@@ -1,0 +1,4 @@
+BehaviorIsManaged
+=================
+
+Program simulating behaviors
