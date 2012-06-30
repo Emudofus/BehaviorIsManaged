@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviorIsManaged", "BehaviorIsManaged\BehaviorIsManaged.csproj", "{C547EB82-F770-410B-94AD-534E9B1D6C1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiM.Protocol", "Protocol\BiM.Protocol.csproj", "{667DCC70-280C-4716-A911-C38DE5C2F0EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiM.Core", "Core\BiM.Core.csproj", "{2D0B3716-72B4-457B-8F61-4F7A2A200A57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C547EB82-F770-410B-94AD-534E9B1D6C1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C547EB82-F770-410B-94AD-534E9B1D6C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C547EB82-F770-410B-94AD-534E9B1D6C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C547EB82-F770-410B-94AD-534E9B1D6C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{667DCC70-280C-4716-A911-C38DE5C2F0EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{667DCC70-280C-4716-A911-C38DE5C2F0EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{667DCC70-280C-4716-A911-C38DE5C2F0EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{667DCC70-280C-4716-A911-C38DE5C2F0EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D0B3716-72B4-457B-8F61-4F7A2A200A57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D0B3716-72B4-457B-8F61-4F7A2A200A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D0B3716-72B4-457B-8F61-4F7A2A200A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0B3716-72B4-457B-8F61-4F7A2A200A57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

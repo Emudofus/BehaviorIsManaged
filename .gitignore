@@ -1,6 +1,17 @@
-# Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
-bin
-obj
+#
+# VS Solution user file
+#
+*.suo
+*.user
+*.*.user
+*.vsp
+_ReSharper.*/
 
-# mstest test results
-TestResults
+# Output path
+bin/
+obj/
+/trunk/Run/Debug
+/trunk/Run/Release
+
+#TestUnit
+TestResults/

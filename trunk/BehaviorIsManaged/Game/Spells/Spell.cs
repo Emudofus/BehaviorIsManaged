@@ -1,0 +1,60 @@
+﻿using System;
+using System.ComponentModel;
+using BiM.Data;
+using BiM.Protocol.Data;
+using BiM.Protocol.Types;
+
+namespace BiM.Game.Spells
+{
+    public class Spell : INotifyPropertyChanged
+    {
+        private int m_level;
+
+        public Spell(SpellItem spell)
+        {
+            if (spell == null) throw new ArgumentNullException("spell");
+            Template = DataProvider.Instance.GetObjectData<Protocol.Data.Spell>(spell.spellId);
+            Level = spell.spellLevel;
+            Position = spell.position;
+        }
+
+        public Protocol.Data.Spell Template
+        {
+            get;
+            set;
+        }
+
+        public int Level
+        {
+            get { return m_level; }
+            set
+            {
+                m_level = value;
+                LevelTemplate = GetLevelTemplate(m_level);
+            }
+        }
+
+        public SpellLevel LevelTemplate
+        {
+            get;
+            private set;
+        }
+
+        // note, always equal to 63
+        public byte Position
+        {
+            get;
+            set;
+        }
+
+        private SpellLevel GetLevelTemplate(int level)
+        {
+            if (Template.spellLevels.Count <= Level)
+                throw new InvalidOperationException(string.Format("Level {0} doesn't exist in spell {1}", Level, Template.id));
+
+            return DataProvider.Instance.GetObjectData<SpellLevel>((int) Template.spellLevels[level]);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+    }
+}

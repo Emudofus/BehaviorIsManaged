@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BiM.Game.WorldObject">
+    <Position X="4.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAACAAAAAgAAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Game\WorldObject.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BiM.Game.Actors.ContextActor">
+    <Position X="4.5" Y="3.5" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="BiM.Game.Actors.ContextActor.SpeakHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Game\Actors\ContextActor.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAgAAAAAAAAAAAAAAAAAAIAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Game\Actors\ContextActor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BiM.Game.Actors.RolePlay.RolePlayActor">
+    <Position X="4.5" Y="6.75" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="BiM.Game.Actors.RolePlay.RolePlayActor.MoveStartHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Game\Actors\RolePlay\RolePlayActor.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="BiM.Game.Actors.RolePlay.RolePlayActor.MoveStopHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Game\Actors\RolePlay\RolePlayActor.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACAAAAACAAAAAAAACAEAAAAAAAAAEAgAAIAAEgAAA=</HashCode>
+      <FileName>Game\Actors\RolePlay\RolePlayActor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BiM.Game.Actors.RolePlay.NamedActor">
+    <Position X="4.5" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Game\Actors\RolePlay\NamedActor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BiM.Game.Actors.RolePlay.Humanoid">
+    <Position X="4.5" Y="13" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAJACAAAEQAAAAAAAAAAAAAAAAAAgCAAAAEAAA=</HashCode>
+      <FileName>Game\Actors\RolePlay\Humanoid.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BiM.Game.Actors.RolePlay.Character">
+    <Position X="4.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Game\Actors\RolePlay\Character.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="BiM.Game.Actors.RolePlay.PlayedCharacter">
+    <Position X="4.5" Y="19.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>Game\Actors\RolePlay\PlayedCharacter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
