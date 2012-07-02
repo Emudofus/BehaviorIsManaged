@@ -2,6 +2,11 @@
 {
     public abstract class Message
     {
+        public Message()
+        {
+            
+        }
+
         public abstract uint MessageId
         {
             get;

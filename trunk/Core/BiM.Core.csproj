@@ -43,16 +43,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\LockFreeQueue.cs" />
     <Compile Include="Extensions\DateExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Extensions\TaskCompletionSourceExtensions.cs" />
+    <Compile Include="Extensions\TaskExtensions.cs" />
+    <Compile Include="Extensions\TaskFactoryExtensions.cs" />
+    <Compile Include="Extensions\TaskSchedulerExtensions.cs" />
     <Compile Include="IO\BigEndianReader.cs" />
     <Compile Include="IO\BigEndianWriter.cs" />
     <Compile Include="IO\IDataReader.cs" />
     <Compile Include="IO\IDataWriter.cs" />
     <Compile Include="IO\ZipHelper.cs" />
     <Compile Include="Messages\AutomaticIdMessage.cs" />
-    <Compile Include="Messages\IDynamicMessage.cs" />
-    <Compile Include="Messages\IStaticMessage.cs" />
+    <Compile Include="Messages\IDynamicId.cs" />
+    <Compile Include="Messages\IStaticId.cs" />
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\MessageIdFinder.cs" />
     <Compile Include="Network\ListenerEntry.cs" />
@@ -60,6 +65,9 @@
     <Compile Include="Messages\MessageHandlerAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\Singleton.cs" />
+    <Compile Include="Threading\SelfRunningTaskPool.cs" />
+    <Compile Include="Threading\SimpleTimerEntry.cs" />
+    <Compile Include="Threading\TimerEntry.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

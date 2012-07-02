@@ -5,7 +5,7 @@ using BiM.Core.Network;
 
 namespace BiM.Protocol.Messages
 {
-    public abstract class NetworkMessage : Message, IStaticMessage
+    public abstract class NetworkMessage : Message, IStaticId
     {
         private const byte BIT_RIGHT_SHIFT_LEN_PACKET_ID = 2;
         private const byte BIT_MASK = 3;
@@ -16,6 +16,8 @@ namespace BiM.Protocol.Messages
             get;
             set;
         }
+
+        public ListenerEntry From { get; set; }
 
         public void Unpack(IDataReader reader)
         {

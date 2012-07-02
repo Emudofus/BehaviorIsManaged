@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BiM.Core.Extensions;
 
 namespace BiM.Core.Messages
 {
@@ -10,11 +12,21 @@ namespace BiM.Core.Messages
 
         public static void RegisterAssembly(Assembly assembly)
         {
-            foreach (var type in assembly.GetTypes())
+            lock (s_usedIds)
             {
-                if (type.IsSubclassOf(typeof(Message))
+
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.IsSubclassOf(typeof (Message)) && type.HasInterface(typeof (IStaticId)))
+                    {
+                        var msg = Activator.CreateInstance(type) as Message;
+
+                        s_usedIds.Add(msg.MessageId);
+                    }
+                }
             }
         }
+    
 
         public static uint FindUniqueId()
         {
