@@ -4,6 +4,7 @@ using System;
 using BiM.Core.IO;
 using System.Collections.Generic;
 using System.Linq;
+using BiM.Core.Network;
 
 namespace BiM.Protocol.Messages
 {

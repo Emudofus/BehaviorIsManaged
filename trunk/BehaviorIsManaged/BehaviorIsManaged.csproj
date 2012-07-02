@@ -92,6 +92,10 @@
       <Project>{2D0B3716-72B4-457B-8F61-4F7A2A200A57}</Project>
       <Name>BiM.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Librairies\NLog\NLog.netfx40.csproj">
+      <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
+      <Name>NLog.netfx40</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Protocol\BiM.Protocol.csproj">
       <Project>{667DCC70-280C-4716-A911-C38DE5C2F0EC}</Project>
       <Name>BiM.Protocol</Name>

@@ -1,15 +1,13 @@
 ﻿using System;
 using BiM.Core.IO;
 using BiM.Core.Messages;
-using BiM.Core.Network;
 
-namespace BiM.Protocol.Messages
+namespace BiM.Core.Network
 {
     public abstract class NetworkMessage : Message, IStaticId
     {
         private const byte BIT_RIGHT_SHIFT_LEN_PACKET_ID = 2;
         private const byte BIT_MASK = 3;
-
 
         public ListenerEntry Destinations
         {
@@ -17,7 +15,19 @@ namespace BiM.Protocol.Messages
             set;
         }
 
-        public ListenerEntry From { get; set; }
+        public ListenerEntry From
+        {
+            get;
+            set;
+        }
+
+        public void BlockProgression(bool keepSending)
+        {
+            Canceled = true;
+
+            if (!keepSending)
+                Destinations = ListenerEntry.Local;
+        }
 
         public void Unpack(IDataReader reader)
         {
@@ -40,35 +50,26 @@ namespace BiM.Protocol.Messages
             writer.Clear();
 
             byte typeLen = ComputeTypeLen(packet.Length);
-            var header = (short)SubComputeStaticHeader(MessageId, typeLen);
+            var header = (short) SubComputeStaticHeader(MessageId, typeLen);
             writer.WriteShort(header);
 
             switch (typeLen)
             {
                 case 0:
-                    {
-                        break;
-                    }
+                    break;
                 case 1:
-                    {
-                        writer.WriteByte((byte)packet.Length);
-                        break;
-                    }
+                    writer.WriteByte((byte) packet.Length);
+                    break;
                 case 2:
-                    {
-                        writer.WriteShort((short)packet.Length);
-                        break;
-                    }
+                    writer.WriteShort((short) packet.Length);
+                    break;
                 case 3:
-                    {
-                        writer.WriteByte((byte)( packet.Length >> 16 & 255 ));
-                        writer.WriteShort((short)( packet.Length & 65535 ));
-                        break;
-                    }
+                    writer.WriteByte((byte) (packet.Length >> 16 & 255));
+                    writer.WriteShort((short) (packet.Length & 65535));
+                    break;
                 default:
-                    {
-                        throw new Exception("Packet's length can't be encoded on 4 or more bytes");
-                    }
+
+                    throw new Exception("Packet's length can't be encoded on 4 or more bytes");
             }
             writer.WriteBytes(packet);
         }
@@ -77,17 +78,14 @@ namespace BiM.Protocol.Messages
         private static byte ComputeTypeLen(int param1)
         {
             if (param1 > 65535)
-            {
                 return 3;
-            }
+
             if (param1 > 255)
-            {
                 return 2;
-            }
+
             if (param1 > 0)
-            {
                 return 1;
-            }
+
             return 0;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using BiM.Core.Extensions;
 
@@ -35,10 +36,12 @@ namespace BiM.Core.Messages
             }
         }
 
+        private readonly Queue<Message> m_messagesToDispatch = new Queue<Message>(); 
         private readonly Dictionary<uint, List<MessageHandler>> m_handlers = new Dictionary<uint, List<MessageHandler>>();
 
         public void RegisterAssembly(Assembly assembly)
         {
+            if (assembly == null) throw new ArgumentNullException("assembly");
             foreach (var type in assembly.GetTypes())
             {
                 if (!type.IsAbstract)
@@ -50,6 +53,7 @@ namespace BiM.Core.Messages
 
         public void RegisterStaticContainer(Type type)
         {
+            if (type == null) throw new ArgumentNullException("type");
             var methods = type.GetMethods(BindingFlags.Static |
                 BindingFlags.Public | BindingFlags.NonPublic);
 
@@ -59,15 +63,6 @@ namespace BiM.Core.Messages
 
                 if (attributes == null || attributes.Length == 0)
                     continue;
-
-                var parameters = method.GetParameters();
-
-                if (parameters.Length != 2 ||
-                    parameters[0].ParameterType != typeof(T) ||
-                    parameters[1].ParameterType != typeof(Message))
-                {
-                    throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler({1}, Mesage)", method, typeof(T).Name));
-                }
 
                 Register(method, null, attributes);
             }
@@ -87,23 +82,25 @@ namespace BiM.Core.Messages
                 if (attributes == null || attributes.Length == 0)
                     continue;
 
-                var parameters = method.GetParameters();
-
-                if (parameters.Length != 2 ||
-                    parameters[0].ParameterType != typeof(T) ||
-                    parameters[1].ParameterType != typeof(Message))
-                {
-                    throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler({1}, Mesage)", method, typeof(T).Name));
-                }
-
                 Register(method, container, attributes);
             }
         }
 
         public void Register(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
         {
+            if (method == null) throw new ArgumentNullException("method");
             if (attributes == null || attributes.Length == 0)
                 return;
+
+
+            var parameters = method.GetParameters();
+
+            if (parameters.Length != 2 ||
+                parameters[0].ParameterType != typeof(T) ||
+                !parameters[1].ParameterType.IsSubclassOf(typeof(Message)))
+            {
+                throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler({1}, Mesage)", method, typeof(T).Name));
+            }
 
             if (!method.IsStatic && container == null)
                 throw new ArgumentException("You must give an object container if the method is static");
@@ -111,7 +108,7 @@ namespace BiM.Core.Messages
             Action<T, Message> handlerDelegate;
             try
             {
-                handlerDelegate = method.CreateDelegate(typeof(T), typeof(Message)) as Action<T, Message>;
+                handlerDelegate = (Action<T, Message>)method.CreateDelegate(typeof(T), typeof(Message));
             }
             catch (Exception)
             {
@@ -126,6 +123,8 @@ namespace BiM.Core.Messages
 
         public void Register(uint messageId, MessageHandlerAttribute attribute, Action<T, Message> action, object container = null)
         {
+            if (attribute == null) throw new ArgumentNullException("attribute");
+            if (action == null) throw new ArgumentNullException("action");
             if (!m_handlers.ContainsKey(messageId))
                 m_handlers.Add(messageId, new List<MessageHandler>());
 
@@ -137,23 +136,50 @@ namespace BiM.Core.Messages
             return m_handlers.ContainsKey(messageId);
         }
 
-        public void Dispatch(Message message)
+        protected ReadOnlyCollection<MessageHandler> GetHandlers(uint messageId)
         {
             List<MessageHandler> handlers;
-            if (m_handlers.TryGetValue(message.MessageId, out handlers))
+
+            if (m_handlers.TryGetValue(messageId, out handlers))
             {
-                try
+                return handlers.AsReadOnly();
+            }
+
+            return new List<MessageHandler>().AsReadOnly();
+        }
+
+        public virtual void AddMessageToDispatch(Message message)
+        {
+            m_messagesToDispatch.Enqueue(message);
+        }   
+
+        public virtual void ProcessDispatching(T processor)
+        {
+            while (m_messagesToDispatch.Count != 0)
+            {
+                var message = m_messagesToDispatch.Dequeue();
+                Dispatch(processor, message);
+            }
+        }
+
+        protected virtual void Dispatch(T processor, Message message)
+        {
+            var handlers = GetHandlers(message.MessageId);
+
+            try
+            {
+                foreach (var handler in handlers)
                 {
-                    foreach (var handler in handlers)
-                    {
-                        // send to task queue ?
-                    }
+                    handler.Action(processor, message);
+
+                    if (message.Canceled)
+                        break;
                 }
-                catch (Exception)
-                {
-                    // todo : log
-                    throw;
-                }
+            }
+            catch (Exception)
+            {
+                // todo : log
+                throw;
             }
         }
     }
