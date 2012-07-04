@@ -6,29 +6,52 @@ namespace BiM
 {
     public class Bot
     {
-        public bool Running
-        {
-            get;
-            set;
-        }
-
         public Bot()
         {
             Dispatcher = new MessageDispatcher<Bot>();
+            ConnectionType = ClientConnectionType.Disconnected;
             Running = true;
         }
 
         public Bot(MessageDispatcher<Bot> messageDispatcher)
         {
             Dispatcher = messageDispatcher;
+            ConnectionType = ClientConnectionType.Disconnected;
             Running = true;
         }
 
-        public MessageDispatcher<Bot> Dispatcher { get; set; }
+        public MessageDispatcher<Bot> Dispatcher 
+        { 
+            get; 
+            private set; 
+        }
+
+        public bool Running
+        {
+            get;
+            private set;
+        }
+
+        public ClientConnectionType ConnectionType
+        {
+            get;
+            set;
+        }
+
+        public string ConnectionTicket
+        {
+            get;
+            set;
+            }
+
+        public void Tick()
+        {
+            Dispatcher.ProcessDispatching(this);
+        }
 
         public void Send(Message message)
         {
-            Dispatcher.AddMessageToDispatch(message);
+            Dispatcher.Enqueue(message);
         }
 
         public void Send(NetworkMessage message, ListenerEntry dest)
@@ -36,22 +59,68 @@ namespace BiM
             message.Destinations = dest;
             message.From = ListenerEntry.Local;
 
-            Dispatcher.AddMessageToDispatch(message);
+            Dispatcher.Enqueue(message);
         }
 
-        public void SendToClient(NetworkMessage message)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="direct">If true it doesn't reprocess the message internally</param>
+        public void SendToClient(NetworkMessage message, bool direct = false)
         {
-            Send(message, ListenerEntry.Client);
+            if (direct)
+                Send(message, ListenerEntry.Client);
+            else
+                Send(message, ListenerEntry.Client | ListenerEntry.Local);
         }
 
-        public void SendToServer(NetworkMessage message)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="direct">If true it doesn't reprocess the message internally</param>
+        public void SendToServer(NetworkMessage message, bool direct = false)
         {
-            Send(message, ListenerEntry.Server);
+            if (direct)
+                Send(message, ListenerEntry.Server);
+            else
+                Send(message, ListenerEntry.Server | ListenerEntry.Local);
         }
 
         public void SendLocal(NetworkMessage message)
         {
             Send(message, ListenerEntry.Local);
+        }
+
+        public virtual void Stop()
+        {
+            if (!Running)
+                return;
+
+            Running = false;
+
+            if (Dispatcher != null)
+                Dispatcher.Stop();
+        }
+
+        public virtual void Resume()
+        {
+            if (Running)
+                return;
+
+            Running = true;
+
+            if (Dispatcher != null)
+                Dispatcher.Resume();
+        }
+
+        public virtual void Dispose()
+        {
+            Stop();
+
+            if (Dispatcher != null)
+                Dispatcher.Dispose();
         }
     }
 }

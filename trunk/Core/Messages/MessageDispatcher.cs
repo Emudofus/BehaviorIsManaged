@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Threading;
+using BiM.Core.Collections;
 using BiM.Core.Extensions;
 
 namespace BiM.Core.Messages
 {
-    public class MessageDispatcher<T>
+    public class MessageDispatcher<T> where T : class
     {
         protected class MessageHandler
         {
-            public MessageHandler(object container, MessageHandlerAttribute handlerAttribute, Action<T, Message> action)
+            public MessageHandler(object container, MessageHandlerAttribute handlerAttribute, Action<object, T, Message> action)
             {
                 Container = container;
                 Attribute = handlerAttribute;
@@ -29,17 +31,35 @@ namespace BiM.Core.Messages
                 private set;
             }
 
-            public Action<T, Message> Action
+            public Action<object, T, Message> Action
             {
                 get;
                 private set;
             }
         }
 
-        private readonly Queue<Message> m_messagesToDispatch = new Queue<Message>(); 
-        private readonly Dictionary<uint, List<MessageHandler>> m_handlers = new Dictionary<uint, List<MessageHandler>>();
+        private readonly SortedDictionary<MessagePriority, Queue<Message>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Message>>();
+        private static readonly Dictionary<uint, List<MessageHandler>> m_handlers = new Dictionary<uint, List<MessageHandler>>();
 
-        public void RegisterAssembly(Assembly assembly)
+        private int m_currentThreadId;
+        private T m_currentProcessor;
+
+        private bool m_stopped;
+
+        public MessageDispatcher()
+        {
+            foreach (var value in Enum.GetValues(typeof(MessagePriority)))
+            {
+                m_messagesToDispatch.Add((MessagePriority)value, new Queue<Message>());
+            }
+        }
+
+        public bool Stopped
+        {
+            get { return m_stopped; }
+        }
+
+        public static void RegisterAssembly(Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException("assembly");
             foreach (var type in assembly.GetTypes())
@@ -51,7 +71,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public void RegisterStaticContainer(Type type)
+        public static void RegisterStaticContainer(Type type)
         {
             if (type == null) throw new ArgumentNullException("type");
             var methods = type.GetMethods(BindingFlags.Static |
@@ -68,7 +88,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public void RegisterContainer(object container)
+        public static void RegisterContainer(object container)
         {
             var type = container.GetType();
 
@@ -86,7 +106,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public void Register(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
+        public static void Register(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
         {
             if (method == null) throw new ArgumentNullException("method");
             if (attributes == null || attributes.Length == 0)
@@ -105,10 +125,10 @@ namespace BiM.Core.Messages
             if (!method.IsStatic && container == null)
                 throw new ArgumentException("You must give an object container if the method is static");
 
-            Action<T, Message> handlerDelegate;
+            Action<object, T, Message> handlerDelegate;
             try
             {
-                handlerDelegate = (Action<T, Message>)method.CreateDelegate(typeof(T), typeof(Message));
+                handlerDelegate = (Action<object, T, Message>)method.CreateDelegate(typeof(T), typeof(Message));
             }
             catch (Exception)
             {
@@ -121,7 +141,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public void Register(uint messageId, MessageHandlerAttribute attribute, Action<T, Message> action, object container = null)
+        public static void Register(uint messageId, MessageHandlerAttribute attribute, Action<object, T, Message> action, object container = null)
         {
             if (attribute == null) throw new ArgumentNullException("attribute");
             if (action == null) throw new ArgumentNullException("action");
@@ -131,12 +151,17 @@ namespace BiM.Core.Messages
             m_handlers[messageId].Add(new MessageHandler(container, attribute, action));
         }
 
-        public bool IsRegister(uint messageId)
+        public static void UnRegister()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool IsRegistered(uint messageId)
         {
             return m_handlers.ContainsKey(messageId);
         }
 
-        protected ReadOnlyCollection<MessageHandler> GetHandlers(uint messageId)
+        protected static ReadOnlyCollection<MessageHandler> GetHandlers(uint messageId)
         {
             List<MessageHandler> handlers;
 
@@ -148,17 +173,43 @@ namespace BiM.Core.Messages
             return new List<MessageHandler>().AsReadOnly();
         }
 
-        public virtual void AddMessageToDispatch(Message message)
+        public virtual void Enqueue(Message message, bool executeIfCan = true)
         {
-            m_messagesToDispatch.Enqueue(message);
-        }   
+            if (executeIfCan && IsInDispatchingContext())
+                Dispatch(m_currentProcessor, message);
+            else
+                m_messagesToDispatch[message.Priority].Enqueue(message);
+        }
 
-        public virtual void ProcessDispatching(T processor)
+        public bool IsInDispatchingContext()
         {
-            while (m_messagesToDispatch.Count != 0)
+            return Thread.CurrentThread.ManagedThreadId == m_currentThreadId &&
+                m_currentProcessor != null;
+        }
+
+        public void ProcessDispatching(T processor)
+        {
+            if (Interlocked.CompareExchange(ref m_currentThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
             {
-                var message = m_messagesToDispatch.Dequeue();
-                Dispatch(processor, message);
+                m_currentProcessor = processor;
+
+                foreach (var keyPair in m_messagesToDispatch)
+                {
+                    if (m_stopped)
+                        break;
+
+                    while (keyPair.Value.Count != 0)
+                    {
+                        if (m_stopped)
+                            break;
+
+                        var message = keyPair.Value.Dequeue();
+                        Dispatch(processor, message);
+                    }
+                }
+
+                Interlocked.Exchange(ref m_currentThreadId, 0);
+                m_currentProcessor = null;
             }
         }
 
@@ -170,7 +221,7 @@ namespace BiM.Core.Messages
             {
                 foreach (var handler in handlers)
                 {
-                    handler.Action(processor, message);
+                    handler.Action(handler.Container, processor, message);
 
                     if (message.Canceled)
                         break;
@@ -181,6 +232,21 @@ namespace BiM.Core.Messages
                 // todo : log
                 throw;
             }
+        }
+
+        public void Stop()
+        {
+            m_stopped = true;
+        }
+
+        public void Resume()
+        {
+            m_stopped = false;
+        }
+
+        public void Dispose()
+        {
+            m_messagesToDispatch.Clear();
         }
     }
 }

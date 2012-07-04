@@ -15,5 +15,17 @@ namespace BiM.Core.Messages
             get;
             set;
         }
+
+        public ListenerEntry FromFilter
+        {
+            get;
+            set;
+        }
+
+        public ListenerEntry DestinationFilter
+        {
+            get;
+            set;
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace BiM.Core.Network
         private MessagePart m_currentMessage;
 
         public event Action<Client, NetworkMessage> MessageReceived;
-        public event Action<Client, NetworkMessage> MessageSended;
+        public event Action<Client, NetworkMessage> MessageSent;
         public event Action<Client> Disconnected;
 
         public event Action<Client, LogEventInfo> LogMessage;
@@ -29,7 +29,7 @@ namespace BiM.Core.Network
 
         protected virtual void OnMessageSended(NetworkMessage message)
         {
-            var handler = MessageSended;
+            var handler = MessageSent;
             if (handler != null)
                 handler(this, message);
         }
@@ -155,6 +155,13 @@ namespace BiM.Core.Network
                 m_currentMessage = null;
                 BuildMessage(); // there is maybe a second message in the buffer
             }
+        }
+
+        public virtual void Reset(Socket newSocket)
+        {
+            Disconnect();
+
+            Socket = newSocket;
         }
 
         public virtual void Disconnect()

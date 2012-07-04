@@ -21,12 +21,17 @@ namespace BiM.Core.Network
             set;
         }
 
-        public void BlockProgression(bool keepSending)
+        public override void BlockProgression()
         {
             Canceled = true;
+            Destinations = ListenerEntry.Local;
+        }
 
-            if (!keepSending)
-                Destinations = ListenerEntry.Local;
+        public void BlockNetworkSend()
+        {
+            Destinations = ListenerEntry.Local;
+
+            Console.WriteLine("Block message {0}", this);
         }
 
         public void Unpack(IDataReader reader)

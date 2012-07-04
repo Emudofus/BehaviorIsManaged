@@ -66,6 +66,12 @@ namespace BiM.Core.Network
             }
         }
 
+        public bool Running
+        {
+            get;
+            private set;
+        }
+
         public ClientManager(IPEndPoint endPoint, ClientCreationHandler clientCreationDelegate)
         {
             m_endPoint = endPoint;
@@ -87,6 +93,11 @@ namespace BiM.Core.Network
 
         public void Start()
         {
+            if (Running)
+                return;
+
+            Running = true;
+
             m_socket.Bind(m_endPoint);
             m_socket.Listen(MaxConcurrentConnections);
 
@@ -95,7 +106,20 @@ namespace BiM.Core.Network
 
         public void Stop()
         {
+            if (!Running)
+                return;
 
+            Running = false;
+
+            foreach (var client in m_clients)
+            {
+                client.Disconnect();
+            }
+
+            m_semaphore = new SemaphoreSlim(MaxConcurrentConnections, MaxConcurrentConnections);
+
+            m_clients.Clear();
+            m_socket.Close();
         }
 
         private void StartAccept()
@@ -104,6 +128,9 @@ namespace BiM.Core.Network
 
             // thread block if the max connections limit is reached
             m_semaphore.Wait();
+
+            if (!Running)
+                return;
 
             // raise or not the event depending on AcceptAsync return
             if (!m_socket.AcceptAsync(m_acceptArgs))
@@ -114,6 +141,9 @@ namespace BiM.Core.Network
 
         private void ProcessAccept(SocketAsyncEventArgs e)
         {
+            if (!Running)
+                return;
+
             // use a async arg from the pool avoid to re-allocate memory on each connection
             var args = new SocketAsyncEventArgs();
             args.Completed += OnReceiveCompleted;
@@ -166,6 +196,9 @@ namespace BiM.Core.Network
 
         private void ProcessReceive(SocketAsyncEventArgs e)
         {
+            if (!Running)
+                return;
+
             if (e.BytesTransferred <= 0 || e.SocketError != SocketError.Success)
             {
                 CloseClientSocket(e);

@@ -11,8 +11,8 @@ namespace BiM.Core.Network
 {
     public class ServerConnection : IClient
     {
-        private readonly string m_host;
-        private readonly int m_port;
+        private string m_host;
+        private int m_port;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly BigEndianReader m_buffer = new BigEndianReader();
@@ -21,7 +21,7 @@ namespace BiM.Core.Network
 
         private IPEndPoint m_endPoint;
         public event Action<ServerConnection, NetworkMessage> MessageReceived;
-        public event Action<ServerConnection, NetworkMessage> MessageSended;
+        public event Action<ServerConnection, NetworkMessage> MessageSent;
         public event Action<ServerConnection> Connected;
         public event Action<ServerConnection> Disconnected;
 
@@ -36,7 +36,7 @@ namespace BiM.Core.Network
 
         private void OnMessageSended(NetworkMessage message)
         {
-            var handler = MessageSended;
+            var handler = MessageSent;
             if (handler != null)
                 handler(this, message);
         }
@@ -55,12 +55,9 @@ namespace BiM.Core.Network
                 handler(this);
         }
 
-        public ServerConnection(string host, int port, IMessageBuilder messageBuilder)
+        public ServerConnection(IMessageBuilder messageBuilder)
         {
-            m_host = host;
-            m_port = port;
             Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IP = string.Format("{0}:{1}", host, port);
             MessageBuilder = messageBuilder;
         }
 
@@ -77,8 +74,7 @@ namespace BiM.Core.Network
 
         public string IP
         {
-            get;
-            private set;
+            get { return string.Format("{0}:{1}", m_host, m_port); }
         }
 
         /// <summary>
@@ -96,8 +92,6 @@ namespace BiM.Core.Network
             private set;
         }
 
-       
-
         public void Log(LogLevel level, string message, params object[] args)
         {
             var log = new LogEventInfo(level, "", CultureInfo.CurrentCulture, message, args);
@@ -108,7 +102,7 @@ namespace BiM.Core.Network
                 handler(this, log);
         }
 
-        public void Connect()
+        public void Connect(string host, int port)
         {
             if (Socket == null)
             {
@@ -116,7 +110,9 @@ namespace BiM.Core.Network
                 return;
             }
 
-            Socket.Connect(m_host, m_port);
+            m_host = host;
+            m_port = port;
+            Socket.Connect(host, port);
             OnClientConnected();
 
             ReceiveLoop();
@@ -129,7 +125,7 @@ namespace BiM.Core.Network
 
             Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            Connect();
+            Connect(m_host, m_port);
         }
 
         /// <summary>

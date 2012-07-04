@@ -8,13 +8,13 @@ namespace BiM.MITM
     /// <summary>
     /// Represent a connection bind between the client and the server
     /// </summary>
-    public class BotConnection : Client
+    public class ConnectionMITM : Client
     {
-        public BotConnection(Socket socket, IMessageBuilder messageBuilder, Bot bot)
-            : base(socket)
+        public ConnectionMITM(Socket clientSocket, IMessageBuilder messageBuilder)
+            : base(clientSocket)
         {
             m_messageBuilder = messageBuilder;
-            Bot = bot;
+            Server = new ServerConnection(messageBuilder);
         }
 
         private IMessageBuilder m_messageBuilder;
@@ -24,10 +24,10 @@ namespace BiM.MITM
             get { return m_messageBuilder; }
         }
 
-        public Bot Bot
+        public BotMITM Bot
         {
             get;
-            private set;
+            set;
         }
 
         public bool IsBoundToServer
@@ -49,13 +49,11 @@ namespace BiM.MITM
             if (IsBoundToServer)
                 throw new InvalidOperationException("Client already bound to server");
 
-            Server = new ServerConnection(host, port, MessageBuilder);
-
             Server.Connected += OnServerConnected;
             Server.Disconnected += OnServerDisconnected;
             Server.MessageReceived += OnServerMessageReceived;
 
-            Server.Connect();
+            Server.Connect(host, port);
         }
 
         private void OnServerMessageReceived(ServerConnection server, NetworkMessage message)
