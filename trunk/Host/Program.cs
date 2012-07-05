@@ -1,19 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using BiM.Behaviors;
+using BiM.Core.Logging;
 using BiM.MITM;
 using BiM.Protocol.Messages;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 
 namespace BiM.Host
 {
     public class Program
     {
-        private static Dictionary<string, Tuple<Bot, SelectedServerDataMessage>> m_tickets = new Dictionary<string, Tuple<Bot, SelectedServerDataMessage>>();
-        private static string ticket;
-        private static MessageReceiver messageReceiver;
-
         private static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) => Console.WriteLine(eventArgs.ExceptionObject);
+            
+            // todo : properly initialization routine
+            var target = new ColoredConsoleTarget()
+            {
+                Name = "coloredConsole",
+                Layout = NLogHelper.LogFormatConsole
+            };
+            NLogHelper.AddTarget(target);
+            NLogHelper.AddLogRule(new LoggingRule("*", NLog.LogLevel.Debug, target));
+            BotManager.Instance.Initialize();
+            NLogHelper.StartLogging();
 
             var mitm =
                 new MITM.MITM(new MITMConfiguration

@@ -1,4 +1,6 @@
-﻿namespace BiM.MITM
+﻿using BiM.Behaviors;
+
+namespace BiM.MITM.Network
 {
     public class BotMITM : Bot
     {

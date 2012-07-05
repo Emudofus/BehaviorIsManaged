@@ -79,13 +79,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BehaviorIsManaged\BehaviorIsManaged.csproj">
+    <ProjectReference Include="..\Behaviors\BiM.Behaviors.csproj">
       <Project>{C547EB82-F770-410B-94AD-534E9B1D6C1B}</Project>
       <Name>BehaviorIsManaged</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\BiM.Core.csproj">
       <Project>{2D0B3716-72B4-457B-8F61-4F7A2A200A57}</Project>
       <Name>BiM.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Librairies\NLog\NLog.netfx40.csproj">
+      <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
+      <Name>NLog.netfx40</Name>
     </ProjectReference>
     <ProjectReference Include="..\MITM\BiM.MITM.csproj">
       <Project>{B402EFFE-08A0-48B7-98B0-72904C2ABEEA}</Project>

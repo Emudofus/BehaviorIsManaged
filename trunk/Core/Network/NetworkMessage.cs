@@ -1,11 +1,14 @@
 ﻿using System;
 using BiM.Core.IO;
 using BiM.Core.Messages;
+using NLog;
 
 namespace BiM.Core.Network
 {
     public abstract class NetworkMessage : Message, IStaticId
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         private const byte BIT_RIGHT_SHIFT_LEN_PACKET_ID = 2;
         private const byte BIT_MASK = 3;
 
@@ -31,7 +34,7 @@ namespace BiM.Core.Network
         {
             Destinations = ListenerEntry.Local;
 
-            Console.WriteLine("Block message {0}", this);
+            logger.Debug("Block message {0}", this);
         }
 
         public void Unpack(IDataReader reader)

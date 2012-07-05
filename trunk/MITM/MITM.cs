@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using BiM.Behaviors;
 using BiM.Core.Extensions;
 using BiM.Core.Messages;
 using BiM.Core.Network;
+using BiM.MITM.Network;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
+using NLog;
 
 namespace BiM.MITM
 {
     public class MITM
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         private readonly MITMConfiguration m_configuration;
         private readonly Dictionary<string, Tuple<BotMITM, SelectedServerDataMessage>> m_tickets = new Dictionary<string, Tuple<BotMITM, SelectedServerDataMessage>>();
 
@@ -57,12 +62,16 @@ namespace BiM.MITM
         {
             AuthConnections.Start();
             WorldConnections.Start();
+
+            logger.Info("MITM started");
         }
 
         public void Stop()
         {
             AuthConnections.Stop();
             WorldConnections.Stop();
+
+            logger.Info("MITM stoped");
         }
 
         private ConnectionMITM CreateAuthClient(Socket socket)
@@ -70,11 +79,8 @@ namespace BiM.MITM
             if (socket == null) throw new ArgumentNullException("socket");
             var client = new ConnectionMITM(socket, MessageBuilder);
             client.MessageReceived += OnAuthClientMessageReceived;
-            client.MessageSent += OnAuthClientMessageSent;
 
-            var dispatcher = new NetworkMessageDispatcher();
-            dispatcher.Client = client;
-            dispatcher.Server = client.Server;
+            var dispatcher = new NetworkMessageDispatcher {Client = client, Server = client.Server};
 
             var bot = new BotMITM(client, dispatcher);
             client.Bot = bot;
@@ -91,19 +97,20 @@ namespace BiM.MITM
             if (socket == null) throw new ArgumentNullException("socket");
             var client = new ConnectionMITM(socket, MessageBuilder);
             client.MessageReceived += OnWorldClientMessageReceived;
-            client.MessageSent += OnWorldClientMessageSent;
 
             return client;
         }
 
         private void OnAuthClientConnected(ConnectionMITM client)
         {
+            client.Bot.Start();
             client.BindToServer(m_configuration.RealAuthHost, m_configuration.RealAuthPort); 
-            Console.WriteLine("Auth client connected");
+            logger.Debug("Auth client connected");
         }
 
         private void OnAuthClientDisconnected(ConnectionMITM client)
         {
+            client.Bot.Stop();
         }
 
         private void OnWorldClientConnected(ConnectionMITM client)
@@ -112,7 +119,7 @@ namespace BiM.MITM
             client.Send(new ProtocolRequired(1459, 1459));
             client.Send(new HelloGameMessage());
 
-            Console.WriteLine("World client connected");
+            logger.Debug("World client connected");
         }
 
         private void OnWorldClientDisconnected(ConnectionMITM client)
@@ -132,7 +139,7 @@ namespace BiM.MITM
 
             mitm.Bot.Dispatcher.Enqueue(message);
 
-            Console.WriteLine("{0} FROM {1}", message, message.From);
+            logger.Debug("{0} FROM {1}", message, message.From);
         }
 
         private void OnWorldClientMessageReceived(Client client, NetworkMessage message)
@@ -155,15 +162,7 @@ namespace BiM.MITM
                 mitm.Bot.Dispatcher.Enqueue(message);
             }
 
-            Console.WriteLine("{0} FROM {1}", message, message.From);
-        }
-
-        private void OnAuthClientMessageSent(Client client, NetworkMessage message)
-        {
-        }
-
-        private void OnWorldClientMessageSent(Client client, NetworkMessage message)
-        {
+            logger.Debug("{0} FROM {1}", message, message.From);
         }
 
         private void HandleAuthenticationTicketMessage(ConnectionMITM client, AuthenticationTicketMessage message)
@@ -177,13 +176,13 @@ namespace BiM.MITM
 
             client.Bot = tuple.Item1;
             client.Bot.ConnectionType = ClientConnectionType.GameConnection;
+            client.Bot.Start();
 
             ( client.Bot.Dispatcher as NetworkMessageDispatcher ).Client = client;
             ( client.Bot.Dispatcher as NetworkMessageDispatcher ).Server = client.Server;
             client.BindToServer(tuple.Item2.address, tuple.Item2.port);
 
-
-            Console.WriteLine("Retrive bot with ticket {0}", message.ticket);
+            logger.Debug("Bot retrieved with ticket {0}", message.ticket);
         }
 
 
@@ -195,6 +194,8 @@ namespace BiM.MITM
 
             message.address = m_configuration.FakeWorldHost;
             message.port = (ushort) m_configuration.FakeWorldPort;
+
+            logger.Debug("Client redirected to {0}:{1}", message.address, message.port);
         }
 
         [MessageHandler(AuthenticationTicketMessage.Id, FromFilter = ListenerEntry.Client)]

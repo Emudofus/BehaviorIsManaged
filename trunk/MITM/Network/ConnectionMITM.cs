@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Net;
 using System.Net.Sockets;
 using BiM.Core.Network;
 
-namespace BiM.MITM
+namespace BiM.MITM.Network
 {
     /// <summary>
     /// Represent a connection bind between the client and the server

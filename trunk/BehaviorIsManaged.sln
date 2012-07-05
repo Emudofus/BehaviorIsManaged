@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BehaviorIsManaged", "BehaviorIsManaged\BehaviorIsManaged.csproj", "{C547EB82-F770-410B-94AD-534E9B1D6C1B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiM.Behaviors", "Behaviors\BiM.Behaviors.csproj", "{C547EB82-F770-410B-94AD-534E9B1D6C1B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiM.Protocol", "Protocol\BiM.Protocol.csproj", "{667DCC70-280C-4716-A911-C38DE5C2F0EC}"
 EndProject

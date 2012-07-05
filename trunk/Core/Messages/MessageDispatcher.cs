@@ -5,11 +5,14 @@ using System.Reflection;
 using System.Threading;
 using BiM.Core.Collections;
 using BiM.Core.Extensions;
+using NLog;
 
 namespace BiM.Core.Messages
 {
     public class MessageDispatcher<T> where T : class
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         protected class MessageHandler
         {
             public MessageHandler(object container, MessageHandlerAttribute handlerAttribute, Action<object, T, Message> action)
@@ -227,21 +230,20 @@ namespace BiM.Core.Messages
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // todo : log
-                throw;
+                logger.ErrorException(string.Format("Exception on dispatching {0}", message), ex);
             }
+        }
+
+        public void Start()
+        {
+            m_stopped = false;
         }
 
         public void Stop()
         {
             m_stopped = true;
-        }
-
-        public void Resume()
-        {
-            m_stopped = false;
         }
 
         public void Dispose()

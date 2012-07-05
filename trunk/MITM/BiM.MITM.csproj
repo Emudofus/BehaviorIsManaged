@@ -80,7 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BehaviorIsManaged\BehaviorIsManaged.csproj">
+    <ProjectReference Include="..\Behaviors\BiM.Behaviors.csproj">
       <Project>{C547EB82-F770-410B-94AD-534E9B1D6C1B}</Project>
       <Name>BehaviorIsManaged</Name>
     </ProjectReference>
@@ -98,7 +98,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Handlers\" />
+    <Folder Include="Handlers\Chat\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

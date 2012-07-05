@@ -1,9 +1,9 @@
 ﻿using System;
+using BiM.Behaviors;
 using BiM.Core.Messages;
 using BiM.Core.Network;
-using BiM.Protocol.Messages;
 
-namespace BiM.MITM
+namespace BiM.MITM.Network
 {
     public class NetworkMessageDispatcher : MessageDispatcher<Bot>
     {
