@@ -2,6 +2,7 @@
 // From 'GameFightStartMessage.xml' the '27/06/2012 15:55:00'
 using System;
 using BiM.Core.IO;
+using BiM.Core.Network;
 
 namespace BiM.Protocol.Messages
 {

@@ -16,10 +16,13 @@ namespace BiM.Protocol.Types
         /// </summary>
         public static void Initialize()
         {
-            Assembly asm = Assembly.GetAssembly(typeof (System.Version));
+            Assembly asm = Assembly.GetAssembly(typeof(ProtocolTypeManager));
 
             foreach (Type type in asm.GetTypes())
             {
+                if (type.Namespace == null || !type.Namespace.StartsWith(typeof(ProtocolTypeManager).Namespace))
+                    continue;
+
                 FieldInfo field = type.GetField("Id");
 
                 if (field != null)

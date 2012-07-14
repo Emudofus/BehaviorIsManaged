@@ -4,7 +4,7 @@
     {
         public Message()
         {
-            
+            Priority = MessagePriority.Normal;
         }
 
         public abstract uint MessageId
@@ -18,7 +18,13 @@
             set;
         }
 
-        public void BlockProgression()
+        public MessagePriority Priority
+        {
+            get;
+            set;
+        }
+
+        public virtual void BlockProgression()
         {
             Canceled = true;
         }

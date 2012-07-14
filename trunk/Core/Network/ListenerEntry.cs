@@ -5,8 +5,9 @@ namespace BiM.Core.Network
     [Flags]
     public enum ListenerEntry
     {
-        Local,
-        Client,
-        Server,
+        Undefined = 0,
+        Local = 1,
+        Client = 2,
+        Server = 4,
     }
 }

@@ -96,7 +96,7 @@ namespace NLog.Targets
         /// <param name="parameters">Method parameters.</param>
         protected override void DoInvoke(object[] parameters)
         {
-            if (this.Method != null)
+            if (this.Method != null) 
             {
                 this.Method.Invoke(null, parameters);
             }
