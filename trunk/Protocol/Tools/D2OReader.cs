@@ -191,6 +191,7 @@ namespace BiM.Protocol.Tools
         /// <param name = "allownulled">True to adding null instead of throwing an exception</param>
         /// <returns></returns>
         public Dictionary<int, T> ReadObjects<T>(bool allownulled = false)
+            where T : class, IDataObject
         {
             if (!IsTypeDefined(typeof (T)))
                 throw new Exception("The file doesn't contain this class");
@@ -210,7 +211,7 @@ namespace BiM.Protocol.Tools
                     {
                         try
                         {
-                            result.Add(index.Key, (T) BuildObject(m_classes[classid], reader));
+                            result.Add(index.Key, BuildObject(m_classes[classid], reader)as T);
                         }
                         catch
                         {
@@ -330,7 +331,8 @@ namespace BiM.Protocol.Tools
             return objectCreators[classDefinition.ClassType](values.ToArray());
         }
 
-        public object ReadObject<T>(int index)
+        public T ReadObject<T>(int index)
+            where T : class, IDataObject
         {
             using (BigEndianReader reader = CloneReader())
             {
@@ -339,6 +341,7 @@ namespace BiM.Protocol.Tools
         }
 
         private T ReadObject<T>(int index, BigEndianReader reader)
+            where T : class, IDataObject
         {
             if (!IsTypeDefined(typeof (T)))
                 throw new Exception("The file doesn't contain this class");
@@ -352,7 +355,7 @@ namespace BiM.Protocol.Tools
                 throw new Exception(string.Format("Wrong type, try to read object with {1} instead of {0}",
                                                   typeof (T).Name, m_classes[classid].ClassType.Name));
 
-            return (T) BuildObject(m_classes[classid], reader);
+            return BuildObject(m_classes[classid], reader) as T;
         }
 
         public Dictionary<int, D2OClassDefinition> GetClasses()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using BiM.Core.IO;
+using BiM.Protocol.Data;
 
 namespace BiM.Protocol.Tools.Dlm
 {

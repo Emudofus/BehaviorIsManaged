@@ -42,7 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="Data\D2OSource.cs" />
     <Compile Include="Data\DataProvider.cs" />
+    <Compile Include="Data\D2PSource.cs" />
+    <Compile Include="Data\DLMSource.cs" />
+    <Compile Include="Data\IDataSource.cs" />
     <Compile Include="Game\Actors\ContextActor.cs" />
     <Compile Include="Game\Actors\Interfaces\IAlignedActor.cs" />
     <Compile Include="Game\Actors\RolePlay\Character.cs" />
@@ -99,6 +103,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Game\Mounts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
