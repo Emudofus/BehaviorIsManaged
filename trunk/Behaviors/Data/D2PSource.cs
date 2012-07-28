@@ -6,7 +6,7 @@ using BiM.Protocol.Data;
 using BiM.Protocol.Tools.D2p;
 using BiM.Protocol.Tools.Dlm;
 
-namespace BiM.Data
+namespace BiM.Behaviors.Data
 {
     public class D2PSource : IDataSource, IDisposable
     {

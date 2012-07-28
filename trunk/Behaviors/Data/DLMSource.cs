@@ -2,7 +2,7 @@
 using BiM.Protocol.Data;
 using BiM.Protocol.Tools.Dlm;
 
-namespace BiM.Data
+namespace BiM.Behaviors.Data
 {
     public class DLMSource : IDataSource, IDisposable
     {

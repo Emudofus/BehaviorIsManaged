@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using BiM.Core.Extensions;
 using BiM.Core.IO;
 using BiM.Protocol.Data;
 
@@ -173,7 +174,7 @@ namespace BiM.Protocol.Tools
             IEnumerable<Type> correspondantTypes = from asm in ClassesContainers
                                                    let types = asm.GetTypes()
                                                    from type in types
-                                                   where type.Name.Equals(className, StringComparison.InvariantCulture)
+                                                   where type.Name.Equals(className, StringComparison.InvariantCulture) && type.HasInterface(typeof(IDataObject))
                                                    select type;
 
             return correspondantTypes.Single();
@@ -358,16 +359,16 @@ namespace BiM.Protocol.Tools
             return BuildObject(m_classes[classid], reader) as T;
         }
 
-        public Dictionary<int, D2OClassDefinition> GetClasses()
+        public Dictionary<int, D2OClassDefinition> GetObjectsClasses()
         {
-            return m_indextable.ToDictionary(index => index.Key, index => GetClass(index.Key));
+            return m_indextable.ToDictionary(index => index.Key, index => GetObjectClass(index.Key));
         }
 
 
         /// <summary>
         /// Get the class corresponding to the object at the given index
         /// </summary>
-        public D2OClassDefinition GetClass(int index)
+        public D2OClassDefinition GetObjectClass(int index)
         {
             int offset = m_indextable[index];
             m_reader.Seek(offset, SeekOrigin.Begin);

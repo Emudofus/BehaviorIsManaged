@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using BiM.Behaviors;
+using BiM.Behaviors.Data;
 using BiM.Core.Logging;
 using BiM.MITM;
+using BiM.Protocol.Data;
 using BiM.Protocol.Messages;
 using NLog;
 using NLog.Config;
@@ -26,6 +28,12 @@ namespace BiM.Host
             NLogHelper.AddLogRule(new LoggingRule("*", NLog.LogLevel.Debug, target));
             BotManager.Instance.Initialize();
             NLogHelper.StartLogging();
+
+            var d2oSource = new D2OSource();
+            d2oSource.AddReaders(@"C:\Program Files (x86)\Dofus 2\app\data\common");
+            DataProvider.Instance.AddSource(d2oSource);
+
+            var server = DataProvider.Instance.GetObjectData<Server>(1);
 
             var mitm =
                 new MITM.MITM(new MITMConfiguration

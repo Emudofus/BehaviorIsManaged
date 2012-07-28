@@ -1,7 +1,7 @@
 ﻿using System;
 using BiM.Protocol.Data;
 
-namespace BiM.Data
+namespace BiM.Behaviors.Data
 {
     public interface IDataSource
     {

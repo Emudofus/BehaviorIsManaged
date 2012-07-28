@@ -17,5 +17,6 @@ namespace BiM.Protocol.Data
 		public uint zoneSize;
 		public uint zoneShape;
 		public uint zoneMinSize;
+        public string rawZone;
 	}
 }
