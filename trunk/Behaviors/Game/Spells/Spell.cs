@@ -13,7 +13,7 @@ namespace BiM.Behaviors.Game.Spells
         public Spell(SpellItem spell)
         {
             if (spell == null) throw new ArgumentNullException("spell");
-            Template = DataProvider.Instance.GetObjectData<Protocol.Data.Spell>(spell.spellId);
+            Template = DataProvider.Instance.Get<Protocol.Data.Spell>(spell.spellId);
             Level = spell.spellLevel;
             Position = spell.position;
         }
@@ -52,7 +52,7 @@ namespace BiM.Behaviors.Game.Spells
             if (Template.spellLevels.Count <= Level)
                 throw new InvalidOperationException(string.Format("Level {0} doesn't exist in spell {1}", Level, Template.id));
 
-            return DataProvider.Instance.GetObjectData<SpellLevel>((int) Template.spellLevels[level]);
+            return DataProvider.Instance.Get<SpellLevel>((int) Template.spellLevels[level]);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

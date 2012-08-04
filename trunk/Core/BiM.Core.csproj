@@ -88,7 +88,6 @@
     <Compile Include="IO\IDataReader.cs" />
     <Compile Include="IO\IDataWriter.cs" />
     <Compile Include="IO\ZipHelper.cs" />
-    <Compile Include="Logging\NLogHelper.cs" />
     <Compile Include="Messages\AutomaticIdMessage.cs" />
     <Compile Include="Messages\IDynamicId.cs" />
     <Compile Include="Messages\IStaticId.cs" />
@@ -118,7 +117,6 @@
       <Name>NLog.netfx40</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

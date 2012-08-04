@@ -39,7 +39,7 @@ namespace BiM.Behaviors.Data
             return sources.Single();
         }
 
-        public T GetObjectData<T>(int id)
+        public T Get<T>(int id)
             where T : class, IDataObject
         {
             var source = GetSourceMatching(typeof(T));
@@ -47,7 +47,6 @@ namespace BiM.Behaviors.Data
             return source.ReadObject<T>(id);
         }
 
-        // todo
         public T GetObjectDataOrDefault<T>(int id)
             where T : class, IDataObject
         {

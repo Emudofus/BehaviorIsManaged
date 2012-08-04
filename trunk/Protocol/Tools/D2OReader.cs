@@ -157,7 +157,7 @@ namespace BiM.Protocol.Tools
                     FieldInfo field = classType.GetField(fieldname);
 
                     if (field == null)
-                        throw new Exception(string.Format("Missing field '{0}' in class '{1}'", fieldname, classType.Name));
+                        throw new Exception(string.Format("Missing field '{0}' ({1}) in class '{2}'", fieldname, fieldtype, classType.Name));
 
                     fields.Add(new D2OFieldDefinition(fieldname, fieldtype, field, m_reader.BaseStream.Position,
                                                       vectorTypes.ToArray()));

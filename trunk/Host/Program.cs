@@ -18,22 +18,11 @@ namespace BiM.Host
         {
             AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) => Console.WriteLine(eventArgs.ExceptionObject);
             
-            // todo : properly initialization routine
-            var target = new ColoredConsoleTarget()
-            {
-                Name = "coloredConsole",
-                Layout = NLogHelper.LogFormatConsole
-            };
-            NLogHelper.AddTarget(target);
-            NLogHelper.AddLogRule(new LoggingRule("*", NLog.LogLevel.Debug, target));
-            BotManager.Instance.Initialize();
-            NLogHelper.StartLogging();
-
             var d2oSource = new D2OSource();
             d2oSource.AddReaders(@"C:\Program Files (x86)\Dofus 2\app\data\common");
             DataProvider.Instance.AddSource(d2oSource);
 
-            var server = DataProvider.Instance.GetObjectData<Server>(1);
+            var server = DataProvider.Instance.Get<Server>(1);
 
             var mitm =
                 new MITM.MITM(new MITMConfiguration

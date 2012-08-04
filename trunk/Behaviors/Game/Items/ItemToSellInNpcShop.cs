@@ -8,7 +8,7 @@ namespace BiM.Behaviors.Game.Items
     {
         public ItemToSellInNpcShop(ObjectItemToSellInNpcShop item)
         {
-            Template = DataProvider.Instance.GetObjectData<Protocol.Data.Item>(item.objectGID);
+            Template = DataProvider.Instance.Get<Protocol.Data.Item>(item.objectGID);
             Effects = new ObservableCollection<ObjectEffect>(item.effects);
             PowerRate = item.powerRate;
             OverMax = item.overMax;

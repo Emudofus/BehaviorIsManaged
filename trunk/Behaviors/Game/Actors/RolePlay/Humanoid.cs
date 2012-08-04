@@ -21,12 +21,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             m_followingCharactersLook = new ObservableCollection<EntityLook>(human.followingCharactersLook);
             Emote = human.emoteId > 0 ? 
-                DataProvider.Instance.GetObjectDataOrDefault<Emoticon>(human.emoteId) : null;
+                DataProvider.Instance.Get<Emoticon>(human.emoteId) : null;
             EmoteStartTime = human.emoteStartTime > 0 ? 
                 new DateTime?(human.emoteStartTime.UnixTimestampToDateTime()) : null;
             Restrictions = human.restrictions;
             Title = human.titleId > 0 ?
-                DataProvider.Instance.GetObjectDataOrDefault<Title>(human.titleId) : null;
+                DataProvider.Instance.Get<Title>(human.titleId) : null;
             TitleParam = human.titleParam;
         }
 

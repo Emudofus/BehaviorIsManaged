@@ -10,7 +10,7 @@ namespace BiM.Behaviors.Game.Items
         public Item(ObjectItem item)
         {
             Guid = item.objectUID;
-            Template = DataProvider.Instance.GetObjectData<Protocol.Data.Item>(item.objectGID);
+            Template = DataProvider.Instance.Get<Protocol.Data.Item>(item.objectGID);
             Effects = new ObservableCollection<ObjectEffect>(item.effects);
             Quantity = item.quantity;
             PowerRate = item.powerRate;
