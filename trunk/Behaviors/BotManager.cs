@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using BiM.Core.Logging;
 using BiM.Core.Reflection;
 using NLog.Config;
 using NLog.Layouts;
@@ -15,19 +13,6 @@ namespace BiM.Behaviors
     {
         public void Initialize()
         {
-            var target = new MethodCallTarget()
-            {
-                Name = "botLog",
-                ClassName = GetType().FullName + "," + GetType().Assembly.GetName().Name,
-                MethodName = "LogNotified"
-            };
-
-            target.Parameters.Add(new MethodCallParameter("level", "${level}"));
-            target.Parameters.Add(new MethodCallParameter("caller", "${callsite:className=true:methodName=true:includeSourcePath=false:nonamespace=true}"));
-            target.Parameters.Add(new MethodCallParameter("message", "${message}"));
-
-            NLogHelper.AddTarget(target);
-            NLogHelper.AddLogRule(new LoggingRule("*", NLog.LogLevel.Debug, target));
         }
 
         public event Action<BotManager, Bot> BotAdded;

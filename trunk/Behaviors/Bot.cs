@@ -21,18 +21,18 @@ namespace BiM.Behaviors
         public Bot()
             : base (30)
         {
-            Dispatcher = new MessageDispatcher<Bot>();
+            Dispatcher = new MessageDispatcher();
             ConnectionType = ClientConnectionType.Disconnected;
         }
 
-        public Bot(MessageDispatcher<Bot> messageDispatcher)
+        public Bot(MessageDispatcher messageDispatcher)
             : base(30)
         {
             Dispatcher = messageDispatcher;
             ConnectionType = ClientConnectionType.Disconnected;
         }
 
-        public MessageDispatcher<Bot> Dispatcher 
+        public MessageDispatcher Dispatcher 
         { 
             get; 
             private set; 
@@ -59,7 +59,7 @@ namespace BiM.Behaviors
 
         public void Send(Message message)
         {
-            Dispatcher.Enqueue(message);
+            Dispatcher.Enqueue(message, this);
         }
 
         public void Send(NetworkMessage message, ListenerEntry dest)
@@ -67,7 +67,7 @@ namespace BiM.Behaviors
             message.Destinations = dest;
             message.From = ListenerEntry.Local;
 
-            Dispatcher.Enqueue(message);
+            Dispatcher.Enqueue(message, this);
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace BiM.Behaviors
             if (Running)
                 return;
 
-            if (Dispatcher != null)
-                Dispatcher.Start();
+            if (Dispatcher.Stopped)
+                Dispatcher.Resume();
 
             base.Start();
 

@@ -5,7 +5,7 @@ using NLog;
 
 namespace BiM.Core.Network
 {
-    public abstract class NetworkMessage : Message, IStaticId
+    public abstract class NetworkMessage : Message
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -23,6 +23,8 @@ namespace BiM.Core.Network
             get;
             set;
         }
+
+        public abstract uint MessageId { get; }
 
         public override void BlockProgression()
         {

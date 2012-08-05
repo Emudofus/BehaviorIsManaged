@@ -5,12 +5,12 @@ namespace BiM.Core.Messages
 {
     public class MessageHandlerAttribute : Attribute
     {
-        public MessageHandlerAttribute(uint id)
+        public MessageHandlerAttribute(Type type)
         {
-            MessageId = id;
+            MessageType = type;
         }
 
-        public uint MessageId
+        public Type MessageType
         {
             get;
             set;

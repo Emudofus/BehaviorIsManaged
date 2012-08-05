@@ -10,8 +10,8 @@ namespace BiM.Protocol.Messages
 {
     public class MessageReceiver : IMessageBuilder
     {
-        private readonly Dictionary<uint, Func<NetworkMessage>> Constructors = new Dictionary<uint, Func<NetworkMessage>>(800);
-        private readonly Dictionary<uint, Type> Messages = new Dictionary<uint, Type>(800);
+        private readonly Dictionary<uint, Func<NetworkMessage>> m_constructors = new Dictionary<uint, Func<NetworkMessage>>(800);
+        private readonly Dictionary<uint, Type> m_messages = new Dictionary<uint, Type>(800);
 
         #region IMessageBuilder Members
 
@@ -22,13 +22,13 @@ namespace BiM.Protocol.Messages
         /// <returns></returns>
         public NetworkMessage BuildMessage(uint id, IDataReader reader)
         {
-            if (!Messages.ContainsKey(id))
+            if (!m_messages.ContainsKey(id))
                 throw new MessageNotFoundException(string.Format("NetworkMessage <id:{0}> doesn't exist", id));
 
-            NetworkMessage message = Constructors[id]();
+            NetworkMessage message = m_constructors[id]();
 
             if (message == null)
-                throw new MessageNotFoundException(string.Format("Constructors[{0}] (delegate {1}) does not exist", id, Messages[id]));
+                throw new MessageNotFoundException(string.Format("Constructors[{0}] (delegate {1}) does not exist", id, m_messages[id]));
 
             message.Unpack(reader);
 
@@ -54,13 +54,13 @@ namespace BiM.Protocol.Messages
                 if (fieldId != null)
                 {
                     var id = (uint) fieldId.GetValue(type);
-                    if (Messages.ContainsKey(id))
+                    if (m_messages.ContainsKey(id))
                         throw new AmbiguousMatchException(
                             string.Format(
                                 "MessageReceiver() => {0} item is already in the dictionary, old type is : {1}, new type is  {2}",
-                                id, Messages[id], type));
+                                id, m_messages[id], type));
 
-                    Messages.Add(id, type);
+                    m_messages.Add(id, type);
 
                     ConstructorInfo ctor = type.GetConstructor(Type.EmptyTypes);
 
@@ -69,17 +69,17 @@ namespace BiM.Protocol.Messages
                             string.Format("'{0}' doesn't implemented a parameterless constructor",
                                           type));
 
-                    Constructors.Add(id, ctor.CreateDelegate<Func<NetworkMessage>>());
+                    m_constructors.Add(id, ctor.CreateDelegate<Func<NetworkMessage>>());
                 }
             }
         }
 
         public Type GetMessageType(uint id)
         {
-            if (!Messages.ContainsKey(id))
+            if (!m_messages.ContainsKey(id))
                 throw new MessageNotFoundException(string.Format("NetworkMessage <id:{0}> doesn't exist", id));
 
-            return Messages[id];
+            return m_messages[id];
         }
 
         #region Nested type: MessageNotFoundException

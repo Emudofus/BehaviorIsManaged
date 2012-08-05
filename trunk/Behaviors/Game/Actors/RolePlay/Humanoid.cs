@@ -30,7 +30,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             TitleParam = human.titleParam;
         }
 
-        protected Humanoid(HumanWithGuildInformations human)
+        protected Humanoid(HumanWithGuildInformations human)                         
             : this((HumanInformations)human)
         {
             GuildInformations = new GuildInformations(human.guildInformations);

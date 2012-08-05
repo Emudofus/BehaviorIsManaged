@@ -31,10 +31,8 @@ namespace BiM.MITM
             WorldConnections.ClientConnected += OnWorldClientConnected;
             WorldConnections.ClientDisconnected += OnWorldClientDisconnected;
 
-            // todo : initialization somewhere else ?
             MessageBuilder = new MessageReceiver();
             MessageBuilder.Initialize();
-            ProtocolTypeManager.Initialize();
 
             NetworkMessageDispatcher.RegisterContainer(this);
         }
@@ -186,8 +184,8 @@ namespace BiM.MITM
         }
 
 
-        [MessageHandler(SelectedServerDataMessage.Id, FromFilter = ListenerEntry.Server)]
-        public void HandleSelectedServerDataMessage(Bot bot, SelectedServerDataMessage message)
+        [MessageHandler(typeof(SelectedServerDataMessage), FromFilter = ListenerEntry.Server)]
+        private void HandleSelectedServerDataMessage(Bot bot, SelectedServerDataMessage message)
         {
             bot.ConnectionTicket = message.ticket;
             m_tickets.Add(message.ticket, Tuple.Create((BotMITM)bot, new SelectedServerDataMessage(message.serverId, message.address, message.port, message.canCreateNewCharacter, message.ticket)));
@@ -198,21 +196,21 @@ namespace BiM.MITM
             logger.Debug("Client redirected to {0}:{1}", message.address, message.port);
         }
 
-        [MessageHandler(AuthenticationTicketMessage.Id, FromFilter = ListenerEntry.Client)]
-        public static void HandleAuthenticationTicketMessage(Bot bot, AuthenticationTicketMessage message)
+        [MessageHandler(typeof(AuthenticationTicketMessage), FromFilter = ListenerEntry.Client)]
+        private static void HandleAuthenticationTicketMessage(Bot bot, AuthenticationTicketMessage message)
         {
             message.BlockNetworkSend();
         }
 
-        [MessageHandler(ProtocolRequired.Id, FromFilter = ListenerEntry.Server)]
-        public void HandleProtocolRequired(Bot bot, ProtocolRequired message)
+        [MessageHandler(typeof(ProtocolRequired), FromFilter = ListenerEntry.Server)]
+        private void HandleProtocolRequired(Bot bot, ProtocolRequired message)
         {
             if (bot.ConnectionType == ClientConnectionType.GameConnection)
                 message.BlockNetworkSend();
         }
 
-        [MessageHandler(HelloGameMessage.Id, FromFilter = ListenerEntry.Server)]
-        public void HandleHelloGameMessage(Bot bot, HelloGameMessage message)
+        [MessageHandler(typeof(HelloGameMessage), FromFilter = ListenerEntry.Server)]
+        private void HandleHelloGameMessage(Bot bot, HelloGameMessage message)
         {
             message.BlockNetworkSend();
 

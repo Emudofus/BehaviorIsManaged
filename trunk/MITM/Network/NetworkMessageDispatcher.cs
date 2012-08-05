@@ -2,11 +2,14 @@
 using BiM.Behaviors;
 using BiM.Core.Messages;
 using BiM.Core.Network;
+using NLog;
 
 namespace BiM.MITM.Network
 {
-    public class NetworkMessageDispatcher : MessageDispatcher<Bot>
+    public class NetworkMessageDispatcher : MessageDispatcher
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public NetworkMessageDispatcher()
         {
         }
@@ -23,24 +26,22 @@ namespace BiM.MITM.Network
             set;
         }
 
-        protected override void Dispatch(Bot processor, Message message)
+        protected override void Dispatch(Message message, object token)
         {
-            if (processor == null) throw new ArgumentNullException("processor");
             if (message == null) throw new ArgumentNullException("message");
             if (message is NetworkMessage)
-                Dispatch(processor, message as NetworkMessage);
+                Dispatch(message as NetworkMessage, token);
             else
-                base.Dispatch(processor, message);
+                base.Dispatch(message, token);
         }
 
-        protected void Dispatch(Bot processor, NetworkMessage message)
+        protected void Dispatch(NetworkMessage message, object token)
         {
-            if (processor == null) throw new ArgumentNullException("processor");
             if (message == null) throw new ArgumentNullException("message");
 
             if (message.Destinations.HasFlag(ListenerEntry.Local))
             {
-                InternalDispatch(processor, message);
+                InternalDispatch(message, token);
             }
 
             if (Client != null && message.Destinations.HasFlag(ListenerEntry.Client))
@@ -54,11 +55,10 @@ namespace BiM.MITM.Network
             }
         }
 
-        private void InternalDispatch(Bot processor, NetworkMessage message)
+        private void InternalDispatch(NetworkMessage message, object token)
         {
-            if (processor == null) throw new ArgumentNullException("processor");
             if (message == null) throw new ArgumentNullException("message");
-            var handlers = GetHandlers(message.MessageId);
+            var handlers = GetHandlers(message.GetType(), token);
 
             try
             {
@@ -74,16 +74,15 @@ namespace BiM.MITM.Network
                         (handler.Attribute.FromFilter & message.From) == ListenerEntry.Undefined)
                         continue;
 
-                    handler.Action(handler.Container, processor, message);
+                    handler.Action(handler.Container, token, message);
 
                     if (message.Canceled)
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // todo : log
-                throw;
+                logger.Error("Cannot handle network message {0} : {1}", message, ex);
             }
         }
     }

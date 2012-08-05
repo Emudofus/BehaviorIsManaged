@@ -13,6 +13,7 @@ namespace BiM.Behaviors.Data
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private Dictionary<Type, D2OReader> m_readers = new Dictionary<Type, D2OReader>();
+        private List<Type> m_ignoredTyes = new List<Type>(); 
 
         public void AddReaders(string directory)
         {
@@ -30,10 +31,14 @@ namespace BiM.Behaviors.Data
 
             foreach (var @class in classes)
             {
+                if (m_ignoredTyes.Contains(@class.Value.ClassType))
+                    continue;
+
                 if (m_readers.ContainsKey(@class.Value.ClassType))
                 {
-                    logger.Warn("Class {0} already registered in d2o {1}", @class.Value.Name, d2oFile.FileName);
-                    m_readers[@class.Value.ClassType] = d2oFile;
+                    // this classes are not bound to a single file, so we ignore them
+                    m_ignoredTyes.Add(@class.Value.ClassType);
+                    m_readers.Remove(@class.Value.ClassType);
                 }
                 else
                 {

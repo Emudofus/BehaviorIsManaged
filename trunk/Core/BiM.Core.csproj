@@ -88,11 +88,8 @@
     <Compile Include="IO\IDataReader.cs" />
     <Compile Include="IO\IDataWriter.cs" />
     <Compile Include="IO\ZipHelper.cs" />
-    <Compile Include="Messages\AutomaticIdMessage.cs" />
-    <Compile Include="Messages\IDynamicId.cs" />
-    <Compile Include="Messages\IStaticId.cs" />
+    <Compile Include="Messages\DispatcherTask.cs" />
     <Compile Include="Messages\Message.cs" />
-    <Compile Include="Messages\MessageIdFinder.cs" />
     <Compile Include="Messages\MessagePriority.cs" />
     <Compile Include="Network\BufferManager.cs" />
     <Compile Include="Network\Client.cs" />

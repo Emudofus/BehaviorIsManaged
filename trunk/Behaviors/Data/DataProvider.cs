@@ -31,7 +31,7 @@ namespace BiM.Behaviors.Data
             var sources = m_sources.Where(entry => entry.DoesHandleType(type)).ToArray();
 
             if (sources.Length > 1)
-                throw new InvalidOperationException("Type {0} handle by more than 1 source");
+                throw new InvalidOperationException("Type {0} handled by more than 1 source");
 
             if (sources.Length < 1)
                 throw new InvalidOperationException("Type {0} not handled by any data source");
@@ -40,14 +40,6 @@ namespace BiM.Behaviors.Data
         }
 
         public T Get<T>(int id)
-            where T : class, IDataObject
-        {
-            var source = GetSourceMatching(typeof(T));
-
-            return source.ReadObject<T>(id);
-        }
-
-        public T GetObjectDataOrDefault<T>(int id)
             where T : class, IDataObject
         {
             var source = GetSourceMatching(typeof(T));

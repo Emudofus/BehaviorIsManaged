@@ -11,10 +11,7 @@ namespace BiM.Protocol.Types
         private static readonly Dictionary<short, Type> m_types = new Dictionary<short, Type>(200);
         private static readonly Dictionary<short, Func<object>> m_typesConstructors = new Dictionary<short, Func<object>>(200);
 
-        /// <summary>
-        ///   Initializes this instance.
-        /// </summary>
-        public static void Initialize()
+        static ProtocolTypeManager()
         {
             Assembly asm = Assembly.GetAssembly(typeof(ProtocolTypeManager));
 

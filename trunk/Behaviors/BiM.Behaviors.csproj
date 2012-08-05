@@ -116,6 +116,7 @@
     <Compile Include="Game\World\SubArea.cs" />
     <Compile Include="Game\World\SuperArea.cs" />
     <Compile Include="Game\World\WorldMap.cs" />
+    <Compile Include="Messages\BotCreatedMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

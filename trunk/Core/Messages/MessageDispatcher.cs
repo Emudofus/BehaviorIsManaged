@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using BiM.Core.Collections;
@@ -9,17 +11,22 @@ using NLog;
 
 namespace BiM.Core.Messages
 {
-    public class MessageDispatcher<T> where T : class
+    /// <summary>
+    /// Classic message dispatcher
+    /// </summary>
+    /// <typeparam name="T">Messsage dispatcher type</typeparam>
+    public class MessageDispatcher
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         protected class MessageHandler
         {
-            public MessageHandler(object container, MessageHandlerAttribute handlerAttribute, Action<object, T, Message> action)
+            public MessageHandler(object container, MessageHandlerAttribute handlerAttribute, Action<object, object, Message> action, Type tokenType)
             {
                 Container = container;
                 Attribute = handlerAttribute;
                 Action = action;
+                TokenType = tokenType;
             }
 
             public object Container
@@ -34,26 +41,31 @@ namespace BiM.Core.Messages
                 private set;
             }
 
-            public Action<object, T, Message> Action
+            public Action<object, object, Message> Action
             {
                 get;
                 private set;
             }
+
+            public Type TokenType { get; private set; }
         }
 
-        private readonly SortedDictionary<MessagePriority, Queue<Message>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Message>>();
-        private static readonly Dictionary<uint, List<MessageHandler>> m_handlers = new Dictionary<uint, List<MessageHandler>>();
+        private readonly SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>>();
+        private static readonly Dictionary<Type, List<MessageHandler>> m_handlers = new Dictionary<Type, List<MessageHandler>>();
 
         private int m_currentThreadId;
-        private T m_currentProcessor;
+        private object m_currentProcessor;
+        private ManualResetEventSlim m_resumeEvent = new ManualResetEventSlim(true);
+        private ManualResetEventSlim m_messageEnqueuedEvent = new ManualResetEventSlim(false);
 
         private bool m_stopped;
+        private bool m_dispatching;
 
         public MessageDispatcher()
         {
             foreach (var value in Enum.GetValues(typeof(MessagePriority)))
             {
-                m_messagesToDispatch.Add((MessagePriority)value, new Queue<Message>());
+                m_messagesToDispatch.Add((MessagePriority)value, new Queue<Tuple<Message, object>>());
             }
         }
 
@@ -67,10 +79,7 @@ namespace BiM.Core.Messages
             if (assembly == null) throw new ArgumentNullException("assembly");
             foreach (var type in assembly.GetTypes())
             {
-                if (!type.IsAbstract)
-                {
-                    RegisterStaticContainer(type);
-                }
+                RegisterStaticContainer(type);
             }
         }
 
@@ -93,6 +102,7 @@ namespace BiM.Core.Messages
 
         public static void RegisterContainer(object container)
         {
+            if (container == null) throw new ArgumentNullException("container");
             var type = container.GetType();
 
             var methods = type.GetMethods(BindingFlags.Static |BindingFlags.Instance |
@@ -109,6 +119,16 @@ namespace BiM.Core.Messages
             }
         }
 
+        public static void Register(MethodInfo method, object container)
+        {
+            var attributes = method.GetCustomAttributes(typeof(MessageHandlerAttribute), false) as MessageHandlerAttribute[];
+
+            if (attributes == null || attributes.Length == 0)
+                throw new Exception("A handler method must have a at least one MessageHandler attribute");
+
+            Register(method, container, attributes);
+        }
+
         public static void Register(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
         {
             if (method == null) throw new ArgumentNullException("method");
@@ -119,39 +139,38 @@ namespace BiM.Core.Messages
             var parameters = method.GetParameters();
 
             if (parameters.Length != 2 ||
-                parameters[0].ParameterType != typeof(T) ||
                 !parameters[1].ParameterType.IsSubclassOf(typeof(Message)))
             {
-                throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler({1}, Mesage)", method, typeof(T).Name));
+                throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler(object, Message)", method));
             }
 
             if (!method.IsStatic && container == null)
                 throw new ArgumentException("You must give an object container if the method is static");
 
-            Action<object, T, Message> handlerDelegate;
+            Action<object, object, Message> handlerDelegate;
             try
             {
-                handlerDelegate = (Action<object, T, Message>)method.CreateDelegate(typeof(T), typeof(Message));
+                handlerDelegate = (Action<object, object, Message>)method.CreateDelegate(typeof(object), typeof(Message));
             }
             catch (Exception)
             {
-                throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler({1}, Mesage)", method, typeof(T).Name));
+                throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler(object Message)", method));
             }
 
             foreach (var attribute in attributes)
             {
-                Register(attribute.MessageId, attribute, handlerDelegate, method.IsStatic ? null : container);
+                Register(attribute.MessageType, attribute, handlerDelegate, parameters[0].ParameterType, method.IsStatic ? null : container);
             }
         }
 
-        public static void Register(uint messageId, MessageHandlerAttribute attribute, Action<object, T, Message> action, object container = null)
+        public static void Register(Type messageType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
         {
             if (attribute == null) throw new ArgumentNullException("attribute");
             if (action == null) throw new ArgumentNullException("action");
-            if (!m_handlers.ContainsKey(messageId))
-                m_handlers.Add(messageId, new List<MessageHandler>());
+            if (!m_handlers.ContainsKey(messageType))
+                m_handlers.Add(messageType, new List<MessageHandler>());
 
-            m_handlers[messageId].Add(new MessageHandler(container, attribute, action));
+            m_handlers[messageType].Add(new MessageHandler(container, attribute, action, tokenType));
         }
 
         public static void UnRegister()
@@ -159,29 +178,49 @@ namespace BiM.Core.Messages
             throw new NotImplementedException();
         }
 
-        public static bool IsRegistered(uint messageId)
+        public static bool IsRegistered(Type messageType)
         {
-            return m_handlers.ContainsKey(messageId);
+            return m_handlers.ContainsKey(messageType);
         }
 
-        protected static ReadOnlyCollection<MessageHandler> GetHandlers(uint messageId)
+        protected static IEnumerable<MessageHandler> GetHandlers(Type messageType, object token)
         {
-            List<MessageHandler> handlers;
+            IEnumerable<MessageHandler> handlers = null;
 
-            if (m_handlers.TryGetValue(messageId, out handlers))
-            {
-                return handlers.AsReadOnly();
-            }
+            if (m_handlers.ContainsKey(messageType))
+                handlers = m_handlers[messageType].Where(entry => token == null || entry.TokenType.IsAssignableFrom(token.GetType()));
 
-            return new List<MessageHandler>().AsReadOnly();
+            else
+                if (messageType.BaseType != null && messageType.BaseType.IsSubclassOf(typeof(Message)))
+                    return GetHandlers(messageType.BaseType, token);
+                else
+                    return Enumerable.Empty<MessageHandler>();
+
+            if (messageType.BaseType != null && messageType.BaseType.IsSubclassOf(typeof(Message)))
+                return handlers.Concat(GetHandlers(messageType.BaseType, token));
+
+            return handlers;
         }
 
-        public virtual void Enqueue(Message message, bool executeIfCan = true)
+        public void Enqueue(Message message, bool executeIfCan = true)
+        {
+            Enqueue(message, null, executeIfCan);   
+        }
+
+        public virtual void Enqueue(Message message, object token, bool executeIfCan = true)
         {
             if (executeIfCan && IsInDispatchingContext())
-                Dispatch(m_currentProcessor, message);
+                Dispatch(message, token);
             else
-                m_messagesToDispatch[message.Priority].Enqueue(message);
+            {
+                lock (m_messageEnqueuedEvent)
+                {
+                    m_messagesToDispatch[message.Priority].Enqueue(Tuple.Create(message, token));
+
+                    if (!m_dispatching)
+                        m_messageEnqueuedEvent.Set();
+                }
+            }
         }
 
         public bool IsInDispatchingContext()
@@ -189,13 +228,17 @@ namespace BiM.Core.Messages
             return Thread.CurrentThread.ManagedThreadId == m_currentThreadId &&
                 m_currentProcessor != null;
         }
-
-        public void ProcessDispatching(T processor)
+                
+        public void ProcessDispatching(object processor)
         {
+            if (m_stopped)
+                return;
+
             if (Interlocked.CompareExchange(ref m_currentThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
             {
                 m_currentProcessor = processor;
-
+                m_dispatching = true;
+                
                 foreach (var keyPair in m_messagesToDispatch)
                 {
                     if (m_stopped)
@@ -207,43 +250,70 @@ namespace BiM.Core.Messages
                             break;
 
                         var message = keyPair.Value.Dequeue();
-                        Dispatch(processor, message);
+                        Dispatch(message.Item1, message.Item2);
                     }
                 }
 
-                Interlocked.Exchange(ref m_currentThreadId, 0);
                 m_currentProcessor = null;
+                m_dispatching = false;
+                Interlocked.Exchange(ref m_currentThreadId, 0);
+            }
+
+            lock (m_messagesToDispatch)
+            {
+                if (m_messagesToDispatch.Count > 0)
+                    m_messageEnqueuedEvent.Set();
+                else
+                    m_messageEnqueuedEvent.Reset();
             }
         }
 
-        protected virtual void Dispatch(T processor, Message message)
+        protected virtual void Dispatch(Message message, object token)
         {
-            var handlers = GetHandlers(message.MessageId);
+            var handlers = GetHandlers(message.GetType(), token);
 
             try
             {
                 foreach (var handler in handlers)
                 {
-                    handler.Action(handler.Container, processor, message);
+                    handler.Action(handler.Container, token, message);
 
                     if (message.Canceled)
                         break;
                 }
+
+                message.OnDispatched();
             }
             catch (Exception ex)
             {
-                logger.ErrorException(string.Format("Exception on dispatching {0}", message), ex);
+                logger.Error(string.Format("Exception on dispatching {0} : {1}", message, ex));
             }
         }
 
-        public void Start()
+        /// <summary>
+        /// Block the current thread until a message is enqueued
+        /// </summary>
+        public void Wait()
+        {
+            if (m_stopped)
+                m_resumeEvent.Wait();
+
+            if (m_messagesToDispatch.Count > 0)
+                return;
+
+            m_messageEnqueuedEvent.Wait();
+        }
+
+        public void Resume()
         {
             m_stopped = false;
+            m_resumeEvent.Set();
         }
 
         public void Stop()
         {
             m_stopped = true;
+            m_resumeEvent.Reset();
         }
 
         public void Dispose()

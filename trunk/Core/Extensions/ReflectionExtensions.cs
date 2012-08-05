@@ -72,7 +72,7 @@ namespace BiM.Core.Extensions
             if (delegParams.Length != methodParams.Length)
                 throw new Exception("Method parameters count != delegParams.Length");
 
-            var dynamicMethod = new DynamicMethod(string.Empty, null, new[] { typeof(object) }.Concat(delegParams).ToArray());
+            var dynamicMethod = new DynamicMethod(string.Empty, null, new[] { typeof(object) }.Concat(delegParams).ToArray(), true);
             var ilGenerator = dynamicMethod.GetILGenerator();
 
             if (!method.IsStatic)
