@@ -135,7 +135,7 @@ namespace BiM.MITM
             if (mitm.Bot == null)
                 throw new NullReferenceException("mitm.Bot");
 
-            mitm.Bot.Dispatcher.Enqueue(message);
+            mitm.Bot.Dispatcher.Enqueue(message, mitm.Bot);
 
             logger.Debug("{0} FROM {1}", message, message.From);
         }
@@ -157,7 +157,7 @@ namespace BiM.MITM
                 if (mitm.Bot == null)
                     throw new NullReferenceException("mitm.Bot");
 
-                mitm.Bot.Dispatcher.Enqueue(message);
+                mitm.Bot.Dispatcher.Enqueue(message, mitm.Bot);
             }
 
             logger.Debug("{0} FROM {1}", message, message.From);
@@ -187,7 +187,6 @@ namespace BiM.MITM
         [MessageHandler(typeof(SelectedServerDataMessage), FromFilter = ListenerEntry.Server)]
         private void HandleSelectedServerDataMessage(Bot bot, SelectedServerDataMessage message)
         {
-            bot.ConnectionTicket = message.ticket;
             m_tickets.Add(message.ticket, Tuple.Create((BotMITM)bot, new SelectedServerDataMessage(message.serverId, message.address, message.port, message.canCreateNewCharacter, message.ticket)));
 
             message.address = m_configuration.FakeWorldHost;
@@ -214,7 +213,7 @@ namespace BiM.MITM
         {
             message.BlockNetworkSend();
 
-            bot.SendToServer(new AuthenticationTicketMessage("fr", bot.ConnectionTicket));
+            bot.SendToServer(new AuthenticationTicketMessage("fr", bot.ClientInformations.ConnectionTicket));
         }
     }
 }

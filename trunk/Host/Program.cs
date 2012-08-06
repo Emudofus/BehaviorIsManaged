@@ -1,29 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using BiM.Behaviors;
 using BiM.Behaviors.Data;
 using BiM.Core.Messages;
 using BiM.Host.Messages;
 using BiM.MITM;
-using BiM.Protocol.Data;
-using BiM.Protocol.Messages;
-using BiM.Protocol.Types;
 using NLog;
-using NLog.Config;
-using NLog.Targets;
 
 namespace BiM.Host
 {
     public static class Program
     {
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public static bool Running { get; private set; }
+        public static bool Running
+        {
+            get;
+            private set;
+        }
 
-        public static MITM.MITM MITM { get; private set; }
+        public static MITM.MITM MITM
+        {
+            get;
+            private set;
+        }
 
-        public static DispatcherTask DispatcherTask { get; private set; }
+        public static DispatcherTask DispatcherTask
+        {
+            get;
+            private set;
+        }
 
         private static void Main(string[] args)
         {
@@ -50,16 +55,19 @@ namespace BiM.Host
 
             // todo : config
             MITM = new MITM.MITM(new MITMConfiguration
-            {
-                FakeAuthHost = "localhost",
-                FakeAuthPort = 5555,
-                FakeWorldHost = "localhost",
-                FakeWorldPort = 5556,
-                RealAuthHost = "213.248.126.180",
-                RealAuthPort = 5555
-            });
+                                     {
+                                         FakeAuthHost = "localhost",
+                                         FakeAuthPort = 5555,
+                                         FakeWorldHost = "localhost",
+                                         FakeWorldPort = 5556,
+                                         RealAuthHost = "213.248.126.180",
+                                         RealAuthPort = 5555
+                                     });
 
-            MessageDispatcher.RegisterAssembly(typeof(Program).Assembly);
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                MessageDispatcher.RegisterAssembly(assembly);
+            }
 
             DispatcherTask = new DispatcherTask(new MessageDispatcher(), MITM);
             DispatcherTask.Start(); // we have to start it now to dispatch the initialization msg
@@ -68,12 +76,6 @@ namespace BiM.Host
             DispatcherTask.Dispatcher.Enqueue(msg, MITM);
 
             msg.Wait();
-        }
-
-        [MessageHandler(typeof(HostInitializationMessage))]
-        private static void Handle(object sender, HostInitializationMessage message)
-        {
-            
         }
 
 
@@ -119,7 +121,6 @@ namespace BiM.Host
 
             if (ex.InnerException != null)
                 LogUnhandledException(ex.InnerException);
-
         }
     }
 }

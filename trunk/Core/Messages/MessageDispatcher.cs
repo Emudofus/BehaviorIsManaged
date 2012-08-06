@@ -261,7 +261,7 @@ namespace BiM.Core.Messages
 
             lock (m_messagesToDispatch)
             {
-                if (m_messagesToDispatch.Count > 0)
+                if (m_messagesToDispatch.Sum(x => x.Value.Count) > 0)
                     m_messageEnqueuedEvent.Set();
                 else
                     m_messageEnqueuedEvent.Reset();
@@ -298,7 +298,7 @@ namespace BiM.Core.Messages
             if (m_stopped)
                 m_resumeEvent.Wait();
 
-            if (m_messagesToDispatch.Count > 0)
+            if (m_messagesToDispatch.Sum(x => x.Value.Count) > 0)
                 return;
 
             m_messageEnqueuedEvent.Wait();

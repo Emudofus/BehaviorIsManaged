@@ -1,4 +1,7 @@
-﻿using BiM.Core.Messages;
+﻿using System;
+using BiM.Behaviors.Authentification;
+using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Core.Messages;
 using BiM.Core.Network;
 using BiM.Core.Threading;
 using NLog;
@@ -19,17 +22,17 @@ namespace BiM.Behaviors
         }
 
         public Bot()
-            : base (30)
+            : this(new MessageDispatcher())
         {
-            Dispatcher = new MessageDispatcher();
-            ConnectionType = ClientConnectionType.Disconnected;
         }
 
         public Bot(MessageDispatcher messageDispatcher)
             : base(30)
         {
+            if (messageDispatcher == null) throw new ArgumentNullException("messageDispatcher");
             Dispatcher = messageDispatcher;
             ConnectionType = ClientConnectionType.Disconnected;
+            ClientInformations = new ClientInformations();
         }
 
         public MessageDispatcher Dispatcher 
@@ -44,7 +47,13 @@ namespace BiM.Behaviors
             set;
         }
 
-        public string ConnectionTicket
+        public ClientInformations ClientInformations
+        {
+            get;
+            set;
+        }
+
+        public PlayedCharacter Character
         {
             get;
             set;
@@ -59,11 +68,13 @@ namespace BiM.Behaviors
 
         public void Send(Message message)
         {
+            if (message == null) throw new ArgumentNullException("message");
             Dispatcher.Enqueue(message, this);
         }
 
         public void Send(NetworkMessage message, ListenerEntry dest)
         {
+            if (message == null) throw new ArgumentNullException("message");
             message.Destinations = dest;
             message.From = ListenerEntry.Local;
 
@@ -77,6 +88,7 @@ namespace BiM.Behaviors
         /// <param name="direct">If true it doesn't reprocess the message internally</param>
         public void SendToClient(NetworkMessage message, bool direct = false)
         {
+            if (message == null) throw new ArgumentNullException("message");
             if (direct)
                 Send(message, ListenerEntry.Client);
             else
@@ -90,6 +102,7 @@ namespace BiM.Behaviors
         /// <param name="direct">If true it doesn't reprocess the message internally</param>
         public void SendToServer(NetworkMessage message, bool direct = false)
         {
+            if (message == null) throw new ArgumentNullException("message");
             if (direct)
                 Send(message, ListenerEntry.Server);
             else

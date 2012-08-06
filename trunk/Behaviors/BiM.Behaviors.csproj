@@ -69,6 +69,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentification\ServersList.cs" />
+    <Compile Include="Authentification\ServersListEntry.cs" />
     <Compile Include="Bot.cs" />
     <Compile Include="Data\D2OSource.cs" />
     <Compile Include="BotManager.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="Data\D2PSource.cs" />
     <Compile Include="Data\DLMSource.cs" />
     <Compile Include="Data\IDataSource.cs" />
+    <Compile Include="Authentification\ClientInformations.cs" />
     <Compile Include="Game\Actors\ContextActor.cs" />
     <Compile Include="Game\Actors\Interfaces\IAlignedActor.cs" />
     <Compile Include="Game\Actors\RolePlay\Character.cs" />
@@ -116,6 +119,7 @@
     <Compile Include="Game\World\SubArea.cs" />
     <Compile Include="Game\World\SuperArea.cs" />
     <Compile Include="Game\World\WorldMap.cs" />
+    <Compile Include="Handlers\ConnectionHandler.cs" />
     <Compile Include="Messages\BotCreatedMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
