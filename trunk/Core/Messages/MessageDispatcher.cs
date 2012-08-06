@@ -21,15 +21,29 @@ namespace BiM.Core.Messages
 
         protected class MessageHandler
         {
-            public MessageHandler(object container, MessageHandlerAttribute handlerAttribute, Action<object, object, Message> action, Type tokenType)
+            public MessageHandler(object container, Type containerType, Type messageType, MessageHandlerAttribute handlerAttribute, Action<object, object, Message> action, Type tokenType)
             {
                 Container = container;
+                ContainerType = containerType;
+                MessageType = messageType;
                 Attribute = handlerAttribute;
                 Action = action;
                 TokenType = tokenType;
             }
 
             public object Container
+            {
+                get;
+                private set;
+            }
+
+            public Type ContainerType
+            {
+                get;
+                private set;
+            }
+
+            public Type MessageType
             {
                 get;
                 private set;
@@ -50,8 +64,8 @@ namespace BiM.Core.Messages
             public Type TokenType { get; private set; }
         }
 
-        private readonly SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>>();
-        private static readonly Dictionary<Type, List<MessageHandler>> m_handlers = new Dictionary<Type, List<MessageHandler>>();
+        private SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>>();
+        private static Dictionary<Assembly, Dictionary<Type, List<MessageHandler>>> m_handlers = new Dictionary<Assembly, Dictionary<Type, List<MessageHandler>>>();
 
         private int m_currentThreadId;
         private object m_currentProcessor;
@@ -159,18 +173,42 @@ namespace BiM.Core.Messages
 
             foreach (var attribute in attributes)
             {
-                Register(attribute.MessageType, attribute, handlerDelegate, parameters[0].ParameterType, method.IsStatic ? null : container);
+                Register(attribute.MessageType, method.DeclaringType, attribute, handlerDelegate, parameters[0].ParameterType, method.IsStatic ? null : container);
             }
         }
 
-        public static void Register(Type messageType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
+        public static void Register(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
         {
             if (attribute == null) throw new ArgumentNullException("attribute");
             if (action == null) throw new ArgumentNullException("action");
-            if (!m_handlers.ContainsKey(messageType))
-                m_handlers.Add(messageType, new List<MessageHandler>());
 
-            m_handlers[messageType].Add(new MessageHandler(container, attribute, action, tokenType));
+            var assembly = containerType.Assembly;
+
+            // handlers are organized by assemblies to build an hierarchie
+            // if the assembly is not registered yet we add it to the end
+            if (!m_handlers.ContainsKey(assembly))
+                m_handlers.Add(assembly, new Dictionary<Type, List<MessageHandler>>());
+
+            if (!m_handlers[assembly].ContainsKey(messageType))
+                m_handlers[assembly].Add(messageType, new List<MessageHandler>());
+
+            m_handlers[assembly][messageType].Add(new MessageHandler(container, containerType, messageType, attribute, action, tokenType));
+        }
+
+        public static void DefineHierarchy(IEnumerable<Assembly> assemblies)
+        {
+            var handlers = m_handlers;
+            m_handlers = assemblies.ToDictionary(entry => entry, entry => new Dictionary<Type, List<MessageHandler>>());
+            
+            // assembly that are first are the basic ones
+            // the handlers in this assemblies are called first
+            foreach (var handler in handlers)
+            {
+                if (!m_handlers.ContainsKey(handler.Key))
+                    m_handlers.Add(handler.Key, new Dictionary<Type, List<MessageHandler>>());
+
+                m_handlers[handler.Key] = handler.Value;
+            }
         }
 
         public static void UnRegister()
@@ -180,26 +218,31 @@ namespace BiM.Core.Messages
 
         public static bool IsRegistered(Type messageType)
         {
-            return m_handlers.ContainsKey(messageType);
+            return m_handlers.Any(entry => entry.Value.ContainsKey(messageType));
         }
 
         protected static IEnumerable<MessageHandler> GetHandlers(Type messageType, object token)
         {
             IEnumerable<MessageHandler> handlers = null;
 
-            if (m_handlers.ContainsKey(messageType))
-                handlers = m_handlers[messageType].Where(entry => token == null || entry.TokenType.IsAssignableFrom(token.GetType()));
+            // navigate throw hierarchy ...
+            foreach (var keyPair in m_handlers)
+            {
+                // if a handler can handle this type we return it
+                if (keyPair.Value.ContainsKey(messageType))
+                    foreach (var handler in keyPair.Value[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
+                    {
+                        yield return handler;
+                    }
 
-            else
+                // if a handler can handle the message subclass, we add it too
                 if (messageType.BaseType != null && messageType.BaseType.IsSubclassOf(typeof(Message)))
-                    return GetHandlers(messageType.BaseType, token);
-                else
-                    return Enumerable.Empty<MessageHandler>();
-
-            if (messageType.BaseType != null && messageType.BaseType.IsSubclassOf(typeof(Message)))
-                return handlers.Concat(GetHandlers(messageType.BaseType, token));
-
-            return handlers;
+                    foreach (var handler in GetHandlers(messageType.BaseType, token))
+                    {
+                        yield return handler;
+                    }
+                    
+            }
         }
 
         public void Enqueue(Message message, bool executeIfCan = true)

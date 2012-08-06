@@ -28,7 +28,7 @@ namespace BiM.Core.Threading
             UpdateInterval = updateInterval;
         }
 
-        public string Name
+        public virtual string Name
         {
             get;
             set;

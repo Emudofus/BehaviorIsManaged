@@ -53,6 +53,8 @@ namespace BiM.MITM.Network
             {
                 Server.Send(message);
             }
+
+            message.OnDispatched();
         }
 
         private void InternalDispatch(NetworkMessage message, object token)

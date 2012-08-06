@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using BiM.Behaviors.Data;
 using BiM.Core.Messages;
@@ -11,6 +12,16 @@ namespace BiM.Host
     public static class Program
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        private static List<Assembly> m_hierarchy = new List<Assembly>()
+        {
+            Assembly.Load("BiM.Core"),
+            Assembly.Load("BiM.Protocol"),
+            Assembly.Load("BiM.Behaviors"),
+            Assembly.Load("BiM.MITM"),
+            Assembly.Load("BiM.Host"),
+            // plugins come next
+        };
 
         public static bool Running
         {
@@ -63,6 +74,8 @@ namespace BiM.Host
                                          RealAuthHost = "213.248.126.180",
                                          RealAuthPort = 5555
                                      });
+
+            MessageDispatcher.DefineHierarchy(m_hierarchy);
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {

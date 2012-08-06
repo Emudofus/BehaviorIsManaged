@@ -10,16 +10,13 @@ namespace BiM.Behaviors
 {
     public class Bot : SelfRunningTaskQueue
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        #region Delegates
 
         public delegate void LogHandler(Bot bot, LogLevel level, string caller, string message);
-        public event LogHandler LogNotified;
 
-        public void NotifyMessageLog(LogLevel level, string caller, string message)
-        {
-            LogHandler handler = LogNotified;
-            if (handler != null) handler(this, level, caller, message);
-        }
+        #endregion
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public Bot()
             : this(new MessageDispatcher())
@@ -35,10 +32,10 @@ namespace BiM.Behaviors
             ClientInformations = new ClientInformations();
         }
 
-        public MessageDispatcher Dispatcher 
-        { 
-            get; 
-            private set; 
+        public MessageDispatcher Dispatcher
+        {
+            get;
+            private set;
         }
 
         public ClientConnectionType ConnectionType
@@ -57,6 +54,20 @@ namespace BiM.Behaviors
         {
             get;
             set;
+        }
+
+        public override string Name
+        {
+            get { return ToString(); }
+            set { }
+        }
+
+        public event LogHandler LogNotified;
+
+        public void NotifyMessageLog(LogLevel level, string caller, string message)
+        {
+            LogHandler handler = LogNotified;
+            if (handler != null) handler(this, level, caller, message);
         }
 
         protected override void OnTick()
@@ -146,6 +157,11 @@ namespace BiM.Behaviors
 
             if (Dispatcher != null)
                 Dispatcher.Dispose();
+        }
+
+        public override string ToString()
+        {
+            return "Bot";
         }
     }
 }
