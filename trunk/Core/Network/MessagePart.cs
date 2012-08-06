@@ -107,18 +107,21 @@ namespace BiM.Core.Network
             //second case : the message was split and it missed some bytes
             if (Data != null && Length.HasValue && Data.Length < Length)
             {
+                int bytesToRead = 0;
+
                 // still miss some bytes ...
                 if (Data.Length + reader.BytesAvailable < Length)
-                {
-                    Array.Resize(ref m_data, (int)( Data.Length + reader.BytesAvailable ));
-                    Array.Copy(reader.ReadBytes((int)reader.BytesAvailable), 0, Data, Data.Length, reader.BytesAvailable);
-                }
+                    bytesToRead = (int)reader.BytesAvailable;
+
                 // there is enough bytes in the buffer to complete the message :)
-                if (Data.Length + reader.BytesAvailable >= Length)
+                else if(Data.Length + reader.BytesAvailable >= Length)
+                    bytesToRead = Length.Value - Data.Length;
+
+                if(bytesToRead != 0)
                 {
-                    int bytesToRead = Length.Value - Data.Length;
-                    Array.Resize(ref m_data, Data.Length + bytesToRead);
-                    Array.Copy(reader.ReadBytes(bytesToRead), 0, Data, Data.Length, bytesToRead);
+                    int oldLength = Data.Length;
+                    Array.Resize(ref m_data, (int)( Data.Length + bytesToRead ));
+                    Array.Copy(reader.ReadBytes(bytesToRead), 0, Data, oldLength, bytesToRead);
                 }
             }
 
