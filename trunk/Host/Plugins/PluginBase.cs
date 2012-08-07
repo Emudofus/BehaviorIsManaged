@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using BiM.Core.Messages;
 
 namespace BiM.Host.Plugins
 {
@@ -40,10 +41,12 @@ namespace BiM.Host.Plugins
 
         public virtual void Initialize()
         {
+            MessageDispatcher.RegisterAssembly(Context.PluginAssembly);
         }
 
         public virtual void Shutdown()
         {
+            MessageDispatcher.UnRegisterAssembly(Context.PluginAssembly);
         }
 
         public abstract void Dispose();

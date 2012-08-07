@@ -4,6 +4,7 @@ using System.Reflection;
 using BiM.Behaviors.Data;
 using BiM.Core.Messages;
 using BiM.Host.Messages;
+using BiM.Host.Plugins;
 using BiM.MITM;
 using NLog;
 
@@ -81,6 +82,8 @@ namespace BiM.Host
             {
                 MessageDispatcher.RegisterAssembly(assembly);
             }
+
+            PluginManager.Instance.LoadAllPlugins();
 
             DispatcherTask = new DispatcherTask(new MessageDispatcher(), MITM);
             DispatcherTask.Start(); // we have to start it now to dispatch the initialization msg

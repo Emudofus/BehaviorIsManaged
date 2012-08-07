@@ -211,9 +211,34 @@ namespace BiM.Core.Messages
             }
         }
 
-        public static void UnRegister()
+        protected static void UnRegister(MessageHandler handler)
         {
-            throw new NotImplementedException();
+            m_handlers[handler.ContainerType.Assembly][handler.MessageType].Remove(handler);
+        }
+
+        public static void UnRegister(Type messageType)
+        {
+            foreach (var keyPair in m_handlers)
+            {
+                foreach (var handler in keyPair.Value)
+                {
+                    if (handler.Key == messageType)
+                        handler.Value.Clear();
+                }
+            }
+        }
+
+        public static void UnRegisterContainer(Type containerType)
+        {
+            foreach (var keyPair in m_handlers[containerType.Assembly])
+            {
+                keyPair.Value.RemoveAll(entry => entry.ContainerType == containerType);
+            }
+        }
+
+        public static void UnRegisterAssembly(Assembly assembly)
+        {
+            m_handlers.Remove(assembly);
         }
 
         public static bool IsRegistered(Type messageType)

@@ -86,7 +86,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Behaviors\BiM.Behaviors.csproj">
       <Project>{C547EB82-F770-410B-94AD-534E9B1D6C1B}</Project>
-      <Name>BehaviorIsManaged</Name>
+      <Name>BiM.Behaviors</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\BiM.Core.csproj">
       <Project>{2D0B3716-72B4-457B-8F61-4F7A2A200A57}</Project>
