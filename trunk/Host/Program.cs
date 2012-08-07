@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BiM.Behaviors.Data;
+using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Host.Messages;
 using BiM.Host.Plugins;
@@ -13,6 +14,7 @@ namespace BiM.Host
     public static class Program
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private const string ConfigPath = "./config.xml";
 
         private static List<Assembly> m_hierarchy = new List<Assembly>()
         {
@@ -42,6 +44,12 @@ namespace BiM.Host
             private set;
         }
 
+        public static Config Config
+        {
+            get;
+            private set;
+        }
+
         private static void Main(string[] args)
         {
             Console.WriteLine("Initialization...");
@@ -59,21 +67,29 @@ namespace BiM.Host
         private static void Initialize()
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
+            Config = new Config(ConfigPath);
+            Config.Load();
+
+            foreach (var assembly in m_hierarchy)
+            {
+                Config.BindAssembly(assembly);
+            }
 
 
             var d2oSource = new D2OSource();
-            d2oSource.AddReaders(@"C:\Program Files (x86)\Dofus 2\app\data\common");
+            d2oSource.AddReaders(Config.GetStatic("DofusDataPath", @"C:\Program Files (x86)\Dofus 2\app\data\common"));
             DataProvider.Instance.AddSource(d2oSource);
 
-            // todo : config
             MITM = new MITM.MITM(new MITMConfiguration
                                      {
-                                         FakeAuthHost = "localhost",
-                                         FakeAuthPort = 5555,
-                                         FakeWorldHost = "localhost",
-                                         FakeWorldPort = 5556,
-                                         RealAuthHost = "213.248.126.180",
-                                         RealAuthPort = 5555
+                                         FakeAuthHost = Config.GetStatic("BotAuthHost", "localhost"),
+                                         FakeAuthPort = Config.GetStatic("BotAuthPort", 5555),
+                                         FakeWorldHost = Config.GetStatic("BotWorldHost", "localhost"),
+                                         FakeWorldPort = Config.GetStatic("BotWorldPort", 5556),
+                                         RealAuthHost = Config.GetStatic("RealAuthHost", "213.248.126.180"),
+                                         RealAuthPort = Config.GetStatic("RealAuthPort", 5555)
                                      });
 
             MessageDispatcher.DefineHierarchy(m_hierarchy);
@@ -94,6 +110,10 @@ namespace BiM.Host
             msg.Wait();
         }
 
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            Stop();
+        }
 
         private static void Start()
         {
@@ -108,10 +128,18 @@ namespace BiM.Host
         {
             if (!Running)
                 return;
-
             Running = false;
-            MITM.Stop();
-            DispatcherTask.Stop();
+
+            if (Config != null)
+                Config.Save();
+
+            if (MITM != null)
+                MITM.Stop();
+
+            if (DispatcherTask != null)
+                DispatcherTask.Stop();
+
+            PluginManager.Instance.UnLoadAllPlugins();
         }
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

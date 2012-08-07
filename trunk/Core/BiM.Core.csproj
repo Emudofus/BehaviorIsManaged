@@ -76,6 +76,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\LockFreeQueue.cs" />
+    <Compile Include="Config\ConfigNode.cs" />
+    <Compile Include="Config\Config.cs" />
     <Compile Include="Extensions\DateExtensions.cs" />
     <Compile Include="Extensions\DnsExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
@@ -114,6 +116,7 @@
       <Name>NLog.netfx40</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

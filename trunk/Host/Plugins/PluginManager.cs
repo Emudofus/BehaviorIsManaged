@@ -126,6 +126,14 @@ namespace BiM.Host.Plugins
             UnRegisterPlugin(context);
         }
 
+        public void UnLoadAllPlugins()
+        {
+            foreach (var plugin in Plugins.ToArray())
+            {
+                UnLoadPlugin(plugin);
+            }
+        }
+
         public PluginContext GetPlugin(string name, bool ignoreCase = false)
         {
             var plugins = from entry in m_pluginContexts

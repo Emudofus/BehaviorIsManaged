@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BiM.Host.Plugins;
 
 namespace SimplePlugin
@@ -15,18 +12,12 @@ namespace SimplePlugin
 
         public override string Name
         {
-            get
-            {
-                return "Simple Plugin";
-            }
+            get { return "Simple Plugin"; }
         }
 
         public override string Description
         {
-            get
-            {
-                return "Just an example";
-            }
+            get { return "Just an example"; }
         }
 
         public override string Author
@@ -36,12 +27,16 @@ namespace SimplePlugin
 
         public override Version Version
         {
-            get { return new Version(1,0); }
+            get { return new Version(1, 0); }
+        }
+
+        public override bool UseConfig
+        {
+            get { return true; }
         }
 
         public override void Dispose()
         {
-            
         }
     }
 }
