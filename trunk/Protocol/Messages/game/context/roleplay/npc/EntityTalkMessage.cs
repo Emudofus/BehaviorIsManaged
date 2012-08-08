@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public int entityId;
 		public short textId;
-		public IEnumerable<string> parameters;
+		public string[] parameters;
 		
 		public EntityTalkMessage()
 		{
 		}
 		
-		public EntityTalkMessage(int entityId, short textId, IEnumerable<string> parameters)
+		public EntityTalkMessage(int entityId, short textId, string[] parameters)
 		{
 			this.entityId = entityId;
 			this.textId = textId;

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.JobDescription> jobsDescription;
+		public Types.JobDescription[] jobsDescription;
 		
 		public JobDescriptionMessage()
 		{
 		}
 		
-		public JobDescriptionMessage(IEnumerable<Types.JobDescription> jobsDescription)
+		public JobDescriptionMessage(Types.JobDescription[] jobsDescription)
 		{
 			this.jobsDescription = jobsDescription;
 		}

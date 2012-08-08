@@ -21,14 +21,14 @@ namespace BiM.Protocol.Messages
 		
 		public int summonerId;
 		public int slaveId;
-		public IEnumerable<Types.SpellItem> slaveSpells;
+		public Types.SpellItem[] slaveSpells;
 		public Types.CharacterCharacteristicsInformations slaveStats;
 		
 		public SlaveSwitchContextMessage()
 		{
 		}
 		
-		public SlaveSwitchContextMessage(int summonerId, int slaveId, IEnumerable<Types.SpellItem> slaveSpells, Types.CharacterCharacteristicsInformations slaveStats)
+		public SlaveSwitchContextMessage(int summonerId, int slaveId, Types.SpellItem[] slaveSpells, Types.CharacterCharacteristicsInformations slaveStats)
 		{
 			this.summonerId = summonerId;
 			this.slaveId = slaveId;

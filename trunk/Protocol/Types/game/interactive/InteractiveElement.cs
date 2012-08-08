@@ -20,14 +20,14 @@ namespace BiM.Protocol.Types
 		
 		public int elementId;
 		public int elementTypeId;
-		public IEnumerable<Types.InteractiveElementSkill> enabledSkills;
-		public IEnumerable<Types.InteractiveElementSkill> disabledSkills;
+		public Types.InteractiveElementSkill[] enabledSkills;
+		public Types.InteractiveElementSkill[] disabledSkills;
 		
 		public InteractiveElement()
 		{
 		}
 		
-		public InteractiveElement(int elementId, int elementTypeId, IEnumerable<Types.InteractiveElementSkill> enabledSkills, IEnumerable<Types.InteractiveElementSkill> disabledSkills)
+		public InteractiveElement(int elementId, int elementTypeId, Types.InteractiveElementSkill[] enabledSkills, Types.InteractiveElementSkill[] disabledSkills)
 		{
 			this.elementId = elementId;
 			this.elementTypeId = elementTypeId;

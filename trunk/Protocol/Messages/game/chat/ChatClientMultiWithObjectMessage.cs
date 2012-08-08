@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItem> objects;
+		public Types.ObjectItem[] objects;
 		
 		public ChatClientMultiWithObjectMessage()
 		{
 		}
 		
-		public ChatClientMultiWithObjectMessage(string content, sbyte channel, IEnumerable<Types.ObjectItem> objects)
+		public ChatClientMultiWithObjectMessage(string content, sbyte channel, Types.ObjectItem[] objects)
 			 : base(content, channel)
 		{
 			this.objects = objects;

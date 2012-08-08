@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public sbyte jobId;
-		public IEnumerable<Types.SkillActionDescription> skills;
+		public Types.SkillActionDescription[] skills;
 		
 		public JobDescription()
 		{
 		}
 		
-		public JobDescription(sbyte jobId, IEnumerable<Types.SkillActionDescription> skills)
+		public JobDescription(sbyte jobId, Types.SkillActionDescription[] skills)
 		{
 			this.jobId = jobId;
 			this.skills = skills;

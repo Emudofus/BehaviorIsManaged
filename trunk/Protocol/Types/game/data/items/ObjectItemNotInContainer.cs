@@ -21,7 +21,7 @@ namespace BiM.Protocol.Types
 		public short objectGID;
 		public short powerRate;
 		public bool overMax;
-		public IEnumerable<Types.ObjectEffect> effects;
+		public Types.ObjectEffect[] effects;
 		public int objectUID;
 		public int quantity;
 		
@@ -29,7 +29,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public ObjectItemNotInContainer(short objectGID, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, int objectUID, int quantity)
+		public ObjectItemNotInContainer(short objectGID, short powerRate, bool overMax, Types.ObjectEffect[] effects, int objectUID, int quantity)
 		{
 			this.objectGID = objectGID;
 			this.powerRate = powerRate;

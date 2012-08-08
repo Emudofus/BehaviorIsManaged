@@ -22,13 +22,13 @@ namespace BiM.Protocol.Messages
 		public string name;
 		public sbyte breed;
 		public bool sex;
-		public IEnumerable<int> colors;
+		public int[] colors;
 		
 		public CharacterCreationRequestMessage()
 		{
 		}
 		
-		public CharacterCreationRequestMessage(string name, sbyte breed, bool sex, IEnumerable<int> colors)
+		public CharacterCreationRequestMessage(string name, sbyte breed, bool sex, int[] colors)
 		{
 			this.name = name;
 			this.breed = breed;

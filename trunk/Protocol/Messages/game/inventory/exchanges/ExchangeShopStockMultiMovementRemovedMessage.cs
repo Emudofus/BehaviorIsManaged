@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> objectIdList;
+		public int[] objectIdList;
 		
 		public ExchangeShopStockMultiMovementRemovedMessage()
 		{
 		}
 		
-		public ExchangeShopStockMultiMovementRemovedMessage(IEnumerable<int> objectIdList)
+		public ExchangeShopStockMultiMovementRemovedMessage(int[] objectIdList)
 		{
 			this.objectIdList = objectIdList;
 		}

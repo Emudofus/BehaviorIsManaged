@@ -53,8 +53,13 @@ namespace BiM.Behaviors.Data
             return m_readers.ContainsKey(type);
         }
 
-        public T ReadObject<T>(int id) where T : class, IDataObject
+        public T ReadObject<T>(params object[] keys) where T : class, IDataObject
         {
+            if (keys.Length != 1 || !( keys[0] is IConvertible ))
+                throw new ArgumentException("D2OSource needs a int key, use ReadObject(int)");
+
+            int id = Convert.ToInt32(keys[0]);
+
             if (!m_readers.ContainsKey(typeof(T)))
                 throw new ArgumentException("Cannot find data corresponding to type : " + typeof(T));
 

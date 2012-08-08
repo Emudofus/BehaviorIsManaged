@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public int playerCount;
-		public IEnumerable<Types.MonsterInGroupLightInformations> monsters;
+		public Types.MonsterInGroupLightInformations[] monsters;
 		
 		public AlternativeMonstersInGroupLightInformations()
 		{
 		}
 		
-		public AlternativeMonstersInGroupLightInformations(int playerCount, IEnumerable<Types.MonsterInGroupLightInformations> monsters)
+		public AlternativeMonstersInGroupLightInformations(int playerCount, Types.MonsterInGroupLightInformations[] monsters)
 		{
 			this.playerCount = playerCount;
 			this.monsters = monsters;

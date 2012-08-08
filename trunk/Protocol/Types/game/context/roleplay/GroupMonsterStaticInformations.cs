@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public Types.MonsterInGroupLightInformations mainCreatureLightInfos;
-		public IEnumerable<Types.MonsterInGroupInformations> underlings;
+		public Types.MonsterInGroupInformations[] underlings;
 		
 		public GroupMonsterStaticInformations()
 		{
 		}
 		
-		public GroupMonsterStaticInformations(Types.MonsterInGroupLightInformations mainCreatureLightInfos, IEnumerable<Types.MonsterInGroupInformations> underlings)
+		public GroupMonsterStaticInformations(Types.MonsterInGroupLightInformations mainCreatureLightInfos, Types.MonsterInGroupInformations[] underlings)
 		{
 			this.mainCreatureLightInfos = mainCreatureLightInfos;
 			this.underlings = underlings;

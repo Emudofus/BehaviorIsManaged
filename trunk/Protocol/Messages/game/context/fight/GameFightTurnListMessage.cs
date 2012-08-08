@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> ids;
-		public IEnumerable<int> deadsIds;
+		public int[] ids;
+		public int[] deadsIds;
 		
 		public GameFightTurnListMessage()
 		{
 		}
 		
-		public GameFightTurnListMessage(IEnumerable<int> ids, IEnumerable<int> deadsIds)
+		public GameFightTurnListMessage(int[] ids, int[] deadsIds)
 		{
 			this.ids = ids;
 			this.deadsIds = deadsIds;

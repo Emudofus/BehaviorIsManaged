@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> actorIds;
+		public int[] actorIds;
 		
 		public EmotePlayMassiveMessage()
 		{
 		}
 		
-		public EmotePlayMassiveMessage(sbyte emoteId, double emoteStartTime, IEnumerable<int> actorIds)
+		public EmotePlayMassiveMessage(sbyte emoteId, double emoteStartTime, int[] actorIds)
 			 : base(emoteId, emoteStartTime)
 		{
 			this.actorIds = actorIds;

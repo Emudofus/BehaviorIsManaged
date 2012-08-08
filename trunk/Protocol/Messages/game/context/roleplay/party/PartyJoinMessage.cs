@@ -21,15 +21,15 @@ namespace BiM.Protocol.Messages
 		public sbyte partyType;
 		public int partyLeaderId;
 		public sbyte maxParticipants;
-		public IEnumerable<Types.PartyMemberInformations> members;
-		public IEnumerable<Types.PartyGuestInformations> guests;
+		public Types.PartyMemberInformations[] members;
+		public Types.PartyGuestInformations[] guests;
 		public bool restricted;
 		
 		public PartyJoinMessage()
 		{
 		}
 		
-		public PartyJoinMessage(int partyId, sbyte partyType, int partyLeaderId, sbyte maxParticipants, IEnumerable<Types.PartyMemberInformations> members, IEnumerable<Types.PartyGuestInformations> guests, bool restricted)
+		public PartyJoinMessage(int partyId, sbyte partyType, int partyLeaderId, sbyte maxParticipants, Types.PartyMemberInformations[] members, Types.PartyGuestInformations[] guests, bool restricted)
 			 : base(partyId)
 		{
 			this.partyType = partyType;

@@ -7,6 +7,7 @@ using BiM.Core.Messages;
 using BiM.Host.Messages;
 using BiM.Host.Plugins;
 using BiM.MITM;
+using BiM.Protocol.Tools.D2p;
 using NLog;
 
 namespace BiM.Host

@@ -23,7 +23,7 @@ namespace BiM.Protocol.Messages
 		{
 		}
 		
-		public ZaapListMessage(sbyte teleporterType, IEnumerable<int> mapIds, IEnumerable<short> subAreaIds, IEnumerable<short> costs, int spawnMapId)
+		public ZaapListMessage(sbyte teleporterType, int[] mapIds, short[] subAreaIds, short[] costs, int spawnMapId)
 			 : base(teleporterType, mapIds, subAreaIds, costs)
 		{
 			this.spawnMapId = spawnMapId;

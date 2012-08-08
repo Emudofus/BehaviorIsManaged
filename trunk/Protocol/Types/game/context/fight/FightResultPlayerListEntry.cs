@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public byte level;
-		public IEnumerable<Types.FightResultAdditionalData> additional;
+		public Types.FightResultAdditionalData[] additional;
 		
 		public FightResultPlayerListEntry()
 		{
 		}
 		
-		public FightResultPlayerListEntry(short outcome, Types.FightLoot rewards, int id, bool alive, byte level, IEnumerable<Types.FightResultAdditionalData> additional)
+		public FightResultPlayerListEntry(short outcome, Types.FightLoot rewards, int id, bool alive, byte level, Types.FightResultAdditionalData[] additional)
 			 : base(outcome, rewards, id, alive)
 		{
 			this.level = level;

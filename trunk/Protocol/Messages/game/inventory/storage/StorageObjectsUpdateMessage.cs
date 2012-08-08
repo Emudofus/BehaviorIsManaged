@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItem> objectList;
+		public Types.ObjectItem[] objectList;
 		
 		public StorageObjectsUpdateMessage()
 		{
 		}
 		
-		public StorageObjectsUpdateMessage(IEnumerable<Types.ObjectItem> objectList)
+		public StorageObjectsUpdateMessage(Types.ObjectItem[] objectList)
 		{
 			this.objectList = objectList;
 		}

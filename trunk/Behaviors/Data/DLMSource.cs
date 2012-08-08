@@ -6,18 +6,26 @@ namespace BiM.Behaviors.Data
 {
     public class DLMSource : IDataSource, IDisposable
     {
-        private DlmReader m_reader;
+        private readonly DlmReader m_reader;
 
         public DLMSource(DlmReader reader)
         {
-            if (reader == null) throw new ArgumentNullException("reader");
+            if (m_reader == null) throw new ArgumentNullException("reader");
             m_reader = reader;
         }
 
-        public T ReadObject<T>(int id) where T : class, IDataObject
+        public T ReadObject<T>(params object[] keys) where T : class, IDataObject
         {
+            if (keys.Length <= 0 || keys.Length > 2 || !( keys[0] is IConvertible ) || ( keys.Length == 2 && !( keys[1] is string ) ))
+                throw new ArgumentException("DLMSource needs a int key and can have a decryptionKey as string, use ReadObject(int) or ReadObject(int, string)");
+
             if (!DoesHandleType(typeof(T)))
                 throw new ArgumentException("typeof(T)");
+
+            int id = Convert.ToInt32(keys[0]);
+
+            if (keys[1] is string)
+                m_reader.DecryptionKey = (string)keys[1];
 
             var map = m_reader.ReadMap();
 

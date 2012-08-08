@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> spellsId;
+		public short[] spellsId;
 		public short boostPoint;
 		
 		public SpellForgottenMessage()
 		{
 		}
 		
-		public SpellForgottenMessage(IEnumerable<short> spellsId, short boostPoint)
+		public SpellForgottenMessage(short[] spellsId, short boostPoint)
 		{
 			this.spellsId = spellsId;
 			this.boostPoint = boostPoint;

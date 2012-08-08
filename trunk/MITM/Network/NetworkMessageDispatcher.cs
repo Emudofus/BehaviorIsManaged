@@ -39,22 +39,30 @@ namespace BiM.MITM.Network
         {
             if (message == null) throw new ArgumentNullException("message");
 
-            if (message.Destinations.HasFlag(ListenerEntry.Local))
+            try
             {
-                InternalDispatch(message, token);
-            }
+                if (message.Destinations.HasFlag(ListenerEntry.Local))
+                {
+                    InternalDispatch(message, token);
+                }
 
-            if (Client != null && message.Destinations.HasFlag(ListenerEntry.Client))
+                if (Client != null && message.Destinations.HasFlag(ListenerEntry.Client))
+                {
+                    Client.Send(message);
+                }
+
+                if (Server != null && message.Destinations.HasFlag(ListenerEntry.Server))
+                {
+                    Server.Send(message);
+                }
+
+                message.OnDispatched();
+                OnMessageDispatched(message);
+            }
+            catch (Exception ex)
             {
-                Client.Send(message);
+                throw new Exception(string.Format("Cannot dispatch {0}", message), ex);
             }
-
-            if (Server != null && message.Destinations.HasFlag(ListenerEntry.Server))
-            {
-                Server.Send(message);
-            }
-
-            message.OnDispatched();
         }
 
         private void InternalDispatch(NetworkMessage message, object token)

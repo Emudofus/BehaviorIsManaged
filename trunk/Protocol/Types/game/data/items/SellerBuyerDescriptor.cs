@@ -18,8 +18,8 @@ namespace BiM.Protocol.Types
 			}
 		}
 		
-		public IEnumerable<int> quantities;
-		public IEnumerable<int> types;
+		public int[] quantities;
+		public int[] types;
 		public float taxPercentage;
 		public int maxItemLevel;
 		public int maxItemPerAccount;
@@ -30,7 +30,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public SellerBuyerDescriptor(IEnumerable<int> quantities, IEnumerable<int> types, float taxPercentage, int maxItemLevel, int maxItemPerAccount, int npcContextualId, short unsoldDelay)
+		public SellerBuyerDescriptor(int[] quantities, int[] types, float taxPercentage, int maxItemLevel, int maxItemPerAccount, int npcContextualId, short unsoldDelay)
 		{
 			this.quantities = quantities;
 			this.types = types;

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.MapObstacle> obstacles;
+		public Types.MapObstacle[] obstacles;
 		
 		public MapObstacleUpdateMessage()
 		{
 		}
 		
-		public MapObstacleUpdateMessage(IEnumerable<Types.MapObstacle> obstacles)
+		public MapObstacleUpdateMessage(Types.MapObstacle[] obstacles)
 		{
 			this.obstacles = obstacles;
 		}

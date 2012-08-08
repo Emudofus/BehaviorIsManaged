@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public short pageIndex;
 		public short totalPage;
-		public IEnumerable<Types.HouseInformationsForSell> houseList;
+		public Types.HouseInformationsForSell[] houseList;
 		
 		public HouseToSellListMessage()
 		{
 		}
 		
-		public HouseToSellListMessage(short pageIndex, short totalPage, IEnumerable<Types.HouseInformationsForSell> houseList)
+		public HouseToSellListMessage(short pageIndex, short totalPage, Types.HouseInformationsForSell[] houseList)
 		{
 			this.pageIndex = pageIndex;
 			this.totalPage = totalPage;

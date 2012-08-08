@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> id;
+		public int[] id;
 		
 		public GameContextRemoveMultipleElementsMessage()
 		{
 		}
 		
-		public GameContextRemoveMultipleElementsMessage(IEnumerable<int> id)
+		public GameContextRemoveMultipleElementsMessage(int[] id)
 		{
 			this.id = id;
 		}

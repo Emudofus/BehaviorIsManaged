@@ -3,6 +3,7 @@ using System.Threading;
 
 namespace BiM.Core.Messages
 {
+    [Serializable]
     public abstract class Message
     {
         public event Action<Message> Dispatched;

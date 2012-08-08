@@ -19,16 +19,16 @@ namespace BiM.Protocol.Types
 		}
 		
 		public short bonesId;
-		public IEnumerable<short> skins;
-		public IEnumerable<int> indexedColors;
-		public IEnumerable<short> scales;
-		public IEnumerable<Types.SubEntity> subentities;
+		public short[] skins;
+		public int[] indexedColors;
+		public short[] scales;
+		public Types.SubEntity[] subentities;
 		
 		public EntityLook()
 		{
 		}
 		
-		public EntityLook(short bonesId, IEnumerable<short> skins, IEnumerable<int> indexedColors, IEnumerable<short> scales, IEnumerable<Types.SubEntity> subentities)
+		public EntityLook(short bonesId, short[] skins, int[] indexedColors, short[] scales, Types.SubEntity[] subentities)
 		{
 			this.bonesId = bonesId;
 			this.skins = skins;

@@ -19,15 +19,15 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> finishedQuestsIds;
-		public IEnumerable<short> finishedQuestsCounts;
-		public IEnumerable<Types.QuestActiveInformations> activeQuests;
+		public short[] finishedQuestsIds;
+		public short[] finishedQuestsCounts;
+		public Types.QuestActiveInformations[] activeQuests;
 		
 		public QuestListMessage()
 		{
 		}
 		
-		public QuestListMessage(IEnumerable<short> finishedQuestsIds, IEnumerable<short> finishedQuestsCounts, IEnumerable<Types.QuestActiveInformations> activeQuests)
+		public QuestListMessage(short[] finishedQuestsIds, short[] finishedQuestsCounts, Types.QuestActiveInformations[] activeQuests)
 		{
 			this.finishedQuestsIds = finishedQuestsIds;
 			this.finishedQuestsCounts = finishedQuestsCounts;

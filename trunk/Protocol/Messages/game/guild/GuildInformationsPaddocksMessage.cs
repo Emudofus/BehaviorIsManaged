@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public sbyte nbPaddockMax;
-		public IEnumerable<Types.PaddockContentInformations> paddocksInformations;
+		public Types.PaddockContentInformations[] paddocksInformations;
 		
 		public GuildInformationsPaddocksMessage()
 		{
 		}
 		
-		public GuildInformationsPaddocksMessage(sbyte nbPaddockMax, IEnumerable<Types.PaddockContentInformations> paddocksInformations)
+		public GuildInformationsPaddocksMessage(sbyte nbPaddockMax, Types.PaddockContentInformations[] paddocksInformations)
 		{
 			this.nbPaddockMax = nbPaddockMax;
 			this.paddocksInformations = paddocksInformations;

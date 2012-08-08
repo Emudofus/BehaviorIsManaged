@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.PartyMemberGeoPosition> geopositions;
+		public Types.PartyMemberGeoPosition[] geopositions;
 		
 		public PartyLocateMembersMessage()
 		{
 		}
 		
-		public PartyLocateMembersMessage(int partyId, IEnumerable<Types.PartyMemberGeoPosition> geopositions)
+		public PartyLocateMembersMessage(int partyId, Types.PartyMemberGeoPosition[] geopositions)
 			 : base(partyId)
 		{
 			this.geopositions = geopositions;

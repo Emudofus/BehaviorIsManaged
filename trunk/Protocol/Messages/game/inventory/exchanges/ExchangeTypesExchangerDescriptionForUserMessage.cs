@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> typeDescription;
+		public int[] typeDescription;
 		
 		public ExchangeTypesExchangerDescriptionForUserMessage()
 		{
 		}
 		
-		public ExchangeTypesExchangerDescriptionForUserMessage(IEnumerable<int> typeDescription)
+		public ExchangeTypesExchangerDescriptionForUserMessage(int[] typeDescription)
 		{
 			this.typeDescription = typeDescription;
 		}

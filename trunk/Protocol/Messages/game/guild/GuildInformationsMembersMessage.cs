@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.GuildMember> members;
+		public Types.GuildMember[] members;
 		
 		public GuildInformationsMembersMessage()
 		{
 		}
 		
-		public GuildInformationsMembersMessage(IEnumerable<Types.GuildMember> members)
+		public GuildInformationsMembersMessage(Types.GuildMember[] members)
 		{
 			this.members = members;
 		}

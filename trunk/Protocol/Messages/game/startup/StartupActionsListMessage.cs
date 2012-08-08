@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.StartupActionAddObject> actions;
+		public Types.StartupActionAddObject[] actions;
 		
 		public StartupActionsListMessage()
 		{
 		}
 		
-		public StartupActionsListMessage(IEnumerable<Types.StartupActionAddObject> actions)
+		public StartupActionsListMessage(Types.StartupActionAddObject[] actions)
 		{
 			this.actions = actions;
 		}

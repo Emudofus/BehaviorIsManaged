@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<sbyte> emoteIds;
+		public sbyte[] emoteIds;
 		
 		public EmoteListMessage()
 		{
 		}
 		
-		public EmoteListMessage(IEnumerable<sbyte> emoteIds)
+		public EmoteListMessage(sbyte[] emoteIds)
 		{
 			this.emoteIds = emoteIds;
 		}

@@ -1,6 +1,7 @@
 ﻿using System;
 using BiM.Behaviors.Authentification;
 using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Core.Network;
 using BiM.Core.Threading;
@@ -30,6 +31,8 @@ namespace BiM.Behaviors
             Dispatcher = messageDispatcher;
             ConnectionType = ClientConnectionType.Disconnected;
             ClientInformations = new ClientInformations();
+
+            messageDispatcher.Enqueue(new BotCreatedMessage(), this);
         }
 
         public MessageDispatcher Dispatcher
@@ -72,7 +75,19 @@ namespace BiM.Behaviors
 
         protected override void OnTick()
         {
-            Dispatcher.ProcessDispatching(this);
+            try
+            {
+                Dispatcher.ProcessDispatching(this);
+            }
+            catch (Exception ex)
+            {
+                logger.Fatal(ex);
+
+                while (( ex = ex.InnerException ) != null)
+                    logger.Fatal(ex);
+
+                Dispose();
+            }
 
             base.OnTick();
         }
@@ -157,6 +172,8 @@ namespace BiM.Behaviors
 
             if (Dispatcher != null)
                 Dispatcher.Dispose();
+
+            BotManager.Instance.RemoveBot(this);
         }
 
         public override string ToString()

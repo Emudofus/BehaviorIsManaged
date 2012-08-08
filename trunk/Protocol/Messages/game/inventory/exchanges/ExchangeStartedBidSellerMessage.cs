@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public Types.SellerBuyerDescriptor sellerDescriptor;
-		public IEnumerable<Types.ObjectItemToSellInBid> objectsInfos;
+		public Types.ObjectItemToSellInBid[] objectsInfos;
 		
 		public ExchangeStartedBidSellerMessage()
 		{
 		}
 		
-		public ExchangeStartedBidSellerMessage(Types.SellerBuyerDescriptor sellerDescriptor, IEnumerable<Types.ObjectItemToSellInBid> objectsInfos)
+		public ExchangeStartedBidSellerMessage(Types.SellerBuyerDescriptor sellerDescriptor, Types.ObjectItemToSellInBid[] objectsInfos)
 		{
 			this.sellerDescriptor = sellerDescriptor;
 			this.objectsInfos = objectsInfos;

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.FriendInformations> friendsList;
+		public Types.FriendInformations[] friendsList;
 		
 		public FriendsListMessage()
 		{
 		}
 		
-		public FriendsListMessage(IEnumerable<Types.FriendInformations> friendsList)
+		public FriendsListMessage(Types.FriendInformations[] friendsList)
 		{
 			this.friendsList = friendsList;
 		}

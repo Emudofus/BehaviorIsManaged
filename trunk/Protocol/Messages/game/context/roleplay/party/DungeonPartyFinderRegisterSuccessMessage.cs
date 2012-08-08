@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> dungeonIds;
+		public short[] dungeonIds;
 		
 		public DungeonPartyFinderRegisterSuccessMessage()
 		{
 		}
 		
-		public DungeonPartyFinderRegisterSuccessMessage(IEnumerable<short> dungeonIds)
+		public DungeonPartyFinderRegisterSuccessMessage(short[] dungeonIds)
 		{
 			this.dungeonIds = dungeonIds;
 		}

@@ -22,7 +22,7 @@ namespace BiM.Protocol.Messages
 		{
 		}
 		
-		public ExchangeBidHouseInListUpdatedMessage(int itemUID, int objGenericId, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, IEnumerable<int> prices)
+		public ExchangeBidHouseInListUpdatedMessage(int itemUID, int objGenericId, short powerRate, bool overMax, Types.ObjectEffect[] effects, int[] prices)
 			 : base(itemUID, objGenericId, powerRate, overMax, effects, prices)
 		{
 		}

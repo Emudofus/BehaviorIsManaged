@@ -24,13 +24,13 @@ namespace BiM.Protocol.Types
 		public int mapId;
 		public short subAreaId;
 		public bool abandonned;
-		public IEnumerable<Types.MountInformationsForPaddock> mountsInformations;
+		public Types.MountInformationsForPaddock[] mountsInformations;
 		
 		public PaddockContentInformations()
 		{
 		}
 		
-		public PaddockContentInformations(short maxOutdoorMount, short maxItems, int paddockId, short worldX, short worldY, int mapId, short subAreaId, bool abandonned, IEnumerable<Types.MountInformationsForPaddock> mountsInformations)
+		public PaddockContentInformations(short maxOutdoorMount, short maxItems, int paddockId, short worldX, short worldY, int mapId, short subAreaId, bool abandonned, Types.MountInformationsForPaddock[] mountsInformations)
 			 : base(maxOutdoorMount, maxItems)
 		{
 			this.paddockId = paddockId;

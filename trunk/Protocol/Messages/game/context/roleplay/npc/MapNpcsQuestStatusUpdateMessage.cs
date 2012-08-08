@@ -20,15 +20,15 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public int mapId;
-		public IEnumerable<int> npcsIdsWithQuest;
-		public IEnumerable<Types.GameRolePlayNpcQuestFlag> questFlags;
-		public IEnumerable<int> npcsIdsWithoutQuest;
+		public int[] npcsIdsWithQuest;
+		public Types.GameRolePlayNpcQuestFlag[] questFlags;
+		public int[] npcsIdsWithoutQuest;
 		
 		public MapNpcsQuestStatusUpdateMessage()
 		{
 		}
 		
-		public MapNpcsQuestStatusUpdateMessage(int mapId, IEnumerable<int> npcsIdsWithQuest, IEnumerable<Types.GameRolePlayNpcQuestFlag> questFlags, IEnumerable<int> npcsIdsWithoutQuest)
+		public MapNpcsQuestStatusUpdateMessage(int mapId, int[] npcsIdsWithQuest, Types.GameRolePlayNpcQuestFlag[] questFlags, int[] npcsIdsWithoutQuest)
 		{
 			this.mapId = mapId;
 			this.npcsIdsWithQuest = npcsIdsWithQuest;

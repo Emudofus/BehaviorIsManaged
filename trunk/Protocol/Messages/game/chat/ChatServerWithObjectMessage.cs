@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItem> objects;
+		public Types.ObjectItem[] objects;
 		
 		public ChatServerWithObjectMessage()
 		{
 		}
 		
-		public ChatServerWithObjectMessage(sbyte channel, string content, int timestamp, string fingerprint, int senderId, string senderName, int senderAccountId, IEnumerable<Types.ObjectItem> objects)
+		public ChatServerWithObjectMessage(sbyte channel, string content, int timestamp, string fingerprint, int senderId, string senderName, int senderAccountId, Types.ObjectItem[] objects)
 			 : base(channel, content, timestamp, fingerprint, senderId, senderName, senderAccountId)
 		{
 			this.objects = objects;

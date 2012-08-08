@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public short dungeonId;
-		public IEnumerable<Types.DungeonPartyFinderPlayer> players;
+		public Types.DungeonPartyFinderPlayer[] players;
 		
 		public DungeonPartyFinderRoomContentMessage()
 		{
 		}
 		
-		public DungeonPartyFinderRoomContentMessage(short dungeonId, IEnumerable<Types.DungeonPartyFinderPlayer> players)
+		public DungeonPartyFinderRoomContentMessage(short dungeonId, Types.DungeonPartyFinderPlayer[] players)
 		{
 			this.dungeonId = dungeonId;
 			this.players = players;

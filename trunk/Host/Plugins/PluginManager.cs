@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using BiM.Core.Config;
 using BiM.Core.Extensions;
 using BiM.Core.Reflection;
 using NLog;
@@ -12,12 +13,25 @@ namespace BiM.Host.Plugins
 {
     public sealed class PluginManager : Singleton<PluginManager>
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
-        // todo : config
-        public static List<string> PluginsPath = new List<string>{"./plugins/"};
+        #region Delegates
 
         public delegate void PluginContextHandler(PluginContext pluginContext);
+
+        #endregion
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public static string PluginsFolder = Config.GetStatic("PluginsFolder", "./plugins");
+        private readonly List<PluginContext> m_pluginContexts = new List<PluginContext>();
+
+        private PluginManager()
+        {
+        }
+
+        public ReadOnlyCollection<PluginContext> Plugins
+        {
+            get { return m_pluginContexts.AsReadOnly(); }
+        }
 
         public event PluginContextHandler PluginAdded;
 
@@ -35,37 +49,16 @@ namespace BiM.Host.Plugins
             if (handler != null) handler(pluginContext);
         }
 
-        private readonly List<PluginContext> m_pluginContexts = new List<PluginContext>();
-
-        public ReadOnlyCollection<PluginContext> Plugins
-        {
-            get { return m_pluginContexts.AsReadOnly(); }
-        }
-
-        private PluginManager()
-        {
-
-        }
-
         public void LoadAllPlugins()
         {
-            foreach (var path in PluginsPath)
+            if (!Directory.Exists(PluginsFolder))
             {
-                if (!Directory.Exists(path) && !File.Exists(path))
-                {
-                    logger.Error("Cannot load unexistant plugin path {0}", path);
-                    return;
-                }
+                Directory.CreateDirectory(PluginsFolder);
+            }
 
-                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
-                {
-                    foreach (var file in Directory.EnumerateFiles(path, "*.dll"))
-                    {
-                        LoadPlugin(file);
-                    }
-                }
-                else
-                    LoadPlugin(path);
+            foreach (string file in Directory.EnumerateFiles(PluginsFolder, "*.dll"))
+            {
+                LoadPlugin(file);
             }
         }
 
@@ -77,7 +70,7 @@ namespace BiM.Host.Plugins
             if (m_pluginContexts.Any(entry => Path.GetFullPath(entry.AssemblyPath) == Path.GetFullPath(libPath)))
                 throw new Exception("Plugin already loaded");
 
-            var asmData = File.ReadAllBytes(libPath);
+            byte[] asmData = File.ReadAllBytes(libPath);
 
             Assembly pluginAssembly = Assembly.Load(asmData);
             var pluginContext = new PluginContext(libPath, pluginAssembly);
@@ -88,7 +81,7 @@ namespace BiM.Host.Plugins
             {
                 if (pluginType.IsPublic && !pluginType.IsAbstract)
                 {
-                    if (pluginType.HasInterface(typeof(IPlugin)))
+                    if (pluginType.HasInterface(typeof (IPlugin)))
                     {
                         if (initialized)
                             throw new PluginLoadException("Found 2 classes that implements IPlugin. A plugin can contains only one");
@@ -106,12 +99,13 @@ namespace BiM.Host.Plugins
 
         public void UnLoadPlugin(string name, bool ignoreCase = false)
         {
-            var plugin = from entry in m_pluginContexts
-                         where entry.Plugin.Name.Equals(name, ignoreCase ?
-                            StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture)
-                         select entry;
+            IEnumerable<PluginContext> plugin = from entry in m_pluginContexts
+                                                where entry.Plugin.Name.Equals(name, ignoreCase
+                                                                                         ? StringComparison.InvariantCultureIgnoreCase
+                                                                                         : StringComparison.InvariantCulture)
+                                                select entry;
 
-            foreach (var pluginContext in plugin)
+            foreach (PluginContext pluginContext in plugin)
             {
                 UnLoadPlugin(pluginContext);
             }
@@ -128,7 +122,7 @@ namespace BiM.Host.Plugins
 
         public void UnLoadAllPlugins()
         {
-            foreach (var plugin in Plugins.ToArray())
+            foreach (PluginContext plugin in Plugins.ToArray())
             {
                 UnLoadPlugin(plugin);
             }
@@ -136,10 +130,11 @@ namespace BiM.Host.Plugins
 
         public PluginContext GetPlugin(string name, bool ignoreCase = false)
         {
-            var plugins = from entry in m_pluginContexts
-                         where entry.Plugin.Name.Equals(name, ignoreCase ?
-                            StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture)
-                         select entry;
+            IEnumerable<PluginContext> plugins = from entry in m_pluginContexts
+                                                 where entry.Plugin.Name.Equals(name, ignoreCase
+                                                                                          ? StringComparison.InvariantCultureIgnoreCase
+                                                                                          : StringComparison.InvariantCulture)
+                                                 select entry;
 
             return plugins.FirstOrDefault();
         }
@@ -164,7 +159,6 @@ namespace BiM.Host.Plugins
         public PluginLoadException(string exception)
             : base(exception)
         {
-
         }
     }
 }

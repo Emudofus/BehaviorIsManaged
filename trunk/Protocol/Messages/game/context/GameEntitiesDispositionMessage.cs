@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.IdentifiedEntityDispositionInformations> dispositions;
+		public Types.IdentifiedEntityDispositionInformations[] dispositions;
 		
 		public GameEntitiesDispositionMessage()
 		{
 		}
 		
-		public GameEntitiesDispositionMessage(IEnumerable<Types.IdentifiedEntityDispositionInformations> dispositions)
+		public GameEntitiesDispositionMessage(Types.IdentifiedEntityDispositionInformations[] dispositions)
 		{
 			this.dispositions = dispositions;
 		}

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> flags;
+		public int[] flags;
 		
 		public NotificationListMessage()
 		{
 		}
 		
-		public NotificationListMessage(IEnumerable<int> flags)
+		public NotificationListMessage(int[] flags)
 		{
 			this.flags = flags;
 		}

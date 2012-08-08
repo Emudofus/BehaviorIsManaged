@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ContentPart> parts;
+		public Types.ContentPart[] parts;
 		
 		public PartsListMessage()
 		{
 		}
 		
-		public PartsListMessage(IEnumerable<Types.ContentPart> parts)
+		public PartsListMessage(Types.ContentPart[] parts)
 		{
 			this.parts = parts;
 		}

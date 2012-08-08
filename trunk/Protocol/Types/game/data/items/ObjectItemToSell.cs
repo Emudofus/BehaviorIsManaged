@@ -21,7 +21,7 @@ namespace BiM.Protocol.Types
 		public short objectGID;
 		public short powerRate;
 		public bool overMax;
-		public IEnumerable<Types.ObjectEffect> effects;
+		public Types.ObjectEffect[] effects;
 		public int objectUID;
 		public int quantity;
 		public int objectPrice;
@@ -30,7 +30,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public ObjectItemToSell(short objectGID, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, int objectUID, int quantity, int objectPrice)
+		public ObjectItemToSell(short objectGID, short powerRate, bool overMax, Types.ObjectEffect[] effects, int objectUID, int quantity, int objectPrice)
 		{
 			this.objectGID = objectGID;
 			this.powerRate = powerRate;

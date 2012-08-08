@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public short pageIndex;
 		public short totalPage;
-		public IEnumerable<Types.PaddockInformationsForSell> paddockList;
+		public Types.PaddockInformationsForSell[] paddockList;
 		
 		public PaddockToSellListMessage()
 		{
 		}
 		
-		public PaddockToSellListMessage(short pageIndex, short totalPage, IEnumerable<Types.PaddockInformationsForSell> paddockList)
+		public PaddockToSellListMessage(short pageIndex, short totalPage, Types.PaddockInformationsForSell[] paddockList)
 		{
 			this.pageIndex = pageIndex;
 			this.totalPage = totalPage;

@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public sbyte presetId;
 		public sbyte code;
-		public IEnumerable<byte> unlinkedPosition;
+		public byte[] unlinkedPosition;
 		
 		public InventoryPresetUseResultMessage()
 		{
 		}
 		
-		public InventoryPresetUseResultMessage(sbyte presetId, sbyte code, IEnumerable<byte> unlinkedPosition)
+		public InventoryPresetUseResultMessage(sbyte presetId, sbyte code, byte[] unlinkedPosition)
 		{
 			this.presetId = presetId;
 			this.code = code;

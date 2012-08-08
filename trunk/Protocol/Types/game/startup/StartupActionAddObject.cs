@@ -23,13 +23,13 @@ namespace BiM.Protocol.Types
 		public string text;
 		public string descUrl;
 		public string pictureUrl;
-		public IEnumerable<Types.ObjectItemInformationWithQuantity> items;
+		public Types.ObjectItemInformationWithQuantity[] items;
 		
 		public StartupActionAddObject()
 		{
 		}
 		
-		public StartupActionAddObject(int uid, string title, string text, string descUrl, string pictureUrl, IEnumerable<Types.ObjectItemInformationWithQuantity> items)
+		public StartupActionAddObject(int uid, string title, string text, string descUrl, string pictureUrl, Types.ObjectItemInformationWithQuantity[] items)
 		{
 			this.uid = uid;
 			this.title = title;

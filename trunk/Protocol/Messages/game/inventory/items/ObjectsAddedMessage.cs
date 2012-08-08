@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItem> @object;
+		public Types.ObjectItem[] @object;
 		
 		public ObjectsAddedMessage()
 		{
 		}
 		
-		public ObjectsAddedMessage(IEnumerable<Types.ObjectItem> @object)
+		public ObjectsAddedMessage(Types.ObjectItem[] @object)
 		{
 			this.@object = @object;
 		}

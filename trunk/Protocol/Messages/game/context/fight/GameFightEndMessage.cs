@@ -22,13 +22,13 @@ namespace BiM.Protocol.Messages
 		public int duration;
 		public short ageBonus;
 		public short lootShareLimitMalus;
-		public IEnumerable<Types.FightResultListEntry> results;
+		public Types.FightResultListEntry[] results;
 		
 		public GameFightEndMessage()
 		{
 		}
 		
-		public GameFightEndMessage(int duration, short ageBonus, short lootShareLimitMalus, IEnumerable<Types.FightResultListEntry> results)
+		public GameFightEndMessage(int duration, short ageBonus, short lootShareLimitMalus, Types.FightResultListEntry[] results)
 		{
 			this.duration = duration;
 			this.ageBonus = ageBonus;

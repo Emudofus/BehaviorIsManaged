@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> cells;
+		public short[] cells;
 		
 		public ObjectGroundRemovedMultipleMessage()
 		{
 		}
 		
-		public ObjectGroundRemovedMultipleMessage(IEnumerable<short> cells)
+		public ObjectGroundRemovedMultipleMessage(short[] cells)
 		{
 			this.cells = cells;
 		}

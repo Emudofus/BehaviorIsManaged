@@ -19,15 +19,15 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<string> aliases;
-		public IEnumerable<string> arguments;
-		public IEnumerable<string> descriptions;
+		public string[] aliases;
+		public string[] arguments;
+		public string[] descriptions;
 		
 		public ConsoleCommandsListMessage()
 		{
 		}
 		
-		public ConsoleCommandsListMessage(IEnumerable<string> aliases, IEnumerable<string> arguments, IEnumerable<string> descriptions)
+		public ConsoleCommandsListMessage(string[] aliases, string[] arguments, string[] descriptions)
 		{
 			this.aliases = aliases;
 			this.arguments = arguments;

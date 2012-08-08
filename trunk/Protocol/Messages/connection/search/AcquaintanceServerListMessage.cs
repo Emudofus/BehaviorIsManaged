@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> servers;
+		public short[] servers;
 		
 		public AcquaintanceServerListMessage()
 		{
 		}
 		
-		public AcquaintanceServerListMessage(IEnumerable<short> servers)
+		public AcquaintanceServerListMessage(short[] servers)
 		{
 			this.servers = servers;
 		}

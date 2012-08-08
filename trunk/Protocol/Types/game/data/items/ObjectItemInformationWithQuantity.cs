@@ -23,7 +23,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public ObjectItemInformationWithQuantity(short objectGID, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, int quantity)
+		public ObjectItemInformationWithQuantity(short objectGID, short powerRate, bool overMax, Types.ObjectEffect[] effects, int quantity)
 			 : base(objectGID, powerRate, overMax, effects)
 		{
 			this.quantity = quantity;

@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public bool spellPrevisualization;
-		public IEnumerable<Types.SpellItem> spells;
+		public Types.SpellItem[] spells;
 		
 		public SpellListMessage()
 		{
 		}
 		
-		public SpellListMessage(bool spellPrevisualization, IEnumerable<Types.SpellItem> spells)
+		public SpellListMessage(bool spellPrevisualization, Types.SpellItem[] spells)
 		{
 			this.spellPrevisualization = spellPrevisualization;
 			this.spells = spells;

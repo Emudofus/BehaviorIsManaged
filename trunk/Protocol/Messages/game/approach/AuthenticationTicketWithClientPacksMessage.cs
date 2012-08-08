@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> packs;
+		public int[] packs;
 		
 		public AuthenticationTicketWithClientPacksMessage()
 		{
 		}
 		
-		public AuthenticationTicketWithClientPacksMessage(string lang, string ticket, IEnumerable<int> packs)
+		public AuthenticationTicketWithClientPacksMessage(string lang, string ticket, int[] packs)
 			 : base(lang, ticket)
 		{
 			this.packs = packs;

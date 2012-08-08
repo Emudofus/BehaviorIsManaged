@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public string salt;
-		public IEnumerable<sbyte> key;
+		public sbyte[] key;
 		
 		public HelloConnectMessage()
 		{
 		}
 		
-		public HelloConnectMessage(string salt, IEnumerable<sbyte> key)
+		public HelloConnectMessage(string salt, sbyte[] key)
 		{
 			this.salt = salt;
 			this.key = key;

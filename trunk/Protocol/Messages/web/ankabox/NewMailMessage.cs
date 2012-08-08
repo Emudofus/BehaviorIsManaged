@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> sendersAccountId;
+		public int[] sendersAccountId;
 		
 		public NewMailMessage()
 		{
 		}
 		
-		public NewMailMessage(short unread, short total, IEnumerable<int> sendersAccountId)
+		public NewMailMessage(short unread, short total, int[] sendersAccountId)
 			 : base(unread, total)
 		{
 			this.sendersAccountId = sendersAccountId;

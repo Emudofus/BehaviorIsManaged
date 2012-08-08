@@ -24,7 +24,7 @@ namespace BiM.Protocol.Messages
 		{
 		}
 		
-		public MapComplementaryInformationsWithCoordsMessage(short subAreaId, int mapId, sbyte subareaAlignmentSide, IEnumerable<Types.HouseInformations> houses, IEnumerable<Types.GameRolePlayActorInformations> actors, IEnumerable<Types.InteractiveElement> interactiveElements, IEnumerable<Types.StatedElement> statedElements, IEnumerable<Types.MapObstacle> obstacles, IEnumerable<Types.FightCommonInformations> fights, short worldX, short worldY)
+		public MapComplementaryInformationsWithCoordsMessage(short subAreaId, int mapId, sbyte subareaAlignmentSide, Types.HouseInformations[] houses, Types.GameRolePlayActorInformations[] actors, Types.InteractiveElement[] interactiveElements, Types.StatedElement[] statedElements, Types.MapObstacle[] obstacles, Types.FightCommonInformations[] fights, short worldX, short worldY)
 			 : base(subAreaId, mapId, subareaAlignmentSide, houses, actors, interactiveElements, statedElements, obstacles, fights)
 		{
 			this.worldX = worldX;

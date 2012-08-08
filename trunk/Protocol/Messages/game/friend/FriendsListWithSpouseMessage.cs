@@ -23,7 +23,7 @@ namespace BiM.Protocol.Messages
 		{
 		}
 		
-		public FriendsListWithSpouseMessage(IEnumerable<Types.FriendInformations> friendsList, Types.FriendSpouseInformations spouse)
+		public FriendsListWithSpouseMessage(Types.FriendInformations[] friendsList, Types.FriendSpouseInformations spouse)
 			 : base(friendsList)
 		{
 			this.spouse = spouse;

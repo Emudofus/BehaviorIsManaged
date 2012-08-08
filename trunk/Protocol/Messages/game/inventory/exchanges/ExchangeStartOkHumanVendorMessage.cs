@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public int sellerId;
-		public IEnumerable<Types.ObjectItemToSellInHumanVendorShop> objectsInfos;
+		public Types.ObjectItemToSellInHumanVendorShop[] objectsInfos;
 		
 		public ExchangeStartOkHumanVendorMessage()
 		{
 		}
 		
-		public ExchangeStartOkHumanVendorMessage(int sellerId, IEnumerable<Types.ObjectItemToSellInHumanVendorShop> objectsInfos)
+		public ExchangeStartOkHumanVendorMessage(int sellerId, Types.ObjectItemToSellInHumanVendorShop[] objectsInfos)
 		{
 			this.sellerId = sellerId;
 			this.objectsInfos = objectsInfos;

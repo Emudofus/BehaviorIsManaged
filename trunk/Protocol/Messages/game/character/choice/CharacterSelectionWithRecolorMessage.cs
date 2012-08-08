@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> indexedColor;
+		public int[] indexedColor;
 		
 		public CharacterSelectionWithRecolorMessage()
 		{
 		}
 		
-		public CharacterSelectionWithRecolorMessage(int id, IEnumerable<int> indexedColor)
+		public CharacterSelectionWithRecolorMessage(int id, int[] indexedColor)
 			 : base(id)
 		{
 			this.indexedColor = indexedColor;

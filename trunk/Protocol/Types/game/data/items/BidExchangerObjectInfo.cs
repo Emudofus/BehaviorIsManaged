@@ -21,14 +21,14 @@ namespace BiM.Protocol.Types
 		public int objectUID;
 		public short powerRate;
 		public bool overMax;
-		public IEnumerable<Types.ObjectEffect> effects;
-		public IEnumerable<int> prices;
+		public Types.ObjectEffect[] effects;
+		public int[] prices;
 		
 		public BidExchangerObjectInfo()
 		{
 		}
 		
-		public BidExchangerObjectInfo(int objectUID, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, IEnumerable<int> prices)
+		public BidExchangerObjectInfo(int objectUID, short powerRate, bool overMax, Types.ObjectEffect[] effects, int[] prices)
 		{
 			this.objectUID = objectUID;
 			this.powerRate = powerRate;

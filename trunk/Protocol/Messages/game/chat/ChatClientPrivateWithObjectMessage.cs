@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItem> objects;
+		public Types.ObjectItem[] objects;
 		
 		public ChatClientPrivateWithObjectMessage()
 		{
 		}
 		
-		public ChatClientPrivateWithObjectMessage(string content, string receiver, IEnumerable<Types.ObjectItem> objects)
+		public ChatClientPrivateWithObjectMessage(string content, string receiver, Types.ObjectItem[] objects)
 			 : base(content, receiver)
 		{
 			this.objects = objects;

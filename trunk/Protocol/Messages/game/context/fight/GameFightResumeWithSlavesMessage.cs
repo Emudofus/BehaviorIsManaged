@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.GameFightResumeSlaveInfo> slavesInfo;
+		public Types.GameFightResumeSlaveInfo[] slavesInfo;
 		
 		public GameFightResumeWithSlavesMessage()
 		{
 		}
 		
-		public GameFightResumeWithSlavesMessage(IEnumerable<Types.FightDispellableEffectExtendedInformations> effects, IEnumerable<Types.GameActionMark> marks, short gameTurn, IEnumerable<Types.GameFightSpellCooldown> spellCooldowns, sbyte summonCount, sbyte bombCount, IEnumerable<Types.GameFightResumeSlaveInfo> slavesInfo)
+		public GameFightResumeWithSlavesMessage(Types.FightDispellableEffectExtendedInformations[] effects, Types.GameActionMark[] marks, short gameTurn, Types.GameFightSpellCooldown[] spellCooldowns, sbyte summonCount, sbyte bombCount, Types.GameFightResumeSlaveInfo[] slavesInfo)
 			 : base(effects, marks, gameTurn, spellCooldowns, summonCount, bombCount)
 		{
 			this.slavesInfo = slavesInfo;

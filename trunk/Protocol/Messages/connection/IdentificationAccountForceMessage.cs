@@ -23,7 +23,7 @@ namespace BiM.Protocol.Messages
 		{
 		}
 		
-		public IdentificationAccountForceMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, string login, IEnumerable<sbyte> credentials, short serverId, string forcedAccountLogin)
+		public IdentificationAccountForceMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, string login, sbyte[] credentials, short serverId, string forcedAccountLogin)
 			 : base(autoconnect, useCertificate, useLoginToken, version, lang, login, credentials, serverId)
 		{
 			this.forcedAccountLogin = forcedAccountLogin;

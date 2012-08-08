@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public int id;
-		public IEnumerable<sbyte> steps;
+		public sbyte[] steps;
 		
 		public EntityMovementInformations()
 		{
 		}
 		
-		public EntityMovementInformations(int id, IEnumerable<sbyte> steps)
+		public EntityMovementInformations(int id, sbyte[] steps)
 		{
 			this.id = id;
 			this.steps = steps;

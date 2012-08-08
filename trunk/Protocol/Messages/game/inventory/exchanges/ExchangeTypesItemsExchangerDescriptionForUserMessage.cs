@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.BidExchangerObjectInfo> itemTypeDescriptions;
+		public Types.BidExchangerObjectInfo[] itemTypeDescriptions;
 		
 		public ExchangeTypesItemsExchangerDescriptionForUserMessage()
 		{
 		}
 		
-		public ExchangeTypesItemsExchangerDescriptionForUserMessage(IEnumerable<Types.BidExchangerObjectInfo> itemTypeDescriptions)
+		public ExchangeTypesItemsExchangerDescriptionForUserMessage(Types.BidExchangerObjectInfo[] itemTypeDescriptions)
 		{
 			this.itemTypeDescriptions = itemTypeDescriptions;
 		}

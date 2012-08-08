@@ -18,7 +18,7 @@ namespace BiM.Protocol.Types
 			}
 		}
 		
-		public IEnumerable<Types.EntityLook> followingCharactersLook;
+		public Types.EntityLook[] followingCharactersLook;
 		public sbyte emoteId;
 		public double emoteStartTime;
 		public Types.ActorRestrictionsInformations restrictions;
@@ -29,7 +29,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public HumanInformations(IEnumerable<Types.EntityLook> followingCharactersLook, sbyte emoteId, double emoteStartTime, Types.ActorRestrictionsInformations restrictions, short titleId, string titleParam)
+		public HumanInformations(Types.EntityLook[] followingCharactersLook, sbyte emoteId, double emoteStartTime, Types.ActorRestrictionsInformations restrictions, short titleId, string titleParam)
 		{
 			this.followingCharactersLook = followingCharactersLook;
 			this.emoteId = emoteId;

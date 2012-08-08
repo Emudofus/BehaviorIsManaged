@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public sbyte barType;
-		public IEnumerable<Types.Shortcut> shortcuts;
+		public Types.Shortcut[] shortcuts;
 		
 		public ShortcutBarContentMessage()
 		{
 		}
 		
-		public ShortcutBarContentMessage(sbyte barType, IEnumerable<Types.Shortcut> shortcuts)
+		public ShortcutBarContentMessage(sbyte barType, Types.Shortcut[] shortcuts)
 		{
 			this.barType = barType;
 			this.shortcuts = shortcuts;

@@ -32,11 +32,19 @@ namespace BiM.Behaviors.Data
                 Select(entry => entry).ToArray());
         }
 
-        public T ReadObject<T>(int id) where T : class, IDataObject
+        public T ReadObject<T>(params object[] keys) where T : class, IDataObject
         {
+            // we don't check the others keys, they may be used by the others sources
+            if (( !( keys[0] is IConvertible ) ))
+                throw new ArgumentException("D2PSource needs a int key, use ReadObject(int)");
+
             if (!DoesHandleType(typeof(T)))
                 throw new ArgumentException(string.Format("type {0} not handled", typeof(T)));
 
+            int id = Convert.ToInt32(keys[0]);
+            
+
+            // retrieve the bound entry to the key or find it in the d2p file
             D2pEntry entry;
             if (!m_entriesLinks.TryGetValue(id, out entry))
             {
@@ -49,6 +57,7 @@ namespace BiM.Behaviors.Data
                 m_entriesLinks.Add(id, entry);
             }
 
+            // then retrieve the data source bound to the entry or create it
             IDataSource source;
             if (!m_sources.TryGetValue(entry, out source))
             {
@@ -57,7 +66,7 @@ namespace BiM.Behaviors.Data
                 m_sources.Add(entry, source);
             }
 
-            return source.ReadObject<T>(id);
+            return source.ReadObject<T>(keys);
         }
 
         private IDataSource CreateDataSource(D2pEntry entry, Type type)

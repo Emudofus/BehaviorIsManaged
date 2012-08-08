@@ -20,15 +20,15 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public sbyte teleporterType;
-		public IEnumerable<int> mapIds;
-		public IEnumerable<short> subAreaIds;
-		public IEnumerable<short> costs;
+		public int[] mapIds;
+		public short[] subAreaIds;
+		public short[] costs;
 		
 		public TeleportDestinationsListMessage()
 		{
 		}
 		
-		public TeleportDestinationsListMessage(sbyte teleporterType, IEnumerable<int> mapIds, IEnumerable<short> subAreaIds, IEnumerable<short> costs)
+		public TeleportDestinationsListMessage(sbyte teleporterType, int[] mapIds, short[] subAreaIds, short[] costs)
 		{
 			this.teleporterType = teleporterType;
 			this.mapIds = mapIds;

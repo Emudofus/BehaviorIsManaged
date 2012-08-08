@@ -5,6 +5,7 @@ using NLog;
 
 namespace BiM.Core.Network
 {
+    [Serializable]
     public abstract class NetworkMessage : Message
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();

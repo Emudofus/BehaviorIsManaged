@@ -26,25 +26,37 @@ namespace BiM.Behaviors.Data
             m_sources.Remove(source);
         }
 
-        public IDataSource GetSourceMatching(Type type)
+        public IEnumerable<IDataSource> GetSourcesMatching(Type type)
         {
             var sources = m_sources.Where(entry => entry.DoesHandleType(type)).ToArray();
-
-            if (sources.Length > 1)
-                throw new InvalidOperationException("Type {0} handled by more than 1 source");
 
             if (sources.Length < 1)
                 throw new InvalidOperationException("Type {0} not handled by any data source");
 
-            return sources.Single();
+            return sources;
         }
 
-        public T Get<T>(int id)
+        public T Get<T>(params object[] keys)
             where T : class, IDataObject
         {
-            var source = GetSourceMatching(typeof(T));
+            // try each source before throwing an exception
+            var exceptions = new List<Exception>();
+            var sources = GetSourcesMatching(typeof(T));
+            foreach (var source in sources)
+            {
+                try
+                {
+                    var data = source.ReadObject<T>(keys);
 
-            return source.ReadObject<T>(id);
+                    return data;
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+
+            throw new AggregateException(string.Format("Cannot retrieve {0} with these keys {1}", typeof(T), string.Join(",", keys)), exceptions);
         }
     }
 }

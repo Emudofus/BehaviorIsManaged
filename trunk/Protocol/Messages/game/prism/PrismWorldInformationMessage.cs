@@ -22,16 +22,16 @@ namespace BiM.Protocol.Messages
 		public int nbSubOwned;
 		public int subTotal;
 		public int maxSub;
-		public IEnumerable<Types.PrismSubAreaInformation> subAreasInformation;
+		public Types.PrismSubAreaInformation[] subAreasInformation;
 		public int nbConqsOwned;
 		public int conqsTotal;
-		public IEnumerable<Types.VillageConquestPrismInformation> conquetesInformation;
+		public Types.VillageConquestPrismInformation[] conquetesInformation;
 		
 		public PrismWorldInformationMessage()
 		{
 		}
 		
-		public PrismWorldInformationMessage(int nbSubOwned, int subTotal, int maxSub, IEnumerable<Types.PrismSubAreaInformation> subAreasInformation, int nbConqsOwned, int conqsTotal, IEnumerable<Types.VillageConquestPrismInformation> conquetesInformation)
+		public PrismWorldInformationMessage(int nbSubOwned, int subTotal, int maxSub, Types.PrismSubAreaInformation[] subAreasInformation, int nbConqsOwned, int conqsTotal, Types.VillageConquestPrismInformation[] conquetesInformation)
 		{
 			this.nbSubOwned = nbSubOwned;
 			this.subTotal = subTotal;

@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public ushort id;
-		public IEnumerable<string> parameters;
+		public string[] parameters;
 		public bool forceOpen;
 		
 		public NotificationByServerMessage()
 		{
 		}
 		
-		public NotificationByServerMessage(ushort id, IEnumerable<string> parameters, bool forceOpen)
+		public NotificationByServerMessage(ushort id, string[] parameters, bool forceOpen)
 		{
 			this.id = id;
 			this.parameters = parameters;

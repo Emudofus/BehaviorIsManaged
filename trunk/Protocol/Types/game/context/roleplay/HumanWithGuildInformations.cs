@@ -23,7 +23,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public HumanWithGuildInformations(IEnumerable<Types.EntityLook> followingCharactersLook, sbyte emoteId, double emoteStartTime, Types.ActorRestrictionsInformations restrictions, short titleId, string titleParam, Types.GuildInformations guildInformations)
+		public HumanWithGuildInformations(Types.EntityLook[] followingCharactersLook, sbyte emoteId, double emoteStartTime, Types.ActorRestrictionsInformations restrictions, short titleId, string titleParam, Types.GuildInformations guildInformations)
 			 : base(followingCharactersLook, emoteId, emoteStartTime, restrictions, titleId, titleParam)
 		{
 			this.guildInformations = guildInformations;

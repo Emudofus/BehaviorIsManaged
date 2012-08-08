@@ -87,6 +87,11 @@ namespace BiM.Behaviors.Game.World
             }
         }
 
+        public ObjectPosition Clone()
+        {
+            return new ObjectPosition(Map, Cell, Direction);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

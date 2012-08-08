@@ -22,14 +22,14 @@ namespace BiM.Protocol.Messages
 		public int fromId;
 		public string fromName;
 		public int leaderId;
-		public IEnumerable<Types.PartyInvitationMemberInformations> members;
-		public IEnumerable<Types.PartyGuestInformations> guests;
+		public Types.PartyInvitationMemberInformations[] members;
+		public Types.PartyGuestInformations[] guests;
 		
 		public PartyInvitationDetailsMessage()
 		{
 		}
 		
-		public PartyInvitationDetailsMessage(int partyId, sbyte partyType, int fromId, string fromName, int leaderId, IEnumerable<Types.PartyInvitationMemberInformations> members, IEnumerable<Types.PartyGuestInformations> guests)
+		public PartyInvitationDetailsMessage(int partyId, sbyte partyType, int fromId, string fromName, int leaderId, Types.PartyInvitationMemberInformations[] members, Types.PartyGuestInformations[] guests)
 			 : base(partyId)
 		{
 			this.partyType = partyType;

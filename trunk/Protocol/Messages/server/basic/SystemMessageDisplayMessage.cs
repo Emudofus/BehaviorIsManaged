@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public bool hangUp;
 		public short msgId;
-		public IEnumerable<string> parameters;
+		public string[] parameters;
 		
 		public SystemMessageDisplayMessage()
 		{
 		}
 		
-		public SystemMessageDisplayMessage(bool hangUp, short msgId, IEnumerable<string> parameters)
+		public SystemMessageDisplayMessage(bool hangUp, short msgId, string[] parameters)
 		{
 			this.hangUp = hangUp;
 			this.msgId = msgId;

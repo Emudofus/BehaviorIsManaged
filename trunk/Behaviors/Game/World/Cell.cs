@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using BiM.Protocol.Enums;
+using BiM.Protocol.Tools.Dlm;
 
 namespace BiM.Behaviors.Game.World
 {
@@ -27,12 +30,37 @@ namespace BiM.Behaviors.Game.World
         public byte Speed;
 
         private Point? m_point;
+
+        public Cell(Map map, DlmCellData cell)
+        {
+            Map = map;
+            Id = cell.Id;
+            Floor = cell.Floor;
+            LosMov = cell.LosMov;
+            MapChangeData = cell.MapChangeData;
+            MoveZone = cell.MoveZone;
+            Speed = cell.Speed;
+        }
+
+        public Map Map
+        {
+            get;
+            private set;
+        }
+
         public Point Point
         {
-            get
-            {
-                return m_point != null ? m_point.Value : ( m_point = GetPointFromCell(Id) ).Value;
-            }
+            get { return m_point != null ? m_point.Value : (m_point = GetPointFromCell(Id)).Value; }
+        }
+
+        public int X
+        {
+            get { return Point.X; }
+        }
+
+        public int Y
+        {
+            get { return Point.Y; }
         }
 
         public bool Walkable
@@ -76,12 +104,13 @@ namespace BiM.Behaviors.Game.World
         }
 
         #region Point-Cell
+
         public static short GetCellFromPoint(Point point)
         {
             if (!m_initialized)
                 InitializeStaticGrid();
 
-            return (short)( ( point.X - point.Y ) * Map.Width + point.Y + ( point.X - point.Y ) / 2 );
+            return (short) ((point.X - point.Y)*Map.Width + point.Y + (point.X - point.Y)/2);
         }
 
         public static Point GetPointFromCell(short id)
@@ -93,7 +122,7 @@ namespace BiM.Behaviors.Game.World
                 throw new IndexOutOfRangeException("Cell identifier out of bounds (" + id + ").");
 
             var point = s_orthogonalGridReference[id];
-            
+
             return point;
         }
 
@@ -121,6 +150,7 @@ namespace BiM.Behaviors.Game.World
 
             m_initialized = true;
         }
+
         #endregion
 
         #region Serialization
@@ -159,6 +189,173 @@ namespace BiM.Behaviors.Game.World
 
             MoveZone = (uint) ((data[index + 7] << 24) | (data[index + 8] << 16) | (data[index + 9] << 8) | (data[index + 10]));
         }
+
         #endregion
+
+        #region Geometry
+
+        public uint DistanceTo(Cell cell)
+        {
+            return (uint)Math.Sqrt(( cell.X - Point.X ) * ( cell.X - Point.X ) + ( cell.Y - Point.Y ) * ( cell.Y - Point.Y ));
+        }
+
+        public uint DistanceToCell(Cell cell)
+        {
+            return (uint)( Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y) );
+        }
+
+        public bool IsAdjacentTo(Cell cell)
+        {
+            return DistanceToCell(cell) == 1;
+        }
+
+        public static bool IsInMap(Cell cell)
+        {
+            return IsInMap(cell.X, cell.Y);
+        }
+
+        public static bool IsInMap(int x, int y)
+        {
+            return x + y >= 0 && x - y >= 0 && x - y < Map.Height*2 && x + y < Map.Width*2;
+        }
+
+        public DirectionsEnum OrientationToAdjacent(Point point)
+        {
+            var vector = new Point
+                             {
+                                 X = point.X > Point.X ? (1) : (point.X < Point.X ? (-1) : (0)),
+                                 Y = point.Y > Point.Y ? (1) : (point.Y < Point.Y ? (-1) : (0))
+                             };
+
+            if (vector == s_vectorRight)
+            {
+                return DirectionsEnum.DIRECTION_EAST;
+            }
+            if (vector == s_vectorDownRight)
+            {
+                return DirectionsEnum.DIRECTION_SOUTH_EAST;
+            }
+            if (vector == s_vectorDown)
+            {
+                return DirectionsEnum.DIRECTION_SOUTH;
+            }
+            if (vector == s_vectorDownLeft)
+            {
+                return DirectionsEnum.DIRECTION_SOUTH_WEST;
+            }
+            if (vector == s_vectorLeft)
+            {
+                return DirectionsEnum.DIRECTION_WEST;
+            }
+            if (vector == s_vectorUpLeft)
+            {
+                return DirectionsEnum.DIRECTION_NORTH_WEST;
+            }
+            if (vector == s_vectorUp)
+            {
+                return DirectionsEnum.DIRECTION_NORTH;
+            }
+            if (vector == s_vectorUpRight)
+            {
+                return DirectionsEnum.DIRECTION_NORTH_EAST;
+            }
+
+            return DirectionsEnum.DIRECTION_EAST;
+        }
+
+        /// <summary>
+        /// Returns null if the cell is not in the map
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="step"></param>
+        /// <returns></returns>
+        public Cell GetCellInDirection(DirectionsEnum direction, short step)
+        {
+            Point mapPoint;
+            switch (direction)
+            {
+                case DirectionsEnum.DIRECTION_EAST:
+                    {
+                        mapPoint = new Point(Point.X + step, Point.Y + step);
+                        break;
+                    }
+                case DirectionsEnum.DIRECTION_SOUTH_EAST:
+                    {
+                        mapPoint = new Point(Point.X + step, Point.Y);
+                        break;
+                    }
+                case DirectionsEnum.DIRECTION_SOUTH:
+                    {
+                        mapPoint = new Point(Point.X + step, Point.Y - step);
+                        break;
+                    }
+                case DirectionsEnum.DIRECTION_SOUTH_WEST:
+                    {
+                        mapPoint = new Point(Point.X, Point.Y - step);
+                        break;
+                    }
+                case DirectionsEnum.DIRECTION_WEST:
+                    {
+                        mapPoint = new Point(Point.X - step, Point.Y - step);
+                        break;
+                    }
+                case DirectionsEnum.DIRECTION_NORTH_WEST:
+                    {
+                        mapPoint = new Point(Point.X - step, Point.Y);
+                        break;
+                    }
+                case DirectionsEnum.DIRECTION_NORTH:
+                    {
+                        mapPoint = new Point(Point.X - step, Point.Y + step);
+                        break;
+                    }
+                case DirectionsEnum.DIRECTION_NORTH_EAST:
+                    {
+                        mapPoint = new Point(Point.X, Point.Y + step);
+                        break;
+                    }
+                default:
+                    throw new Exception("Unknown direction : " + direction);
+            }
+
+            if (IsInMap(mapPoint.X, mapPoint.Y))
+                return Map.Cells[mapPoint];
+            return null;
+        }
+
+        public Cell GetNearestCellInDirection(DirectionsEnum direction)
+        {
+            return GetCellInDirection(direction, 1);
+        }
+
+        public IEnumerable<Cell> GetAdjacentCells()
+        {
+            return GetAdjacentCells(IsInMap);
+        }
+
+        public IEnumerable<Cell> GetAdjacentCells(Func<Cell, bool> predicate)
+        {
+            var southEast = Map.Cells[Point.X + 1, Point.Y];
+            if (IsInMap(southEast.X, southEast.Y) && predicate(southEast))
+                yield return southEast;
+
+            var southWest =  Map.Cells[Point.X, Point.Y - 1];
+            if (IsInMap(southWest.X, southWest.Y) && predicate(southWest))
+                yield return southWest;
+
+            var northEast =  Map.Cells[Point.X, Point.Y + 1];
+            if (IsInMap(northEast.X, northEast.Y) && predicate(northEast))
+                yield return northEast;
+
+            var northWest =  Map.Cells[Point.X - 1, Point.Y];
+            if (IsInMap(northWest.X, northWest.Y) && predicate(northWest))
+                yield return northWest;
+        }
+        #endregion
+
+        public override string ToString()
+        {
+            return Id.ToString();
+        }
     }
 }

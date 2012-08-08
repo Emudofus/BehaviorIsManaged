@@ -18,14 +18,14 @@ namespace BiM.Protocol.Types
 			}
 		}
 		
-		public IEnumerable<short> objects;
+		public short[] objects;
 		public int kamas;
 		
 		public FightLoot()
 		{
 		}
 		
-		public FightLoot(IEnumerable<short> objects, int kamas)
+		public FightLoot(short[] objects, int kamas)
 		{
 			this.objects = objects;
 			this.kamas = kamas;

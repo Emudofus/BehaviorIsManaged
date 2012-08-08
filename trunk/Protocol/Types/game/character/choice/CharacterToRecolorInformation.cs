@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public int id;
-		public IEnumerable<int> colors;
+		public int[] colors;
 		
 		public CharacterToRecolorInformation()
 		{
 		}
 		
-		public CharacterToRecolorInformation(int id, IEnumerable<int> colors)
+		public CharacterToRecolorInformation(int id, int[] colors)
 		{
 			this.id = id;
 			this.colors = colors;

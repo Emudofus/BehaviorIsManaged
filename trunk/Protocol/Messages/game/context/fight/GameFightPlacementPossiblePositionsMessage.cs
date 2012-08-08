@@ -19,15 +19,15 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> positionsForChallengers;
-		public IEnumerable<short> positionsForDefenders;
+		public short[] positionsForChallengers;
+		public short[] positionsForDefenders;
 		public sbyte teamNumber;
 		
 		public GameFightPlacementPossiblePositionsMessage()
 		{
 		}
 		
-		public GameFightPlacementPossiblePositionsMessage(IEnumerable<short> positionsForChallengers, IEnumerable<short> positionsForDefenders, sbyte teamNumber)
+		public GameFightPlacementPossiblePositionsMessage(short[] positionsForChallengers, short[] positionsForDefenders, sbyte teamNumber)
 		{
 			this.positionsForChallengers = positionsForChallengers;
 			this.positionsForDefenders = positionsForDefenders;

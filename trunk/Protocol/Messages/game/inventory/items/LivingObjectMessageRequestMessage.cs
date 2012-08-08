@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public short msgId;
-		public IEnumerable<string> parameters;
+		public string[] parameters;
 		public uint livingObject;
 		
 		public LivingObjectMessageRequestMessage()
 		{
 		}
 		
-		public LivingObjectMessageRequestMessage(short msgId, IEnumerable<string> parameters, uint livingObject)
+		public LivingObjectMessageRequestMessage(short msgId, string[] parameters, uint livingObject)
 		{
 			this.msgId = msgId;
 			this.parameters = parameters;

@@ -22,7 +22,7 @@ namespace BiM.Protocol.Messages
 		{
 		}
 		
-		public StorageInventoryContentMessage(IEnumerable<Types.ObjectItem> objects, int kamas)
+		public StorageInventoryContentMessage(Types.ObjectItem[] objects, int kamas)
 			 : base(objects, kamas)
 		{
 		}

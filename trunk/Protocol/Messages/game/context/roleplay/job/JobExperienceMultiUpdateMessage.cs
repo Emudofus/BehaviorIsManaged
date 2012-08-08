@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.JobExperience> experiencesUpdate;
+		public Types.JobExperience[] experiencesUpdate;
 		
 		public JobExperienceMultiUpdateMessage()
 		{
 		}
 		
-		public JobExperienceMultiUpdateMessage(IEnumerable<Types.JobExperience> experiencesUpdate)
+		public JobExperienceMultiUpdateMessage(Types.JobExperience[] experiencesUpdate)
 		{
 			this.experiencesUpdate = experiencesUpdate;
 		}

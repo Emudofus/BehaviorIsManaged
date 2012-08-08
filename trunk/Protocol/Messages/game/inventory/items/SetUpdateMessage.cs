@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public short setId;
-		public IEnumerable<short> setObjects;
-		public IEnumerable<Types.ObjectEffect> setEffects;
+		public short[] setObjects;
+		public Types.ObjectEffect[] setEffects;
 		
 		public SetUpdateMessage()
 		{
 		}
 		
-		public SetUpdateMessage(short setId, IEnumerable<short> setObjects, IEnumerable<Types.ObjectEffect> setEffects)
+		public SetUpdateMessage(short setId, short[] setObjects, Types.ObjectEffect[] setEffects)
 		{
 			this.setId = setId;
 			this.setObjects = setObjects;

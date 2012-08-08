@@ -26,7 +26,7 @@ namespace BiM.Protocol.Types
 		public short subAreaId;
 		public sbyte nbRoom;
 		public sbyte nbChest;
-		public IEnumerable<int> skillListIds;
+		public int[] skillListIds;
 		public bool isLocked;
 		public int price;
 		
@@ -34,7 +34,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public HouseInformationsForSell(int modelId, string ownerName, bool ownerConnected, short worldX, short worldY, short subAreaId, sbyte nbRoom, sbyte nbChest, IEnumerable<int> skillListIds, bool isLocked, int price)
+		public HouseInformationsForSell(int modelId, string ownerName, bool ownerConnected, short worldX, short worldY, short subAreaId, sbyte nbRoom, sbyte nbChest, int[] skillListIds, bool isLocked, int price)
 		{
 			this.modelId = modelId;
 			this.ownerName = ownerName;

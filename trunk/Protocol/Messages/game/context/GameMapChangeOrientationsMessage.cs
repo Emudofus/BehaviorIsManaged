@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ActorOrientation> orientations;
+		public Types.ActorOrientation[] orientations;
 		
 		public GameMapChangeOrientationsMessage()
 		{
 		}
 		
-		public GameMapChangeOrientationsMessage(IEnumerable<Types.ActorOrientation> orientations)
+		public GameMapChangeOrientationsMessage(Types.ActorOrientation[] orientations)
 		{
 			this.orientations = orientations;
 		}

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> objectUIDList;
+		public int[] objectUIDList;
 		
 		public StorageObjectsRemoveMessage()
 		{
 		}
 		
-		public StorageObjectsRemoveMessage(IEnumerable<int> objectUIDList)
+		public StorageObjectsRemoveMessage(int[] objectUIDList)
 		{
 			this.objectUIDList = objectUIDList;
 		}

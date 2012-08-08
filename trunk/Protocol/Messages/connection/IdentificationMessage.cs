@@ -25,14 +25,14 @@ namespace BiM.Protocol.Messages
 		public Types.VersionExtended version;
 		public string lang;
 		public string login;
-		public IEnumerable<sbyte> credentials;
+		public sbyte[] credentials;
 		public short serverId;
 		
 		public IdentificationMessage()
 		{
 		}
 		
-		public IdentificationMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, string login, IEnumerable<sbyte> credentials, short serverId)
+		public IdentificationMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, string login, sbyte[] credentials, short serverId)
 		{
 			this.autoconnect = autoconnect;
 			this.useCertificate = useCertificate;

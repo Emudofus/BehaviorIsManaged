@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public double fightId;
-		public IEnumerable<Types.CharacterMinimalPlusLookAndGradeInformations> mainFighters;
-		public IEnumerable<Types.CharacterMinimalPlusLookAndGradeInformations> reserveFighters;
+		public Types.CharacterMinimalPlusLookAndGradeInformations[] mainFighters;
+		public Types.CharacterMinimalPlusLookAndGradeInformations[] reserveFighters;
 		
 		public PrismFightDefendersStateMessage()
 		{
 		}
 		
-		public PrismFightDefendersStateMessage(double fightId, IEnumerable<Types.CharacterMinimalPlusLookAndGradeInformations> mainFighters, IEnumerable<Types.CharacterMinimalPlusLookAndGradeInformations> reserveFighters)
+		public PrismFightDefendersStateMessage(double fightId, Types.CharacterMinimalPlusLookAndGradeInformations[] mainFighters, Types.CharacterMinimalPlusLookAndGradeInformations[] reserveFighters)
 		{
 			this.fightId = fightId;
 			this.mainFighters = mainFighters;

@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public Types.JobCrafterDirectoryEntryPlayerInfo playerInfo;
-		public IEnumerable<Types.JobCrafterDirectoryEntryJobInfo> jobInfoList;
+		public Types.JobCrafterDirectoryEntryJobInfo[] jobInfoList;
 		public Types.EntityLook playerLook;
 		
 		public JobCrafterDirectoryEntryMessage()
 		{
 		}
 		
-		public JobCrafterDirectoryEntryMessage(Types.JobCrafterDirectoryEntryPlayerInfo playerInfo, IEnumerable<Types.JobCrafterDirectoryEntryJobInfo> jobInfoList, Types.EntityLook playerLook)
+		public JobCrafterDirectoryEntryMessage(Types.JobCrafterDirectoryEntryPlayerInfo playerInfo, Types.JobCrafterDirectoryEntryJobInfo[] jobInfoList, Types.EntityLook playerLook)
 		{
 			this.playerInfo = playerInfo;
 			this.jobInfoList = jobInfoList;

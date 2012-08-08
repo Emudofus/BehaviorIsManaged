@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.Preset> presets;
+		public Types.Preset[] presets;
 		
 		public InventoryContentAndPresetMessage()
 		{
 		}
 		
-		public InventoryContentAndPresetMessage(IEnumerable<Types.ObjectItem> objects, int kamas, IEnumerable<Types.Preset> presets)
+		public InventoryContentAndPresetMessage(Types.ObjectItem[] objects, int kamas, Types.Preset[] presets)
 			 : base(objects, kamas)
 		{
 			this.presets = presets;

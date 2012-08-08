@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.InteractiveElement> interactiveElements;
+		public Types.InteractiveElement[] interactiveElements;
 		
 		public InteractiveMapUpdateMessage()
 		{
 		}
 		
-		public InteractiveMapUpdateMessage(IEnumerable<Types.InteractiveElement> interactiveElements)
+		public InteractiveMapUpdateMessage(Types.InteractiveElement[] interactiveElements)
 		{
 			this.interactiveElements = interactiveElements;
 		}

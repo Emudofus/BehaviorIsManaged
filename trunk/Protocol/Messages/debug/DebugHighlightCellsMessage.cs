@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public int color;
-		public IEnumerable<short> cells;
+		public short[] cells;
 		
 		public DebugHighlightCellsMessage()
 		{
 		}
 		
-		public DebugHighlightCellsMessage(int color, IEnumerable<short> cells)
+		public DebugHighlightCellsMessage(int color, short[] cells)
 		{
 			this.color = color;
 			this.cells = cells;

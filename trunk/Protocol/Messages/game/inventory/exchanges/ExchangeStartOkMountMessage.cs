@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.MountClientData> paddockedMountsDescription;
+		public Types.MountClientData[] paddockedMountsDescription;
 		
 		public ExchangeStartOkMountMessage()
 		{
 		}
 		
-		public ExchangeStartOkMountMessage(IEnumerable<Types.MountClientData> stabledMountsDescription, IEnumerable<Types.MountClientData> paddockedMountsDescription)
+		public ExchangeStartOkMountMessage(Types.MountClientData[] stabledMountsDescription, Types.MountClientData[] paddockedMountsDescription)
 			 : base(stabledMountsDescription)
 		{
 			this.paddockedMountsDescription = paddockedMountsDescription;

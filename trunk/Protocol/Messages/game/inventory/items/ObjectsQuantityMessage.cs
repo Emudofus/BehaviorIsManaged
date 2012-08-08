@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItemQuantity> objectsUIDAndQty;
+		public Types.ObjectItemQuantity[] objectsUIDAndQty;
 		
 		public ObjectsQuantityMessage()
 		{
 		}
 		
-		public ObjectsQuantityMessage(IEnumerable<Types.ObjectItemQuantity> objectsUIDAndQty)
+		public ObjectsQuantityMessage(Types.ObjectItemQuantity[] objectsUIDAndQty)
 		{
 			this.objectsUIDAndQty = objectsUIDAndQty;
 		}

@@ -1,11 +1,14 @@
 ﻿using System;
 using BiM.Behaviors.Game.World.Pathfinding;
+using NLog;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
 {
 
     public abstract class RolePlayActor : ContextActor
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public delegate void MoveStartHandler(RolePlayActor actor, Path path);
         public event MoveStartHandler StartMoving;
 
@@ -14,10 +17,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             MovePath = path;
             MoveStartTime = DateTime.Now;
 
-            if (MovePath.Start != Position)
+            if (MovePath.Start != Position.Cell)
             {
-                // todo : log
-                Position = MovePath.Start;
+                logger.Warn("Actor start cell incorrect for this moving path Position={0}, StartPath={1}", Position.Cell, MovePath.Start);
+                Position.Cell = MovePath.Start;
             }
 
             var handler = StartMoving;
@@ -32,7 +35,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (MovePath == null)
                 throw new InvalidOperationException("Entity was not moving");
 
-            Position = MovePath.End;
+            Position = MovePath.EndPosition.Clone();
 
             var handler = StopMoving;
             if (handler != null) handler(this, MovePath);

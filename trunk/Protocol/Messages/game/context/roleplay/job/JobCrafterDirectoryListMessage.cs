@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.JobCrafterDirectoryListEntry> listEntries;
+		public Types.JobCrafterDirectoryListEntry[] listEntries;
 		
 		public JobCrafterDirectoryListMessage()
 		{
 		}
 		
-		public JobCrafterDirectoryListMessage(IEnumerable<Types.JobCrafterDirectoryListEntry> listEntries)
+		public JobCrafterDirectoryListMessage(Types.JobCrafterDirectoryListEntry[] listEntries)
 		{
 			this.listEntries = listEntries;
 		}

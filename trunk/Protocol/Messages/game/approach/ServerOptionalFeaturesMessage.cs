@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> features;
+		public short[] features;
 		
 		public ServerOptionalFeaturesMessage()
 		{
 		}
 		
-		public ServerOptionalFeaturesMessage(IEnumerable<short> features)
+		public ServerOptionalFeaturesMessage(short[] features)
 		{
 			this.features = features;
 		}

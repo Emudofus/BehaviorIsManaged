@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.FightExternalInformations> fights;
+		public Types.FightExternalInformations[] fights;
 		
 		public MapRunningFightListMessage()
 		{
 		}
 		
-		public MapRunningFightListMessage(IEnumerable<Types.FightExternalInformations> fights)
+		public MapRunningFightListMessage(Types.FightExternalInformations[] fights)
 		{
 			this.fights = fights;
 		}

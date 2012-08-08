@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public int collectorId;
-		public IEnumerable<Types.ObjectItem> objectsInfos;
+		public Types.ObjectItem[] objectsInfos;
 		public int goldInfo;
 		
 		public ExchangeStartOkTaxCollectorMessage()
 		{
 		}
 		
-		public ExchangeStartOkTaxCollectorMessage(int collectorId, IEnumerable<Types.ObjectItem> objectsInfos, int goldInfo)
+		public ExchangeStartOkTaxCollectorMessage(int collectorId, Types.ObjectItem[] objectsInfos, int goldInfo)
 		{
 			this.collectorId = collectorId;
 			this.objectsInfos = objectsInfos;

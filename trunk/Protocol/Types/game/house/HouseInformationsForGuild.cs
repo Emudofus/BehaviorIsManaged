@@ -23,14 +23,14 @@ namespace BiM.Protocol.Types
 		public string ownerName;
 		public short worldX;
 		public short worldY;
-		public IEnumerable<int> skillListIds;
+		public int[] skillListIds;
 		public uint guildshareParams;
 		
 		public HouseInformationsForGuild()
 		{
 		}
 		
-		public HouseInformationsForGuild(int houseId, int modelId, string ownerName, short worldX, short worldY, IEnumerable<int> skillListIds, uint guildshareParams)
+		public HouseInformationsForGuild(int houseId, int modelId, string ownerName, short worldX, short worldY, int[] skillListIds, uint guildshareParams)
 		{
 			this.houseId = houseId;
 			this.modelId = modelId;

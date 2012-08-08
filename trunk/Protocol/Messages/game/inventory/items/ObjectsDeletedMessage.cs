@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> objectUID;
+		public int[] objectUID;
 		
 		public ObjectsDeletedMessage()
 		{
 		}
 		
-		public ObjectsDeletedMessage(IEnumerable<int> objectUID)
+		public ObjectsDeletedMessage(int[] objectUID)
 		{
 			this.objectUID = objectUID;
 		}

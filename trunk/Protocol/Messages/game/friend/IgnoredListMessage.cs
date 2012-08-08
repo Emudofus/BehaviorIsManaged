@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.IgnoredInformations> ignoredList;
+		public Types.IgnoredInformations[] ignoredList;
 		
 		public IgnoredListMessage()
 		{
 		}
 		
-		public IgnoredListMessage(IEnumerable<Types.IgnoredInformations> ignoredList)
+		public IgnoredListMessage(Types.IgnoredInformations[] ignoredList)
 		{
 			this.ignoredList = ignoredList;
 		}

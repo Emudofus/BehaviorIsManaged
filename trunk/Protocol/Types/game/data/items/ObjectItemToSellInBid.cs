@@ -23,7 +23,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public ObjectItemToSellInBid(short objectGID, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, int objectUID, int quantity, int objectPrice, short unsoldDelay)
+		public ObjectItemToSellInBid(short objectGID, short powerRate, bool overMax, Types.ObjectEffect[] effects, int objectUID, int quantity, int objectPrice, short unsoldDelay)
 			 : base(objectGID, powerRate, overMax, effects, objectUID, quantity, objectPrice)
 		{
 			this.unsoldDelay = unsoldDelay;

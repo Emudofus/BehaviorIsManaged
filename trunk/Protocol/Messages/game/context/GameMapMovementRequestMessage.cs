@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> keyMovements;
+		public short[] keyMovements;
 		public int mapId;
 		
 		public GameMapMovementRequestMessage()
 		{
 		}
 		
-		public GameMapMovementRequestMessage(IEnumerable<short> keyMovements, int mapId)
+		public GameMapMovementRequestMessage(short[] keyMovements, int mapId)
 		{
 			this.keyMovements = keyMovements;
 			this.mapId = mapId;

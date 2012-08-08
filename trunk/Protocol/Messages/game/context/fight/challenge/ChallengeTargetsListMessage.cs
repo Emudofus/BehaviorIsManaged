@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> targetIds;
-		public IEnumerable<short> targetCells;
+		public int[] targetIds;
+		public short[] targetCells;
 		
 		public ChallengeTargetsListMessage()
 		{
 		}
 		
-		public ChallengeTargetsListMessage(IEnumerable<int> targetIds, IEnumerable<short> targetCells)
+		public ChallengeTargetsListMessage(int[] targetIds, short[] targetCells)
 		{
 			this.targetIds = targetIds;
 			this.targetCells = targetCells;

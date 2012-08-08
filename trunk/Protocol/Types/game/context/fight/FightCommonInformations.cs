@@ -20,15 +20,15 @@ namespace BiM.Protocol.Types
 		
 		public int fightId;
 		public sbyte fightType;
-		public IEnumerable<Types.FightTeamInformations> fightTeams;
-		public IEnumerable<short> fightTeamsPositions;
-		public IEnumerable<Types.FightOptionsInformations> fightTeamsOptions;
+		public Types.FightTeamInformations[] fightTeams;
+		public short[] fightTeamsPositions;
+		public Types.FightOptionsInformations[] fightTeamsOptions;
 		
 		public FightCommonInformations()
 		{
 		}
 		
-		public FightCommonInformations(int fightId, sbyte fightType, IEnumerable<Types.FightTeamInformations> fightTeams, IEnumerable<short> fightTeamsPositions, IEnumerable<Types.FightOptionsInformations> fightTeamsOptions)
+		public FightCommonInformations(int fightId, sbyte fightType, Types.FightTeamInformations[] fightTeams, short[] fightTeamsPositions, Types.FightOptionsInformations[] fightTeamsOptions)
 		{
 			this.fightId = fightId;
 			this.fightType = fightType;

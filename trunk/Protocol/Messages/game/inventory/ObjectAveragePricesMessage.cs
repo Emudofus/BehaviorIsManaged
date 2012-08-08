@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> ids;
-		public IEnumerable<int> avgPrices;
+		public short[] ids;
+		public int[] avgPrices;
 		
 		public ObjectAveragePricesMessage()
 		{
 		}
 		
-		public ObjectAveragePricesMessage(IEnumerable<short> ids, IEnumerable<int> avgPrices)
+		public ObjectAveragePricesMessage(short[] ids, int[] avgPrices)
 		{
 			this.ids = ids;
 			this.avgPrices = avgPrices;

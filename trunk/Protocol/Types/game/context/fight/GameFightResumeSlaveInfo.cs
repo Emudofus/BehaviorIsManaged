@@ -19,7 +19,7 @@ namespace BiM.Protocol.Types
 		}
 		
 		public int slaveId;
-		public IEnumerable<Types.GameFightSpellCooldown> spellCooldowns;
+		public Types.GameFightSpellCooldown[] spellCooldowns;
 		public sbyte summonCount;
 		public sbyte bombCount;
 		
@@ -27,7 +27,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public GameFightResumeSlaveInfo(int slaveId, IEnumerable<Types.GameFightSpellCooldown> spellCooldowns, sbyte summonCount, sbyte bombCount)
+		public GameFightResumeSlaveInfo(int slaveId, Types.GameFightSpellCooldown[] spellCooldowns, sbyte summonCount, sbyte bombCount)
 		{
 			this.slaveId = slaveId;
 			this.spellCooldowns = spellCooldowns;

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> cellId;
+		public short[] cellId;
 		
 		public GameDataPlayFarmObjectAnimationMessage()
 		{
 		}
 		
-		public GameDataPlayFarmObjectAnimationMessage(IEnumerable<short> cellId)
+		public GameDataPlayFarmObjectAnimationMessage(short[] cellId)
 		{
 			this.cellId = cellId;
 		}

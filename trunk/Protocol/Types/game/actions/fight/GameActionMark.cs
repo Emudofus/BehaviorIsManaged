@@ -22,13 +22,13 @@ namespace BiM.Protocol.Types
 		public int markSpellId;
 		public short markId;
 		public sbyte markType;
-		public IEnumerable<Types.GameActionMarkedCell> cells;
+		public Types.GameActionMarkedCell[] cells;
 		
 		public GameActionMark()
 		{
 		}
 		
-		public GameActionMark(int markAuthorId, int markSpellId, short markId, sbyte markType, IEnumerable<Types.GameActionMarkedCell> cells)
+		public GameActionMark(int markAuthorId, int markSpellId, short markId, sbyte markType, Types.GameActionMarkedCell[] cells)
 		{
 			this.markAuthorId = markAuthorId;
 			this.markSpellId = markSpellId;

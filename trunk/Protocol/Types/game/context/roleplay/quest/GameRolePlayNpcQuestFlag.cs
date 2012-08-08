@@ -18,14 +18,14 @@ namespace BiM.Protocol.Types
 			}
 		}
 		
-		public IEnumerable<short> questsToValidId;
-		public IEnumerable<short> questsToStartId;
+		public short[] questsToValidId;
+		public short[] questsToStartId;
 		
 		public GameRolePlayNpcQuestFlag()
 		{
 		}
 		
-		public GameRolePlayNpcQuestFlag(IEnumerable<short> questsToValidId, IEnumerable<short> questsToStartId)
+		public GameRolePlayNpcQuestFlag(short[] questsToValidId, short[] questsToStartId)
 		{
 			this.questsToValidId = questsToValidId;
 			this.questsToStartId = questsToStartId;

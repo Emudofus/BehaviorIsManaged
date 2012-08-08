@@ -18,13 +18,13 @@ namespace BiM.Protocol.Types
 			}
 		}
 		
-		public IEnumerable<Types.FightTeamMemberInformations> teamMembers;
+		public Types.FightTeamMemberInformations[] teamMembers;
 		
 		public FightTeamInformations()
 		{
 		}
 		
-		public FightTeamInformations(sbyte teamId, int leaderId, sbyte teamSide, sbyte teamTypeId, IEnumerable<Types.FightTeamMemberInformations> teamMembers)
+		public FightTeamInformations(sbyte teamId, int leaderId, sbyte teamSide, sbyte teamTypeId, Types.FightTeamMemberInformations[] teamMembers)
 			 : base(teamId, leaderId, teamSide, teamTypeId)
 		{
 			this.teamMembers = teamMembers;

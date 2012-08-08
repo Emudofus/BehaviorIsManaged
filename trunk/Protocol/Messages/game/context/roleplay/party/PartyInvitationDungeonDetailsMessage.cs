@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public short dungeonId;
-		public IEnumerable<bool> playersDungeonReady;
+		public bool[] playersDungeonReady;
 		
 		public PartyInvitationDungeonDetailsMessage()
 		{
 		}
 		
-		public PartyInvitationDungeonDetailsMessage(int partyId, sbyte partyType, int fromId, string fromName, int leaderId, IEnumerable<Types.PartyInvitationMemberInformations> members, IEnumerable<Types.PartyGuestInformations> guests, short dungeonId, IEnumerable<bool> playersDungeonReady)
+		public PartyInvitationDungeonDetailsMessage(int partyId, sbyte partyType, int fromId, string fromName, int leaderId, Types.PartyInvitationMemberInformations[] members, Types.PartyGuestInformations[] guests, short dungeonId, bool[] playersDungeonReady)
 			 : base(partyId, partyType, fromId, fromName, leaderId, members, guests)
 		{
 			this.dungeonId = dungeonId;

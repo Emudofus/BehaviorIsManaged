@@ -26,13 +26,13 @@ namespace BiM.Protocol.Messages
 		public short subAreaId;
 		public string userName;
 		public double experience;
-		public IEnumerable<Types.ObjectItemQuantity> objectsInfos;
+		public Types.ObjectItemQuantity[] objectsInfos;
 		
 		public ExchangeGuildTaxCollectorGetMessage()
 		{
 		}
 		
-		public ExchangeGuildTaxCollectorGetMessage(string collectorName, short worldX, short worldY, int mapId, short subAreaId, string userName, double experience, IEnumerable<Types.ObjectItemQuantity> objectsInfos)
+		public ExchangeGuildTaxCollectorGetMessage(string collectorName, short worldX, short worldY, int mapId, short subAreaId, string userName, double experience, Types.ObjectItemQuantity[] objectsInfos)
 		{
 			this.collectorName = collectorName;
 			this.worldX = worldX;

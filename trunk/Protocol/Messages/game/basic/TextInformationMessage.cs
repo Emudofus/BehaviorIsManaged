@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public sbyte msgType;
 		public short msgId;
-		public IEnumerable<string> parameters;
+		public string[] parameters;
 		
 		public TextInformationMessage()
 		{
 		}
 		
-		public TextInformationMessage(sbyte msgType, short msgId, IEnumerable<string> parameters)
+		public TextInformationMessage(sbyte msgType, short msgId, string[] parameters)
 		{
 			this.msgType = msgType;
 			this.msgId = msgId;

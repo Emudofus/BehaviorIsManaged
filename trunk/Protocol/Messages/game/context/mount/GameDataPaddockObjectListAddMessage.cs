@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.PaddockItem> paddockItemDescription;
+		public Types.PaddockItem[] paddockItemDescription;
 		
 		public GameDataPaddockObjectListAddMessage()
 		{
 		}
 		
-		public GameDataPaddockObjectListAddMessage(IEnumerable<Types.PaddockItem> paddockItemDescription)
+		public GameDataPaddockObjectListAddMessage(Types.PaddockItem[] paddockItemDescription)
 		{
 			this.paddockItemDescription = paddockItemDescription;
 		}

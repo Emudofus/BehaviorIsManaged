@@ -20,16 +20,16 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public int fightId;
-		public IEnumerable<string> names;
-		public IEnumerable<short> levels;
+		public string[] names;
+		public short[] levels;
 		public sbyte teamSwap;
-		public IEnumerable<bool> alives;
+		public bool[] alives;
 		
 		public MapRunningFightDetailsMessage()
 		{
 		}
 		
-		public MapRunningFightDetailsMessage(int fightId, IEnumerable<string> names, IEnumerable<short> levels, sbyte teamSwap, IEnumerable<bool> alives)
+		public MapRunningFightDetailsMessage(int fightId, string[] names, short[] levels, sbyte teamSwap, bool[] alives)
 		{
 			this.fightId = fightId;
 			this.names = names;

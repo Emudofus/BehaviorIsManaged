@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> cells;
-		public IEnumerable<int> referenceIds;
+		public short[] cells;
+		public int[] referenceIds;
 		
 		public ObjectGroundListAddedMessage()
 		{
 		}
 		
-		public ObjectGroundListAddedMessage(IEnumerable<short> cells, IEnumerable<int> referenceIds)
+		public ObjectGroundListAddedMessage(short[] cells, int[] referenceIds)
 		{
 			this.cells = cells;
 			this.referenceIds = referenceIds;

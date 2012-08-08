@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public bool hasStartupActions;
-		public IEnumerable<Types.CharacterBaseInformations> characters;
+		public Types.CharacterBaseInformations[] characters;
 		
 		public CharactersListMessage()
 		{
 		}
 		
-		public CharactersListMessage(bool hasStartupActions, IEnumerable<Types.CharacterBaseInformations> characters)
+		public CharactersListMessage(bool hasStartupActions, Types.CharacterBaseInformations[] characters)
 		{
 			this.hasStartupActions = hasStartupActions;
 			this.characters = characters;

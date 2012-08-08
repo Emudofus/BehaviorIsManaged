@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> availables;
-		public IEnumerable<short> unavailables;
+		public short[] availables;
+		public short[] unavailables;
 		
 		public DungeonKeyRingMessage()
 		{
 		}
 		
-		public DungeonKeyRingMessage(IEnumerable<short> availables, IEnumerable<short> unavailables)
+		public DungeonKeyRingMessage(short[] availables, short[] unavailables)
 		{
 			this.availables = availables;
 			this.unavailables = unavailables;

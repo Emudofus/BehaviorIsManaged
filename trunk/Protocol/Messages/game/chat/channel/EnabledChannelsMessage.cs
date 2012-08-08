@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<sbyte> channels;
-		public IEnumerable<sbyte> disallowed;
+		public sbyte[] channels;
+		public sbyte[] disallowed;
 		
 		public EnabledChannelsMessage()
 		{
 		}
 		
-		public EnabledChannelsMessage(IEnumerable<sbyte> channels, IEnumerable<sbyte> disallowed)
+		public EnabledChannelsMessage(sbyte[] channels, sbyte[] disallowed)
 		{
 			this.channels = channels;
 			this.disallowed = disallowed;

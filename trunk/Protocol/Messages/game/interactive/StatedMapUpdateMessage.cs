@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.StatedElement> statedElements;
+		public Types.StatedElement[] statedElements;
 		
 		public StatedMapUpdateMessage()
 		{
 		}
 		
-		public StatedMapUpdateMessage(IEnumerable<Types.StatedElement> statedElements)
+		public StatedMapUpdateMessage(Types.StatedElement[] statedElements)
 		{
 			this.statedElements = statedElements;
 		}

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.GameServerInformations> servers;
+		public Types.GameServerInformations[] servers;
 		
 		public ServersListMessage()
 		{
 		}
 		
-		public ServersListMessage(IEnumerable<Types.GameServerInformations> servers)
+		public ServersListMessage(Types.GameServerInformations[] servers)
 		{
 			this.servers = servers;
 		}

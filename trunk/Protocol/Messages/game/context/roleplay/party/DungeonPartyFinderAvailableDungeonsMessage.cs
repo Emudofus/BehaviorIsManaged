@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> dungeonIds;
+		public short[] dungeonIds;
 		
 		public DungeonPartyFinderAvailableDungeonsMessage()
 		{
 		}
 		
-		public DungeonPartyFinderAvailableDungeonsMessage(IEnumerable<short> dungeonIds)
+		public DungeonPartyFinderAvailableDungeonsMessage(short[] dungeonIds)
 		{
 			this.dungeonIds = dungeonIds;
 		}

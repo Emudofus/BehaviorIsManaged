@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItemToSell> objectInfoList;
+		public Types.ObjectItemToSell[] objectInfoList;
 		
 		public ExchangeShopStockMultiMovementUpdatedMessage()
 		{
 		}
 		
-		public ExchangeShopStockMultiMovementUpdatedMessage(IEnumerable<Types.ObjectItemToSell> objectInfoList)
+		public ExchangeShopStockMultiMovementUpdatedMessage(Types.ObjectItemToSell[] objectInfoList)
 		{
 			this.objectInfoList = objectInfoList;
 		}

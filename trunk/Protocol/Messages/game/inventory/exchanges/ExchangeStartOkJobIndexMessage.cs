@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> jobs;
+		public int[] jobs;
 		
 		public ExchangeStartOkJobIndexMessage()
 		{
 		}
 		
-		public ExchangeStartOkJobIndexMessage(IEnumerable<int> jobs)
+		public ExchangeStartOkJobIndexMessage(int[] jobs)
 		{
 			this.jobs = jobs;
 		}

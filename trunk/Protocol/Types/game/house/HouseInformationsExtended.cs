@@ -23,7 +23,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public HouseInformationsExtended(bool isOnSale, bool isSaleLocked, int houseId, IEnumerable<int> doorsOnMap, string ownerName, short modelId, Types.GuildInformations guildInfo)
+		public HouseInformationsExtended(bool isOnSale, bool isSaleLocked, int houseId, int[] doorsOnMap, string ownerName, short modelId, Types.GuildInformations guildInfo)
 			 : base(isOnSale, isSaleLocked, houseId, doorsOnMap, ownerName, modelId)
 		{
 			this.guildInfo = guildInfo;

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.EntityMovementInformations> movements;
+		public Types.EntityMovementInformations[] movements;
 		
 		public GameContextMoveMultipleElementsMessage()
 		{
 		}
 		
-		public GameContextMoveMultipleElementsMessage(IEnumerable<Types.EntityMovementInformations> movements)
+		public GameContextMoveMultipleElementsMessage(Types.EntityMovementInformations[] movements)
 		{
 			this.movements = movements;
 		}

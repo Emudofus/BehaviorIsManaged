@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public int fightId;
-		public IEnumerable<int> alliesId;
+		public int[] alliesId;
 		public short duration;
 		
 		public GameRolePlayArenaFightPropositionMessage()
 		{
 		}
 		
-		public GameRolePlayArenaFightPropositionMessage(int fightId, IEnumerable<int> alliesId, short duration)
+		public GameRolePlayArenaFightPropositionMessage(int fightId, int[] alliesId, short duration)
 		{
 			this.fightId = fightId;
 			this.alliesId = alliesId;

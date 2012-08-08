@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public double fightId;
-		public IEnumerable<Types.CharacterMinimalPlusLookInformations> playerInfo;
+		public Types.CharacterMinimalPlusLookInformations[] playerInfo;
 		
 		public GuildFightPlayersEnemiesListMessage()
 		{
 		}
 		
-		public GuildFightPlayersEnemiesListMessage(double fightId, IEnumerable<Types.CharacterMinimalPlusLookInformations> playerInfo)
+		public GuildFightPlayersEnemiesListMessage(double fightId, Types.CharacterMinimalPlusLookInformations[] playerInfo)
 		{
 			this.fightId = fightId;
 			this.playerInfo = playerInfo;

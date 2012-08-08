@@ -69,11 +69,31 @@ namespace BiM.Core.Messages
 
         private int m_currentThreadId;
         private object m_currentProcessor;
+
+        public object CurrentProcessor
+        {
+            get { return m_currentProcessor; }
+        }
+
+        public int CurrentThreadId
+        {
+            get { return m_currentThreadId; }
+        }
+
         private ManualResetEventSlim m_resumeEvent = new ManualResetEventSlim(true);
         private ManualResetEventSlim m_messageEnqueuedEvent = new ManualResetEventSlim(false);
 
         private bool m_stopped;
         private bool m_dispatching;
+
+        public event Action<MessageDispatcher, Message> MessageDispatched;
+
+        protected void OnMessageDispatched(Message message)
+        {
+            var evnt = MessageDispatched;
+            if (evnt != null)
+                MessageDispatched(this, message);
+        }
 
         public MessageDispatcher()
         {
@@ -338,10 +358,10 @@ namespace BiM.Core.Messages
 
         protected virtual void Dispatch(Message message, object token)
         {
-            var handlers = GetHandlers(message.GetType(), token);
-
             try
             {
+                var handlers = GetHandlers(message.GetType(), token);
+
                 foreach (var handler in handlers)
                 {
                     handler.Action(handler.Container, token, message);
@@ -351,10 +371,11 @@ namespace BiM.Core.Messages
                 }
 
                 message.OnDispatched();
+                OnMessageDispatched(message);
             }
             catch (Exception ex)
             {
-                logger.Error(string.Format("Exception on dispatching {0} : {1}", message, ex));
+                throw new Exception(string.Format("Cannot dispatch {0}", message), ex);
             }
         }
 

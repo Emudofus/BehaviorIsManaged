@@ -18,15 +18,15 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.CharacterToRecolorInformation> charactersToRecolor;
-		public IEnumerable<int> charactersToRename;
-		public IEnumerable<int> unusableCharacters;
+		public Types.CharacterToRecolorInformation[] charactersToRecolor;
+		public int[] charactersToRename;
+		public int[] unusableCharacters;
 		
 		public CharactersListWithModificationsMessage()
 		{
 		}
 		
-		public CharactersListWithModificationsMessage(bool hasStartupActions, IEnumerable<Types.CharacterBaseInformations> characters, IEnumerable<Types.CharacterToRecolorInformation> charactersToRecolor, IEnumerable<int> charactersToRename, IEnumerable<int> unusableCharacters)
+		public CharactersListWithModificationsMessage(bool hasStartupActions, Types.CharacterBaseInformations[] characters, Types.CharacterToRecolorInformation[] charactersToRecolor, int[] charactersToRename, int[] unusableCharacters)
 			 : base(hasStartupActions, characters)
 		{
 			this.charactersToRecolor = charactersToRecolor;

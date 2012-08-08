@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public sbyte type;
-		public IEnumerable<Types.MapCoordinatesExtended> coords;
+		public Types.MapCoordinatesExtended[] coords;
 		
 		public AtlasPointsInformations()
 		{
 		}
 		
-		public AtlasPointsInformations(sbyte type, IEnumerable<Types.MapCoordinatesExtended> coords)
+		public AtlasPointsInformations(sbyte type, Types.MapCoordinatesExtended[] coords)
 		{
 			this.type = type;
 			this.coords = coords;

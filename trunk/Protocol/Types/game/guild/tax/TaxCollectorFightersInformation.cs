@@ -19,14 +19,14 @@ namespace BiM.Protocol.Types
 		}
 		
 		public int collectorId;
-		public IEnumerable<Types.CharacterMinimalPlusLookInformations> allyCharactersInformations;
-		public IEnumerable<Types.CharacterMinimalPlusLookInformations> enemyCharactersInformations;
+		public Types.CharacterMinimalPlusLookInformations[] allyCharactersInformations;
+		public Types.CharacterMinimalPlusLookInformations[] enemyCharactersInformations;
 		
 		public TaxCollectorFightersInformation()
 		{
 		}
 		
-		public TaxCollectorFightersInformation(int collectorId, IEnumerable<Types.CharacterMinimalPlusLookInformations> allyCharactersInformations, IEnumerable<Types.CharacterMinimalPlusLookInformations> enemyCharactersInformations)
+		public TaxCollectorFightersInformation(int collectorId, Types.CharacterMinimalPlusLookInformations[] allyCharactersInformations, Types.CharacterMinimalPlusLookInformations[] enemyCharactersInformations)
 		{
 			this.collectorId = collectorId;
 			this.allyCharactersInformations = allyCharactersInformations;

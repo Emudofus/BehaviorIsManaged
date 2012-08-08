@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.JobCrafterDirectorySettings> craftersSettings;
+		public Types.JobCrafterDirectorySettings[] craftersSettings;
 		
 		public JobCrafterDirectorySettingsMessage()
 		{
 		}
 		
-		public JobCrafterDirectorySettingsMessage(IEnumerable<Types.JobCrafterDirectorySettings> craftersSettings)
+		public JobCrafterDirectorySettingsMessage(Types.JobCrafterDirectorySettings[] craftersSettings)
 		{
 			this.craftersSettings = craftersSettings;
 		}

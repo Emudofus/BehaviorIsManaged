@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.Achievement> startedAchievements;
-		public IEnumerable<short> finishedAchievementsIds;
+		public Types.Achievement[] startedAchievements;
+		public short[] finishedAchievementsIds;
 		
 		public AchievementListMessage()
 		{
 		}
 		
-		public AchievementListMessage(IEnumerable<Types.Achievement> startedAchievements, IEnumerable<short> finishedAchievementsIds)
+		public AchievementListMessage(Types.Achievement[] startedAchievements, short[] finishedAchievementsIds)
 		{
 			this.startedAchievements = startedAchievements;
 			this.finishedAchievementsIds = finishedAchievementsIds;

@@ -18,13 +18,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> tacklersIds;
+		public int[] tacklersIds;
 		
 		public GameActionFightTackledMessage()
 		{
 		}
 		
-		public GameActionFightTackledMessage(short actionId, int sourceId, IEnumerable<int> tacklersIds)
+		public GameActionFightTackledMessage(short actionId, int sourceId, int[] tacklersIds)
 			 : base(actionId, sourceId)
 		{
 			this.tacklersIds = tacklersIds;

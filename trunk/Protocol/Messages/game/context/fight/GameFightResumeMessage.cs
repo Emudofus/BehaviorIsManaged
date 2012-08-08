@@ -18,7 +18,7 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.GameFightSpellCooldown> spellCooldowns;
+		public Types.GameFightSpellCooldown[] spellCooldowns;
 		public sbyte summonCount;
 		public sbyte bombCount;
 		
@@ -26,7 +26,7 @@ namespace BiM.Protocol.Messages
 		{
 		}
 		
-		public GameFightResumeMessage(IEnumerable<Types.FightDispellableEffectExtendedInformations> effects, IEnumerable<Types.GameActionMark> marks, short gameTurn, IEnumerable<Types.GameFightSpellCooldown> spellCooldowns, sbyte summonCount, sbyte bombCount)
+		public GameFightResumeMessage(Types.FightDispellableEffectExtendedInformations[] effects, Types.GameActionMark[] marks, short gameTurn, Types.GameFightSpellCooldown[] spellCooldowns, sbyte summonCount, sbyte bombCount)
 			 : base(effects, marks, gameTurn)
 		{
 			this.spellCooldowns = spellCooldowns;

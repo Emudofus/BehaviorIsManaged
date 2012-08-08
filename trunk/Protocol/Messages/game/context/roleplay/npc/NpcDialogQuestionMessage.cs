@@ -20,14 +20,14 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public short messageId;
-		public IEnumerable<string> dialogParams;
-		public IEnumerable<short> visibleReplies;
+		public string[] dialogParams;
+		public short[] visibleReplies;
 		
 		public NpcDialogQuestionMessage()
 		{
 		}
 		
-		public NpcDialogQuestionMessage(short messageId, IEnumerable<string> dialogParams, IEnumerable<short> visibleReplies)
+		public NpcDialogQuestionMessage(short messageId, string[] dialogParams, short[] visibleReplies)
 		{
 			this.messageId = messageId;
 			this.dialogParams = dialogParams;

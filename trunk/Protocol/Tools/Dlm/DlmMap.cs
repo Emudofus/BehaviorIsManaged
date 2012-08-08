@@ -4,10 +4,11 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using BiM.Core.IO;
+using BiM.Protocol.Data;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmMap : INotifyPropertyChanged
+    public class DlmMap : INotifyPropertyChanged, IDataObject
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public const int CellCount = 560;

@@ -21,14 +21,14 @@ namespace BiM.Protocol.Types
 		public int fightId;
 		public int fightStart;
 		public bool fightSpectatorLocked;
-		public IEnumerable<Types.FightTeamLightInformations> fightTeams;
-		public IEnumerable<Types.FightOptionsInformations> fightTeamsOptions;
+		public Types.FightTeamLightInformations[] fightTeams;
+		public Types.FightOptionsInformations[] fightTeamsOptions;
 		
 		public FightExternalInformations()
 		{
 		}
 		
-		public FightExternalInformations(int fightId, int fightStart, bool fightSpectatorLocked, IEnumerable<Types.FightTeamLightInformations> fightTeams, IEnumerable<Types.FightOptionsInformations> fightTeamsOptions)
+		public FightExternalInformations(int fightId, int fightStart, bool fightSpectatorLocked, Types.FightTeamLightInformations[] fightTeams, Types.FightOptionsInformations[] fightTeamsOptions)
 		{
 			this.fightId = fightId;
 			this.fightStart = fightStart;

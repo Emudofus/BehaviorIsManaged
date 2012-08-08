@@ -23,14 +23,14 @@ namespace BiM.Protocol.Messages
 		public int objGenericId;
 		public short powerRate;
 		public bool overMax;
-		public IEnumerable<Types.ObjectEffect> effects;
-		public IEnumerable<int> prices;
+		public Types.ObjectEffect[] effects;
+		public int[] prices;
 		
 		public ExchangeBidHouseInListAddedMessage()
 		{
 		}
 		
-		public ExchangeBidHouseInListAddedMessage(int itemUID, int objGenericId, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, IEnumerable<int> prices)
+		public ExchangeBidHouseInListAddedMessage(int itemUID, int objGenericId, short powerRate, bool overMax, Types.ObjectEffect[] effects, int[] prices)
 		{
 			this.itemUID = itemUID;
 			this.objGenericId = objGenericId;

@@ -112,10 +112,15 @@
     <Compile Include="Game\WorldObject.cs" />
     <Compile Include="Game\World\Area.cs" />
     <Compile Include="Game\World\Cell.cs" />
+    <Compile Include="Game\World\CellList.cs" />
     <Compile Include="Game\World\IContext.cs" />
     <Compile Include="Game\World\Map.cs" />
     <Compile Include="Game\World\ObjectPosition.cs" />
+    <Compile Include="Game\World\Pathfinding\CellInformation.cs" />
+    <Compile Include="Game\World\Pathfinding\ICellsInformationProvider.cs" />
+    <Compile Include="Game\World\Pathfinding\NodesComparer.cs" />
     <Compile Include="Game\World\Pathfinding\Path.cs" />
+    <Compile Include="Game\World\Pathfinding\Pathfinder.cs" />
     <Compile Include="Game\World\SubArea.cs" />
     <Compile Include="Game\World\SuperArea.cs" />
     <Compile Include="Game\World\WorldMap.cs" />

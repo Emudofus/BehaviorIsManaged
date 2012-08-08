@@ -20,13 +20,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public double rideId;
-		public IEnumerable<Types.UpdateMountBoost> boostToUpdateList;
+		public Types.UpdateMountBoost[] boostToUpdateList;
 		
 		public UpdateMountBoostMessage()
 		{
 		}
 		
-		public UpdateMountBoostMessage(double rideId, IEnumerable<Types.UpdateMountBoost> boostToUpdateList)
+		public UpdateMountBoostMessage(double rideId, Types.UpdateMountBoost[] boostToUpdateList)
 		{
 			this.rideId = rideId;
 			this.boostToUpdateList = boostToUpdateList;

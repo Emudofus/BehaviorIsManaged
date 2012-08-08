@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<int> ids;
+		public int[] ids;
 		
 		public ExchangeObjectTransfertListFromInvMessage()
 		{
 		}
 		
-		public ExchangeObjectTransfertListFromInvMessage(IEnumerable<int> ids)
+		public ExchangeObjectTransfertListFromInvMessage(int[] ids)
 		{
 			this.ids = ids;
 		}

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.MountClientData> stabledMountsDescription;
+		public Types.MountClientData[] stabledMountsDescription;
 		
 		public ExchangeStartOkMountWithOutPaddockMessage()
 		{
 		}
 		
-		public ExchangeStartOkMountWithOutPaddockMessage(IEnumerable<Types.MountClientData> stabledMountsDescription)
+		public ExchangeStartOkMountWithOutPaddockMessage(Types.MountClientData[] stabledMountsDescription)
 		{
 			this.stabledMountsDescription = stabledMountsDescription;
 		}

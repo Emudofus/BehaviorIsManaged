@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 		}
 		
 		public int playerId;
-		public IEnumerable<short> skills;
+		public short[] skills;
 		
 		public JobMultiCraftAvailableSkillsMessage()
 		{
 		}
 		
-		public JobMultiCraftAvailableSkillsMessage(bool enabled, int playerId, IEnumerable<short> skills)
+		public JobMultiCraftAvailableSkillsMessage(bool enabled, int playerId, short[] skills)
 			 : base(enabled)
 		{
 			this.playerId = playerId;

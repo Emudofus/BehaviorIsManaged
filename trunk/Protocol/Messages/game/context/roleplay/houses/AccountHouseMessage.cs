@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.AccountHouseInformations> houses;
+		public Types.AccountHouseInformations[] houses;
 		
 		public AccountHouseMessage()
 		{
 		}
 		
-		public AccountHouseMessage(IEnumerable<Types.AccountHouseInformations> houses)
+		public AccountHouseMessage(Types.AccountHouseInformations[] houses)
 		{
 			this.houses = houses;
 		}

@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\LockFreeQueue.cs" />
+    <Compile Include="Collections\PriorityQueueB.cs" />
     <Compile Include="Config\ConfigNode.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="Extensions\DateExtensions.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Network\ClientManager.cs" />
     <Compile Include="Network\SocketAsyncEventArgsPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\ObjectDumper.cs" />
     <Compile Include="Reflection\Singleton.cs" />
     <Compile Include="Threading\SelfRunningTaskQueue.cs" />
     <Compile Include="Threading\SimplerTimer.cs" />

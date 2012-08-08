@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public short dungeonId;
 		public int inviterId;
-		public IEnumerable<int> invalidBuddiesIds;
+		public int[] invalidBuddiesIds;
 		
 		public TeleportBuddiesRequestedMessage()
 		{
 		}
 		
-		public TeleportBuddiesRequestedMessage(short dungeonId, int inviterId, IEnumerable<int> invalidBuddiesIds)
+		public TeleportBuddiesRequestedMessage(short dungeonId, int inviterId, int[] invalidBuddiesIds)
 		{
 			this.dungeonId = dungeonId;
 			this.inviterId = inviterId;

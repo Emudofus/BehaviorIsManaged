@@ -27,14 +27,14 @@ namespace BiM.Protocol.Messages
 		public short taxCollectorProspecting;
 		public short taxCollectorWisdom;
 		public short boostPoints;
-		public IEnumerable<short> spellId;
-		public IEnumerable<sbyte> spellLevel;
+		public short[] spellId;
+		public sbyte[] spellLevel;
 		
 		public GuildInfosUpgradeMessage()
 		{
 		}
 		
-		public GuildInfosUpgradeMessage(sbyte maxTaxCollectorsCount, sbyte taxCollectorsCount, short taxCollectorLifePoints, short taxCollectorDamagesBonuses, short taxCollectorPods, short taxCollectorProspecting, short taxCollectorWisdom, short boostPoints, IEnumerable<short> spellId, IEnumerable<sbyte> spellLevel)
+		public GuildInfosUpgradeMessage(sbyte maxTaxCollectorsCount, sbyte taxCollectorsCount, short taxCollectorLifePoints, short taxCollectorDamagesBonuses, short taxCollectorPods, short taxCollectorProspecting, short taxCollectorWisdom, short boostPoints, short[] spellId, sbyte[] spellLevel)
 		{
 			this.maxTaxCollectorsCount = maxTaxCollectorsCount;
 			this.taxCollectorsCount = taxCollectorsCount;

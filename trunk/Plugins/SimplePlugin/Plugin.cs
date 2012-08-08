@@ -8,6 +8,16 @@ namespace SimplePlugin
         public Plugin(PluginContext context)
             : base(context)
         {
+            if (CurrentPlugin != null)
+                throw new Exception("Can be instancied only once");
+
+            CurrentPlugin = this;
+        }
+
+        public static Plugin CurrentPlugin
+        {
+            get;
+            private set;
         }
 
         public override string Name

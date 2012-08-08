@@ -47,9 +47,8 @@ namespace BiM.Behaviors
 
         public void RemoveBot(Bot bot)
         {
-            m_bots.Remove(bot);
-
-            OnBotRemoved(bot);
+            if (m_bots.Remove(bot))
+                OnBotRemoved(bot);
         }
 
         public Bot GetCurrentBot()

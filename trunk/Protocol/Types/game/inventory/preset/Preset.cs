@@ -21,13 +21,13 @@ namespace BiM.Protocol.Types
 		public sbyte presetId;
 		public sbyte symbolId;
 		public bool mount;
-		public IEnumerable<Types.PresetItem> objects;
+		public Types.PresetItem[] objects;
 		
 		public Preset()
 		{
 		}
 		
-		public Preset(sbyte presetId, sbyte symbolId, bool mount, IEnumerable<Types.PresetItem> objects)
+		public Preset(sbyte presetId, sbyte symbolId, bool mount, Types.PresetItem[] objects)
 		{
 			this.presetId = presetId;
 			this.symbolId = symbolId;

@@ -19,13 +19,13 @@ namespace BiM.Protocol.Types
 		}
 		
 		public short stepId;
-		public IEnumerable<Types.QuestObjectiveInformations> objectives;
+		public Types.QuestObjectiveInformations[] objectives;
 		
 		public QuestActiveDetailedInformations()
 		{
 		}
 		
-		public QuestActiveDetailedInformations(short questId, short stepId, IEnumerable<Types.QuestObjectiveInformations> objectives)
+		public QuestActiveDetailedInformations(short questId, short stepId, Types.QuestObjectiveInformations[] objectives)
 			 : base(questId)
 		{
 			this.stepId = stepId;

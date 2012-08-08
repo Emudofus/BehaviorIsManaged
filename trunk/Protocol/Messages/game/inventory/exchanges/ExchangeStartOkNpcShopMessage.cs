@@ -21,13 +21,13 @@ namespace BiM.Protocol.Messages
 		
 		public int npcSellerId;
 		public int tokenId;
-		public IEnumerable<Types.ObjectItemToSellInNpcShop> objectsInfos;
+		public Types.ObjectItemToSellInNpcShop[] objectsInfos;
 		
 		public ExchangeStartOkNpcShopMessage()
 		{
 		}
 		
-		public ExchangeStartOkNpcShopMessage(int npcSellerId, int tokenId, IEnumerable<Types.ObjectItemToSellInNpcShop> objectsInfos)
+		public ExchangeStartOkNpcShopMessage(int npcSellerId, int tokenId, Types.ObjectItemToSellInNpcShop[] objectsInfos)
 		{
 			this.npcSellerId = npcSellerId;
 			this.tokenId = tokenId;

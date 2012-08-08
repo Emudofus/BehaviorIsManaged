@@ -21,14 +21,14 @@ namespace BiM.Protocol.Messages
 		
 		public sbyte nbcollectorMax;
 		public short taxCollectorHireCost;
-		public IEnumerable<Types.TaxCollectorInformations> informations;
-		public IEnumerable<Types.TaxCollectorFightersInformation> fightersInformations;
+		public Types.TaxCollectorInformations[] informations;
+		public Types.TaxCollectorFightersInformation[] fightersInformations;
 		
 		public TaxCollectorListMessage()
 		{
 		}
 		
-		public TaxCollectorListMessage(sbyte nbcollectorMax, short taxCollectorHireCost, IEnumerable<Types.TaxCollectorInformations> informations, IEnumerable<Types.TaxCollectorFightersInformation> fightersInformations)
+		public TaxCollectorListMessage(sbyte nbcollectorMax, short taxCollectorHireCost, Types.TaxCollectorInformations[] informations, Types.TaxCollectorFightersInformation[] fightersInformations)
 		{
 			this.nbcollectorMax = nbcollectorMax;
 			this.taxCollectorHireCost = taxCollectorHireCost;

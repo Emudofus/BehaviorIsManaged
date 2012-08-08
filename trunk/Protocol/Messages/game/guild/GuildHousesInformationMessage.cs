@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.HouseInformationsForGuild> housesInformations;
+		public Types.HouseInformationsForGuild[] housesInformations;
 		
 		public GuildHousesInformationMessage()
 		{
 		}
 		
-		public GuildHousesInformationMessage(IEnumerable<Types.HouseInformationsForGuild> housesInformations)
+		public GuildHousesInformationMessage(Types.HouseInformationsForGuild[] housesInformations)
 		{
 			this.housesInformations = housesInformations;
 		}

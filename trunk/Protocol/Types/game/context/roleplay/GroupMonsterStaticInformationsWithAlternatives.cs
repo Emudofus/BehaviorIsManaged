@@ -18,13 +18,13 @@ namespace BiM.Protocol.Types
 			}
 		}
 		
-		public IEnumerable<Types.AlternativeMonstersInGroupLightInformations> alternatives;
+		public Types.AlternativeMonstersInGroupLightInformations[] alternatives;
 		
 		public GroupMonsterStaticInformationsWithAlternatives()
 		{
 		}
 		
-		public GroupMonsterStaticInformationsWithAlternatives(Types.MonsterInGroupLightInformations mainCreatureLightInfos, IEnumerable<Types.MonsterInGroupInformations> underlings, IEnumerable<Types.AlternativeMonstersInGroupLightInformations> alternatives)
+		public GroupMonsterStaticInformationsWithAlternatives(Types.MonsterInGroupLightInformations mainCreatureLightInfos, Types.MonsterInGroupInformations[] underlings, Types.AlternativeMonstersInGroupLightInformations[] alternatives)
 			 : base(mainCreatureLightInfos, underlings)
 		{
 			this.alternatives = alternatives;

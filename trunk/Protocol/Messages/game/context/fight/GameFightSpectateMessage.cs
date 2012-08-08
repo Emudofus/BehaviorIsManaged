@@ -19,15 +19,15 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.FightDispellableEffectExtendedInformations> effects;
-		public IEnumerable<Types.GameActionMark> marks;
+		public Types.FightDispellableEffectExtendedInformations[] effects;
+		public Types.GameActionMark[] marks;
 		public short gameTurn;
 		
 		public GameFightSpectateMessage()
 		{
 		}
 		
-		public GameFightSpectateMessage(IEnumerable<Types.FightDispellableEffectExtendedInformations> effects, IEnumerable<Types.GameActionMark> marks, short gameTurn)
+		public GameFightSpectateMessage(Types.FightDispellableEffectExtendedInformations[] effects, Types.GameActionMark[] marks, short gameTurn)
 		{
 			this.effects = effects;
 			this.marks = marks;

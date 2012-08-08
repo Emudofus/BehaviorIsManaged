@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<short> angelsSubAreas;
-		public IEnumerable<short> evilsSubAreas;
+		public short[] angelsSubAreas;
+		public short[] evilsSubAreas;
 		
 		public AlignmentSubAreasListMessage()
 		{
 		}
 		
-		public AlignmentSubAreasListMessage(IEnumerable<short> angelsSubAreas, IEnumerable<short> evilsSubAreas)
+		public AlignmentSubAreasListMessage(short[] angelsSubAreas, short[] evilsSubAreas)
 		{
 			this.angelsSubAreas = angelsSubAreas;
 			this.evilsSubAreas = evilsSubAreas;

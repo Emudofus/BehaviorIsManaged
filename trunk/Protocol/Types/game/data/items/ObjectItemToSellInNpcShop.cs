@@ -24,7 +24,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public ObjectItemToSellInNpcShop(short objectGID, short powerRate, bool overMax, IEnumerable<Types.ObjectEffect> effects, int objectPrice, string buyCriterion)
+		public ObjectItemToSellInNpcShop(short objectGID, short powerRate, bool overMax, Types.ObjectEffect[] effects, int objectPrice, string buyCriterion)
 			 : base(objectGID, powerRate, overMax, effects)
 		{
 			this.objectPrice = objectPrice;

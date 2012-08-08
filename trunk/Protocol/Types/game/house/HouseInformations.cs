@@ -22,7 +22,7 @@ namespace BiM.Protocol.Types
 		public bool isOnSale;
 		public bool isSaleLocked;
 		public int houseId;
-		public IEnumerable<int> doorsOnMap;
+		public int[] doorsOnMap;
 		public string ownerName;
 		public short modelId;
 		
@@ -30,7 +30,7 @@ namespace BiM.Protocol.Types
 		{
 		}
 		
-		public HouseInformations(bool isOnSale, bool isSaleLocked, int houseId, IEnumerable<int> doorsOnMap, string ownerName, short modelId)
+		public HouseInformations(bool isOnSale, bool isSaleLocked, int houseId, int[] doorsOnMap, string ownerName, short modelId)
 		{
 			this.isOnSale = isOnSale;
 			this.isSaleLocked = isSaleLocked;

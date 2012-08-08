@@ -19,14 +19,14 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.ObjectItem> objects;
+		public Types.ObjectItem[] objects;
 		public int kamas;
 		
 		public InventoryContentMessage()
 		{
 		}
 		
-		public InventoryContentMessage(IEnumerable<Types.ObjectItem> objects, int kamas)
+		public InventoryContentMessage(Types.ObjectItem[] objects, int kamas)
 		{
 			this.objects = objects;
 			this.kamas = kamas;

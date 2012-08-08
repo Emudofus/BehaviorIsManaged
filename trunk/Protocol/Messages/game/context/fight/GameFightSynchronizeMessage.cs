@@ -19,13 +19,13 @@ namespace BiM.Protocol.Messages
 			}
 		}
 		
-		public IEnumerable<Types.GameFightFighterInformations> fighters;
+		public Types.GameFightFighterInformations[] fighters;
 		
 		public GameFightSynchronizeMessage()
 		{
 		}
 		
-		public GameFightSynchronizeMessage(IEnumerable<Types.GameFightFighterInformations> fighters)
+		public GameFightSynchronizeMessage(Types.GameFightFighterInformations[] fighters)
 		{
 			this.fighters = fighters;
 		}

@@ -25,8 +25,8 @@ namespace BiM.Protocol.Types
 		public bool isFecondationReady;
 		public double id;
 		public int model;
-		public IEnumerable<int> ancestor;
-		public IEnumerable<int> behaviors;
+		public int[] ancestor;
+		public int[] behaviors;
 		public string name;
 		public int ownerId;
 		public double experience;
@@ -50,13 +50,13 @@ namespace BiM.Protocol.Types
 		public double boostMax;
 		public int reproductionCount;
 		public int reproductionCountMax;
-		public IEnumerable<Types.ObjectEffectInteger> effectList;
+		public Types.ObjectEffectInteger[] effectList;
 		
 		public MountClientData()
 		{
 		}
 		
-		public MountClientData(bool sex, bool isRideable, bool isWild, bool isFecondationReady, double id, int model, IEnumerable<int> ancestor, IEnumerable<int> behaviors, string name, int ownerId, double experience, double experienceForLevel, double experienceForNextLevel, sbyte level, int maxPods, int stamina, int staminaMax, int maturity, int maturityForAdult, int energy, int energyMax, int serenity, int aggressivityMax, int serenityMax, int love, int loveMax, int fecondationTime, int boostLimiter, double boostMax, int reproductionCount, int reproductionCountMax, IEnumerable<Types.ObjectEffectInteger> effectList)
+		public MountClientData(bool sex, bool isRideable, bool isWild, bool isFecondationReady, double id, int model, int[] ancestor, int[] behaviors, string name, int ownerId, double experience, double experienceForLevel, double experienceForNextLevel, sbyte level, int maxPods, int stamina, int staminaMax, int maturity, int maturityForAdult, int energy, int energyMax, int serenity, int aggressivityMax, int serenityMax, int love, int loveMax, int fecondationTime, int boostLimiter, double boostMax, int reproductionCount, int reproductionCountMax, Types.ObjectEffectInteger[] effectList)
 		{
 			this.sex = sex;
 			this.isRideable = isRideable;
