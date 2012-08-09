@@ -50,12 +50,12 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             return EstimateHeuristic * ( diagonalValue + orthogonalValue + dxy.X + dxy.Y );
         }
 
-        public Pathfinder(ICellsInformationProvider cellsInformationProvider)
+        public Pathfinder(CellInformationProvider cellsInformationProvider)
         {
             CellsInformationProvider = cellsInformationProvider;
         }
 
-        public ICellsInformationProvider CellsInformationProvider
+        public CellInformationProvider CellsInformationProvider
         {
             get;
             private set;

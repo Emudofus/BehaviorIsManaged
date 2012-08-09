@@ -395,19 +395,30 @@ namespace BiM.Core.Messages
 
         public void Resume()
         {
+            if (!m_stopped)
+                return;
+
             m_stopped = false;
             m_resumeEvent.Set();
         }
 
         public void Stop()
         {
+            if (m_stopped)
+                return;
+
             m_stopped = true;
             m_resumeEvent.Reset();
         }
 
         public void Dispose()
         {
-            m_messagesToDispatch.Clear();
+            Stop();
+
+            foreach (var messages in m_messagesToDispatch)
+            {
+                messages.Value.Clear();
+            }
         }
     }
 }

@@ -19,8 +19,7 @@ namespace BiM.Behaviors.Game.Spells
         {
             if (list == null) throw new ArgumentNullException("list");
             Owner = owner;
-            Spells = new ObservableCollection<Spell>(list.spells.Select(entry => new Spell(entry)));
-            SpellPrevisualization = list.spellPrevisualization;
+            Update(list);
         }
 
         public PlayedCharacter Owner
@@ -59,6 +58,13 @@ namespace BiM.Behaviors.Game.Spells
         public bool UpgradeSpell(Spell spell)
         {
             throw new NotImplementedException();
+        }
+
+        public void Update(SpellListMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            Spells = new ObservableCollection<Spell>(msg.spells.Select(entry => new Spell(entry)));
+            SpellPrevisualization = msg.spellPrevisualization;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

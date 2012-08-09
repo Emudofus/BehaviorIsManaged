@@ -1,7 +1,7 @@
 ﻿using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 
-namespace BiM.Behaviors.Handlers
+namespace BiM.Behaviors.Handlers.Connection
 {
     public class ConnectionHandler
     {
@@ -43,6 +43,12 @@ namespace BiM.Behaviors.Handlers
 
         [MessageHandler(typeof(ServersListMessage))]
         public static void HandleServersListMessage(Bot bot, ServersListMessage message)
+        {
+            bot.ClientInformations.Update(message);
+        }
+
+        [MessageHandler(typeof(AccountCapabilitiesMessage))]
+        public static void HandleAccountCapabilitiesMessage(Bot bot, AccountCapabilitiesMessage message)
         {
             bot.ClientInformations.Update(message);
         }

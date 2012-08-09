@@ -219,6 +219,27 @@ namespace BiM.Behaviors.Game.World
             return x + y >= 0 && x - y >= 0 && x - y < Map.Height*2 && x + y < Map.Width*2;
         }
 
+        public DirectionsEnum OrientationTo(Cell cell, Boolean diagonal = true)
+        {
+            int dx = cell.X - X;
+            int dy = Y - cell.Y;
+
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+            double angleInRadians = Math.Acos(dx / distance);
+
+            double angleInDegrees = angleInRadians * 180 / Math.PI;
+            double transformedAngle = angleInDegrees * ( cell.Y > Y ? ( -1 ) : ( 1 ) );
+
+            double orientation = !diagonal ? Math.Round(transformedAngle / 90) * 2 + 1 : Math.Round(transformedAngle / 45) + 1;
+
+            if (orientation < 0)
+            {
+                orientation = orientation + 8;
+            }
+
+            return (DirectionsEnum)(uint)orientation;
+        }
+
         public DirectionsEnum OrientationToAdjacent(Point point)
         {
             var vector = new Point

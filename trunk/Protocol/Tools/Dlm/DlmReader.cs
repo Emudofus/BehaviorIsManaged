@@ -50,6 +50,7 @@ namespace BiM.Protocol.Tools.Dlm
 
         public DlmMap ReadMap()
         {
+            m_reader.Seek(0, SeekOrigin.Begin);
             int header = m_reader.ReadByte();
 
             if (header != 77)

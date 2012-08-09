@@ -70,29 +70,22 @@ namespace BiM.MITM.Network
             if (message == null) throw new ArgumentNullException("message");
             var handlers = GetHandlers(message.GetType(), token);
 
-            try
+            foreach (var handler in handlers)
             {
-                foreach (var handler in handlers)
-                {
-                    if (handler.Attribute.DestinationFilter != ListenerEntry.Undefined &&
-                        handler.Attribute.DestinationFilter != message.Destinations && 
-                        (handler.Attribute.DestinationFilter & message.Destinations) == ListenerEntry.Undefined)
-                        continue;
+                if (handler.Attribute.DestinationFilter != ListenerEntry.Undefined &&
+                    handler.Attribute.DestinationFilter != message.Destinations && 
+                    (handler.Attribute.DestinationFilter & message.Destinations) == ListenerEntry.Undefined)
+                    continue;
 
-                    if (handler.Attribute.FromFilter != ListenerEntry.Undefined && 
-                        handler.Attribute.FromFilter != message.From &&
-                        (handler.Attribute.FromFilter & message.From) == ListenerEntry.Undefined)
-                        continue;
+                if (handler.Attribute.FromFilter != ListenerEntry.Undefined && 
+                    handler.Attribute.FromFilter != message.From &&
+                    (handler.Attribute.FromFilter & message.From) == ListenerEntry.Undefined)
+                    continue;
 
-                    handler.Action(handler.Container, token, message);
+                handler.Action(handler.Container, token, message);
 
-                    if (message.Canceled)
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Cannot handle network message {0} : {1}", message, ex);
+                if (message.Canceled)
+                    break;
             }
         }
     }

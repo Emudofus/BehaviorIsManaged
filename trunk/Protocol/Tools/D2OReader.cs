@@ -333,7 +333,7 @@ namespace BiM.Protocol.Tools
         }
 
         public T ReadObject<T>(int index)
-            where T : class, IDataObject
+            where T : class
         {
             using (BigEndianReader reader = CloneReader())
             {
@@ -342,7 +342,7 @@ namespace BiM.Protocol.Tools
         }
 
         private T ReadObject<T>(int index, BigEndianReader reader)
-            where T : class, IDataObject
+            where T : class
         {
             if (!IsTypeDefined(typeof (T)))
                 throw new Exception("The file doesn't contain this class");

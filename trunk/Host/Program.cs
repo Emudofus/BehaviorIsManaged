@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using BiM.Behaviors.Data;
 using BiM.Core.Config;
+using BiM.Core.I18n;
 using BiM.Core.Messages;
 using BiM.Host.Messages;
 using BiM.Host.Plugins;
@@ -82,6 +83,14 @@ namespace BiM.Host
             var d2oSource = new D2OSource();
             d2oSource.AddReaders(Config.GetStatic("DofusDataPath", @"C:\Program Files (x86)\Dofus 2\app\data\common"));
             DataProvider.Instance.AddSource(d2oSource);
+
+            var maps = new D2PSource(new D2pFile(Config.GetStatic("DofusMapsD2P", @"C:\Program Files (x86)\Dofus 2\app\content\maps\maps0.d2p")));
+            DataProvider.Instance.AddSource(maps);
+
+            var d2iSource = new D2ISource(Languages.English);
+            d2oSource.AddReaders(Config.GetStatic("DofusI18NPath", @"C:\Program Files (x86)\Dofus 2\app\data\i18n"));
+            DataProvider.Instance.AddSource(d2iSource);
+
 
             MITM = new MITM.MITM(new MITMConfiguration
                                      {

@@ -173,6 +173,7 @@ namespace BiM.MITM
             m_tickets.Remove(message.ticket);
 
             client.Bot = tuple.Item1;
+            client.Bot.ChangeConnection(client);
             client.Bot.ConnectionType = ClientConnectionType.GameConnection;
             client.Bot.Start();
 

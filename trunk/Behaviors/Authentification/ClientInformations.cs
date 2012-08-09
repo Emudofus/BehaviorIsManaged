@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Data;
 using BiM.Core.Extensions;
 using BiM.Protocol.Data;
+using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using Version = BiM.Protocol.Types.Version;
@@ -138,6 +140,40 @@ namespace BiM.Behaviors.Authentification
             set;
         }
 
+        public PlayableBreedEnum[] VisibleBreeds
+        {
+            get;
+            set;
+        }
+
+        public PlayableBreedEnum[] AvailableBreeds
+        {
+            get;
+            set;
+        }
+
+        public TimeSpan ServerTimeOffset
+        {
+            get;
+            set;
+        }
+
+        private DateTime? m_serverTimeReference;
+        private DateTime m_referenceTimeChange;
+
+        public DateTime ServerTimeReference
+        {
+            get { return m_serverTimeReference ?? DateTime.Now; }
+            set { m_serverTimeReference = value;
+                m_referenceTimeChange = DateTime.Now; }
+        }
+
+        public DateTime ServerTime
+        {
+            get { return ServerTimeReference + (DateTime.Now - m_referenceTimeChange); }
+        }
+
+
         public bool IsSubscribed()
         {
             return SubscriptionEndDate.HasValue && SubscriptionEndDate > DateTime.Now;
@@ -220,6 +256,22 @@ namespace BiM.Behaviors.Authentification
         {
             if (msg == null) throw new ArgumentNullException("msg");
             ServersList = new ServersList(msg);
+        }
+
+        public void Update(AccountCapabilitiesMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            VisibleBreeds = Enum.GetValues(typeof(PlayableBreedEnum)).
+                Cast<PlayableBreedEnum>().Where(entry => ( ( msg.breedsVisible >> (int)entry - 1 ) & 1 ) == 1).ToArray();
+            AvailableBreeds = Enum.GetValues(typeof(PlayableBreedEnum)).
+                Cast<PlayableBreedEnum>().Where(entry => ( ( msg.breedsAvailable >> (int)entry - 1 ) & 1 ) == 1).ToArray();
+        }
+
+        public void Update(BasicTimeMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            ServerTimeOffset = new TimeSpan(0, 0, msg.timezoneOffset, 0);
+            ServerTimeReference = msg.timestamp.UnixTimestampToDateTime();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

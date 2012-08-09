@@ -13,10 +13,15 @@ namespace BiM.Protocol.Tools
         public I18NFile(string uri)
         {
             m_uri = uri;
-            Init();
+            Initialize();
         }
 
-        private void Init()
+        public string FileName
+        {
+            get { return m_uri; }
+        }
+
+        private void Initialize()
         {
             using (var reader = new BigEndianReader(new StreamReader(m_uri).BaseStream))
             {

@@ -12,6 +12,7 @@ namespace BiM.Behaviors.Game.Items
     {
         public Inventory(PlayedCharacter owner)
         {
+            if (owner == null) throw new ArgumentNullException("owner");
             Owner = owner;
             Items = new ObservableCollection<Item>();
         }
@@ -21,8 +22,9 @@ namespace BiM.Behaviors.Game.Items
             if (owner == null) throw new ArgumentNullException("owner");
             if (inventory == null) throw new ArgumentNullException("inventory");
             Owner = owner;
-            Items = new ObservableCollection<Item>(inventory.objects.Select(entry => new Item(entry)));
             Kamas = inventory.kamas;
+
+            Update(inventory);
         }
 
         public PlayedCharacter Owner
@@ -86,6 +88,18 @@ namespace BiM.Behaviors.Game.Items
         public bool Use(Item item)
         {
             throw new NotImplementedException();
+        }
+
+        public void Update(InventoryContentMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            Items = new ObservableCollection<Item>(msg.objects.Select(entry => new Item(entry)));
+        }
+
+        public void Update(SetUpdateMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            // todo
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

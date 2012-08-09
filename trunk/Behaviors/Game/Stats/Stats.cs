@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Stats
@@ -15,12 +16,26 @@ namespace BiM.Behaviors.Game.Stats
             SpellsModifications = new ObservableCollection<SpellModification>();
         }
 
-        public Stats(CharacterCharacteristicsInformations stats)
+        public Stats(PlayedCharacter owner, CharacterCharacteristicsInformations stats)
         {
             if (stats == null) throw new ArgumentNullException("stats");
             Fields = new Dictionary<PlayerField, StatsRow>();
             SpellsModifications = new ObservableCollection<SpellModification>();
             Update(stats);
+        }
+
+        public Stats(PlayedCharacter owner)
+        {
+            if (owner == null) throw new ArgumentNullException("owner");
+            Fields = new Dictionary<PlayerField, StatsRow>();
+            SpellsModifications = new ObservableCollection<SpellModification>();
+            Owner = owner;
+        }
+
+        public PlayedCharacter Owner
+        {
+            get;
+            set;
         }
 
         public ObservableCollection<SpellModification> SpellsModifications
@@ -165,6 +180,7 @@ namespace BiM.Behaviors.Game.Stats
 
         public void Update(CharacterCharacteristicsInformations stats)
         {
+            if (stats == null) throw new ArgumentNullException("stats");
             Experience = stats.experience;
             ExperienceLevelFloor = stats.experienceLevelFloor;
             ExperienceNextLevelFloor = stats.experienceNextLevelFloor;

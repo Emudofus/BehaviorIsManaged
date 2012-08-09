@@ -1,4 +1,5 @@
 ﻿using System;
+using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
 using NLog;
 
@@ -61,6 +62,24 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             get;
             protected set;
+        }
+
+        public override IContext Context
+        {
+            get
+            {
+                return Map;
+            }
+            protected set
+            {
+                
+            }
+        }
+
+        public Map Map
+        {
+            get;
+            set;
         }
 
         public bool IsMoving()

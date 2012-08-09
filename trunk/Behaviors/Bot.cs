@@ -19,6 +19,15 @@ namespace BiM.Behaviors
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+
+        public event LogHandler LogNotified;
+
+        public void NotifyMessageLog(LogLevel level, string caller, string message)
+        {
+            LogHandler handler = LogNotified;
+            if (handler != null) handler(this, level, caller, message);
+        }
+
         public Bot()
             : this(new MessageDispatcher())
         {
@@ -64,15 +73,6 @@ namespace BiM.Behaviors
             get { return ToString(); }
             set { }
         }
-
-        public event LogHandler LogNotified;
-
-        public void NotifyMessageLog(LogLevel level, string caller, string message)
-        {
-            LogHandler handler = LogNotified;
-            if (handler != null) handler(this, level, caller, message);
-        }
-
         protected override void OnTick()
         {
             try
@@ -82,9 +82,6 @@ namespace BiM.Behaviors
             catch (Exception ex)
             {
                 logger.Fatal(ex);
-
-                while (( ex = ex.InnerException ) != null)
-                    logger.Fatal(ex);
 
                 Dispose();
             }
@@ -174,6 +171,8 @@ namespace BiM.Behaviors
                 Dispatcher.Dispose();
 
             BotManager.Instance.RemoveBot(this);
+
+            logger.Debug("Bot removed");
         }
 
         public override string ToString()

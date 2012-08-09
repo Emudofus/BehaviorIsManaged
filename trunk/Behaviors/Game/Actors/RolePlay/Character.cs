@@ -32,5 +32,6 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             get;
             protected set;
         }
+
     }
 }

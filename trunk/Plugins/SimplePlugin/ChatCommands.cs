@@ -13,15 +13,16 @@ namespace SimplePlugin
         [MessageHandler(typeof (ChatClientMultiMessage))]
         public static void HandleChatMessage(Bot bot, ChatClientMultiMessage message)
         {
-            // if the client send ".hello" in the chat
+            // if the client sends ".hello" in the chat
             if (message.content == ".hello")
             {
                 // do not send this message to the server
                 message.BlockNetworkSend();
 
-                // send a respond to the client
+                // sends a respond to the client
                 // todo : method Say()
-                bot.SendToClient(new ChatServerMessage(message.channel, Config.GetStatic("HelloMessage", "Hello, my name is BiM"), (int) DateTime.Now.DateTimeToUnixTimestamp(), "", 0, "BiM", 0));
+                bot.SendToClient(new ChatServerMessage(message.channel, string.Format("Hello {0} you are on sub area {1}",
+                    bot.Character.Name, bot.Character.Map.SubArea.Name), (int) DateTime.Now.DateTimeToUnixTimestamp(), "", 0, "BiM", 0));
             }
         }
     }

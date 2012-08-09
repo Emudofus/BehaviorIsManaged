@@ -31,13 +31,12 @@ namespace BiM.Behaviors.Data
             var sources = m_sources.Where(entry => entry.DoesHandleType(type)).ToArray();
 
             if (sources.Length < 1)
-                throw new InvalidOperationException("Type {0} not handled by any data source");
+                throw new InvalidOperationException(string.Format("Type {0} not handled by any data source", type));
 
             return sources;
         }
 
-        public T Get<T>(params object[] keys)
-            where T : class, IDataObject
+        public T Get<T>(params object[] keys) where T : class
         {
             // try each source before throwing an exception
             var exceptions = new List<Exception>();

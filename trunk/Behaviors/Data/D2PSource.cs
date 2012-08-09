@@ -32,11 +32,11 @@ namespace BiM.Behaviors.Data
                 Select(entry => entry).ToArray());
         }
 
-        public T ReadObject<T>(params object[] keys) where T : class, IDataObject
+        public T ReadObject<T>(params object[] keys) where T : class
         {
             // we don't check the others keys, they may be used by the others sources
             if (( !( keys[0] is IConvertible ) ))
-                throw new ArgumentException("D2PSource needs a int key, use ReadObject(int)");
+                throw new ArgumentException("D2PSource needs a int key, use ReadObject(int, args[])");
 
             if (!DoesHandleType(typeof(T)))
                 throw new ArgumentException(string.Format("type {0} not handled", typeof(T)));
