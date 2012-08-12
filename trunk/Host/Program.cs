@@ -88,7 +88,7 @@ namespace BiM.Host
             DataProvider.Instance.AddSource(maps);
 
             var d2iSource = new D2ISource(Languages.English);
-            d2oSource.AddReaders(Config.GetStatic("DofusI18NPath", @"C:\Program Files (x86)\Dofus 2\app\data\i18n"));
+            d2iSource.AddReaders(Config.GetStatic("DofusI18NPath", @"C:\Program Files (x86)\Dofus 2\app\data\i18n"));
             DataProvider.Instance.AddSource(d2iSource);
 
 
