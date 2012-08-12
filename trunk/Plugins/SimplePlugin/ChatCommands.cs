@@ -21,8 +21,8 @@ namespace SimplePlugin
 
                 // sends a respond to the client
                 // todo : method Say()
-                bot.SendToClient(new ChatServerMessage(message.channel, string.Format("Hello {0} you are on sub area {1}",
-                    bot.Character.Name, bot.Character.Map.SubArea.Name), (int) DateTime.Now.DateTimeToUnixTimestamp(), "", 0, "BiM", 0));
+                bot.ChatManager.SendMessageToClient(string.Format("Hello {0} you are on sub area {1}",
+                    bot.Character.Name, bot.Character.Map.SubArea.Name));
             }
         }
     }
