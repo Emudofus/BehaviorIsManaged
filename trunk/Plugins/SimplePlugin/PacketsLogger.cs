@@ -20,7 +20,7 @@ namespace SimplePlugin
     {
         public static bool AllowLogging
         {
-            get { return Config.GetStatic("AllowLogging", true); }
+            get { return Config.GetStatic("AllowLogging", false); }
         }
 
         private static ObjectDumper m_dumper = new ObjectDumper(2, true, false, BindingFlags.Public | BindingFlags.Instance |

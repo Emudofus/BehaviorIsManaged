@@ -199,14 +199,14 @@ namespace BiM.Behaviors.Game.World
             return (uint)Math.Sqrt(( cell.X - Point.X ) * ( cell.X - Point.X ) + ( cell.Y - Point.Y ) * ( cell.Y - Point.Y ));
         }
 
-        public uint DistanceToCell(Cell cell)
+        public uint ManhattanDistanceTo(Cell cell)
         {
             return (uint)( Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y) );
         }
 
         public bool IsAdjacentTo(Cell cell)
         {
-            return DistanceToCell(cell) == 1;
+            return ManhattanDistanceTo(cell) == 1;
         }
 
         public static bool IsInMap(Cell cell)
@@ -372,6 +372,12 @@ namespace BiM.Behaviors.Game.World
             if (IsInMap(northWest.X, northWest.Y) && predicate(northWest))
                 yield return northWest;
         }
+
+        public bool IsChangeZone(Cell cell)
+        {
+            return MoveZone != cell.MoveZone && Math.Abs(Floor) == Math.Abs(cell.Floor);
+        }
+
         #endregion
 
         public override string ToString()

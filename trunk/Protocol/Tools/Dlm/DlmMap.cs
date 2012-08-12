@@ -162,6 +162,12 @@ namespace BiM.Protocol.Tools.Dlm
             set;
         }
 
+        public bool UsingNewMovementSystem
+        {
+            get;
+            set;
+        }
+
         public static DlmMap ReadFromStream(BigEndianReader givenReader, DlmReader dlmReader)
         {
             var reader = givenReader;
@@ -258,9 +264,14 @@ namespace BiM.Protocol.Tools.Dlm
             }
 
             map.Cells = new DlmCellData[CellCount];
+            int? lastMoveZone = null;
             for (short i = 0; i < map.Cells.Length; i++)
             {
                 map.Cells[i] = DlmCellData.ReadFromStream(map, i, reader);
+                if (!lastMoveZone.HasValue)
+                    lastMoveZone = map.Cells[i].MoveZone;
+                else if (lastMoveZone != map.Cells[i].MoveZone) // if a cell is different the new system is used
+                    map.UsingNewMovementSystem = true;
             }
 
             return map;

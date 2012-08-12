@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Config;
@@ -14,8 +15,9 @@ using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class Map : IContext
+    public class Map : IContext, IMapDataProvider
     {
+        public const int ElevationTolerance = 11;
         public const uint Width = 14;
         public const uint Height = 20;
 
@@ -44,12 +46,6 @@ namespace BiM.Behaviors.Game.World
             get { return Config.GetStatic("MapDecryptionKey", "649ae451ca33ec53bbcbcc33becf15f4"); }
         }
 
-        public CellList Cells
-        {
-            get;
-            private set;
-        }
-
         public CellInformationProvider CellInformationProvider
         {
             get { return m_cellInformationProvider; }
@@ -57,8 +53,7 @@ namespace BiM.Behaviors.Game.World
 
         public ReadOnlyCollection<RolePlayActor> Actors
         {
-            get;
-            set;
+            get { return m_actors.AsReadOnly(); }
         }
 
         public SubArea SubArea
@@ -191,6 +186,35 @@ namespace BiM.Behaviors.Game.World
             get { return m_map.Layers; }
         }
 
+        public bool UsingNewMovementSystem
+        {
+            get { return m_map.UsingNewMovementSystem; }
+        }
+
+        #endregion
+
+        #region IContext Members
+
+        public ContextActor[] GetActors(Cell cell)
+        {
+            return Actors.Where(entry => entry.Position != null && entry.Position.Cell == cell).Select(entry => (ContextActor)entry).ToArray();
+        }
+
+        #endregion
+
+        #region IMapDataProvider Members
+
+        public CellList Cells
+        {
+            get;
+            private set;
+        }
+
+        public bool CellMarked(Cell cell)
+        {
+            return false;
+        }
+
         #endregion
 
         public RolePlayActor GetActor(int id)
@@ -222,14 +246,13 @@ namespace BiM.Behaviors.Game.World
 
         public RolePlayActor CreateRolePlayActor(GameRolePlayActorInformations actor)
         {
-
             if (actor is GameRolePlayCharacterInformations)
                 return new Character(actor as GameRolePlayCharacterInformations, this);
             if (actor is GameRolePlayGroupMonsterInformations)
                 return new GroupMonster(actor as GameRolePlayGroupMonsterInformations, this);
             if (actor is GameRolePlayMerchantWithGuildInformations)
                 return new Merchant(actor as GameRolePlayMerchantWithGuildInformations, this);
-            if (actor is GameRolePlayMerchantInformations) 
+            if (actor is GameRolePlayMerchantInformations)
                 return new Merchant(actor as GameRolePlayMerchantInformations, this);
             if (actor is GameRolePlayMountInformations)
                 return new MountActor(actor as GameRolePlayMountInformations, this);
@@ -262,9 +285,28 @@ namespace BiM.Behaviors.Game.World
             get { return m_map; }
         }
 
-        public override bool IsCellWalkable(Cell cell)
+        public override bool IsCellWalkable(Cell cell, bool fight = false, Cell previousCell = null)
         {
-            return cell.Walkable;
+            if (!cell.Walkable)
+                return false;
+
+            if (fight && cell.NonWalkableDuringFight)
+                return false;
+
+            if (!fight && cell.NonWalkableDuringRP)
+                return false;
+
+            if (Map.UsingNewMovementSystem && previousCell != null)
+            {
+                var floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
+
+                if (cell.MoveZone != previousCell.MoveZone || cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff > Map.ElevationTolerance)
+                    return false;
+            }
+
+            // todo : LoS
+
+            return true;
         }
 
         // do something better

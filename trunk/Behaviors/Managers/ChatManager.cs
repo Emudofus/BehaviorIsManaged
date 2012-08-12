@@ -10,89 +10,93 @@ namespace BiM.Behaviors.Managers
 {
     public class ChatManager
     {
-        private Bot _bot;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Bot m_bot;
 
         public ChatManager(Bot bot)
         {
-            this._bot = bot;
+            m_bot = bot;
         }
 
-        public ChatActivableChannelsEnum defaultChannel
+        public static ChatActivableChannelsEnum DefaultChannel
         {
-            get
-            {
-                return Config.GetStatic("DefaultChannel", ChatActivableChannelsEnum.CHANNEL_ADS);
-            }
+            get { return Config.GetStatic("DefaultChannel", ChatActivableChannelsEnum.CHANNEL_ADS); }
         }
 
-        public string defaultSenderName
+        public static string DefaultSenderName
         {
-            get
-            {
-                return Config.GetStatic("DefaultSenderName", "BiM");
-            }
+            get { return Config.GetStatic("DefaultSenderName", "BiM"); }
         }
 
         #region SendToClient
+
         /// <summary>
-        /// Send a Message to the D. Client
+        /// Send a Message to the Client
         /// </summary>
         /// <param name="content">Content of chat Message</param>
         public void SendMessageToClient(string content)
         {
-            this.SendMessageToClient(content, defaultSenderName, defaultChannel);
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessageToClient(content, DefaultSenderName, DefaultChannel);
         }
 
         /// <summary>
-        /// Send a Message to the D. Client
+        /// Send a Message to the Client
         /// </summary>
         /// <param name="content">Content of chat Message</param>
         /// <param name="senderName">Name of the Sender</param>
         public void SendMessageToClient(string content, string senderName)
         {
-            this.SendMessageToClient(content, senderName, defaultChannel);
+            if (content == null) throw new ArgumentNullException("content");
+            if (senderName == null) throw new ArgumentNullException("senderName");
+            SendMessageToClient(content, senderName, DefaultChannel);
         }
 
         /// <summary>
-        /// Send a Message to the D. Client
+        /// Send a Message to the Client
         /// </summary>
         /// <param name="content">Content of chat Message</param>
         /// <param name="senderName">Name of the Sender</param>
         /// <param name="channel">Channel of the chat Message</param>
-        public void SendMessageToClient(string content, string senderName, ChatActivableChannelsEnum channel, string LogMessage = "Message Sent to Client")
+        public void SendMessageToClient(string content, string senderName, ChatActivableChannelsEnum channel)
         {
-            this._bot.SendToClient(new ChatServerMessage((sbyte)channel, content, (int)DateTime.Now.DateTimeToUnixTimestamp(), "", 0, senderName, 0));
-            logger.Debug(LogMessage);
+            if (content == null) throw new ArgumentNullException("content");
+            if (senderName == null) throw new ArgumentNullException("senderName");
+            m_bot.SendToClient(new ChatServerMessage((sbyte) channel, content, (int) DateTime.Now.DateTimeToUnixTimestamp(), "", 0, senderName, 0));
         }
 
         /// <summary>
-        /// Send an Error Message to the D. Client
+        /// Send an Error Message to the Client
         /// </summary>
         /// <param name="content">Content of error Message</param>
         public void SendErrorToClient(string content)
         {
-            this.SendMessageToClient("[Error]" + content, defaultSenderName, ChatActivableChannelsEnum.CHANNEL_ADMIN, "Error message Sent to Client");
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessageToClient("[Error]" + content, DefaultSenderName, ChatActivableChannelsEnum.CHANNEL_ADMIN);
         }
 
         /// <summary>
-        /// Send an Information Message to the D. Client
+        /// Send an Information Message to the Client
         /// </summary>
         /// <param name="content">Content of info Message</param>
         public void SendInfoToClient(string content)
         {
-            this.SendMessageToClient("[Info]" + content, defaultSenderName, ChatActivableChannelsEnum.CHANNEL_ALIGN, "Info message Sent to Client");
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessageToClient("[Info]" + content, DefaultSenderName, ChatActivableChannelsEnum.CHANNEL_ALIGN);
         }
+
         #endregion
 
         #region SendToServer
+
         /// <summary>
         /// Send a chat message to current Map
         /// </summary>
         /// <param name="content">Content of chat Message</param>
         public void SendMessageToMap(string content)
         {
-            this.SendMessage(content, ChatActivableChannelsEnum.CHANNEL_GLOBAL);
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessage(content, ChatActivableChannelsEnum.CHANNEL_GLOBAL);
         }
 
         /// <summary>
@@ -101,7 +105,8 @@ namespace BiM.Behaviors.Managers
         /// <param name="content">Content of chat Message</param>
         public void SendMessageToSales(string content)
         {
-            this.SendMessage(content, ChatActivableChannelsEnum.CHANNEL_SALES);
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessage(content, ChatActivableChannelsEnum.CHANNEL_SALES);
         }
 
         /// <summary>
@@ -110,7 +115,8 @@ namespace BiM.Behaviors.Managers
         /// <param name="content">Content of chat Message</param>
         public void SendMessageToParty(string content)
         {
-            this.SendMessage(content, ChatActivableChannelsEnum.CHANNEL_PARTY);
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessage(content, ChatActivableChannelsEnum.CHANNEL_PARTY);
         }
 
         /// <summary>
@@ -119,7 +125,8 @@ namespace BiM.Behaviors.Managers
         /// <param name="content">Content of chat Message</param>
         public void SendMessageToSeek(string content)
         {
-            this.SendMessage(content, ChatActivableChannelsEnum.CHANNEL_SEEK);
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessage(content, ChatActivableChannelsEnum.CHANNEL_SEEK);
         }
 
         /// <summary>
@@ -128,7 +135,8 @@ namespace BiM.Behaviors.Managers
         /// <param name="content">Content of chat Message</param>
         public void SendMessageToGuild(string content)
         {
-            this.SendMessage(content, ChatActivableChannelsEnum.CHANNEL_GUILD);
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessage(content, ChatActivableChannelsEnum.CHANNEL_GUILD);
         }
 
         /// <summary>
@@ -138,7 +146,9 @@ namespace BiM.Behaviors.Managers
         /// <param name="receiverName">Name of the receiver</param>
         public void SendPrivateMessage(string content, string receiverName)
         {
-            this.SendMessage(new ChatClientPrivateMessage(content, receiverName));
+            if (content == null) throw new ArgumentNullException("content");
+            if (receiverName == null) throw new ArgumentNullException("receiverName");
+            SendMessage(new ChatClientPrivateMessage(content, receiverName));
         }
 
         /// <summary>
@@ -148,7 +158,8 @@ namespace BiM.Behaviors.Managers
         /// <param name="channel">Channel of the message</param>
         public void SendMessage(string content, ChatActivableChannelsEnum channel)
         {
-            this.SendMessage(new ChatClientMultiMessage(content, (sbyte)channel));
+            if (content == null) throw new ArgumentNullException("content");
+            SendMessage(new ChatClientMultiMessage(content, (sbyte) channel));
         }
 
         /// <summary>
@@ -158,13 +169,14 @@ namespace BiM.Behaviors.Managers
         public void SendMessage(NetworkMessage message)
         {
             if (message == null) throw new ArgumentNullException("message");
-            _bot.SendToServer(message);
+            m_bot.SendToServer(message);
 
             if (message is ChatClientPrivateMessage)
                 logger.Debug("Private Message Sent to Server");
             else
                 logger.Debug("Message Sent to Server");
         }
+
         #endregion
     }
 }

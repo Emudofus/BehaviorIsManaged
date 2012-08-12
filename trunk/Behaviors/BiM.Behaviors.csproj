@@ -128,7 +128,7 @@
     <Compile Include="Game\World\ObjectPosition.cs" />
     <Compile Include="Game\World\Pathfinding\CellInformation.cs" />
     <Compile Include="Game\World\Pathfinding\CellInformationProvider.cs" />
-    <Compile Include="Game\World\Pathfinding\NodesComparer.cs" />
+    <Compile Include="Game\World\Pathfinding\IMapDataProvider.cs" />
     <Compile Include="Game\World\Pathfinding\Path.cs" />
     <Compile Include="Game\World\Pathfinding\Pathfinder.cs" />
     <Compile Include="Game\World\SubArea.cs" />

@@ -7,7 +7,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             get;
         }
 
-        public abstract bool IsCellWalkable(Cell cell);
+        public abstract bool IsCellWalkable(Cell cell, bool fight = false, Cell previousCell = null);
         public abstract CellInformation GetCellInformation(Cell cell);
     }
 }
