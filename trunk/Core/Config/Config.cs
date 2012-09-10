@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.XPath;
+using BiM.Core.Extensions;
 
 namespace BiM.Core.Config
 {
@@ -30,24 +31,79 @@ namespace BiM.Core.Config
             get { return m_nodes; }
         }
 
+        public void RegisterAttributes()
+        {
+            RegisterAttributes(Assembly.GetCallingAssembly());
+        }
+
+        public void RegisterAttributes(Assembly assembly)
+        {
+            foreach (var type in assembly.GetTypes())
+            {
+                foreach (var field in type.GetFields())
+                {
+                    var attr = field.GetCustomAttribute<ConfigurableAttribute>();
+
+                    if (attr == null)
+                        continue;
+
+                    if (Exists(attr.Name))
+                        throw new Exception(string.Format("Node with name {0} already used, a node name must be unique", attr.Name));
+
+                    m_nodes.Add(new ConfigVariable(attr, field));
+                }
+
+                foreach (var property in type.GetProperties())
+                {
+                    var attr = property.GetCustomAttribute<ConfigurableAttribute>();
+
+                    if (attr == null)
+                        continue; 
+                    
+                    if (Exists(attr.Name))
+                        throw new Exception(string.Format("Node with name {0} already used, a node name must be unique", attr.Name));
+
+
+
+                    m_nodes.Add(new ConfigVariable(attr, property));
+                }
+            }
+        }
+
         public void Load()
         {
             if (!File.Exists(FilePath))
-                Save();
+                Save(); // create the config file
 
             var document = new XmlDocument();
             document.Load(FilePath);
 
             var navigator = document.CreateNavigator();
-            m_nodes.Clear();
+            var listedNames = new List<string>();
             foreach (XPathNavigator iterator in navigator.Select("//" + ConfigNode.NodeName + "[@" + ConfigNode.AttributeName + "]"))
             {
                 if (!iterator.IsNode)
                     continue;
 
-                var node = new ConfigNode(( (IHasXmlNode)iterator ).GetNode());
+                var xmlNode = ( (IHasXmlNode)iterator ).GetNode();
+                var name = ConfigNode.GetNodeName(xmlNode);
+                var node = GetNode(name);
+
+                if (listedNames.Contains(name))
+                    throw new Exception(string.Format("Node with name {0} already used, a node name must be unique", name));
+
+                // if the noad already exist we set the value
+                if (node != null)
+                {
+                    node.Load(xmlNode);
+                }
+                else
+                {
+                    node = new ConfigNode(xmlNode);
+                }
 
                 m_nodes.Add(node);
+                listedNames.Add(name);
             }
         }
 
@@ -74,6 +130,11 @@ namespace BiM.Core.Config
             writer.Close();
         }
 
+        public bool Exists(string nodeName)
+        {
+            return m_nodes.Any(entry => entry.Name == nodeName);
+        }
+
         public ConfigNode GetNode(string name)
         {
             var nodes = m_nodes.Where(entry => entry.Name == name).ToArray();
@@ -91,7 +152,7 @@ namespace BiM.Core.Config
             if (node == null)
                 throw new KeyNotFoundException(string.Format("Node {0} not found", key));
 
-            return node.GetValue<T>();
+            return (T)node.GetValue(typeof(T));
         }
 
         public T Get<T>(string key, T defaultValue)
@@ -105,7 +166,7 @@ namespace BiM.Core.Config
                 return defaultValue;
             }
 
-            return node.GetValue<T>();
+            return (T)node.GetValue(typeof(T));
         }
 
         public void Set<T>(string key, T value)
@@ -152,38 +213,21 @@ namespace BiM.Core.Config
         public static T GetStatic<T>(string key)
         {
             var config = GetAssemblyConfig(Assembly.GetCallingAssembly());
-            var node = config.GetNode(key);
 
-            if (node == null)
-                throw new KeyNotFoundException(string.Format("Node {0} not found", key));
-
-            return node.GetValue<T>();
+            return config.Get<T>(key);
         }
 
         public static T GetStatic<T>(string key, T defaultValue)
         {
             var config = GetAssemblyConfig(Assembly.GetCallingAssembly());
-            var node = config.GetNode(key);
 
-            if (node == null)
-            {
-                config.Nodes.Add(new ConfigNode(key, defaultValue));
-
-                return defaultValue;
-            }
-
-            return node.GetValue<T>();
+            return config.Get<T>(key, defaultValue);
         }
 
         public static void SetStatic<T>(string key, T value)
         {
             var config = GetAssemblyConfig(Assembly.GetCallingAssembly());
-            var node = config.GetNode(key);
-
-            if (node == null)
-                throw new KeyNotFoundException(string.Format("Node {0} not found", key));
-
-            node.SetValue(value);
+            config.Set(key, value);
         }
     }
 }

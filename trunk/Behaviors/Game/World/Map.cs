@@ -17,13 +17,15 @@ namespace BiM.Behaviors.Game.World
 {
     public class Map : IContext, IMapDataProvider
     {
+        [Configurable("MapDecryptionKey", "The decryption key used by default")]
+        public static string GenericDecryptionKey = "649ae451ca33ec53bbcbcc33becf15f4";
+
         public const int ElevationTolerance = 11;
         public const uint Width = 14;
         public const uint Height = 20;
 
         public const uint MapSize = Width*Height*2;
         private readonly List<RolePlayActor> m_actors = new List<RolePlayActor>();
-        private readonly CellInformationProvider m_cellInformationProvider;
         private readonly DlmMap m_map;
 
         public Map(int id)
@@ -38,18 +40,8 @@ namespace BiM.Behaviors.Game.World
             IEnumerable<Cell> cells = m_map.Cells.Select(entry => new Cell(this, entry));
 
             Cells = new CellList(cells.ToArray());
-            m_cellInformationProvider = new MapCellInformationProvider(this);
         }
 
-        public static string GenericDecryptionKey
-        {
-            get { return Config.GetStatic("MapDecryptionKey", "649ae451ca33ec53bbcbcc33becf15f4"); }
-        }
-
-        public CellInformationProvider CellInformationProvider
-        {
-            get { return m_cellInformationProvider; }
-        }
 
         public ReadOnlyCollection<RolePlayActor> Actors
         {
@@ -269,34 +261,33 @@ namespace BiM.Behaviors.Game.World
 
             throw new Exception(string.Format("Actor {0} not handled", actor.GetType()));
         }
-    }
 
-    public class MapCellInformationProvider : CellInformationProvider
-    {
-        private readonly Map m_map;
-
-        public MapCellInformationProvider(Map map)
+        public bool IsActor(Cell cell)
         {
-            m_map = map;
+            throw new NotImplementedException();
         }
 
-        public override Map Map
+        public bool IsCellMarked(Cell cell)
         {
-            get { return m_map; }
+            // todo
+            return false;
         }
 
-        public override bool IsCellWalkable(Cell cell, bool fight = false, Cell previousCell = null)
+        public object[] GetMarks(Cell cell)
+        {
+            return new object[0];
+        }
+
+        public bool IsCellWalkable(Cell cell, bool throughEntities = false, Cell previousCell = null)
         {
             if (!cell.Walkable)
                 return false;
 
-            if (fight && cell.NonWalkableDuringFight)
+            if (cell.NonWalkableDuringRP)
                 return false;
 
-            if (!fight && cell.NonWalkableDuringRP)
-                return false;
-
-            if (Map.UsingNewMovementSystem && previousCell != null)
+            // compare the floors
+            if (UsingNewMovementSystem && previousCell != null)
             {
                 var floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
 
@@ -307,12 +298,6 @@ namespace BiM.Behaviors.Game.World
             // todo : LoS
 
             return true;
-        }
-
-        // do something better
-        public override CellInformation GetCellInformation(Cell cell)
-        {
-            return new CellInformation(cell, cell.Walkable, false, 1);
         }
     }
 }

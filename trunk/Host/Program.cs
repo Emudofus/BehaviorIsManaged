@@ -15,6 +15,34 @@ namespace BiM.Host
 {
     public static class Program
     {
+        [Configurable("DofusDataPath")]
+        public static string DofusDataPath = @"C:\Program Files (x86)\Dofus 2\app\data\common";
+
+        [Configurable("DofusMapsD2P")]
+        public static string DofusMapsD2P = @"C:\Program Files (x86)\Dofus 2\app\content\maps\maps0.d2p";
+
+        [Configurable("DofusI18NPath")]
+        public static string DofusI18NPath = @"C:\Program Files (x86)\Dofus 2\app\data\i18n";
+
+        [Configurable("BotAuthHost")]
+        public static string BotAuthHost = "localhost";
+
+        [Configurable("BotAuthPort")]
+        public static int BotAuthPort = 5555;
+
+        [Configurable("BotWorldHost")]
+        public static string BotWorldHost = "localhost";
+
+        [Configurable("BotWorldPort")]
+        public static int BotWorldPort = 5556;
+
+        [Configurable("RealAuthHost")]
+        public static string RealAuthHost = "213.248.126.180";
+
+        [Configurable("RealAuthPort")]
+        public static int RealAuthPort = 5555;
+
+
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private const string ConfigPath = "./config.xml";
 
@@ -72,34 +100,38 @@ namespace BiM.Host
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
             Config = new Config(ConfigPath);
-            Config.Load();
 
             foreach (var assembly in m_hierarchy)
             {
                 Config.BindAssembly(assembly);
+                Config.RegisterAttributes(assembly);
             }
+
+            Config.Load();
+
 
 
             var d2oSource = new D2OSource();
-            d2oSource.AddReaders(Config.GetStatic("DofusDataPath", @"C:\Program Files (x86)\Dofus 2\app\data\common"));
+            d2oSource.AddReaders(DofusDataPath);
             DataProvider.Instance.AddSource(d2oSource);
 
-            var maps = new D2PSource(new D2pFile(Config.GetStatic("DofusMapsD2P", @"C:\Program Files (x86)\Dofus 2\app\content\maps\maps0.d2p")));
+            var maps = new D2PSource(new D2pFile(DofusMapsD2P));
             DataProvider.Instance.AddSource(maps);
 
+            // todo : langs
             var d2iSource = new D2ISource(Languages.English);
-            d2iSource.AddReaders(Config.GetStatic("DofusI18NPath", @"C:\Program Files (x86)\Dofus 2\app\data\i18n"));
+            d2iSource.AddReaders(DofusI18NPath);
             DataProvider.Instance.AddSource(d2iSource);
 
 
             MITM = new MITM.MITM(new MITMConfiguration
                                      {
-                                         FakeAuthHost = Config.GetStatic("BotAuthHost", "localhost"),
-                                         FakeAuthPort = Config.GetStatic("BotAuthPort", 5555),
-                                         FakeWorldHost = Config.GetStatic("BotWorldHost", "localhost"),
-                                         FakeWorldPort = Config.GetStatic("BotWorldPort", 5556),
-                                         RealAuthHost = Config.GetStatic("RealAuthHost", "213.248.126.180"),
-                                         RealAuthPort = Config.GetStatic("RealAuthPort", 5555)
+                                         FakeAuthHost = BotAuthHost,
+                                         FakeAuthPort = BotAuthPort,
+                                         FakeWorldHost = BotWorldHost,
+                                         FakeWorldPort = BotWorldPort,
+                                         RealAuthHost = RealAuthHost,
+                                         RealAuthPort = RealAuthPort
                                      });
 
             MessageDispatcher.DefineHierarchy(m_hierarchy);

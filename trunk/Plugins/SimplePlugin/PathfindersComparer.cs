@@ -10,13 +10,8 @@ namespace SimplePlugin
 {
     public class PathfindersComparer
     {
-        public static bool AllowLogging
-        {
-            get
-            {
-                return Config.GetStatic("AllowComparer", false);
-            }
-        }
+        [Configurable("AllowComparer")]
+        public static bool AllowComparer = false;
 
         [MessageHandler(typeof (GameMapMovementRequestMessage))]
         public static void HandleGameMapMovementRequestMessage(Bot bot, GameMapMovementRequestMessage message)
@@ -26,7 +21,7 @@ namespace SimplePlugin
             var clientPath = Path.BuildFromClientCompressedPath(bot.Character.Map, message.keyMovements);
 
 
-            var pathfinder = new Pathfinder(bot.Character.Map.CellInformationProvider, bot.Character.Map);
+            var pathfinder = new Pathfinder(bot.Character.Map, bot.Character.Map);
             var botPath = pathfinder.FindPath(bot.Character.Position.Cell, clientPath.End, true);
 
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client

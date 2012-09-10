@@ -18,10 +18,8 @@ namespace SimplePlugin
 {
     public static class PacketsLogger
     {
-        public static bool AllowLogging
-        {
-            get { return Config.GetStatic("AllowLogging", false); }
-        }
+        [Configurable("AllowLogging")]
+        public static bool AllowLogging = false;
 
         private static ObjectDumper m_dumper = new ObjectDumper(2, true, false, BindingFlags.Public | BindingFlags.Instance |
             BindingFlags.GetField | BindingFlags.FlattenHierarchy);

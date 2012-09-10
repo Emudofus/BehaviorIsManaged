@@ -21,7 +21,7 @@ namespace BiM.Core.Messages
 
         protected class MessageHandler
         {
-            public MessageHandler(object container, Type containerType, Type messageType, MessageHandlerAttribute handlerAttribute, Action<object, object, Message> action, Type tokenType)
+            public MessageHandler(object container, Type containerType, Type messageType, MessageHandlerAttribute handlerAttribute, Action<object, object, Message> action, Type tokenType, IMessageFilter filter)
             {
                 Container = container;
                 ContainerType = containerType;
@@ -29,39 +29,42 @@ namespace BiM.Core.Messages
                 Attribute = handlerAttribute;
                 Action = action;
                 TokenType = tokenType;
+                Filter = filter;
             }
 
             public object Container
             {
                 get;
-                private set;
+                set;
             }
 
             public Type ContainerType
             {
                 get;
-                private set;
+                set;
             }
 
             public Type MessageType
             {
                 get;
-                private set;
+                set;
             }
 
             public MessageHandlerAttribute Attribute
             {
                 get;
-                private set;
+                set;
             }
 
             public Action<object, object, Message> Action
             {
                 get;
-                private set;
+                set;
             }
 
-            public Type TokenType { get; private set; }
+            public Type TokenType { get; set; }
+
+            public IMessageFilter Filter { get; set; }
         }
 
         private SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>>();
@@ -212,7 +215,20 @@ namespace BiM.Core.Messages
             if (!m_handlers[assembly].ContainsKey(messageType))
                 m_handlers[assembly].Add(messageType, new List<MessageHandler>());
 
-            m_handlers[assembly][messageType].Add(new MessageHandler(container, containerType, messageType, attribute, action, tokenType));
+            IMessageFilter filter = null;
+            if (attribute.FilterType != null)
+            {
+                if (!attribute.FilterType.HasInterface(typeof(IMessageFilter)))
+                    throw new Exception(string.Format("Cannot register handler {0} in {1}, the filter type {2} doesn't implement IMessageFilter", messageType, containerType, attribute.FilterType));
+
+                ConstructorInfo ctor;
+                if ((ctor = attribute.FilterType.GetConstructor(new Type[0])) == null)
+                    throw new Exception(string.Format("Cannot register handler {0} in {1}, the filter type {2} hasn't a default constructor", messageType, containerType, attribute.FilterType));
+
+                filter = (IMessageFilter)ctor.Invoke(new object[0]);
+            }
+
+            m_handlers[assembly][messageType].Add(new MessageHandler(container, containerType, messageType, attribute, action, tokenType, filter));
         }
 
         public static void DefineHierarchy(IEnumerable<Assembly> assemblies)
@@ -270,7 +286,7 @@ namespace BiM.Core.Messages
         {
             IEnumerable<MessageHandler> handlers = null;
 
-            // navigate throw hierarchy ...
+            // navigate through the hierarchy ...
             foreach (var keyPair in m_handlers)
             {
                 // if a handler can handle this type we return it

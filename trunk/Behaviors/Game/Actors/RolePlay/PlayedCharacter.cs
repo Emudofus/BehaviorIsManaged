@@ -142,11 +142,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             if (cell == null) throw new ArgumentNullException("cell");
 
-            var pathfinder = new Pathfinder(Map.CellInformationProvider, Map);
+            var pathfinder = new Pathfinder(Map, Map);
             var path = pathfinder.FindPath(Position.Cell, cell, true);
 
-            NotifyStartMoving(path);
-            Bot.SendToServer(new GameMapMovementRequestMessage(path.GetCompressedPathKeys(), Map.Id));
+            Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
         }
 
         public void CancelMove()

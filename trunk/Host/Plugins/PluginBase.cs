@@ -64,8 +64,9 @@ namespace BiM.Host.Plugins
             if (UseConfig)
             {
                 Config = new Config(ConfigPath);
-                Config.Load();
                 Config.BindAssembly(Context.PluginAssembly);
+                Config.RegisterAttributes(Context.PluginAssembly);
+                Config.Load();
             }
         }
 

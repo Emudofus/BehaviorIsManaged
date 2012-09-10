@@ -21,7 +21,9 @@ namespace BiM.Host.Plugins
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public static string PluginsFolder = Config.GetStatic("PluginsFolder", "./plugins");
+        [Configurable("PluginsFolder")]
+        public static string PluginsFolder = "./plugins";
+
         private readonly List<PluginContext> m_pluginContexts = new List<PluginContext>();
 
         private PluginManager()

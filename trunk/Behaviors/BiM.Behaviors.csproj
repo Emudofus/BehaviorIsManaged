@@ -130,6 +130,7 @@
     <Compile Include="Game\World\Pathfinding\CellInformationProvider.cs" />
     <Compile Include="Game\World\Pathfinding\IMapDataProvider.cs" />
     <Compile Include="Game\World\Pathfinding\Path.cs" />
+    <Compile Include="Game\World\Pathfinding\PathElement.cs" />
     <Compile Include="Game\World\Pathfinding\Pathfinder.cs" />
     <Compile Include="Game\World\SubArea.cs" />
     <Compile Include="Game\World\SuperArea.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Handlers\Context\RolePlayHandler.cs" />
     <Compile Include="Handlers\Regen\RegenHandler.cs" />
     <Compile Include="Handlers\Spells\SpellHandler.cs" />
+    <Compile Include="Managers\ChatManager.cs" />
     <Compile Include="Messages\BotCreatedMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -18,15 +18,11 @@ namespace BiM.Behaviors.Managers
             m_bot = bot;
         }
 
-        public static ChatActivableChannelsEnum DefaultChannel
-        {
-            get { return Config.GetStatic("DefaultChannel", ChatActivableChannelsEnum.CHANNEL_ADS); }
-        }
+        [Configurable("DefaultChannel")]
+        public static ChatActivableChannelsEnum DefaultChannel = ChatActivableChannelsEnum.CHANNEL_ADS;
 
-        public static string DefaultSenderName
-        {
-            get { return Config.GetStatic("DefaultSenderName", "BiM"); }
-        }
+        [Configurable("DefaultSenderName")]
+        public static string DefaultSenderName = "BiM";
 
         #region SendToClient
 

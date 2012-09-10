@@ -1,4 +1,5 @@
 using System;
+using BiM.Core.Extensions;
 using BiM.Core.Network;
 
 namespace BiM.Core.Messages
@@ -27,5 +28,7 @@ namespace BiM.Core.Messages
             get;
             set;
         }
+
+        public Type FilterType { get; set; }
     }
 }

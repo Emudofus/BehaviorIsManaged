@@ -10,17 +10,19 @@ namespace BiM.Core.Config
         public const string NodeName = "Key";
         public const string AttributeName = "name";
 
+        private string m_name;
         private XmlNode m_node;
         private object m_value;
-        private string m_name;
+
+        protected ConfigNode()
+        {
+        }
 
         public ConfigNode(XmlNode node)
         {
             if (node == null) throw new ArgumentNullException("node");
-            m_node = node;
 
-            if (node.Attributes[AttributeName] == null)
-                throw new Exception(string.Format("Attribute {0} not found", AttributeName));
+            Load(node);
         }
 
         public ConfigNode(string name, object value)
@@ -31,53 +33,61 @@ namespace BiM.Core.Config
             m_value = value;
         }
 
-        public string Name
+        public virtual string Name
         {
-            get
-            {
-                if (m_node == null)
-                    return m_name;
-                else
-                    return m_node.Attributes[AttributeName].Value;
-            }
-            set
-            {
-                if (m_node == null)
-                    m_name = value;
-                else
-                    m_node.Attributes[AttributeName].Value = value;
-            }
+            get { return m_name; }
+            set { m_name = value; }
         }
 
-        public T GetValue<T>()
+        public bool IsSynchronised
         {
-            if (m_value != null)
-                return (T)m_value;
-
-            return (T)(m_value = new XmlSerializer(typeof(T)).Deserialize(new StringReader(m_node.InnerXml)));
+            get;
+            protected set;
         }
 
-        public void SetValue<T>(T value)
+        public static string GetNodeName(XmlNode node)
+        {
+            if (node.Attributes[AttributeName] == null)
+                throw new Exception(string.Format("Attribute {0} not found", AttributeName));
+
+            return node.Attributes[AttributeName].Value;
+        }
+
+        public virtual object GetValue(Type type)
+        {
+            if (m_node != null)
+            {
+                m_value = new XmlSerializer(type).Deserialize(new StringReader(m_node.InnerXml));
+                m_node = null;
+                IsSynchronised = true;
+            }
+
+            return m_value;
+        }
+
+        public virtual void SetValue(object value)
         {
             m_value = value;
+            IsSynchronised = false;
         }
 
-        internal void Save(XmlWriter writer)
+        internal virtual void Save(XmlWriter writer)
         {
             if (writer == null) throw new ArgumentNullException("writer");
 
             writer.WriteStartElement(NodeName);
             writer.WriteAttributeString(AttributeName, Name);
 
-            if (m_value != null)
-                new XmlSerializer(m_value.GetType()).Serialize(writer, m_value);
-            else if (m_node == null)
-                throw new Exception("m_node and m_value are null, something went wrong");
-            else
-                m_node.WriteContentTo(writer);
-
+            new XmlSerializer(m_value.GetType()).Serialize(writer, m_value);
+            IsSynchronised = true;
 
             writer.WriteEndElement();
+        }
+
+        internal virtual void Load(XmlNode node)
+        {
+            m_name = GetNodeName(node);
+            m_node = node;
         }
     }
 }

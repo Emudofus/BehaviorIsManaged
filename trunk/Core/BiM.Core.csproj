@@ -79,6 +79,8 @@
     <Compile Include="Collections\PriorityQueueB.cs" />
     <Compile Include="Config\ConfigNode.cs" />
     <Compile Include="Config\Config.cs" />
+    <Compile Include="Config\ConfigurableAttribute.cs" />
+    <Compile Include="Config\ConfigVariable.cs" />
     <Compile Include="Extensions\DateExtensions.cs" />
     <Compile Include="Extensions\DnsExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="IO\IDataWriter.cs" />
     <Compile Include="IO\ZipHelper.cs" />
     <Compile Include="Messages\DispatcherTask.cs" />
+    <Compile Include="Messages\IMessageFilter.cs" />
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\MessagePriority.cs" />
     <Compile Include="Network\BufferManager.cs" />

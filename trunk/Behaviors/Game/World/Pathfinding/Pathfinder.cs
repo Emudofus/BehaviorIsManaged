@@ -31,8 +31,12 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
     // todo : centralize informations between IMapDataProvider and CellsInformationsProvider
     // todo : find a way to organize the nodes as the client without falling in O(n) complexity
+    /// <summary>
+    /// This class use a derived A* algorithm to find a path between two points with the given informations.
+    /// </summary>
     public class Pathfinder
     {
+        private readonly Map m_map;
         private readonly IMapDataProvider m_mapDataProvider;
         private readonly bool m_throughEntities;
         public static int EstimateHeuristic = 10;
@@ -62,17 +66,11 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             return EstimateHeuristic * pointA.DistanceTo(pointB);
         }
 
-        public Pathfinder(CellInformationProvider cellsInformationProvider, IMapDataProvider mapDataProvider, bool throughEntities = true)
+        public Pathfinder(Map map, IMapDataProvider mapDataProvider, bool throughEntities = true)
         {
+            m_map = map;
             m_mapDataProvider = mapDataProvider;
             m_throughEntities = throughEntities;
-            CellsInformationProvider = cellsInformationProvider;
-        }
-
-        public CellInformationProvider CellsInformationProvider
-        {
-            get;
-            private set;
         }
 
         public Path FindPath(Cell startCell, Cell endCell, bool allowDiagonals, int movementPoints = (short)-1)
@@ -87,7 +85,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             var counter = 0;
 
             if (movementPoints == 0)
-                return Path.GetEmptyPath(CellsInformationProvider.Map, startCell);
+                return Path.GetEmptyPath(m_map, startCell);
 
             matrix[location.Id].Cell = location;
             matrix[location.Id].Parent = null;
@@ -111,7 +109,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 }
 
                 if (counter > SearchLimit)
-                    return Path.GetEmptyPath(CellsInformationProvider.Map, startCell);
+                    return Path.GetEmptyPath(m_map, startCell);
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -128,7 +126,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                     if (newLocation.Id < 0 || newLocation.Id >= Map.MapSize)
                         continue;
 
-                    if (!CellsInformationProvider.IsCellWalkable(newLocation))
+                    if (!m_mapDataProvider.IsCellWalkable(newLocation))
                         continue;
 
                     double baseCost;
@@ -205,9 +203,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             else
             {
                 if (movementPoints > 0 && closedList.Count + 1 > movementPoints)
-                    return new Path(CellsInformationProvider.Map, closedList.Take(movementPoints + 1).Select(entry => entry.Cell));
+                    return new Path(m_map, closedList.Take(movementPoints + 1).Select(entry => entry.Cell));
 
-                return new Path(CellsInformationProvider.Map, closedList.Select(entry => entry.Cell));
+                return new Path(m_map, closedList.Select(entry => entry.Cell));
             }
         }
 
@@ -235,9 +233,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                     var middle = new Point(cell.X + (int)Math.Round(( nodes[i + 3].Cell.X - cell.X ) / 2d),
                         cell.Y + (int)Math.Round(( nodes[i + 3].Cell.Y - cell.Y ) / 2d));
 
-                    var middleCell = m_mapDataProvider.Cells[middle];
+                    var middleCell = m_map.Cells[middle];
 
-                    if (GetCellCost(middleCell, true) < 2 && CellsInformationProvider.IsCellWalkable(middleCell, false, cell))
+                    if (GetCellCost(middleCell, true) < 2 && m_mapDataProvider.IsCellWalkable(middleCell, false, cell))
                     {
                         cells.Add(middleCell);
                         i += 2;
@@ -248,8 +246,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 {
                     var middleCell = nodes[i + 1].Cell;
                     var nextCell = nodes[i + 2].Cell;
-                    var middleCell2X = m_mapDataProvider.Cells[cell.X, middleCell.Y];
-                    var middleCell2Y = m_mapDataProvider.Cells[middleCell.X, cell.Y];
+                    var middleCell2X = m_map.Cells[cell.X, middleCell.Y];
+                    var middleCell2Y = m_map.Cells[middleCell.X, cell.Y];
 
                     // cell aligned to nextcell but not to middle cell
                     if (((cell.X + cell.Y == nextCell.X + nextCell.Y && cell.X - cell.Y != middleCell.X - middleCell.Y) ||
@@ -261,12 +259,12 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                         i++;
                     }
 
-                    else if (cell.X == nextCell.X && cell.X != middleCell.X && GetCellCost(middleCell2X, true) < 2 && CellsInformationProvider.IsCellWalkable(middleCell2X, false, cell))
+                    else if (cell.X == nextCell.X && cell.X != middleCell.X && GetCellCost(middleCell2X, true) < 2 && m_mapDataProvider.IsCellWalkable(middleCell2X, false, cell))
                     {
                         cells.Add(middleCell2X);
                         i++;
                     }
-                    else if (cell.Y == nextCell.Y && cell.Y != middleCell.Y && GetCellCost(middleCell2Y, true) < 2 && CellsInformationProvider.IsCellWalkable(middleCell2Y, false, cell))
+                    else if (cell.Y == nextCell.Y && cell.Y != middleCell.Y && GetCellCost(middleCell2Y, true) < 2 && m_mapDataProvider.IsCellWalkable(middleCell2Y, false, cell))
                     {
                         cells.Add(middleCell2Y);
                         i++;
@@ -274,7 +272,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 }
             }
 
-            return new Path(CellsInformationProvider.Map, cells);
+            return new Path(m_map, cells);
         }
 
         private double GetCellCost(Cell cell, bool throughEntities)
@@ -295,16 +293,16 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             var cost = 1d;
             if (m_mapDataProvider.GetActors(cell).Length > 0)
                 cost += 0.3;
-            if (m_mapDataProvider.GetActors(m_mapDataProvider.Cells[cell.X + 1, cell.Y]).Length > 0)
-                cost += 0.3; 
-            if (m_mapDataProvider.GetActors(m_mapDataProvider.Cells[cell.X, cell.Y + 1]).Length > 0)
+            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X + 1, cell.Y]).Length > 0)
                 cost += 0.3;
-            if (m_mapDataProvider.GetActors(m_mapDataProvider.Cells[cell.X - 1, cell.Y]).Length > 0)
+            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X, cell.Y + 1]).Length > 0)
                 cost += 0.3;
-            if (m_mapDataProvider.GetActors(m_mapDataProvider.Cells[cell.X , cell.Y - 1]).Length > 0)
+            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X - 1, cell.Y]).Length > 0)
+                cost += 0.3;
+            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X, cell.Y - 1]).Length > 0)
                 cost += 0.3;
 
-            if (m_mapDataProvider.CellMarked(cell))
+            if (m_mapDataProvider.IsCellMarked(cell))
                 cost += 0.2;
 
             return cost;
