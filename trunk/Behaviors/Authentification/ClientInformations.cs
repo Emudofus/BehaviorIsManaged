@@ -4,16 +4,20 @@ using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Data;
 using BiM.Core.Extensions;
+using BiM.Core.Reflection;
 using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
+using NLog;
 using Version = BiM.Protocol.Types.Version;
 
 namespace BiM.Behaviors.Authentification
 {
     public class ClientInformations : INotifyPropertyChanged
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public string Salt
         {
             get;
@@ -220,6 +224,8 @@ namespace BiM.Behaviors.Authentification
         {
             if (msg == null) throw new ArgumentNullException("msg");
             BanEndDate = msg.banEndDate.UnixTimestampToDateTime();
+
+            logger.Warn("F*** I'm banned :( for {0}", BanEndDate - DateTime.Now);
         }
 
         public void Update(IdentificationSuccessMessage msg)
@@ -245,7 +251,7 @@ namespace BiM.Behaviors.Authentification
         public void Update(SelectedServerDataMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            SelectedServer = DataProvider.Instance.Get<Server>(msg.serverId);
+            SelectedServer = Singleton<DataProvider>.Instance.Get<Server>(msg.serverId);
             ConnectionTicket = msg.ticket;
             ServerAddress = msg.address;
             ServerPort = msg.port;

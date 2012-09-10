@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Sockets;
+using BiM.Core.Config;
 using BiM.Core.Network;
+using NLog;
 
 namespace BiM.MITM.Network
 {
@@ -9,6 +11,11 @@ namespace BiM.MITM.Network
     /// </summary>
     public class ConnectionMITM : Client
     {
+        [Configurable("ServerConnectionTimeout", "Timeout in seconds before closing the connection")]
+        public static int ServerConnectionTimeout = 20;
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public ConnectionMITM(Socket clientSocket, IMessageBuilder messageBuilder)
             : base(clientSocket)
         {
@@ -65,11 +72,13 @@ namespace BiM.MITM.Network
 
         private void OnServerDisconnected(ServerConnection server)
         {
+            logger.Debug("The server closed the connection");
             Disconnect();
         }
 
         private void OnServerConnected(ServerConnection server)
         {
+            logger.Debug("Connection to the server opened");
         }
 
         protected override void OnMessageReceived(NetworkMessage message)

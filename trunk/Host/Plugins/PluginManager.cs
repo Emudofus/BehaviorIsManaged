@@ -92,6 +92,8 @@ namespace BiM.Host.Plugins
                         initialized = true;
 
                         RegisterPlugin(pluginContext);
+
+                        logger.Info("Plugin '{0}' loaded", pluginContext.Plugin.Name);
                     }
                 }
             }

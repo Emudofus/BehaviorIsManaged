@@ -102,7 +102,18 @@ namespace BiM.MITM
         private void OnAuthClientConnected(ConnectionMITM client)
         {
             client.Bot.Start();
-            client.BindToServer(m_configuration.RealAuthHost, m_configuration.RealAuthPort); 
+
+            try
+            {
+                client.BindToServer(m_configuration.RealAuthHost, m_configuration.RealAuthPort); 
+            }
+            catch (Exception)
+            {
+                logger.Error("Cannot connect to {0}:{1}.", m_configuration.RealAuthHost, m_configuration.RealAuthPort);
+                client.Bot.Stop();
+                return;
+            }
+
             logger.Debug("Auth client connected");
         }
 
@@ -179,7 +190,17 @@ namespace BiM.MITM
 
             ( client.Bot.Dispatcher as NetworkMessageDispatcher ).Client = client;
             ( client.Bot.Dispatcher as NetworkMessageDispatcher ).Server = client.Server;
-            client.BindToServer(tuple.Item2.address, tuple.Item2.port);
+
+            try
+            {
+                client.BindToServer(tuple.Item2.address, tuple.Item2.port);
+            }
+            catch (Exception)
+            {
+                logger.Error("Cannot connect to {0}:{1}.", tuple.Item2.address, tuple.Item2.port);
+                client.Bot.Stop();
+                return;
+            }
 
             logger.Debug("Bot retrieved with ticket {0}", message.ticket);
         }

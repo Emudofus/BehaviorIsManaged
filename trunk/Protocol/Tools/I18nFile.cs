@@ -16,7 +16,7 @@ namespace BiM.Protocol.Tools
             Initialize();
         }
 
-        public string FileName
+        public string FilePath
         {
             get { return m_uri; }
         }

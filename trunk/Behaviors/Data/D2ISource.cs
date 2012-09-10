@@ -50,7 +50,7 @@ namespace BiM.Behaviors.Data
 
         public void AddReader(I18NFile d2iFile)
         {
-            var file = Path.GetFileNameWithoutExtension(d2iFile.FileName);
+            var file = Path.GetFileNameWithoutExtension(d2iFile.FilePath);
 
             if (!file.Contains("_"))
                 throw new Exception(string.Format("Cannot found character '_' in file name {0}, cannot deduce the file lang", file));
@@ -66,6 +66,8 @@ namespace BiM.Behaviors.Data
         public void AddReader(I18NFile d2iFile, Languages language)
         {
             m_readers.Add(language, d2iFile);
+
+            logger.Info("File added : {0}", Path.GetFileName(d2iFile.FilePath));
         }
 
         public bool DoesHandleType(Type type)

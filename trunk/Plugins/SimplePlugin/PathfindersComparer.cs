@@ -16,6 +16,9 @@ namespace SimplePlugin
         [MessageHandler(typeof (GameMapMovementRequestMessage))]
         public static void HandleGameMapMovementRequestMessage(Bot bot, GameMapMovementRequestMessage message)
         {
+            if (!AllowComparer)
+                return;
+
             bot.SendToClient(new DebugClearHighlightCellsMessage());
 
             var clientPath = Path.BuildFromClientCompressedPath(bot.Character.Map, message.keyMovements);

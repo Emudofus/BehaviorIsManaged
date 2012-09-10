@@ -45,7 +45,9 @@ namespace BiM.Behaviors.Data
                     m_readers.Add(@class.Value.ClassType, d2oFile);
                 }
             }
-            
+
+            logger.Info("File added : {0}", Path.GetFileName(d2oFile.FilePath));
+
         }
 
         public bool DoesHandleType(Type type)

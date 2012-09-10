@@ -5,18 +5,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using BiM.Core.IO;
+using NLog;
 
 namespace BiM.Protocol.Tools.D2p
 {
     public class D2pFile : INotifyPropertyChanged, IDisposable
     {
-        public event Action<D2pFile, int> ExtractPercentProgress;
-
-        private void OnExtractPercentProgress(int percent)
-        {
-            Action<D2pFile, int> handler = ExtractPercentProgress;
-            if (handler != null) handler(this, percent);
-        }
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly Dictionary<string, D2pEntry> m_entries = new Dictionary<string, D2pEntry>();
         private readonly List<D2pFile> m_links = new List<D2pFile>();
@@ -24,7 +19,8 @@ namespace BiM.Protocol.Tools.D2p
         private readonly Queue<D2pFile> m_linksToSave = new Queue<D2pFile>();
         private readonly List<D2pProperty> m_properties = new List<D2pProperty>();
 
-        private readonly List<D2pDirectory>  m_rootDirectories = new List<D2pDirectory>();
+        private readonly List<D2pDirectory> m_rootDirectories = new List<D2pDirectory>();
+        private string m_filePath;
 
         private bool m_isDisposed;
         private BigEndianReader m_reader;
@@ -76,6 +72,16 @@ namespace BiM.Protocol.Tools.D2p
 
         public string FilePath
         {
+            get { return m_filePath; }
+            private set
+            {
+                m_filePath = value;
+                FileName = Path.GetFileName(value);
+            }
+        }
+
+        public string FileName
+        {
             get;
             private set;
         }
@@ -93,10 +99,10 @@ namespace BiM.Protocol.Tools.D2p
                 m_reader.Dispose();
 
             if (m_links != null)
-            foreach (var link in m_links)
-            {
-                link.Dispose();
-            }
+                foreach (D2pFile link in m_links)
+                {
+                    link.Dispose();
+                }
         }
 
         #endregion
@@ -106,6 +112,14 @@ namespace BiM.Protocol.Tools.D2p
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
+        public event Action<D2pFile, int> ExtractPercentProgress;
+
+        private void OnExtractPercentProgress(int percent)
+        {
+            Action<D2pFile, int> handler = ExtractPercentProgress;
+            if (handler != null) handler(this, percent);
+        }
 
         public bool HasFilePath()
         {
@@ -168,7 +182,7 @@ namespace BiM.Protocol.Tools.D2p
             m_reader.Seek(IndexTable.EntriesDefinitionOffset, SeekOrigin.Begin);
             for (int i = 0; i < IndexTable.EntriesCount; i++)
             {
-                var entry = D2pEntry.CreateEntryDefinition(this, m_reader);
+                D2pEntry entry = D2pEntry.CreateEntryDefinition(this, m_reader);
 
                 InternalAddEntry(entry);
             }
@@ -332,13 +346,24 @@ namespace BiM.Protocol.Tools.D2p
 
         private void InternalAddEntry(D2pEntry entry)
         {
-            m_entries.Add(entry.FullFileName, entry);
+            D2pEntry registerdEntry = TryGetEntry(entry.FullFileName);
+
+            // shouldn't be possible but dofus don't care about that
+            if (registerdEntry != null)
+            {
+                logger.Warn("Entry '{0}'({1}) already added and will be override ({2})", registerdEntry.FullFileName,
+                            registerdEntry.Container.FileName, FileName);
+                m_entries[registerdEntry.FullFileName] = entry;
+            }
+            else
+                m_entries.Add(entry.FullFileName, entry);
+
             InternalAddDirectories(entry);
         }
 
         private void InternalAddDirectories(D2pEntry entry)
         {
-            var directories = entry.GetDirectoriesName();
+            string[] directories = entry.GetDirectoriesName();
 
             if (directories.Length == 0)
                 return;
@@ -357,14 +382,14 @@ namespace BiM.Protocol.Tools.D2p
 
             current.Entries.Add(entry);
 
-            foreach (var directory in directories.Skip(1))
+            foreach (string directory in directories.Skip(1))
             {
                 if (!current.HasDirectory(directory))
                 {
                     var dir = new D2pDirectory(directory)
-                    {
-                        Parent = current
-                    };
+                                  {
+                                      Parent = current
+                                  };
                     current.Directories.Add(dir);
 
                     current = dir;
@@ -467,14 +492,14 @@ namespace BiM.Protocol.Tools.D2p
         }
 
         public void ExtractFile(string fileName, bool overwrite = false)
-        {                          
+        {
             if (!Exists(fileName))
                 throw new FileNotFoundException(fileName);
 
             D2pEntry entry = GetEntry(fileName);
 
-            var dest = Path.Combine("./", entry.FullFileName);
-                
+            string dest = Path.Combine("./", entry.FullFileName);
+
             if (!Directory.Exists(Path.GetDirectoryName(dest)))
                 Directory.CreateDirectory(dest);
 
@@ -486,7 +511,7 @@ namespace BiM.Protocol.Tools.D2p
             byte[] bytes = ReadFile(fileName);
             FileAttributes attr = File.GetAttributes(destination);
 
-            if (( attr & FileAttributes.Directory ) == FileAttributes.Directory)
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
             {
                 destination = Path.Combine(destination, Path.GetFileName(fileName));
             }
@@ -505,12 +530,12 @@ namespace BiM.Protocol.Tools.D2p
             if (!HasDirectory(directoryName))
                 throw new InvalidOperationException(string.Format("Directory {0} does not exist", directoryName));
 
-            var directory = TryGetDirectory(directoryName);
+            D2pDirectory directory = TryGetDirectory(directoryName);
 
             if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(destination, directory.FullName))))
                 Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(destination, directory.FullName)));
 
-            foreach (var entry in directory.Entries)
+            foreach (D2pEntry entry in directory.Entries)
             {
                 ExtractFile(entry.FullFileName, Path.Combine(destination, entry.FullFileName));
             }
@@ -529,7 +554,7 @@ namespace BiM.Protocol.Tools.D2p
             //create dirs
             foreach (var dir in m_entries.Select(entry => entry.Value.GetDirectoriesName()).Distinct())
             {
-                var dest = Path.Combine(Path.GetFullPath(destination), Path.Combine(dir));
+                string dest = Path.Combine(Path.GetFullPath(destination), Path.Combine(dir));
 
                 if (!Directory.Exists(dest))
                     Directory.CreateDirectory(dest);
@@ -542,15 +567,15 @@ namespace BiM.Protocol.Tools.D2p
                 if (File.Exists(Path.GetFullPath(destination)) && !overwrite)
                     throw new InvalidOperationException(string.Format("Cannot overwrite {0}", destination));
 
-                var dest = Path.Combine(Path.GetFullPath(destination), entry.Value.FullFileName);
+                string dest = Path.Combine(Path.GetFullPath(destination), entry.Value.FullFileName);
 
                 File.WriteAllBytes(dest, ReadFile(entry.Value));
                 i++;
 
                 if (progress)
                 {
-                    if ((int) (( i / m_entries.Count ) * 100) != progressPercent)
-                        OnExtractPercentProgress(progressPercent = (int) (( i / m_entries.Count ) * 100));
+                    if ((int) ((i/m_entries.Count)*100) != progressPercent)
+                        OnExtractPercentProgress(progressPercent = (int) ((i/m_entries.Count)*100));
                 }
             }
         }
@@ -563,7 +588,7 @@ namespace BiM.Protocol.Tools.D2p
         {
             byte[] bytes = File.ReadAllBytes(file);
 
-            var dest = file;
+            string dest = file;
 
             if (HasFilePath())
                 dest = GetRelativePath(file, Path.GetDirectoryName(FilePath));
@@ -638,7 +663,8 @@ namespace BiM.Protocol.Tools.D2p
             if (!File.Exists(destination))
                 stream = File.Create(destination);
             else if (!overwrite)
-                throw new InvalidOperationException("Cannot perform SaveAs : file already exist, notify overwrite parameter to true");
+                throw new InvalidOperationException(
+                    "Cannot perform SaveAs : file already exist, notify overwrite parameter to true");
             else
                 stream = File.OpenWrite(destination);
 
@@ -688,19 +714,20 @@ namespace BiM.Protocol.Tools.D2p
         #endregion
 
         #region Explore
+
         public bool HasDirectory(string directory)
         {
-            var directoriesName = directory.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] directoriesName = directory.Split(new[] {'/', '\\'}, StringSplitOptions.RemoveEmptyEntries);
 
             if (directoriesName.Length == 0)
                 return false;
 
-            var current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
+            D2pDirectory current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
 
             if (current == null)
                 return false;
 
-            foreach (var dir in directoriesName.Skip(1))
+            foreach (string dir in directoriesName.Skip(1))
             {
                 if (!current.HasDirectory(dir))
                     return false;
@@ -713,17 +740,17 @@ namespace BiM.Protocol.Tools.D2p
 
         public D2pDirectory TryGetDirectory(string directory)
         {
-            var directoriesName = directory.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] directoriesName = directory.Split(new[] {'/', '\\'}, StringSplitOptions.RemoveEmptyEntries);
 
             if (directoriesName.Length == 0)
                 return null;
 
-            var current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
+            D2pDirectory current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
 
             if (current == null)
                 return null;
 
-            foreach (var dir in directoriesName.Skip(1))
+            foreach (string dir in directoriesName.Skip(1))
             {
                 if (!current.HasDirectory(dir))
                     return null;
@@ -737,19 +764,19 @@ namespace BiM.Protocol.Tools.D2p
         public D2pDirectory[] GetDirectoriesTree(string directory)
         {
             var result = new List<D2pDirectory>();
-            var directoriesName = directory.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] directoriesName = directory.Split(new[] {'/', '\\'}, StringSplitOptions.RemoveEmptyEntries);
 
             if (directoriesName.Length == 0)
                 return new D2pDirectory[0];
 
-            var current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
+            D2pDirectory current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
 
             if (current == null)
                 return new D2pDirectory[0];
 
             result.Add(current);
 
-            foreach (var dir in directoriesName.Skip(1))
+            foreach (string dir in directoriesName.Skip(1))
             {
                 if (!current.HasDirectory(dir))
                     return result.ToArray();
@@ -760,7 +787,6 @@ namespace BiM.Protocol.Tools.D2p
 
             return result.ToArray();
         }
-
 
         #endregion
     }

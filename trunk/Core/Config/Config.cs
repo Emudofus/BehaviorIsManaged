@@ -100,9 +100,9 @@ namespace BiM.Core.Config
                 else
                 {
                     node = new ConfigNode(xmlNode);
+                    m_nodes.Add(node);
                 }
 
-                m_nodes.Add(node);
                 listedNames.Add(name);
             }
         }

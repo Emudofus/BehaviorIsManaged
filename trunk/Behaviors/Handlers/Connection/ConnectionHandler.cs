@@ -1,5 +1,6 @@
 ﻿using BiM.Core.Messages;
 using BiM.Protocol.Messages;
+using NLog;
 
 namespace BiM.Behaviors.Handlers.Connection
 {

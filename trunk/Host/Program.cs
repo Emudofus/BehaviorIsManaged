@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using BiM.Behaviors.Data;
 using BiM.Core.Config;
@@ -82,12 +84,11 @@ namespace BiM.Host
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("Initialization...");
             Initialize();
 
-            Console.WriteLine("Starting...");
             Start();
-            Console.WriteLine("Started");
+
+            Console.WriteLine("Enter or Ctrl+C to stop");
 
             Console.Read();
 
@@ -96,7 +97,9 @@ namespace BiM.Host
 
         private static void Initialize()
         {
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            if (!Debugger.IsAttached) // the debugger handle the unhandled exceptions
+                AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
             Config = new Config(ConfigPath);
@@ -108,6 +111,8 @@ namespace BiM.Host
             }
 
             Config.Load();
+
+            logger.Info("{0} loaded", Path.GetFileName(Config.FilePath));
 
 
 
@@ -123,7 +128,6 @@ namespace BiM.Host
             d2iSource.AddReaders(DofusI18NPath);
             DataProvider.Instance.AddSource(d2iSource);
 
-
             MITM = new MITM.MITM(new MITMConfiguration
                                      {
                                          FakeAuthHost = BotAuthHost,
@@ -136,7 +140,7 @@ namespace BiM.Host
 
             MessageDispatcher.DefineHierarchy(m_hierarchy);
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in m_hierarchy)
             {
                 MessageDispatcher.RegisterAssembly(assembly);
             }
