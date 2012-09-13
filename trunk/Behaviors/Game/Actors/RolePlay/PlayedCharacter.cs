@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Guilds;
@@ -145,6 +146,11 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             var pathfinder = new Pathfinder(Map, Map);
             var path = pathfinder.FindPath(Position.Cell, cell, true);
 
+            if (IsMoving())
+                CancelMove();
+
+            NotifyStartMoving(path);
+
             Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
         }
 
@@ -153,7 +159,33 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (!IsMoving())
                 return;
 
-            throw new NotImplementedException();
+            var stopOnCell = Movement.TimedPath.GetCurrentCell();
+            NotifyStopMoving(true);
+
+            Bot.SendToServer(new GameMapMovementCancelMessage(stopOnCell.Id));
+        }
+
+        public void HighlightCell(Cell cell, Color color)
+        {
+            Bot.SendToClient(new DebugHighlightCellsMessage(color.ToArgb(), new[] { cell.Id }));
+        }
+
+        public void HighlightCells(IEnumerable<Cell> cells, Color color)
+        {
+            Bot.SendToClient(new DebugHighlightCellsMessage(color.ToArgb(), cells.Select(entry => entry.Id).ToArray()));
+        }
+
+        public void ResetCellsHighlight()
+        {
+            Bot.SendToClient(new DebugClearHighlightCellsMessage());
+        }
+
+        public void StartFightWith(GroupMonster monster)
+        {
+            // todo
+            var cell = monster.Position.Cell;
+
+            Move(cell);
         }
 
         #region Update Method
@@ -203,6 +235,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             if (msg == null) throw new ArgumentNullException("msg");
             Position = new ObjectPosition(Map, Map.Cells[msg.disposition.cellId], (DirectionsEnum) msg.disposition.direction);
+            Update(msg.humanoidInfo);
+
+            Name = msg.name;
+            Look = msg.look;
+            
+            // todo : aligns
         }
 
         #endregion

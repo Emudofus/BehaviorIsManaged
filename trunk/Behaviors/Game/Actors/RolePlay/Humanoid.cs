@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Game.Movements;
 using BiM.Protocol.Data;
 using BiM.Protocol.Types;
 using BiM.Core.Extensions;
@@ -19,15 +20,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             if (human == null) throw new ArgumentNullException("human");
 
-            m_followingCharactersLook = new ObservableCollection<EntityLook>(human.followingCharactersLook);
-            Emote = human.emoteId > 0 ? 
-                DataProvider.Instance.Get<Emoticon>(human.emoteId) : null;
-            EmoteStartTime = human.emoteStartTime > 0 ? 
-                new DateTime?(human.emoteStartTime.UnixTimestampToDateTime()) : null;
-            Restrictions = human.restrictions;
-            Title = human.titleId > 0 ?
-                DataProvider.Instance.Get<Title>(human.titleId) : null;
-            TitleParam = human.titleParam;
+            Update(human);
         }
 
         protected Humanoid(HumanWithGuildInformations human)                         
@@ -80,6 +73,29 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             get;
             protected set;
+        }
+
+        public override VelocityConfiguration GetAdaptedVelocity(World.Pathfinding.Path path)
+        {
+            if (Restrictions.forceSlowWalk)
+                return MovementBehavior.FantomMovementBehavior;
+            else if (Restrictions.cantRun)
+                return MovementBehavior.WalkingMovementBehavior;
+
+            return path.MPCost <= 3 ? MovementBehavior.WalkingMovementBehavior : MovementBehavior.RunningMovementBehavior;
+        }
+
+        public void Update(HumanInformations human)
+        {
+            m_followingCharactersLook = new ObservableCollection<EntityLook>(human.followingCharactersLook);
+            Emote = human.emoteId > 0 ?
+                DataProvider.Instance.Get<Emoticon>(human.emoteId) : null;
+            EmoteStartTime = human.emoteStartTime > 0 ?
+                new DateTime?(human.emoteStartTime.UnixTimestampToDateTime()) : null;
+            Restrictions = human.restrictions;
+            Title = human.titleId > 0 ?
+                DataProvider.Instance.Get<Title>(human.titleId) : null;
+            TitleParam = human.titleParam;
         }
 
         public override void Dispose()

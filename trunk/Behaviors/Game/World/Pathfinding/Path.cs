@@ -69,7 +69,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
         public bool IsEmpty()
         {
-            return m_cellsPath.Length == 0;
+            return m_cellsPath.Length <= 1; // if end == start the path is also empty
         }
 
         public DirectionsEnum GetEndCellDirection()
@@ -80,7 +80,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             if (m_compressedPath != null)
                 return m_compressedPath.Last().Direction;
 
-            return m_cellsPath[m_cellsPath.Length - 2].OrientationToAdjacent(m_cellsPath[m_cellsPath.Length - 1].Point);
+            return m_cellsPath[m_cellsPath.Length - 2].OrientationToAdjacent(m_cellsPath[m_cellsPath.Length - 1]);
         }
 
         public PathElement[] GetCompressedPath()
@@ -137,7 +137,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             var path = new List<PathElement>();
             for (int i = 1; i < m_cellsPath.Length; i++)
             {
-                path.Add(new PathElement(m_cellsPath[i - 1], m_cellsPath[i - 1].OrientationToAdjacent(m_cellsPath[i].Point)));
+                path.Add(new PathElement(m_cellsPath[i - 1], m_cellsPath[i - 1].OrientationToAdjacent(m_cellsPath[i])));
             }
 
             path.Add(new PathElement(m_cellsPath[m_cellsPath.Length - 1], path[path.Count - 1].Direction));
@@ -187,8 +187,6 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <summary>
         /// Build a Path instance from the keys sent by the server
         /// </summary>
-        /// <param name="map"></param>
-        /// <param name="keys"></param>
         /// <returns></returns>
         public static Path BuildFromServerCompressedPath(Map map, IEnumerable<short> keys)
         {

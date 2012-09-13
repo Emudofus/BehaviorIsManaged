@@ -61,7 +61,7 @@ namespace BiM.Behaviors.Game.World
         /// <returns></returns>
         public Cell this[int x, int y]
         {
-            get { return m_cellsByPoint[new Point(x, y)]; }
+            get { return this[new Point(x, y)]; }
         }
     }
 }

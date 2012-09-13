@@ -143,29 +143,32 @@ namespace BiM.Core.Network
 
         public void Send(NetworkMessage message)
         {
-            if (!IsConnected)
-                return;
-
-            var args = new SocketAsyncEventArgs();
-            args.Completed += OnSendCompleted;
-            args.UserToken = message;
-
-            byte[] data;
-            using (var writer = new BigEndianWriter())
+            lock (this)
             {
-                message.Pack(writer);
-                data = writer.Data;
+                if (!IsConnected)
+                    return;
+
+                var args = new SocketAsyncEventArgs();
+                args.Completed += OnSendCompleted;
+                args.UserToken = message;
+
+                byte[] data;
+                using (var writer = new BigEndianWriter())
+                {
+                    message.Pack(writer);
+                    data = writer.Data;
+                }
+
+                args.SetBuffer(data, 0, data.Length);
+
+                if (!Socket.SendAsync(args))
+                {
+                    OnMessageSended(message);
+                    args.Dispose();
+                }
+
+                LastActivity = DateTime.Now;
             }
-
-            args.SetBuffer(data, 0, data.Length);
-
-            if (!Socket.SendAsync(args))
-            {
-                OnMessageSended(message);
-                args.Dispose();
-            }
-
-            LastActivity = DateTime.Now;
         }
 
         private void OnSendCompleted(object sender, SocketAsyncEventArgs socketAsyncEventArgs)
@@ -176,16 +179,19 @@ namespace BiM.Core.Network
 
         private void ReceiveLoop()
         {
-            if (!IsConnected)
-                return;
-            
-            var args = new SocketAsyncEventArgs();
-            args.Completed += OnReceiveCompleted;
-            args.SetBuffer(new byte[8192], 0, 8192);
-
-            if (!Socket.ReceiveAsync(args))
+            lock (this)
             {
-                ProcessReceiveCompleted(args);
+                if (!IsConnected)
+                    return;
+
+                var args = new SocketAsyncEventArgs();
+                args.Completed += OnReceiveCompleted;
+                args.SetBuffer(new byte[8192], 0, 8192);
+
+                if (!Socket.ReceiveAsync(args))
+                {
+                    ProcessReceiveCompleted(args);
+                }
             }
         }
 
@@ -204,21 +210,23 @@ namespace BiM.Core.Network
 
         private void ProcessReceiveCompleted(SocketAsyncEventArgs args)
         {
-            if (!IsConnected)
-                return;
-
-            if (args.BytesTransferred <= 0 ||
-                args.SocketError != SocketError.Success)
+            lock (this)
             {
-                Disconnect();
-            }
-            else
-            {
-                Receive(args.Buffer, args.Offset, args.BytesTransferred);
+                if (!IsConnected)
+                    return;
 
-                ReceiveLoop();
-            }
+                if (args.BytesTransferred <= 0 ||
+                    args.SocketError != SocketError.Success)
+                {
+                    Disconnect();
+                }
+                else
+                {
+                    Receive(args.Buffer, args.Offset, args.BytesTransferred);
 
+                    ReceiveLoop();
+                }
+            }
         }
 
         public virtual void Receive(byte[] data, int offset, int count)
@@ -249,12 +257,15 @@ namespace BiM.Core.Network
 
         protected void Close()
         {
-            if (Socket != null && Socket.Connected)
+            lock (this)
             {
-                Socket.Shutdown(SocketShutdown.Both);
-                Socket.Close();
+                if (Socket != null && Socket.Connected)
+                {
+                    Socket.Shutdown(SocketShutdown.Both);
+                    Socket.Close();
 
-                Socket = null;
+                    Socket = null;
+                }
             }
         }
 

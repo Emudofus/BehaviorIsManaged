@@ -20,6 +20,11 @@ namespace BiM.Behaviors.Game
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public virtual void Tick(int dt)
+        {
+
+        }
+
         public virtual void Dispose()
         {
             PropertyChanged = null;

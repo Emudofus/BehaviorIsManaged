@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BiM.Behaviors;
 using BiM.Core.Messages;
 using BiM.Core.Network;
@@ -9,6 +10,7 @@ namespace BiM.MITM.Network
     public class NetworkMessageDispatcher : MessageDispatcher
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly List<Message> m_logs = new List<Message>();
 
         public NetworkMessageDispatcher()
         {
@@ -28,6 +30,8 @@ namespace BiM.MITM.Network
 
         protected override void Dispatch(Message message, object token)
         {
+            m_logs.Add(message);
+
             if (message == null) throw new ArgumentNullException("message");
             if (message is NetworkMessage)
                 Dispatch(message as NetworkMessage, token);

@@ -240,12 +240,12 @@ namespace BiM.Behaviors.Game.World
             return (DirectionsEnum)(uint)orientation;
         }
 
-        public DirectionsEnum OrientationToAdjacent(Point point)
+        public DirectionsEnum OrientationToAdjacent(Cell cell)
         {
             var vector = new Point
                              {
-                                 X = point.X > Point.X ? (1) : (point.X < Point.X ? (-1) : (0)),
-                                 Y = point.Y > Point.Y ? (1) : (point.Y < Point.Y ? (-1) : (0))
+                                 X = cell.X > Point.X ? ( 1 ) : ( cell.X < Point.X ? ( -1 ) : ( 0 ) ),
+                                 Y = cell.Y > Point.Y ? ( 1 ) : ( cell.Y < Point.Y ? ( -1 ) : ( 0 ) )
                              };
 
             if (vector == s_vectorRight)

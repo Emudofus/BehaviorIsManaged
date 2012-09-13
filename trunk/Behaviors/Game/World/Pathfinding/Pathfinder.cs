@@ -30,7 +30,6 @@ namespace BiM.Behaviors.Game.World.Pathfinding
     }
 
     // todo : centralize informations between IMapDataProvider and CellsInformationsProvider
-    // todo : find a way to organize the nodes as the client without falling in O(n) complexity
     /// <summary>
     /// This class use a derived A* algorithm to find a path between two points with the given informations.
     /// </summary>
@@ -39,6 +38,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         private readonly Map m_map;
         private readonly IMapDataProvider m_mapDataProvider;
         private readonly bool m_throughEntities;
+        private readonly bool m_useLogNodeSearch;
         public static int EstimateHeuristic = 10;
         public static int DiagonalCost = 15;
         public static int HorizontalCost = 10;
@@ -60,25 +60,28 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             {
                 0, 2, 5, 7
             };
-
+            
         private static double GetHeuristic(Cell pointA, Cell pointB)
         {
             return EstimateHeuristic * pointA.DistanceTo(pointB);
         }
 
-        public Pathfinder(Map map, IMapDataProvider mapDataProvider, bool throughEntities = true)
+        public Pathfinder(Map map, IMapDataProvider mapDataProvider, bool throughEntities = true, bool useLogNodeSearch = false)
         {
             m_map = map;
             m_mapDataProvider = mapDataProvider;
             m_throughEntities = throughEntities;
+            // the dofus client use a bad linear algorithm to find the closest node.
+            // if we use an other sort method the result may be different
+            m_useLogNodeSearch = useLogNodeSearch;
         }
-
+            
         public Path FindPath(Cell startCell, Cell endCell, bool allowDiagonals, int movementPoints = (short)-1)
         {
             var success = false;
 
             var matrix = new PathNode[Map.MapSize + 1];
-            var openList = new PriorityQueueB<Cell>(new ComparePfNodeMatrix(matrix));
+            IOpenList openList = m_useLogNodeSearch ? (IOpenList)new LogOpenList(new ComparePfNodeMatrix(matrix)) : new LinearOpenList(new ComparePfNodeMatrix(matrix));
             var closedList = new List<PathNode>();
 
             var location = startCell;
@@ -93,17 +96,17 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             matrix[location.Id].Heuristic = 0;
             matrix[location.Id].Status = NodeState.Open;
 
+            var distToEnd = startCell.ManhattanDistanceTo(endCell);
+            var endCellAux = startCell;
+
             openList.Push(location);
             while (openList.Count > 0)
             {
                 location = openList.Pop();
-
-                if (matrix[location.Id].Status == NodeState.Closed)
-                    continue;
+                matrix[location.Id].Status = NodeState.Closed;
 
                 if (location == endCell)
                 {
-                    matrix[location.Id].Status = NodeState.Closed;
                     success = true;
                     break;
                 }
@@ -115,7 +118,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 {
                     var isDiagonal = DiagonalsDirections.Contains(i);
 
-                    if (!allowDiagonals)
+                    if (isDiagonal && !allowDiagonals)
                         continue;
 
                     var newLocation = location.GetNearestCellInDirection(Directions[i]);
@@ -124,6 +127,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                         continue;
 
                     if (newLocation.Id < 0 || newLocation.Id >= Map.MapSize)
+                        continue;
+
+                    if (matrix[newLocation.Id].Status == NodeState.Closed)
                         continue;
 
                     if (!m_mapDataProvider.IsCellWalkable(newLocation))
@@ -163,29 +169,52 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
                         if (alignedWithStart)
                             cost -= 2;
+
+                        var currentDistToEnd = newLocation.ManhattanDistanceTo(endCell);
+
+                        if (currentDistToEnd < distToEnd)
+                        {
+                            // if aligned with end
+                            if (newLocation.X == endCell.X || newLocation.Y == endCell.Y ||
+                                alignedWithEnd)
+                            {
+                                distToEnd = currentDistToEnd;
+                                endCellAux = newLocation;
+                            }
+                        }
                     }
 
-                    if (( matrix[newLocation.Id].Status == NodeState.Open ||
-                        matrix[newLocation.Id].Status == NodeState.Closed ) &&
-                        matrix[newLocation.Id].Cost <= cost)
-                        continue;
+                    if (matrix[newLocation.Id].Status == NodeState.Open)
+                    {
+                        if (matrix[newLocation.Id].Cost <= cost)
+                            continue;
 
-                    matrix[newLocation.Id].Cell = newLocation;
-                    matrix[newLocation.Id].Parent = location;
-                    matrix[newLocation.Id].Cost = cost;
-                    matrix[newLocation.Id].Heuristic = GetHeuristic(newLocation, endCell);
+                        matrix[newLocation.Id].Parent = location;
+                        matrix[newLocation.Id].Cost = cost;
+                    }
+                    else
+                    {
+                        matrix[newLocation.Id].Cell = newLocation;
+                        matrix[newLocation.Id].Parent = location;
+                        matrix[newLocation.Id].Cost = cost;
+                        matrix[newLocation.Id].Heuristic = GetHeuristic(newLocation, endCell);
 
-                    openList.Push(newLocation);
+                        openList.Push(newLocation);
+                    }
+
                     matrix[newLocation.Id].Status = NodeState.Open;
                 }
 
                 counter++;
-                matrix[location.Id].Status = NodeState.Closed;
             }
 
             if (success)
             {
                 var node = matrix[endCell.Id];
+
+                // use auxiliary end if not found
+                if (node.Status != NodeState.Closed)
+                    node = matrix[endCellAux.Id];
 
                 while (node.Parent != null)
                 {
@@ -291,15 +320,25 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             }
 
             var cost = 1d;
+            Cell adjCell;
+
             if (m_mapDataProvider.GetActors(cell).Length > 0)
                 cost += 0.3;
-            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X + 1, cell.Y]).Length > 0)
+
+            adjCell = m_map.Cells[cell.X + 1, cell.Y];
+            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
                 cost += 0.3;
-            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X, cell.Y + 1]).Length > 0)
+
+            adjCell = m_map.Cells[cell.X, cell.Y + 1];
+            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
                 cost += 0.3;
-            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X - 1, cell.Y]).Length > 0)
+
+            adjCell = m_map.Cells[cell.X - 1, cell.Y];
+            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
                 cost += 0.3;
-            if (m_mapDataProvider.GetActors(m_map.Cells[cell.X, cell.Y - 1]).Length > 0)
+
+            adjCell = m_map.Cells[cell.X, cell.Y - 1];
+            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
                 cost += 0.3;
 
             if (m_mapDataProvider.IsCellMarked(cell))
@@ -332,7 +371,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 {
                     return -1;
                 }
-                return 1;
+                return 0;
             }
 
             #endregion

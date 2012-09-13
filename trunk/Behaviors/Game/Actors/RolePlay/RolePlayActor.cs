@@ -1,6 +1,8 @@
 ﻿using System;
+using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
+using BiM.Protocol.Enums;
 using NLog;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
@@ -10,41 +12,66 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public delegate void MoveStartHandler(RolePlayActor actor, Path path);
+        public delegate void MoveStartHandler(RolePlayActor actor, MovementBehavior movement);
         public event MoveStartHandler StartMoving;
 
         public virtual void NotifyStartMoving(Path path)
         {
-            MovePath = path;
-            MoveStartTime = DateTime.Now;
-
-            if (MovePath.Start != Position.Cell)
+            if (path.IsEmpty())
             {
-                logger.Warn("Actor start cell incorrect for this moving path Position={0}, StartPath={1}", Position.Cell, MovePath.Start);
-                Position.Cell = MovePath.Start;
+                logger.Warn("Try to start moving with an empty path");
+                return;
+            }
+
+            Movement = new MovementBehavior(path, GetAdaptedVelocity(path));
+            Movement.Start();
+
+            NotifyStartMoving(Movement);
+        }
+
+        public virtual void NotifyStartMoving(MovementBehavior movement)
+        {
+            Movement = movement;
+
+            if (Movement.StartCell != Position.Cell)
+            {
+                logger.Warn("Actor start cell incorrect for this moving path Position={0}, StartPath={1}", Position.Cell, Movement.StartCell);
+                Position.Cell = Movement.StartCell;
             }
 
             var handler = StartMoving;
-            if (handler != null) handler(this, path);
+            if (handler != null) handler(this, Movement);
         }
 
-        public delegate void MoveStopHandler(RolePlayActor actor);
-        public event MoveStartHandler StopMoving;
+        public delegate void MoveStopHandler(RolePlayActor actor, MovementBehavior movement, bool canceled);
+        public event MoveStopHandler StopMoving;
 
-        public virtual void NotifyStopMoving()
+        public virtual void NotifyStopMoving(bool canceled)
         {
-            if (MovePath == null)
+            if (Movement == null)
                 throw new InvalidOperationException("Entity was not moving");
 
-            Position = MovePath.EndPosition.Clone();
+            if (canceled)
+            {
+                Movement.Cancel();
+
+                var element = Movement.TimedPath.GetCurrentElement();
+                Position = new ObjectPosition(Map, element.CurrentCell, element.Direction);
+            }
+            else
+                Position = MovementPath.EndPosition.Clone();
+
+            var movement = Movement;
+            Movement = null;
 
             var handler = StopMoving;
-            if (handler != null) handler(this, MovePath);
-
-            MovePath = null;
-            MoveStartTime = null;
+            if (handler != null) handler(this, movement, canceled);
         }
 
+        public virtual VelocityConfiguration GetAdaptedVelocity(Path path)
+        {
+            return MovementBehavior.WalkingMovementBehavior;
+        }
 
         public override int Id
         {
@@ -52,16 +79,23 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             protected set;
         }
 
-        public DateTime? MoveStartTime
+        public MovementBehavior Movement
         {
             get;
             protected set;
         }
 
-        public Path MovePath
+        public DateTime? MovementStartTime
         {
-            get;
-            protected set;
+            get
+            {
+                return Movement.StartTime;
+            }
+        }
+
+        public Path MovementPath
+        {
+            get { return Movement.MovementPath; }
         }
 
         public override IContext Context
@@ -82,9 +116,21 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             set;
         }
 
+        public override void Tick(int dt)
+        {
+            base.Tick(dt);
+
+            if (Movement != null && Movement.IsEnded())
+                NotifyStopMoving(false);
+        }
+
         public bool IsMoving()
         {
-            return MovePath != null;
+            // not sure if it is good :/
+            if (Movement != null && Movement.IsEnded())
+                NotifyStopMoving(false);
+
+            return Movement != null;
         }
 
         public override void Dispose()

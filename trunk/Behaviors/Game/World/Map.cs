@@ -209,6 +209,14 @@ namespace BiM.Behaviors.Game.World
 
         #endregion
 
+        public void Tick(int dt)
+        {
+            foreach (var actor in Actors)
+            {
+                actor.Tick(dt);
+            }
+        }
+
         public RolePlayActor GetActor(int id)
         {
             return m_actors.FirstOrDefault(entry => entry.Id == id);
@@ -227,13 +235,33 @@ namespace BiM.Behaviors.Game.World
                 if (actor.contextualId == bot.Character.Id)
                 {
                     bot.Character.Update(actor as GameRolePlayCharacterInformations);
-                    m_actors.Add(bot.Character);
+                    AddActor(bot.Character);
                 }
                 else
-                    m_actors.Add(CreateRolePlayActor(actor));
+                    AddActor(actor);
             }
 
             Obstacles = message.obstacles;
+        }
+
+        public void AddActor(RolePlayActor actor)
+        {
+            m_actors.Add(actor);
+        }
+
+        public void AddActor(GameRolePlayActorInformations actor)
+        {
+            m_actors.Add(CreateRolePlayActor(actor));
+        }
+
+        public bool RemoveActor(RolePlayActor actor)
+        {
+            return m_actors.Remove(actor);
+        }
+
+        public bool RemoveActor(int id)
+        {
+            return m_actors.RemoveAll(entry => entry.Id == id) > 0;
         }
 
         public RolePlayActor CreateRolePlayActor(GameRolePlayActorInformations actor)
@@ -264,7 +292,7 @@ namespace BiM.Behaviors.Game.World
 
         public bool IsActor(Cell cell)
         {
-            throw new NotImplementedException();
+            return Actors.Any(entry => entry.Position != null && entry.Position.Cell == cell);
         }
 
         public bool IsCellMarked(Cell cell)

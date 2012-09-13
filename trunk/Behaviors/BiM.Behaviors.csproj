@@ -111,6 +111,10 @@
     <Compile Include="Game\Items\ItemToSellInBid.cs" />
     <Compile Include="Game\Items\ItemToSellInNpcShop.cs" />
     <Compile Include="Game\Jobs\Job.cs" />
+    <Compile Include="Game\Movements\MovementBehavior.cs" />
+    <Compile Include="Game\Movements\TimedPath.cs" />
+    <Compile Include="Game\Movements\TimedPathElement.cs" />
+    <Compile Include="Game\Movements\VelocityConfiguration.cs" />
     <Compile Include="Game\Shortcuts\ShortcutBar.cs" />
     <Compile Include="Game\Spells\Spell.cs" />
     <Compile Include="Game\Spells\SpellsBook.cs" />
@@ -129,6 +133,9 @@
     <Compile Include="Game\World\Pathfinding\CellInformation.cs" />
     <Compile Include="Game\World\Pathfinding\CellInformationProvider.cs" />
     <Compile Include="Game\World\Pathfinding\IMapDataProvider.cs" />
+    <Compile Include="Game\World\Pathfinding\IOpenList.cs" />
+    <Compile Include="Game\World\Pathfinding\LinearOpenList.cs" />
+    <Compile Include="Game\World\Pathfinding\LogOpenList.cs" />
     <Compile Include="Game\World\Pathfinding\Path.cs" />
     <Compile Include="Game\World\Pathfinding\PathElement.cs" />
     <Compile Include="Game\World\Pathfinding\Pathfinder.cs" />

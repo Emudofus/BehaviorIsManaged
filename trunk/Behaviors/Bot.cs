@@ -2,6 +2,7 @@
 using BiM.Behaviors.Authentification;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Messages;
+using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Network;
 using BiM.Core.Threading;
@@ -12,6 +13,9 @@ namespace BiM.Behaviors
 {
     public class Bot : SelfRunningTaskQueue
     {
+        [Configurable("DefaultBotTick", "The interval (ms) between two message dispatching")]
+        public static int DefaultBotTick = 100;
+
         #region Delegates
 
         public delegate void LogHandler(Bot bot, LogLevel level, string caller, string message);
@@ -35,7 +39,7 @@ namespace BiM.Behaviors
         }
 
         public Bot(MessageDispatcher messageDispatcher)
-            : base(30)
+            : base(DefaultBotTick)
         {
             if (messageDispatcher == null) throw new ArgumentNullException("messageDispatcher");
             Dispatcher = messageDispatcher;
@@ -81,11 +85,16 @@ namespace BiM.Behaviors
             get { return ToString(); }
             set { }
         }
+
         protected override void OnTick()
         {
             try
             {
                 Dispatcher.ProcessDispatching(this);
+
+                // note : not the correct way for the moment
+                if (Character != null && Character.Map != null)
+                    Character.Map.Tick(0);
             }
             catch (Exception ex)
             {

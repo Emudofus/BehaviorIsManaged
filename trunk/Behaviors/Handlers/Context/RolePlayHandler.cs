@@ -16,6 +16,18 @@ namespace BiM.Behaviors.Handlers.Context
         public static void HandleMapComplementaryInformationsDataMessage(Bot bot, MapComplementaryInformationsDataMessage message)
         {
             bot.Character.Map.Update(message);
-        } 
+        }
+
+        [MessageHandler(typeof (GameRolePlayShowActorMessage))]
+        public static void HandleGameRolePlayShowActorMessage(Bot bot, GameRolePlayShowActorMessage message)
+        {
+            bot.Character.Map.AddActor(message.informations);
+        }
+
+        [MessageHandler(typeof(GameContextRemoveElementMessage))]
+        public static void HandleGameContextRemoveElementMessage(Bot bot, GameContextRemoveElementMessage message)
+        {
+            bot.Character.Map.RemoveActor(message.id);
+        }
     }
 }
