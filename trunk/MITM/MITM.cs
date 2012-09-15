@@ -119,7 +119,8 @@ namespace BiM.MITM
 
         private void OnAuthClientDisconnected(ConnectionMITM client)
         {
-            client.Bot.Stop();
+            // stop the bot after it ends process stuff
+            client.Bot.AddMessage(client.Bot.Stop);
         }
 
         private void OnWorldClientConnected(ConnectionMITM client)
@@ -186,6 +187,7 @@ namespace BiM.MITM
             client.Bot = tuple.Item1;
             client.Bot.ChangeConnection(client);
             client.Bot.ConnectionType = ClientConnectionType.GameConnection;
+            client.Bot.CancelAllMessages(); // avoid to handle message from the auth client.
             client.Bot.Start();
 
             ( client.Bot.Dispatcher as NetworkMessageDispatcher ).Client = client;

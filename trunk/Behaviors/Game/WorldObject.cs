@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using BiM.Behaviors.Game.World;
+using BiM.Protocol.Enums;
 
 namespace BiM.Behaviors.Game
 {
@@ -16,6 +17,21 @@ namespace BiM.Behaviors.Game
         {
             get;
             protected set;
+        }
+
+        public Cell Cell
+        {
+            get { return Position != null ? Position.Cell : null; }
+        }
+
+        public DirectionsEnum Direction
+        {
+            get { return Position != null ? Position.Direction : 0; }
+        }
+
+        public Map Map
+        {
+            get { return Position != null ? Position.Map : null; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

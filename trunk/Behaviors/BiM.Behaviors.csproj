@@ -82,6 +82,11 @@
     <Compile Include="Data\IDataSource.cs" />
     <Compile Include="Authentification\ClientInformations.cs" />
     <Compile Include="Game\Actors\ContextActor.cs" />
+    <Compile Include="Game\Actors\Fighters\CharacterFighter.cs" />
+    <Compile Include="Game\Actors\Fighters\Fighter.cs" />
+    <Compile Include="Game\Actors\Fighters\MonsterFighter.cs" />
+    <Compile Include="Game\Actors\Fighters\PlayedFighter.cs" />
+    <Compile Include="Game\Actors\Fighters\SummonedFighter.cs" />
     <Compile Include="Game\Actors\Interfaces\IAlignedActor.cs" />
     <Compile Include="Game\Actors\RolePlay\Character.cs" />
     <Compile Include="Game\Actors\RolePlay\Humanoid.cs" />
@@ -99,6 +104,17 @@
     <Compile Include="Game\Chat\ChatMessageClient.cs" />
     <Compile Include="Game\Chat\ChatMessageServer.cs" />
     <Compile Include="Game\Contacts\ContactsBook.cs" />
+    <Compile Include="Game\Fights\Fight.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Game\Fights\FightPhase.cs" />
+    <Compile Include="Game\Fights\FightTeam.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Game\Fights\FightTeamColor.cs" />
+    <Compile Include="Game\Fights\Spectator.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Game\Guilds\Guild.cs" />
     <Compile Include="Game\Guilds\GuildInformations.cs" />
     <Compile Include="Game\Guilds\GuildEmblem.cs" />
@@ -118,9 +134,10 @@
     <Compile Include="Game\Shortcuts\ShortcutBar.cs" />
     <Compile Include="Game\Spells\Spell.cs" />
     <Compile Include="Game\Spells\SpellsBook.cs" />
+    <Compile Include="Game\Stats\MinimalStats.cs" />
     <Compile Include="Game\Stats\PlayerField.cs" />
     <Compile Include="Game\Stats\SpellModification.cs" />
-    <Compile Include="Game\Stats\Stats.cs" />
+    <Compile Include="Game\Stats\PlayerStats.cs" />
     <Compile Include="Game\Stats\StatsRow.cs" />
     <Compile Include="Game\WorldObject.cs" />
     <Compile Include="Game\World\Area.cs" />
@@ -145,6 +162,8 @@
     <Compile Include="Handlers\Basics\BasicHandler.cs" />
     <Compile Include="Handlers\Characters\CharacterHandler.cs" />
     <Compile Include="Handlers\Connection\ConnectionHandler.cs" />
+    <Compile Include="Handlers\Context\ContextHandler.cs" />
+    <Compile Include="Handlers\Context\FightHandler.cs" />
     <Compile Include="Handlers\Context\MapMovementHandler.cs" />
     <Compile Include="Handlers\Context\RolePlayHandler.cs" />
     <Compile Include="Handlers\Regen\RegenHandler.cs" />

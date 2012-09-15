@@ -8,15 +8,15 @@ using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Stats
 {
-    public class Stats : INotifyPropertyChanged
+    public class PlayerStats : INotifyPropertyChanged
     {
-        public Stats()
+        public PlayerStats()
         {
             Fields = new Dictionary<PlayerField, StatsRow>();
             SpellsModifications = new ObservableCollection<SpellModification>();
         }
 
-        public Stats(PlayedCharacter owner, CharacterCharacteristicsInformations stats)
+        public PlayerStats(PlayedCharacter owner, CharacterCharacteristicsInformations stats)
         {
             if (stats == null) throw new ArgumentNullException("stats");
             Fields = new Dictionary<PlayerField, StatsRow>();
@@ -24,7 +24,7 @@ namespace BiM.Behaviors.Game.Stats
             Update(stats);
         }
 
-        public Stats(PlayedCharacter owner)
+        public PlayerStats(PlayedCharacter owner)
         {
             if (owner == null) throw new ArgumentNullException("owner");
             Fields = new Dictionary<PlayerField, StatsRow>();

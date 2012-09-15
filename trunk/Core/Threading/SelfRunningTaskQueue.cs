@@ -124,6 +124,11 @@ namespace BiM.Core.Threading
             return timer;
         }
 
+        public void CancelAllMessages()
+        {
+            m_messageQueue.Clear();
+        }
+
         protected virtual void OnTick()
         {
         }

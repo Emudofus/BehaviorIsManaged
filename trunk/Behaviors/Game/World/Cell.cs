@@ -204,6 +204,17 @@ namespace BiM.Behaviors.Game.World
             return (uint)( Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y) );
         }
 
+        public bool IsInRadius(Cell cell, int radius)
+        {
+            return DistanceTo(cell) <= radius;
+        }
+
+        public bool IsInRadius(Cell cell, int minRadius, int radius)
+        {
+            var dist = DistanceTo(cell);
+            return dist >= minRadius && dist <= radius;
+        }
+
         public bool IsAdjacentTo(Cell cell)
         {
             return ManhattanDistanceTo(cell) == 1;

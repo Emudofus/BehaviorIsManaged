@@ -12,11 +12,14 @@ using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Tools.Dlm;
 using BiM.Protocol.Types;
+using NLog;
 
 namespace BiM.Behaviors.Game.World
 {
     public class Map : IContext, IMapDataProvider
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         [Configurable("MapDecryptionKey", "The decryption key used by default")]
         public static string GenericDecryptionKey = "649ae451ca33ec53bbcbcc33becf15f4";
 
@@ -219,7 +222,14 @@ namespace BiM.Behaviors.Game.World
 
         public RolePlayActor GetActor(int id)
         {
-            return m_actors.FirstOrDefault(entry => entry.Id == id);
+            var actors = m_actors.Where(entry => entry.Id == id).ToArray();
+
+            if (actors.Length > 1)
+            {
+                logger.Error("{0} actors found with the same id !", actors.Length);
+            }
+
+            return actors.FirstOrDefault();
         }
 
         public void Update(MapComplementaryInformationsDataMessage message)
@@ -259,9 +269,22 @@ namespace BiM.Behaviors.Game.World
             return m_actors.Remove(actor);
         }
 
-        public bool RemoveActor(int id)
+        /// <summary>
+        /// Returns null if not found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ContextActor RemoveActor(int id)
         {
-            return m_actors.RemoveAll(entry => entry.Id == id) > 0;
+            var actor = GetActor(id);
+
+            if (actor == null)
+                return null;
+
+            if (m_actors.Remove(actor))
+                return actor;
+
+            return null;
         }
 
         public RolePlayActor CreateRolePlayActor(GameRolePlayActorInformations actor)

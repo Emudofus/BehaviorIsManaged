@@ -98,6 +98,7 @@
     <Compile Include="Messages\IMessageFilter.cs" />
     <Compile Include="Messages\Message.cs" />
     <Compile Include="Messages\MessagePriority.cs" />
+    <Compile Include="Messages\MessageValidityCheckRoutines.cs" />
     <Compile Include="Network\BufferManager.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Network\IClient.cs" />

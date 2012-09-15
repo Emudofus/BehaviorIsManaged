@@ -15,21 +15,22 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public delegate void MoveStartHandler(RolePlayActor actor, MovementBehavior movement);
         public event MoveStartHandler StartMoving;
 
-        public virtual void NotifyStartMoving(Path path)
+        public virtual bool NotifyStartMoving(Path path)
         {
             if (path.IsEmpty())
             {
                 logger.Warn("Try to start moving with an empty path");
-                return;
+                return false;
             }
 
             Movement = new MovementBehavior(path, GetAdaptedVelocity(path));
             Movement.Start();
 
-            NotifyStartMoving(Movement);
+
+            return NotifyStartMoving(Movement);
         }
 
-        public virtual void NotifyStartMoving(MovementBehavior movement)
+        public virtual bool NotifyStartMoving(MovementBehavior movement)
         {
             Movement = movement;
 
@@ -41,6 +42,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             var handler = StartMoving;
             if (handler != null) handler(this, Movement);
+
+            return true;
         }
 
         public delegate void MoveStopHandler(RolePlayActor actor, MovementBehavior movement, bool canceled);

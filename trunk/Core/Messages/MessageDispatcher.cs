@@ -342,8 +342,9 @@ namespace BiM.Core.Messages
             {
                 m_currentProcessor = processor;
                 m_dispatching = true;
-                
-                foreach (var keyPair in m_messagesToDispatch)
+
+                var copy = m_messagesToDispatch.ToArray();
+                foreach (var keyPair in copy)
                 {
                     if (m_stopped)
                         break;

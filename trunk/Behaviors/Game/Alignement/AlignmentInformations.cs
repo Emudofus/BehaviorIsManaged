@@ -98,5 +98,15 @@ namespace BiM.Behaviors.Game.Alignement
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public void Update(ActorAlignmentInformations informations)
+        {
+            if (informations == null) throw new ArgumentNullException("informations");
+            AlignmentSide = informations.alignmentSide;
+            AlignmentValue = informations.alignmentValue;
+            AlignmentGrade = informations.alignmentGrade;
+            Dishonor = informations.dishonor;
+            CharacterPower = informations.characterPower;
+        }
     }
 }

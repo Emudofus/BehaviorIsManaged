@@ -36,6 +36,9 @@ namespace BiM.Core.Messages
             Canceled = true;
         }
 
+        /// <summary>
+        /// Internal use only
+        /// </summary>
         public void OnDispatched()
         {
             if (m_dispatched)

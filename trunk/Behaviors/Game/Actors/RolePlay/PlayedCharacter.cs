@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Game.Actors.Fighters;
+using BiM.Behaviors.Game.Alignement;
+using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Guilds;
 using BiM.Behaviors.Game.Items;
 using BiM.Behaviors.Game.Shortcuts;
@@ -13,12 +16,35 @@ using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
+using NLog;
 using Job = BiM.Behaviors.Game.Jobs.Job;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
 {
     public class PlayedCharacter : Character
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public delegate void FightJoinedHandler(PlayedCharacter character, Fight fight);
+        public event FightJoinedHandler FightJoined;
+
+
+        private void NotifyFightJoined(Fight fight)
+        {
+            var evnt = FightJoined;
+            if (evnt != null)
+                evnt(this, fight);
+        }
+
+        public delegate void FightLeftHandler(PlayedCharacter character, Fight fight);
+        public event FightLeftHandler FightLeft;
+
+        private void NotifyFightLeft(Fight fight)
+        {
+            var evnt = FightLeft;
+            if (evnt != null)
+                evnt(this, fight);
+        }
 
         public PlayedCharacter(Bot bot, CharacterBaseInformations informations)
         {
@@ -34,7 +60,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Sex = informations.sex;
 
             Inventory = new Inventory(this);
-            Stats = new Stats.Stats(this);
+            Stats = new Stats.PlayerStats(this);
             SpellsBook = new SpellsBook(this);
             Shortcuts = new ShortcutBar(this);
             Jobs = new List<Job>();
@@ -68,7 +94,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             set;
         }
 
-        public Stats.Stats Stats
+        public Stats.PlayerStats Stats
         {
             get;
             set;
@@ -128,6 +154,28 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             set;
         }
 
+        /// <summary>
+        /// Not recommanded to use this
+        /// </summary>
+        public GameContextEnum ContextType
+        {
+            get;
+            private set;
+        }
+
+        public Fight Fight
+        {
+            get { return Fighter != null ? Fighter.Fight : null; }
+        }
+
+        public PlayedFighter Fighter
+        {
+            get;
+            private set;
+        }
+
+        #region Movements
+
         public bool CanMove()
         {
             return Map != null;
@@ -149,9 +197,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (IsMoving())
                 CancelMove();
 
-            NotifyStartMoving(path);
-
-            Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
+            if (NotifyStartMoving(path))
+                Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
         }
 
         public void CancelMove()
@@ -159,11 +206,14 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (!IsMoving())
                 return;
 
-            var stopOnCell = Movement.TimedPath.GetCurrentCell();
             NotifyStopMoving(true);
 
-            Bot.SendToServer(new GameMapMovementCancelMessage(stopOnCell.Id));
+            Bot.SendToServer(new GameMapMovementCancelMessage(Position.Cell.Id));
         }
+
+        #endregion
+
+        #region Cells Highlighting
 
         public void HighlightCell(Cell cell, Color color)
         {
@@ -180,13 +230,79 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Bot.SendToClient(new DebugClearHighlightCellsMessage());
         }
 
-        public void StartFightWith(GroupMonster monster)
+        #endregion
+
+        #region Contexts
+        
+        // We don't really need to handle the contexts
+
+        public bool IsInContext()
+        {
+            return (int)ContextType != 0;
+        }
+
+        public void ChangeContext(GameContextEnum context)
+        {
+            ContextType = context;
+        }
+
+        public void LeaveContext()
+        {
+            var lastContext = ContextType;
+            ContextType = 0;
+
+            if (lastContext == GameContextEnum.FIGHT && IsFighting())
+                LeaveFight();
+        }
+
+        #endregion
+
+        #region Fights
+
+        public void TryStartFightWith(GroupMonster monster)
         {
             // todo
             var cell = monster.Position.Cell;
 
             Move(cell);
         }
+
+        public void EnterFight(GameFightJoinMessage message)
+        {
+            if (IsFighting())
+                throw new Exception("Player already fighting !");
+
+            var fight = new Fight(message, Map);
+            Fighter = new PlayedFighter(this, fight);
+
+            NotifyFightJoined(Fight);
+        }
+
+        public void LeaveFight()
+        {
+            if (!IsFighting())
+            {
+                logger.Error("Cannot leave the fight : the character is not in fight");
+                return;
+            }
+
+            if (Fight.Phase != FightPhase.Ended)
+            {
+                // todo : have to leave fight
+            }
+
+            var fight = Fight;
+            Fighter = null;
+
+            NotifyFightLeft(fight);
+        }
+
+        public bool IsFighting()
+        {
+            return Fighter != null;
+        }
+
+        #endregion
 
         #region Update Method
 
@@ -239,12 +355,19 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             Name = msg.name;
             Look = msg.look;
-            
-            // todo : aligns
+            if (Alignement == null)
+                Alignement = new AlignmentInformations(msg.alignmentInfos);
+            else
+                Alignement.Update(msg.alignmentInfos);
         }
 
         #endregion
 
-
+        public void Update(GameFightPlacementPossiblePositionsMessage msg)
+        {
+            if (msg == null) throw new ArgumentException("msg");
+            Fighter.SetTeam(Fight.GetTeam((FightTeamColor) msg.teamNumber));
+            Fight.Update(msg);
+        }
     }
 }
