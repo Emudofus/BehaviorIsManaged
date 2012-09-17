@@ -45,6 +45,14 @@ namespace SimplePlugin
             get { return true; }
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            GameCommands.CreateTchatCommand("Seek", "Seek <NomDuMonstre>", MonsterSeeker.HandleSeekCommand);
+            GameCommands.CreateTchatCommand("Stop", "Stop <NomDuMonstre>", MonsterSeeker.HandleStopCommand);
+            GameCommands.CreateTchatCommand("List", "List", MonsterSeeker.HandleListCommand);
+        }
+
         public override void Dispose()
         {
         }
