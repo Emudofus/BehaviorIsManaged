@@ -81,6 +81,13 @@ namespace BiM.Behaviors.Managers
             SendMessageToClient("[Info]" + content, DefaultSenderName, ChatActivableChannelsEnum.CHANNEL_ALIGN);
         }
 
+        public void PrintMessageToClient(string text, System.Drawing.Color color)
+        {
+            string finalText = String.Format("<font color=\"#{0}\">{1}</font>", System.Drawing.ColorTranslator.ToHtml(color), text);
+            TextInformationMessage msg = new TextInformationMessage(0, 0, new string[1] { finalText });
+            m_bot.SendToClient(msg);
+        }
+
         #endregion
 
         #region SendToServer

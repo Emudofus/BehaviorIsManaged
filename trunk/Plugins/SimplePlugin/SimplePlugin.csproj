@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\Host\bin\Debug\plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -109,10 +109,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChatCommands.cs" />
+    <Compile Include="GameCommands.cs" />
+    <Compile Include="MonsterSeeker.cs" />
     <Compile Include="PacketsLogger.cs" />
     <Compile Include="PathfindersComparer.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TchatCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Behaviors\BiM.Behaviors.csproj">
