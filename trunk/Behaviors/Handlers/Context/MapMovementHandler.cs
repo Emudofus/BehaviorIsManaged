@@ -49,7 +49,7 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameMapMovementMessage))]
         public static void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
         {
-            var actor = bot.Character.Map.GetActor(message.actorId);
+            var actor = bot.Character.Context.GetContextActor(message.actorId);
 
             if (actor == null)
                 logger.Error("Actor {0} not found", message.actorId); // only a log for the moment until context are fully handled

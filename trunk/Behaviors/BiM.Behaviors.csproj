@@ -107,14 +107,19 @@
     <Compile Include="Game\Fights\Fight.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Game\Fights\FightPhase.cs" />
+    <Compile Include="Game\Fights\FightPhase.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Game\Fights\FightTeam.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Game\Fights\FightTeamColor.cs" />
+    <Compile Include="Game\Fights\FightTeamColor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Game\Fights\Spectator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Game\Fights\TimeLine.cs" />
     <Compile Include="Game\Guilds\Guild.cs" />
     <Compile Include="Game\Guilds\GuildInformations.cs" />
     <Compile Include="Game\Guilds\GuildEmblem.cs" />

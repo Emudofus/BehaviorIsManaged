@@ -190,9 +190,32 @@ namespace BiM.Behaviors.Game.World
 
         #region IContext Members
 
-        public ContextActor[] GetActors(Cell cell)
+        public ContextActor GetContextActor(int id)
+        {
+            return GetActor(id);
+        }
+
+        public ContextActor[] GetContextActors(Cell cell)
         {
             return Actors.Where(entry => entry.Position != null && entry.Position.Cell == cell).Select(entry => (ContextActor)entry).ToArray();
+        }
+
+        /// <summary>
+        /// Returns null if not found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ContextActor RemoveContextActor(int id)
+        {
+            var actor = GetActor(id);
+
+            if (actor == null)
+                return null;
+
+            if (m_actors.Remove(actor))
+                return actor;
+
+            return null;
         }
 
         #endregion
@@ -267,24 +290,6 @@ namespace BiM.Behaviors.Game.World
         public bool RemoveActor(RolePlayActor actor)
         {
             return m_actors.Remove(actor);
-        }
-
-        /// <summary>
-        /// Returns null if not found
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ContextActor RemoveActor(int id)
-        {
-            var actor = GetActor(id);
-
-            if (actor == null)
-                return null;
-
-            if (m_actors.Remove(actor))
-                return actor;
-
-            return null;
         }
 
         public RolePlayActor CreateRolePlayActor(GameRolePlayActorInformations actor)

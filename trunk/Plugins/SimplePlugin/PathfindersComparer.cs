@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BiM.Behaviors;
+using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.World.Pathfinding;
@@ -51,7 +52,7 @@ namespace SimplePlugin
             bot.SendToClient(new DebugHighlightCellsMessage(Color.Violet.ToArgb(), new short[] { message.cellId }));
         }
 
-        private static void OnStartMoving(RolePlayActor actor, MovementBehavior movement)
+        private static void OnStartMoving(ContextActor actor, MovementBehavior movement)
         {
             if (!AllowComparer)
                 return;

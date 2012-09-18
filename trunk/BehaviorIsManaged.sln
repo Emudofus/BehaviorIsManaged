@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{8464
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplePlugin", "Plugins\SimplePlugin\SimplePlugin.csproj", "{F32A93A9-27A2-4D09-8B94-22B0FC0178EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FightPlugin", "Plugins\FightPlugin\FightPlugin.csproj", "{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,11 +125,24 @@ Global
 		{F32A93A9-27A2-4D09-8B94-22B0FC0178EC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F32A93A9-27A2-4D09-8B94-22B0FC0178EC}.Release|x64.ActiveCfg = Release|Any CPU
 		{F32A93A9-27A2-4D09-8B94-22B0FC0178EC}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Release|x64.ActiveCfg = Release|Any CPU
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F32A93A9-27A2-4D09-8B94-22B0FC0178EC} = {84645BD0-5049-499A-A0A5-5BE7827823F3}
+		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A} = {84645BD0-5049-499A-A0A5-5BE7827823F3}
 	EndGlobalSection
 EndGlobal

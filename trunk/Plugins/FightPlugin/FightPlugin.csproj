@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CE15B20F-B533-4ECB-B118-D1CC9BEE060A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FightPlugin</RootNamespace>
+    <AssemblyName>FightPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FightDetector.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Behaviors\BiM.Behaviors.csproj">
+      <Project>{C547EB82-F770-410B-94AD-534E9B1D6C1B}</Project>
+      <Name>BiM.Behaviors</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\BiM.Core.csproj">
+      <Project>{2D0B3716-72B4-457B-8F61-4F7A2A200A57}</Project>
+      <Name>BiM.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Host\BiM.Host.csproj">
+      <Project>{08587780-2750-4AFD-AD3E-E75393E9EA9B}</Project>
+      <Name>BiM.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Librairies\NLog\NLog.netfx40.csproj">
+      <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
+      <Name>NLog.netfx40</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MITM\BiM.MITM.csproj">
+      <Project>{B402EFFE-08A0-48B7-98B0-72904C2ABEEA}</Project>
+      <Name>BiM.MITM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Protocol\BiM.Protocol.csproj">
+      <Project>{667DCC70-280C-4716-A911-C38DE5C2F0EC}</Project>
+      <Name>BiM.Protocol</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -13,8 +13,11 @@ namespace BiM.Behaviors.Game.Fights
 {
     public class Fight : IContext
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        public delegate void TurnHandler(Fight fight, Fighter fighter);
+        public event TurnHandler TurnStarted;
+        public event TurnHandler TurnEnded;
 
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 
         public Fight(GameFightJoinMessage msg, Map map)
@@ -42,7 +45,7 @@ namespace BiM.Behaviors.Game.Fights
         public DateTime StartTime
         {
             get;
-            set;
+            private set;
         }
 
         public TimeSpan TimeUntilStart
@@ -53,54 +56,103 @@ namespace BiM.Behaviors.Game.Fights
         public bool CanCancelFight
         {
             get;
-            set;
+            private set;
         }
 
         public bool CanSayReady
         {
             get;
-            set;
+            private set;
         }
 
         public bool IsSpectator
         {
             get;
-            set;
+            private set;
         }
 
         public FightTypeEnum Type
         {
             get;
-            set;
+            private set;
         }
 
         public FightPhase Phase
         {
             get;
-            set;
+            private set;
         }
 
         public Map Map
         {
             get;
-            set;
+            private set;
         }
 
         public FightTeam RedTeam
         {
             get;
-            set;
+            private set;
         }
 
         public FightTeam BlueTeam
         {
             get;
-            set;
+            private set;
         }
+
+        public TimeLine TimeLine
+        {
+            get;
+            private set;
+        }
+
+        public Fighter CurrentPlayer
+        {
+            get { return TimeLine.CurrentPlayer; }
+        }
+
+        public int Round
+        {
+            get;
+            private set;
+        }
+
+        #region IContext Members
+
+        /// <summary>
+        /// Returns null if not found
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ContextActor RemoveContextActor(int id)
+        {
+            Fighter fighter = GetFighter(id);
+
+            if (fighter == null)
+                return null;
+
+            if (RemoveFighter(fighter))
+                return fighter;
+
+            return null;
+        }
+
+        public ContextActor GetContextActor(int id)
+        {
+            return GetFighter(id);
+        }
+
+        public ContextActor[] GetContextActors(Cell cell)
+        {
+            return GetConcatedFighters().Where(entry => entry.Position.Cell == cell).Cast<ContextActor>().ToArray();
+        }
+
+        #endregion
 
         public FightTeam GetTeam(sbyte color)
         {
-            return GetTeam((FightTeamColor)color);
+            return GetTeam((FightTeamColor) color);
         }
 
         public FightTeam GetTeam(FightTeamColor color)
@@ -131,7 +183,42 @@ namespace BiM.Behaviors.Game.Fights
             // todo : manage the panel
         }
 
-        public bool HasStarted()
+        public void SetRound(int round)
+        {
+            Round = round;
+
+            //evnt
+        }
+
+        public void StartTurn(int playerId)
+        {
+            var fighter = GetFighter(playerId);
+
+            if (fighter == null)
+                throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot start turn", playerId));
+
+            TimeLine.SetCurrentPlayer(fighter);
+
+            var evnt = TurnStarted;
+            if (evnt != null)
+                evnt(this, TimeLine.CurrentPlayer);
+
+            TimeLine.CurrentPlayer.NotifyTurnStarted();
+        }
+
+        public void EndTurn()
+        {
+            TimeLine.ResetCurrentPlayer();
+
+            var evnt = TurnEnded;
+            if (evnt != null)
+                evnt(this, TimeLine.CurrentPlayer);
+
+
+            TimeLine.CurrentPlayer.NotifyTurnEnded();
+        }
+
+        public bool HasFightStarted()
         {
             return DateTime.Now >= StartTime;
         }
@@ -146,7 +233,7 @@ namespace BiM.Behaviors.Game.Fights
         {
             if (fighter == null) throw new ArgumentNullException("fighter");
 
-            var bot = BotManager.Instance.GetCurrentBot();
+            Bot bot = BotManager.Instance.GetCurrentBot();
 
             // do not add character twice
             if (fighter.contextualId == bot.Character.Id)
@@ -162,24 +249,6 @@ namespace BiM.Behaviors.Game.Fights
         }
 
         /// <summary>
-        /// Returns null if not found
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ContextActor RemoveActor(int id)
-        {
-            var fighter = GetFighter(id);
-
-            if (fighter == null)
-                return null;
-
-            if (RemoveFighter(fighter))
-                return fighter;
-
-            return null;
-        }
-
-        /// <summary>
         /// Create a Fighter instance corresponding to the network given type
         /// </summary>
         /// <param name="fighter"></param>
@@ -188,9 +257,9 @@ namespace BiM.Behaviors.Game.Fights
         {
             if (fighter == null) throw new ArgumentNullException("fighter");
             if (fighter is GameFightCharacterInformations)
-                return new CharacterFighter(fighter as GameFightCharacterInformations, Map, this);
+                return new CharacterFighter(fighter as GameFightCharacterInformations, this);
             if (fighter is GameFightMonsterInformations)
-                return new MonsterFighter(fighter as GameFightMonsterInformations, Map, this);
+                return new MonsterFighter(fighter as GameFightMonsterInformations, this);
 
             throw new Exception(string.Format("Fighter of type {0} not handled", fighter.GetType()));
         }
@@ -200,6 +269,10 @@ namespace BiM.Behaviors.Game.Fights
             return RedTeam.Fighters.Concat(BlueTeam.Fighters);
         }
 
+        /// <summary>
+        /// To get the fighters sort by Initiative use TimeLine.Fighters
+        /// </summary>
+        /// <returns></returns>
         public Fighter[] GetFighters()
         {
             return GetConcatedFighters().ToArray();
@@ -212,7 +285,7 @@ namespace BiM.Behaviors.Game.Fights
 
         public T GetFighter<T>(int id) where T : Fighter
         {
-            return (T)GetConcatedFighters().FirstOrDefault(entry => entry is T && entry.Id == id);
+            return (T) GetConcatedFighters().FirstOrDefault(entry => entry is T && entry.Id == id);
         }
 
         public Fighter GetFighter(Cell cell)
@@ -231,11 +304,6 @@ namespace BiM.Behaviors.Game.Fights
             return GetConcatedFighters().Where(entry => entry.Position.Cell.IsInRadius(centerCell, minRadius, radius)).ToArray();
         }
 
-        public ContextActor[] GetActors(Cell cell)
-        {
-            return GetConcatedFighters().Where(entry => entry.Position.Cell == cell).Cast<ContextActor>().ToArray();
-        }
-
         public void Update(GameFightPlacementPossiblePositionsMessage msg)
         {
             if (msg == null)
@@ -249,13 +317,13 @@ namespace BiM.Behaviors.Game.Fights
         {
             if (msg == null) throw new ArgumentNullException("msg");
 
-            foreach (var disposition in msg.dispositions)
+            foreach (IdentifiedEntityDispositionInformations disposition in msg.dispositions)
             {
-                var fighter = GetFighter(disposition.id);
+                Fighter fighter = GetFighter(disposition.id);
 
                 // seems like the client don't cares
                 if (fighter == null)
-                    logger.Error(string.Format("Received a unknown id ({0}) in GameEntitiesDispositionMessage", disposition.id));
+                    logger.Error(string.Format("(GameEntitiesDispositionMessage) Fight {0} not found", disposition.id));
                 else
                     fighter.Update(disposition);
             }
@@ -272,9 +340,85 @@ namespace BiM.Behaviors.Game.Fights
         public void Update(GameFightHumanReadyStateMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            var fighter = GetFighter(msg.characterId);
+            Fighter fighter = GetFighter(msg.characterId);
 
             fighter.IsReady = msg.isReady;
+        }
+
+        public void Update(GameFightSynchronizeMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+
+            TimeLine.Update(msg);
+
+            foreach (var info in msg.fighters)
+            {
+                var fighter = GetFighter(info.contextualId);
+
+                if (fighter == null)
+                {
+                    logger.Error("(GameFightSynchronizeMessage) Fighter {0} not found", info.contextualId);
+                }
+                else
+                {
+                    fighter.Update(info);
+                }
+            }
+        }
+
+        public void Update(GameFightRefreshFighterMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+
+            if (!( msg.informations is GameFightFighterInformations ))
+            {
+                logger.Error("(GameFightRefreshFighterMessage) Cannot update a fighter with a {0} instance", msg.informations.GetType());
+            }
+            else
+            {
+                var fighter = GetFighter(msg.informations.contextualId);
+
+                if (fighter == null)
+                {
+                    logger.Error("(GameFightRefreshFighterMessage) Fighter {0} not found", msg.informations.contextualId);
+                }
+                else
+                {
+                    fighter.Update(msg.informations as GameFightFighterInformations);
+                }
+            }
+        }
+
+        public void Update(GameFightTurnListMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            foreach (var deadsId in msg.deadsIds)
+            {
+                var fighter = GetFighter(deadsId);
+
+                if (fighter == null)
+                {
+                    logger.Error("(GameFightTurnListMessage) Fighter {0} not found", deadsId);
+                }
+                else
+                {
+                    fighter.IsAlive = false;
+                }
+            }
+
+            foreach (var id in msg.ids)
+            {
+                var fighter = GetFighter(id);
+
+                if (fighter == null)
+                {
+                    logger.Error("(GameFightTurnListMessage) Fighter {0} not found", id);
+                }
+                else
+                {
+                    fighter.IsAlive = false;
+                }
+            }
         }
     }
 }

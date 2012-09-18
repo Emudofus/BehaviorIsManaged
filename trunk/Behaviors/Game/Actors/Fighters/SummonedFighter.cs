@@ -6,8 +6,8 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public class SummonedFighter : MonsterFighter
     {
-        public SummonedFighter(GameFightMonsterInformations msg, Map map, Fight fight)
-            : base(msg, map, fight)
+        public SummonedFighter(GameFightMonsterInformations msg, Fight fight)
+            : base(msg, fight)
         {
         }
 

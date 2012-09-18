@@ -16,9 +16,19 @@
           <NewMemberFileName>Game\Actors\ContextActor.cs</NewMemberFileName>
         </TypeIdentifier>
       </Delegate>
+      <Delegate Name="BiM.Behaviors.Game.Actors.ContextActor.MoveStartHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Game\Actors\ContextActor.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="BiM.Behaviors.Game.Actors.ContextActor.MoveStopHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Game\Actors\ContextActor.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAQAAAAAgAAAAAAAAAAAAAAAAAAIAAAAAAAIAAAAAA=</HashCode>
+      <HashCode>AAAQCAAAAiAAAAACBACAMAAAAAAAIAEgAAAAIAEgQAA=</HashCode>
       <FileName>Game\Actors\ContextActor.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -47,7 +57,7 @@
   <Class Name="BiM.Behaviors.Game.Actors.RolePlay.RolePlayActor" Collapsed="true">
     <Position X="4.5" Y="7" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACCAAAAjAAAAACBACAMAAAAAAAAAEgAAAAAAEgQAA=</HashCode>
+      <HashCode>AAACAAAAAjAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Game\Actors\RolePlay\RolePlayActor.cs</FileName>
     </TypeIdentifier>
   </Class>

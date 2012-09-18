@@ -213,6 +213,58 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         #endregion
 
+        #region Chat
+        public void Say(string message)
+        {
+            Say(message, ChatActivableChannelsEnum.CHANNEL_GLOBAL);
+        }
+
+        public void Say(string message, ChatActivableChannelsEnum channel)
+        {
+            Bot.SendToServer(new ChatClientMultiMessage(message, (sbyte)channel));
+        }
+
+        public void SayTo(string message, string receiverName)
+        {
+            Bot.SendToServer(new ChatClientPrivateMessage(message, receiverName));
+        }
+
+        public void SendTextInformation(TextInformationTypeEnum type, short id, params object[] parameters)
+        {
+            Bot.SendToClient(new TextInformationMessage((sbyte)type, id, parameters.Select(entry => entry.ToString()).ToArray()));
+
+        }
+
+        /// <summary>
+        /// Send a message to the client's chat
+        /// </summary>
+        /// <param name="message"></param>
+        public void SendMessage(string message)
+        {
+            SendTextInformation(TextInformationTypeEnum.TEXT_INFORMATION_MESSAGE, 0, message);
+        }
+
+        /// <summary>
+        /// Send a message to the client's chat
+        /// </summary>
+        /// <param name="message"></param>
+        public void SendMessage(string message, Color color)
+        {
+            SendMessage(string.Format("<font color=\"#{0}\">{1}</font>", color.ToArgb().ToString("X"), message));
+        }
+
+        public void OpenPopup(string message)
+        {
+            OpenPopup(message, "BiM", 0);
+        }
+
+        public void OpenPopup(string message, string sender, byte lockDuration)
+        {
+            Bot.SendToClient(new PopupWarningMessage(lockDuration, message, sender));
+        }
+
+        #endregion
+
         #region Cells Highlighting
 
         public void HighlightCell(Cell cell, Color color)
@@ -291,10 +343,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 // todo : have to leave fight
             }
 
-            var fight = Fight;
-            Fighter = null;
+            NotifyFightLeft(Fight);
 
-            NotifyFightLeft(fight);
+            Fighter = null;
         }
 
         public bool IsFighting()

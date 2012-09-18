@@ -10,6 +10,11 @@ namespace BiM.Behaviors.Game.Stats
     /// </summary>
     public class MinimalStats
     {
+        public MinimalStats(GameFightMinimalStats stats)
+        {
+            Update(stats);
+        }
+
         public int Health
         {
             get;

@@ -5,7 +5,8 @@ namespace BiM.Behaviors.Game.World
 {
     public interface IContext
     {
-        ContextActor[] GetActors(Cell cell);
-        ContextActor RemoveActor(int id);
+        ContextActor GetContextActor(int id);
+        ContextActor[] GetContextActors(Cell cell);
+        ContextActor RemoveContextActor(int id);
     }
 }

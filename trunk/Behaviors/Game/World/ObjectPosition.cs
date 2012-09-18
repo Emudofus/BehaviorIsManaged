@@ -92,6 +92,13 @@ namespace BiM.Behaviors.Game.World
             return new ObjectPosition(Map, Cell, Direction);
         }
 
+        public void Update(EntityDispositionInformations disposition)
+        {
+            if (disposition == null) throw new ArgumentNullException("disposition");
+            Cell = Map.Cells[disposition.cellId];
+            Direction = (DirectionsEnum)disposition.direction;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

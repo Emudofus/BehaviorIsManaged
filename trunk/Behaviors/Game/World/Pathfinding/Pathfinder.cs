@@ -310,7 +310,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
             if (throughEntities)
             {
-                if (m_mapDataProvider.GetActors(cell).Length > 0)
+                if (m_mapDataProvider.GetContextActors(cell).Length > 0)
                     return 20;
 
                 if (speed >= 0)
@@ -322,23 +322,23 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             var cost = 1d;
             Cell adjCell;
 
-            if (m_mapDataProvider.GetActors(cell).Length > 0)
+            if (m_mapDataProvider.GetContextActors(cell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X + 1, cell.Y];
-            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
+            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X, cell.Y + 1];
-            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
+            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X - 1, cell.Y];
-            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
+            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X, cell.Y - 1];
-            if (adjCell != null && m_mapDataProvider.GetActors(adjCell).Length > 0)
+            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
                 cost += 0.3;
 
             if (m_mapDataProvider.IsCellMarked(cell))

@@ -23,11 +23,5 @@ namespace BiM.Behaviors.Handlers.Context
         {
             bot.Character.Map.AddActor(message.informations);
         }
-
-        [MessageHandler(typeof(GameContextRemoveElementMessage))]
-        public static void HandleGameContextRemoveElementMessage(Bot bot, GameContextRemoveElementMessage message)
-        {
-            bot.Character.Map.RemoveActor(message.id);
-        }
     }
 }

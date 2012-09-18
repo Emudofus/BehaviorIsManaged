@@ -48,6 +48,10 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameFightRefreshFighterMessage))]
         public static void HandleGameFightRefreshFighterMessage(Bot bot, GameFightRefreshFighterMessage message)
         {
+            if (!bot.Character.IsFighting())
+                logger.Error("Received GameFightRefreshFighterMessage but character is not in fight !");
+            else
+                bot.Character.Fight.Update(message);
 
         }
 
@@ -111,30 +115,47 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameFightSynchronizeMessage))]
         public static void HandleGameFightSynchronizeMessage(Bot bot, GameFightSynchronizeMessage message)
         {
-
+            if (!bot.Character.IsFighting())
+                logger.Error("Received GameFightSynchronizeMessage but character is not in fight !");
+            else
+                bot.Character.Fight.Update(message);
         }
 
         [MessageHandler(typeof(GameFightNewRoundMessage))]
         public static void HandleGameFightNewRoundMessage(Bot bot, GameFightNewRoundMessage message)
         {
-
+            if (!bot.Character.IsFighting())
+                logger.Error("Received GameFightNewRoundMessage but character is not in fight !");
+            else
+                bot.Character.Fight.SetRound(message.roundNumber);
         }
 
         [MessageHandler(typeof(GameFightTurnStartMessage))]
         public static void HandleGameFightTurnStartMessage(Bot bot, GameFightTurnStartMessage message)
         {
-
+            if (!bot.Character.IsFighting())
+                logger.Error("Received GameFightTurnStartMessage but character is not in fight !");
+            else
+                bot.Character.Fight.StartTurn(message.id);
         }
 
         [MessageHandler(typeof(GameFightTurnListMessage))]
         public static void HandleGameFightTurnListMessage(Bot bot, GameFightTurnListMessage message)
         {
+            if (!bot.Character.IsFighting())
+                logger.Error("Received GameFightTurnListMessage but character is not in fight !");
+            else
+                bot.Character.Fight.Update(message);
 
         }
 
         [MessageHandler(typeof(GameFightTurnEndMessage))]
         public static void HandleGameFightTurnEndMessage(Bot bot, GameFightTurnEndMessage message)
         {
+            if (!bot.Character.IsFighting())
+                logger.Error("Received GameFightTurnEndMessage but character is not in fight !");
+            else
+                bot.Character.Fight.EndTurn();
 
         }
 

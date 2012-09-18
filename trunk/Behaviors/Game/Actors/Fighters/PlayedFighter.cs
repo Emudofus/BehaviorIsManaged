@@ -34,19 +34,19 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public override EntityLook Look
         {
             get { return Character.Look; }
-            set { }
+            protected set { }
         }
 
         public override AlignmentInformations Alignment
         {
             get { return Character.Alignement; }
-            set { }
+            protected set { }
         }
 
         public override Breed Breed
         {
             get { return Character.Breed; }
-            set { }
+            protected set { }
         }
 
         public override bool IsAlive
@@ -58,13 +58,13 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public override string Name
         {
             get { return Character.Name; }
-            set { }
+            protected set { }
         }
 
         public override int Level
         {
             get { return Character.Level; }
-            set { }
+            protected set { }
         }
 
         public void SetTeam(FightTeam team)
