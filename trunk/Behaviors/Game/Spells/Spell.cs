@@ -49,10 +49,10 @@ namespace BiM.Behaviors.Game.Spells
 
         private SpellLevel GetLevelTemplate(int level)
         {
-            if (Template.spellLevels.Count <= Level)
+            if (Template.spellLevels.Count < Level)
                 throw new InvalidOperationException(string.Format("Level {0} doesn't exist in spell {1}", Level, Template.id));
 
-            return DataProvider.Instance.Get<SpellLevel>((int) Template.spellLevels[level]);
+            return DataProvider.Instance.Get<SpellLevel>((int) Template.spellLevels[level - 1]);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
