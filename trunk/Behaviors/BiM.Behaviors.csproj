@@ -91,6 +91,7 @@
     <Compile Include="Game\Actors\RolePlay\Character.cs" />
     <Compile Include="Game\Actors\RolePlay\Humanoid.cs" />
     <Compile Include="Game\Actors\RolePlay\Merchant.cs" />
+    <Compile Include="Game\Actors\RolePlay\Monster.cs" />
     <Compile Include="Game\Actors\RolePlay\MountActor.cs" />
     <Compile Include="Game\Actors\RolePlay\Mutant.cs" />
     <Compile Include="Game\Actors\RolePlay\NamedActor.cs" />
