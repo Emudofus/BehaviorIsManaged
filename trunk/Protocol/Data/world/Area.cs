@@ -1,18 +1,21 @@
+
+
+// Generated on 09/23/2012 21:40:25
 using System;
-using BiM.Protocol.Data;
+using System.Collections.Generic;
 using BiM.Protocol.Tools;
+
 namespace BiM.Protocol.Data
 {
-	[D2OClass("Areas")]
-	[Serializable]
-	public class Area : IDataObject
-	{
-		private const String MODULE = "Areas";
-		public int id;
-		public uint nameId;
-		public int superAreaId;
-		public Boolean containHouses;
-		public Boolean containPaddocks;
-		public Rectangle bounds;
-	}
+    [D2OClass("Area")]
+    public class Area : IDataObject
+    {
+        private const String MODULE = "Areas";
+        public int id;
+        public uint nameId;
+        public int superAreaId;
+        public Boolean containHouses;
+        public Boolean containPaddocks;
+        public Rectangle bounds;
+    }
 }

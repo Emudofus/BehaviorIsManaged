@@ -1,16 +1,14 @@
+
+
+// Generated on 09/23/2012 21:40:24
 using System;
+using System.Collections.Generic;
 using BiM.Protocol.Tools;
+
 namespace BiM.Protocol.Data
 {
-	[Serializable]
-	public class AnimFunMonsterData : AnimFunData, IDataObject
+    [D2OClass("AnimFunMonsterData")]
+    public class AnimFunMonsterData : AnimFunData
     {
-        
-	}
-
-    public class AnimFunData : IDataObject
-    {
-        public string animName;
-        public int animWeight;
     }
 }

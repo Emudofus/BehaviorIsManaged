@@ -1,9 +1,14 @@
+
+
+// Generated on 09/23/2012 21:40:21
 using System;
+using System.Collections.Generic;
 using BiM.Protocol.Tools;
+
 namespace BiM.Protocol.Data
 {
-	[Serializable]
-	public class AccountRightsItemCriterion : ItemCriterion, IDataObject
-	{
-	}
+    [D2OClass("AccountRightsItemCriterion")]
+    public class AccountRightsItemCriterion : ItemCriterion
+    {
+    }
 }

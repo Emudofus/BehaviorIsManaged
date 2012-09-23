@@ -1,9 +1,14 @@
+
+
+// Generated on 09/23/2012 21:40:24
 using System;
+using System.Collections.Generic;
 using BiM.Protocol.Tools;
+
 namespace BiM.Protocol.Data
 {
-	[Serializable]
-	public class SubareaItemCriterion : ItemCriterion, IDataObject
-	{
-	}
+    [D2OClass("SubareaItemCriterion")]
+    public class SubareaItemCriterion : ItemCriterion
+    {
+    }
 }

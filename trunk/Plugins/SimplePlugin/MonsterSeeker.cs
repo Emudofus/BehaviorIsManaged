@@ -24,11 +24,11 @@ namespace SimplePlugin
         {
             if (!AllowSeeker) return;
 
-            GroupMonster[] groups = bot.Character.Map.Actors.Where(entry => entry is GroupMonster).Select(entry => entry as GroupMonster).ToArray();
-            List<string> alreadySignaled = new List<string>();
-            for (int i = 0; i < groups.Length; i++)
+            GroupMonster[] groups = bot.Character.Map.Actors.OfType<GroupMonster>().ToArray();
+            var alreadySignaled = new List<string>();
+            foreach (GroupMonster @group in groups)
             {
-                string monster = SeekedInGroup(groups[i], bot);
+                string monster = SeekedInGroup(@group, bot);
                 if (!String.IsNullOrEmpty(monster))
                 {
                     if (!alreadySignaled.Contains(monster))
@@ -38,7 +38,7 @@ namespace SimplePlugin
                         bot.ChatManager.PrintMessageToClient(String.Format("Le monstre <b>'{0}'</b> a été trouvé sur cette carte.", monster), System.Drawing.Color.Green);
                     }
                 }
-                string archi = SeekedArchiMonsterInGroup(groups[i], bot);
+                string archi = SeekedArchiMonsterInGroup(@group, bot);
                 if (!String.IsNullOrEmpty(archi))
                 {
                     bot.ChatManager.PrintMessageToClient(String.Format("L'archimonstre <b>'{0}'</b> a été trouvé sur cette carte.", archi), System.Drawing.Color.Red);

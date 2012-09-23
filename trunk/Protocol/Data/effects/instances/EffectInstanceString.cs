@@ -1,10 +1,15 @@
+
+
+// Generated on 09/23/2012 21:40:20
 using System;
+using System.Collections.Generic;
 using BiM.Protocol.Tools;
+
 namespace BiM.Protocol.Data
 {
-	[Serializable]
-	public class EffectInstanceString : EffectInstance, IDataObject
-	{
-		public String text;
-	}
+    [D2OClass("EffectInstanceString")]
+    public class EffectInstanceString : EffectInstance
+    {
+        public String text;
+    }
 }

@@ -1,0 +1,18 @@
+Ci dessous la structure des fichiers partons xml générés qui représente les classes network de dofus :
+
+<XmlMessage ou XmlType Name="nom" Id="id" Heritage="heritage" [Namespace="relative namespace"]>
+	<Fields>
+		<XmlField Name="nom" Type="type" [Limit="longueur du tableau"] [Condition="condition de vérification de valeur"]/>
+		[...]
+	</Fields>
+</XmlMessage ou XmlType>
+
+
+Types :
+Si le type commence par "Types." alors il s'agit d'un field serialisé à partir d'une classe Type de dofus
+Si le type commence par "instance of X" alors il s'agit d'un field de type X ou dérivant de X, le type est défini par l'id (short) envoyé dans le paquet
+Si le type à cette forme flag(#) alors il s'agit d'un bit encodé sur un octet, le # désigne la position sur l'octet du flag. # >= 0 && # <= 7.
+
+Un type qui fini par [] est un tableau de taille x défini par un short ou si Limit est défini de taille Limit.
+
+Condition permet de vérifier la valeur du field une fois lu.
