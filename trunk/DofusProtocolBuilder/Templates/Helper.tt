@@ -116,7 +116,7 @@ void WriteIOMethodStatements(IEnumerable<XmlField> fields, bool serializeMethod)
 				if (serializeMethod)
 				{
                     if (Program.Configuration.UseIEnumerable)
-						WriteLine("writer.WriteUShort((ushort)" + name + ".Count();");
+						WriteLine("writer.WriteUShort((ushort)" + name + ".Count());");
 					else
 						WriteLine("writer.WriteUShort((ushort)" + name + ".Length);");
 				}

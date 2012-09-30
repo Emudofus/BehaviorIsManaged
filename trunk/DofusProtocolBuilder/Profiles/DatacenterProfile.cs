@@ -39,9 +39,9 @@ namespace DofusProtocolBuilder.Profiles
                             "readonly static OPERATORS_LIST:Array=new string[]{$1}"
                             },
                         //another hack
-                        {@"(protected|private) var _zoneSize", "public var zoneSize"},
-                        {@"(protected|private) var _zoneShape", "public var zoneShape"},
-                        {@"(protected|private) var _rawZone", "public var rawZone"},
+                        {@"(protected|private) var _zoneSize = 4.29497e+009", "public var zoneSize"},
+                        {@"(protected|private) var _zoneShape = 4.29497e+009", "public var zoneShape"},
+                        {@"(protected|private) var _zoneMinSize = 4.29497e+009", "public var zoneMinSize"},
                         {@"(protected|private) var _weight", "public var weight"},
                         {@"(protected|private) var _type", "public var type"},
                         {@"(protected|private) var _oldValue", "public var oldValue"},

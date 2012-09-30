@@ -82,21 +82,30 @@ namespace BiM.Host
             private set;
         }
 
-        private static void Main(string[] args)
+        public static bool Initialized
         {
-            Initialize();
-
-            Start();
-
-            Console.WriteLine("Enter or Ctrl+C to stop");
-
-            Console.Read();
-
-            Stop();
+            get;
+            private set;
         }
 
-        private static void Initialize()
+        //private static void Main(string[] args)
+        //{
+        //    Initialize();
+
+        //    Start();
+
+        //    Console.WriteLine("Enter or Ctrl+C to stop");
+
+        //    Console.Read();
+
+        //    Stop();
+        //}
+
+        public static void Initialize()
         {
+            if (Initialized)
+                return;
+
             if (!Debugger.IsAttached) // the debugger handle the unhandled exceptions
                 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
@@ -154,6 +163,8 @@ namespace BiM.Host
             DispatcherTask.Dispatcher.Enqueue(msg, MITM);
 
             msg.Wait();
+
+            Initialized = true;
         }
 
         private static void OnProcessExit(object sender, EventArgs e)
@@ -161,7 +172,7 @@ namespace BiM.Host
             Stop();
         }
 
-        private static void Start()
+        public static void Start()
         {
             if (Running)
                 return;

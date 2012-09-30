@@ -15,7 +15,14 @@ using BiM.Protocol.Tools;
 namespace <#= Profile.OutPutNamespace #>
 {
 <# PushIndent("    "); #>
-[D2OClass("<#= Parser.Class.Name #>")]
+<#
+var module = Parser.Fields.FirstOrDefault(x => x.Name == "MODULE");
+
+if (module != null)
+    WriteLine(string.Format("[D2OClass({0})]", module.Value));
+else
+    WriteLine(string.Format("[D2OClass(\"{0}\")]", Parser.Class.Name));
+#>
 public class <#=Parser.Class.Name #><#=( Parser.Class.Heritage != "Object" ? " : " + Parser.Class.Heritage : " : IDataObject" ) #>
 {
 <# PushIndent("    "); #>

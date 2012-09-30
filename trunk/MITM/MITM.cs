@@ -222,6 +222,7 @@ namespace BiM.MITM
         [MessageHandler(typeof(AuthenticationTicketMessage), FromFilter = ListenerEntry.Client)]
         private static void HandleAuthenticationTicketMessage(Bot bot, AuthenticationTicketMessage message)
         {
+            // theorically not received
             message.BlockNetworkSend();
         }
 

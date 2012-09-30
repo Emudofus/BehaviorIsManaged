@@ -11,6 +11,9 @@ namespace BiM.Protocol.Data
     public class ItemType : IDataObject
     {
         private const String MODULE = "ItemTypes";
+        public uint zoneSize;
+        public uint zoneShape;
+        public uint zoneMinSize;
         public int id;
         public uint nameId;
         public uint superTypeId;
