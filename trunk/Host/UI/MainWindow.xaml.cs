@@ -20,6 +20,9 @@ namespace BiM.Host
     /// </summary>
     public partial class MainWindow : Window
     {
+        // temp
+        private static bool m_initialized = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -28,8 +31,9 @@ namespace BiM.Host
         protected override void OnActivated(EventArgs e)
         {
             // temp
-            if (!Program.Initialized)
+            if (!Program.Initialized && !m_initialized)
             {
+                m_initialized = true;
                 Task.Factory.StartNew(
                     () =>
                         {

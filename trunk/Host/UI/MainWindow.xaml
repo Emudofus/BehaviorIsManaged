@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:my="clr-namespace:BiM.Host" Title="MainWindow"
         mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" SizeToContent="WidthAndHeight"
+        xmlns:mdi="clr-namespace:BiM.Host.UI.MDI"
         ResizeMode="CanResize" d:DesignHeight="357" d:DesignWidth="527">
     <DockPanel>
         <Menu DockPanel.Dock="Top" IsMainMenu="True" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -10,8 +11,12 @@
             <MenuItem Header="_Préférences" />
             <MenuItem Header="_Aide" />
         </Menu>
-        <TabControl DockPanel.Dock ="Bottom" TabStripPlacement="Left">
-            <TabItem Header="#Character">
+        <ListBox DockPanel.Dock="Left">
+            <TextBox>#Character 1</TextBox>
+            <TextBox>#Character 2</TextBox>
+        </ListBox>
+        <mdi:MdiContainer DockPanel.Dock="Right">
+            <mdi:MdiChild Title="#Character 1">
                 <TabControl>
                     <TabItem Header="Hello"></TabItem>
                     <TabItem Header="Logs">
@@ -25,8 +30,8 @@
                         </RichTextBox>
                     </TabItem>
                 </TabControl>
-            </TabItem>
-            <TabItem Header="#Character2" />
-        </TabControl>
+            </mdi:MdiChild>
+            <mdi:MdiChild Title="#Character 2" />
+        </mdi:MdiContainer>
     </DockPanel>
 </Window>
