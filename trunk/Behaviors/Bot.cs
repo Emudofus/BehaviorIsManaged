@@ -46,8 +46,6 @@ namespace BiM.Behaviors
             ConnectionType = ClientConnectionType.Disconnected;
             ClientInformations = new ClientInformations();
             ChatManager = new Managers.ChatManager(this);
-
-            messageDispatcher.Enqueue(new BotCreatedMessage(), this);
         }
 
         public MessageDispatcher Dispatcher
@@ -149,9 +147,21 @@ namespace BiM.Behaviors
                 Send(message, ListenerEntry.Server | ListenerEntry.Local);
         }
 
-        public void SendLocal(NetworkMessage message)
+        public void SendLocal(Message message)
         {
-            Send(message, ListenerEntry.Local);
+            if (message == null) throw new ArgumentNullException("message");
+
+            Dispatcher.Enqueue(message, this);
+        }
+
+        public void RegisterHandler(object handler)
+        {
+            Dispatcher.RegisterNonShared(handler);
+        }
+
+        public void UnRegisterHandler(object handler)
+        {
+            Dispatcher.UnRegisterNonShared(handler);
         }
 
         public override void Start()

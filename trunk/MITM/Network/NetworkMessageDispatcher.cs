@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BiM.Behaviors;
 using BiM.Core.Messages;
 using BiM.Core.Network;
@@ -72,7 +73,8 @@ namespace BiM.MITM.Network
         private void InternalDispatch(NetworkMessage message, object token)
         {
             if (message == null) throw new ArgumentNullException("message");
-            var handlers = GetHandlers(message.GetType(), token);
+            var handlers = GetHandlers(message.GetType(), token).ToArray(); // have to transform it into a collection if we want to add/remove handler
+            
 
             foreach (var handler in handlers)
             {

@@ -5,9 +5,15 @@ namespace BiM.Core.Messages
 {
     public class MessageHandlerAttribute : Attribute
     {
+        public MessageHandlerAttribute()
+        {
+            HandleChildMessages = true;
+        }
+
         public MessageHandlerAttribute(Type type)
         {
             MessageType = type;
+            HandleChildMessages = true;
         }
 
         public Type MessageType
@@ -29,6 +35,12 @@ namespace BiM.Core.Messages
         }
 
         public Type FilterType
+        {
+            get;
+            set;
+        }
+
+        public bool HandleChildMessages
         {
             get;
             set;

@@ -260,7 +260,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public void OpenPopup(string message, string sender, byte lockDuration)
         {
-            Bot.SendToClient(new PopupWarningMessage(lockDuration, message, sender));
+            Bot.SendToClient(new PopupWarningMessage(lockDuration, sender, message));
         }
 
         #endregion

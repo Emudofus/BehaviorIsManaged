@@ -21,7 +21,7 @@ namespace BiM.Core.Messages
 
         protected class MessageHandler
         {
-            public MessageHandler(object container, Type containerType, Type messageType, MessageHandlerAttribute handlerAttribute, Action<object, object, Message> action, Type tokenType, IMessageFilter filter)
+            public MessageHandler(object container, Type containerType, Type messageType, MessageHandlerAttribute handlerAttribute, Action<object, object, Message> action, Type tokenType)
             {
                 Container = container;
                 ContainerType = containerType;
@@ -29,7 +29,6 @@ namespace BiM.Core.Messages
                 Attribute = handlerAttribute;
                 Action = action;
                 TokenType = tokenType;
-                Filter = filter;
             }
 
             public object Container
@@ -63,12 +62,11 @@ namespace BiM.Core.Messages
             }
 
             public Type TokenType { get; set; }
-
-            public IMessageFilter Filter { get; set; }
         }
 
         private SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>>();
         private static Dictionary<Assembly, Dictionary<Type, List<MessageHandler>>> m_handlers = new Dictionary<Assembly, Dictionary<Type, List<MessageHandler>>>();
+        private Dictionary<Assembly, Dictionary<Type, List<MessageHandler>>> m_nonSharedHandlers = new Dictionary<Assembly, Dictionary<Type, List<MessageHandler>>>();
 
         private int m_currentThreadId;
         private object m_currentProcessor;
@@ -111,16 +109,18 @@ namespace BiM.Core.Messages
             get { return m_stopped; }
         }
 
-        public static void RegisterAssembly(Assembly assembly)
+        #region Register Static
+
+        public static void RegisterSharedAssembly(Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException("assembly");
             foreach (var type in assembly.GetTypes())
             {
-                RegisterStaticContainer(type);
+                RegisterSharedStaticContainer(type);
             }
         }
 
-        public static void RegisterStaticContainer(Type type)
+        public static void RegisterSharedStaticContainer(Type type)
         {
             if (type == null) throw new ArgumentNullException("type");
             var methods = type.GetMethods(BindingFlags.Static |
@@ -133,11 +133,11 @@ namespace BiM.Core.Messages
                 if (attributes == null || attributes.Length == 0)
                     continue;
 
-                Register(method, null, attributes);
+                RegisterShared(method, null, attributes);
             }
         }
 
-        public static void RegisterContainer(object container)
+        public static void RegisterSharedContainer(object container)
         {
             if (container == null) throw new ArgumentNullException("container");
             var type = container.GetType();
@@ -152,21 +152,21 @@ namespace BiM.Core.Messages
                 if (attributes == null || attributes.Length == 0)
                     continue;
 
-                Register(method, container, attributes);
+                RegisterShared(method, container, attributes);
             }
         }
 
-        public static void Register(MethodInfo method, object container)
+        public static void RegisterShared(MethodInfo method, object container)
         {
             var attributes = method.GetCustomAttributes(typeof(MessageHandlerAttribute), false) as MessageHandlerAttribute[];
 
             if (attributes == null || attributes.Length == 0)
                 throw new Exception("A handler method must have a at least one MessageHandler attribute");
 
-            Register(method, container, attributes);
+            RegisterShared(method, container, attributes);
         }
 
-        public static void Register(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
+        public static void RegisterShared(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
         {
             if (method == null) throw new ArgumentNullException("method");
             if (attributes == null || attributes.Length == 0)
@@ -196,11 +196,11 @@ namespace BiM.Core.Messages
 
             foreach (var attribute in attributes)
             {
-                Register(attribute.MessageType, method.DeclaringType, attribute, handlerDelegate, parameters[0].ParameterType, method.IsStatic ? null : container);
+                RegisterShared(attribute.MessageType, method.DeclaringType, attribute, handlerDelegate, parameters[0].ParameterType, method.IsStatic ? null : container);
             }
         }
 
-        public static void Register(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
+        public static void RegisterShared(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
         {
             if (attribute == null) throw new ArgumentNullException("attribute");
             if (action == null) throw new ArgumentNullException("action");
@@ -215,20 +215,130 @@ namespace BiM.Core.Messages
             if (!m_handlers[assembly].ContainsKey(messageType))
                 m_handlers[assembly].Add(messageType, new List<MessageHandler>());
 
-            IMessageFilter filter = null;
-            if (attribute.FilterType != null)
+            m_handlers[assembly][messageType].Add(new MessageHandler(container, containerType, messageType, attribute, action, tokenType));
+        }
+
+
+        protected static void UnRegisterShared(MessageHandler handler)
+        {
+            m_handlers[handler.ContainerType.Assembly][handler.MessageType].Remove(handler);
+        }
+
+        public static void UnRegisterShared(Type messageType)
+        {
+            foreach (var keyPair in m_handlers)
             {
-                if (!attribute.FilterType.HasInterface(typeof(IMessageFilter)))
-                    throw new Exception(string.Format("Cannot register handler {0} in {1}, the filter type {2} doesn't implement IMessageFilter", messageType, containerType, attribute.FilterType));
+                foreach (var handler in keyPair.Value)
+                {
+                    if (handler.Key == messageType)
+                        handler.Value.Clear();
+                }
+            }
+        }
 
-                ConstructorInfo ctor;
-                if ((ctor = attribute.FilterType.GetConstructor(new Type[0])) == null)
-                    throw new Exception(string.Format("Cannot register handler {0} in {1}, the filter type {2} hasn't a default constructor", messageType, containerType, attribute.FilterType));
+        public static void UnRegisterSharedContainer(Type containerType)
+        {
+            foreach (var keyPair in m_handlers[containerType.Assembly])
+            {
+                keyPair.Value.RemoveAll(entry => entry.ContainerType == containerType);
+            }
+        }
 
-                filter = (IMessageFilter)ctor.Invoke(new object[0]);
+        public static void UnRegisterSharedAssembly(Assembly assembly)
+        {
+            m_handlers.Remove(assembly);
+        }
+
+        #endregion
+
+        #region Register Non-Shared
+        public void RegisterNonShared(object handler)
+        {
+            if (handler == null) throw new ArgumentNullException("handler");
+            var type = handler.GetType();
+
+            var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic);
+
+            foreach (var method in methods)
+            {
+                var attributes = method.GetCustomAttributes(typeof(MessageHandlerAttribute), false) as MessageHandlerAttribute[];
+
+                if (attributes == null || attributes.Length == 0)
+                    continue;
+
+                RegisterNonShared(method, handler, attributes);
+            }
+        }
+
+        public void RegisterNonShared(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
+        {
+            if (method == null) throw new ArgumentNullException("method");
+            if (attributes == null || attributes.Length == 0)
+                return;
+
+            var parameters = method.GetParameters();
+
+            if (parameters.Length != 2 ||
+                !parameters[1].ParameterType.IsSubclassOf(typeof(Message)))
+            {
+                throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler(object, Message)", method));
             }
 
-            m_handlers[assembly][messageType].Add(new MessageHandler(container, containerType, messageType, attribute, action, tokenType, filter));
+            if (!method.IsStatic && container == null)
+                throw new ArgumentException("You must give an object container if the method is static");
+
+            Action<object, object, Message> handlerDelegate;
+            try
+            {
+                handlerDelegate = (Action<object, object, Message>)method.CreateDelegate(typeof(object), typeof(Message));
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler(object Message)", method));
+            }
+
+            foreach (var attribute in attributes)
+            {
+                RegisterNonShared(attribute.MessageType, method.DeclaringType, attribute, handlerDelegate, parameters[0].ParameterType, method.IsStatic ? null : container);
+            }
+        }
+
+        public void RegisterNonShared(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
+        {
+            if (attribute == null) throw new ArgumentNullException("attribute");
+            if (action == null) throw new ArgumentNullException("action");
+
+            var assembly = containerType.Assembly;
+
+            // handlers are organized by assemblies to build an hierarchie
+            // if the assembly is not registered yet we add it to the end
+            if (!m_nonSharedHandlers.ContainsKey(assembly))
+                m_nonSharedHandlers.Add(assembly, new Dictionary<Type, List<MessageHandler>>());
+
+            if (!m_nonSharedHandlers[assembly].ContainsKey(messageType))
+                m_nonSharedHandlers[assembly].Add(messageType, new List<MessageHandler>());
+
+            m_nonSharedHandlers[assembly][messageType].Add(new MessageHandler(container, containerType, messageType, attribute, action, tokenType));
+        }
+
+        public void UnRegisterNonShared(object container)
+        {
+            foreach (var dict in m_nonSharedHandlers.Values)
+            {
+                var handlers = dict.Values; // copy
+                foreach (var handler in handlers)
+                {
+                    handler.RemoveAll(entry => entry.Container == container);
+                }
+            }
+        }
+
+        #endregion
+
+        public bool IsRegistered(Type messageType)
+        {
+            return m_handlers.Concat(m_nonSharedHandlers).Any(entry => entry.Value.ContainsKey(messageType));
         }
 
         public static void DefineHierarchy(IEnumerable<Assembly> assemblies)
@@ -247,64 +357,48 @@ namespace BiM.Core.Messages
             }
         }
 
-        protected static void UnRegister(MessageHandler handler)
+        protected IEnumerable<MessageHandler> GetHandlers(Type messageType, object token)
         {
-            m_handlers[handler.ContainerType.Assembly][handler.MessageType].Remove(handler);
-        }
-
-        public static void UnRegister(Type messageType)
-        {
-            foreach (var keyPair in m_handlers)
-            {
-                foreach (var handler in keyPair.Value)
-                {
-                    if (handler.Key == messageType)
-                        handler.Value.Clear();
-                }
-            }
-        }
-
-        public static void UnRegisterContainer(Type containerType)
-        {
-            foreach (var keyPair in m_handlers[containerType.Assembly])
-            {
-                keyPair.Value.RemoveAll(entry => entry.ContainerType == containerType);
-            }
-        }
-
-        public static void UnRegisterAssembly(Assembly assembly)
-        {
-            m_handlers.Remove(assembly);
-        }
-
-        public static bool IsRegistered(Type messageType)
-        {
-            return m_handlers.Any(entry => entry.Value.ContainsKey(messageType));
-        }
-
-        protected static IEnumerable<MessageHandler> GetHandlers(Type messageType, object token)
-        {
-            IEnumerable<MessageHandler> handlers = null;
+            // a bit heavy, isn't it ?
+            var assemblies = m_handlers.Keys.Concat(m_nonSharedHandlers.Keys).Distinct();
 
             // navigate through the hierarchy ...
-            foreach (var keyPair in m_handlers)
+            foreach (var assembly in assemblies)
             {
-                // if a handler can handle this type we return it
-                if (keyPair.Value.ContainsKey(messageType))
-                    foreach (var handler in keyPair.Value[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
-                    {
-                        yield return handler;
-                    }
+                Dictionary<Type, List<MessageHandler>> nonSharedHandler;
+                if (m_nonSharedHandlers.TryGetValue(assembly, out nonSharedHandler))
+                {
+                    if (nonSharedHandler.ContainsKey(messageType))
+                        foreach (var handler in nonSharedHandler[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
+                        {
+                            yield return handler;
+                        }
 
-                // if a handler can handle the message subclass, we add it too
-                if (messageType.BaseType != null && messageType.BaseType.IsSubclassOf(typeof(Message)))
-                    foreach (var handler in GetHandlers(messageType.BaseType, token))
-                    {
-                        yield return handler;
-                    }
-                    
+                }
+
+                Dictionary<Type, List<MessageHandler>> sharedHandler;
+                if (m_handlers.TryGetValue(assembly, out sharedHandler))
+                {
+                    // if a handler can handle this type we return it
+                    if (sharedHandler.ContainsKey(messageType))
+                        foreach (var handler in sharedHandler[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
+                        {
+                            yield return handler;
+                        }
+                }
             }
+
+            // note : disabled yet.
+
+            // recursivity to handle message from base class
+            //if (messageType.BaseType != null && messageType.BaseType.IsSubclassOf(typeof(Message)))
+            //    foreach (var handler in GetHandlers(messageType.BaseType, token))
+            //    {
+            //        if (handler.Attribute.HandleChildMessages)
+            //            yield return handler;
+            //    }
         }
+
 
         public void Enqueue(Message message, bool executeIfCan = true)
         {
@@ -377,7 +471,7 @@ namespace BiM.Core.Messages
         {
             try
             {
-                var handlers = GetHandlers(message.GetType(), token);
+                var handlers = GetHandlers(message.GetType(), token).ToArray(); // have to transform it into a collection if we want to add/remove handler
 
                 foreach (var handler in handlers)
                 {

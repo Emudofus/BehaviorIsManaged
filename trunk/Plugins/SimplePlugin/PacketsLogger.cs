@@ -24,8 +24,8 @@ namespace SimplePlugin
         private static ObjectDumper m_dumper = new ObjectDumper(2, true, false, BindingFlags.Public | BindingFlags.Instance |
             BindingFlags.GetField | BindingFlags.FlattenHierarchy);
 
-        [MessageHandler(typeof(BotCreatedMessage))]
-        public static void Initialize(Bot bot, BotCreatedMessage message)
+        [MessageHandler(typeof(BotAddedMessage))]
+        public static void Initialize(Bot bot, BotAddedMessage message)
         {
             if (AllowLogging)
                 bot.Dispatcher.MessageDispatched += OnMessageDispatched;

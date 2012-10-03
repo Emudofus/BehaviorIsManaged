@@ -151,7 +151,7 @@ namespace BiM.Host
 
             foreach (var assembly in m_hierarchy)
             {
-                MessageDispatcher.RegisterAssembly(assembly);
+                MessageDispatcher.RegisterSharedAssembly(assembly);
             }
 
             PluginManager.Instance.LoadAllPlugins();

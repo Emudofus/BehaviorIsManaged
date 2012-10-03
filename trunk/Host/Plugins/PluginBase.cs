@@ -59,7 +59,7 @@ namespace BiM.Host.Plugins
 
         public virtual void Initialize()
         {
-            MessageDispatcher.RegisterAssembly(Context.PluginAssembly);
+            MessageDispatcher.RegisterSharedAssembly(Context.PluginAssembly);
 
             if (UseConfig)
             {
@@ -72,7 +72,7 @@ namespace BiM.Host.Plugins
 
         public virtual void Shutdown()
         {
-            MessageDispatcher.UnRegisterAssembly(Context.PluginAssembly);
+            MessageDispatcher.UnRegisterSharedAssembly(Context.PluginAssembly);
 
             if (UseConfig)
             {

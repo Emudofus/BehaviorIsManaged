@@ -2,7 +2,7 @@
 
 namespace BiM.Behaviors.Messages
 {
-    public class BotCreatedMessage : Message
+    public class BotAddedMessage : Message
     {
          
     }

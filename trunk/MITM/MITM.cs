@@ -34,7 +34,7 @@ namespace BiM.MITM
             MessageBuilder = new MessageReceiver();
             MessageBuilder.Initialize();
 
-            NetworkMessageDispatcher.RegisterContainer(this);
+            NetworkMessageDispatcher.RegisterSharedContainer(this);
         }
 
 
@@ -119,7 +119,7 @@ namespace BiM.MITM
 
         private void OnAuthClientDisconnected(ConnectionMITM client)
         {
-            // stop the bot after it ends process stuff
+            // stop the bot after it ends processing stuff
             client.Bot.AddMessage(client.Bot.Stop);
         }
 
@@ -168,6 +168,9 @@ namespace BiM.MITM
             {
                 if (mitm.Bot == null)
                     throw new NullReferenceException("mitm.Bot");
+
+                if (mitm.Bot.Dispatcher.Stopped)
+                    logger.Warn("Enqueue a message but the dispatcher is stopped !");
 
                 mitm.Bot.Dispatcher.Enqueue(message, mitm.Bot);
             }

@@ -2,14 +2,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:my="clr-namespace:BiM.Host" Title="MainWindow"
         mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" SizeToContent="WidthAndHeight"
-        ResizeMode="CanResize" d:DesignHeight="436" d:DesignWidth="576">
-
-  <RichTextBox Name="Console" Height="350" Width="500" HorizontalContentAlignment="Left"
-               HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    <RichTextBox.Resources>
-      <Style TargetType="{x:Type Paragraph}">
-        <Setter Property="Margin" Value="0" />
-      </Style>
-    </RichTextBox.Resources>
-  </RichTextBox>
+        ResizeMode="CanResize" d:DesignHeight="357" d:DesignWidth="527">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" IsMainMenu="True" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <MenuItem Header="_Fichier" />
+            <MenuItem Header="_Plugins" />
+            <MenuItem Header="_Préférences" />
+            <MenuItem Header="_Aide" />
+        </Menu>
+        <TabControl DockPanel.Dock ="Bottom" TabStripPlacement="Left">
+            <TabItem Header="#Character">
+                <TabControl>
+                    <TabItem Header="Hello"></TabItem>
+                    <TabItem Header="Logs">
+                        <RichTextBox Name="Console" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch"
+                       VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                            <RichTextBox.Resources>
+                                <Style TargetType="{x:Type Paragraph}">
+                                    <Setter Property="Margin" Value="0" />
+                                </Style>
+                            </RichTextBox.Resources>
+                        </RichTextBox>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Header="#Character2" />
+        </TabControl>
+    </DockPanel>
 </Window>
