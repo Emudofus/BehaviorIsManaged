@@ -176,6 +176,7 @@ namespace BiM.Core.Threading
 
                         if (!Running)
                         {
+                            Interlocked.Exchange(ref m_currentThreadId, 0);
                             return;
                         }
                     }
@@ -194,6 +195,7 @@ namespace BiM.Core.Threading
 
                         if (!Running)
                         {
+                            Interlocked.Exchange(ref m_currentThreadId, 0);
                             return;
                         }
                     }
