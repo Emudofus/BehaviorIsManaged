@@ -16,6 +16,12 @@ namespace BiM.MITM.Network
             private set;
         }
 
+        public bool ExpectedDisconnection
+        {
+            get;
+            set;
+        }
+
         public void ChangeConnection(ConnectionMITM connection)
         {
             Connection = connection;

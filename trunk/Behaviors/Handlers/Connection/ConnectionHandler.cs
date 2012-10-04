@@ -46,6 +46,7 @@ namespace BiM.Behaviors.Handlers.Connection
         public static void HandleServersListMessage(Bot bot, ServersListMessage message)
         {
             bot.ClientInformations.Update(message);
+            bot.Display = DisplayState.ServerSelection;
         }
 
         [MessageHandler(typeof(AccountCapabilitiesMessage))]

@@ -177,6 +177,11 @@ namespace BiM.Behaviors.Authentification
             get { return ServerTimeReference + (DateTime.Now - m_referenceTimeChange); }
         }
 
+        public CharactersListMessage CharactersList
+        {
+            get;
+            set;
+        }
 
         public bool IsSubscribed()
         {
@@ -278,6 +283,13 @@ namespace BiM.Behaviors.Authentification
             if (msg == null) throw new ArgumentNullException("msg");
             ServerTimeOffset = new TimeSpan(0, 0, msg.timezoneOffset, 0);
             ServerTimeReference = msg.timestamp.UnixTimestampToDateTime();
+        }
+
+        public void Update(CharactersListMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            CharactersList = msg;
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -40,10 +40,15 @@ namespace BiM.Core.Threading
             set;
         }
 
+        private bool m_running;
+
         public bool Running
         {
-            get;
-            protected set;
+            get { return m_running; }
+            protected set
+            {
+                m_running = value; logger.Debug("TaskQueue.Running = {0}", value);
+            }
         }
 
 

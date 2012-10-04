@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using BiM.Behaviors.Authentification;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Messages;
@@ -11,7 +12,7 @@ using BiM.Behaviors.Managers;
 
 namespace BiM.Behaviors
 {
-    public class Bot : SelfRunningTaskQueue
+    public class Bot : SelfRunningTaskQueue, INotifyPropertyChanged
     {
         [Configurable("DefaultBotTick", "The interval (ms) between two message dispatching")]
         public static int DefaultBotTick = 100;
@@ -33,6 +34,15 @@ namespace BiM.Behaviors
             if (handler != null) handler(this, level, caller, message);
         }
 
+        public delegate void CharacterSelectedHandler(Bot bot, PlayedCharacter character);
+        public event CharacterSelectedHandler CharactersSelected;
+
+        protected void OnCharactersSelected(PlayedCharacter character)
+        {
+            CharacterSelectedHandler handler = CharactersSelected;
+            if (handler != null) handler(this, character);
+        }
+
         public Bot()
             : this(new MessageDispatcher())
         {
@@ -46,6 +56,7 @@ namespace BiM.Behaviors
             ConnectionType = ClientConnectionType.Disconnected;
             ClientInformations = new ClientInformations();
             ChatManager = new Managers.ChatManager(this);
+            Display = DisplayState.None;
         }
 
         public MessageDispatcher Dispatcher
@@ -66,6 +77,12 @@ namespace BiM.Behaviors
             set;
         }
 
+        public DisplayState Display
+        {
+            get;
+            set;
+        }
+
         public ClientInformations ClientInformations
         {
             get;
@@ -75,13 +92,23 @@ namespace BiM.Behaviors
         public PlayedCharacter Character
         {
             get;
-            set;
+            private set;
         }
 
         public override string Name
         {
             get { return ToString(); }
             set { }
+        }
+
+        public void SetPlayedCharacter(PlayedCharacter character)
+        {
+            if (character == null) throw new ArgumentNullException("character");
+            if (Character != null)
+                throw new Exception("Character already selected");
+
+            Character = character;
+            OnCharactersSelected(character);
         }
 
         protected override void OnTick()
@@ -206,5 +233,7 @@ namespace BiM.Behaviors
         {
             return "Bot";
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

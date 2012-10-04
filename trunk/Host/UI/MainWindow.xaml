@@ -15,7 +15,7 @@
             <TextBox>#Character 1</TextBox>
             <TextBox>#Character 2</TextBox>
         </ListBox>
-        <mdi:MdiContainer DockPanel.Dock="Right">
+        <mdi:MdiContainer x:Name="MdiContainer" DockPanel.Dock="Right">
             <mdi:MdiChild Title="#Character 1">
                 <TabControl>
                     <TabItem Header="Hello"></TabItem>

@@ -9,6 +9,9 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameContextCreateMessage))]
         public static void HandleGameContextCreateMessage(Bot bot, GameContextCreateMessage message)
         {
+            if (bot.Display != DisplayState.InGame)
+                bot.Display = DisplayState.InGame;
+
             bot.Character.ChangeContext((GameContextEnum)message.context);
         }
 

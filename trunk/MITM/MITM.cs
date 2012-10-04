@@ -120,7 +120,9 @@ namespace BiM.MITM
         private void OnAuthClientDisconnected(ConnectionMITM client)
         {
             // stop the bot after it ends processing stuff
-            client.Bot.AddMessage(client.Bot.Stop);
+            if (client.Bot.ExpectedDisconnection)
+                client.Bot.AddMessage(client.Bot.Stop);
+            else client.Bot.Dispose();
         }
 
         private void OnWorldClientConnected(ConnectionMITM client)
@@ -134,7 +136,7 @@ namespace BiM.MITM
 
         private void OnWorldClientDisconnected(ConnectionMITM client)
         {
-            client.Bot.Stop();
+            client.Bot.Dispose();
         }
 
         private void OnAuthClientMessageReceived(Client client, NetworkMessage message)
@@ -203,7 +205,7 @@ namespace BiM.MITM
             catch (Exception)
             {
                 logger.Error("Cannot connect to {0}:{1}.", tuple.Item2.address, tuple.Item2.port);
-                client.Bot.Stop();
+                client.Bot.Dispose();
                 return;
             }
 
@@ -218,6 +220,8 @@ namespace BiM.MITM
 
             message.address = m_configuration.FakeWorldHost;
             message.port = (ushort) m_configuration.FakeWorldPort;
+
+            ( (BotMITM)bot ).ExpectedDisconnection = true;
 
             logger.Debug("Client redirected to {0}:{1}", message.address, message.port);
         }

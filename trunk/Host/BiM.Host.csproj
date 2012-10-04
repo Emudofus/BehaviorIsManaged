@@ -84,6 +84,18 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UI\Bot\BotControl.xaml.cs">
+      <DependentUpon>BotControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Bot\CharacterSelection.xaml.cs">
+      <DependentUpon>CharacterSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Bot\GameUI.xaml.cs">
+      <DependentUpon>GameUI.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Bot\ServerSelection.xaml.cs">
+      <DependentUpon>ServerSelection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -92,7 +104,7 @@
     <Compile Include="Plugins\PluginBase.cs" />
     <Compile Include="Plugins\PluginContext.cs" />
     <Compile Include="Plugins\PluginManager.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Host.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\MDI\MdiLayout.cs" />
     <Compile Include="UI\MDI\ThemeType.cs" />
@@ -196,6 +208,22 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="UI\Bot\BotControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Bot\CharacterSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Bot\GameUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Bot\ServerSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

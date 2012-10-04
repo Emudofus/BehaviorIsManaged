@@ -31,7 +31,9 @@ namespace BiM.MITM.Network
 
         protected override void Dispatch(Message message, object token)
         {
+#if DEBUG
             m_logs.Add(message);
+#endif
 
             if (message == null) throw new ArgumentNullException("message");
             if (message is NetworkMessage)

@@ -408,12 +408,19 @@ namespace BiM.Core.Messages
         public virtual void Enqueue(Message message, object token, bool executeIfCan = true)
         {
             if (executeIfCan && IsInDispatchingContext())
+            {
+                logger.Debug("Dispatch {0} directly", message);
                 Dispatch(message, token);
+            }
             else
             {
                 lock (m_messageEnqueuedEvent)
                 {
                     m_messagesToDispatch[message.Priority].Enqueue(Tuple.Create(message, token));
+                    logger.Debug("{0} enqueued", message);
+
+                    if (m_dispatching)
+                        logger.Debug("Already dispatching, event not set");
 
                     if (!m_dispatching)
                         m_messageEnqueuedEvent.Set();
@@ -449,6 +456,8 @@ namespace BiM.Core.Messages
                             break;
 
                         var message = keyPair.Value.Dequeue();
+                        logger.Debug("Dequeue {0}", message);
+
                         Dispatch(message.Item1, message.Item2);
                     }
                 }
@@ -501,7 +510,8 @@ namespace BiM.Core.Messages
             if (m_messagesToDispatch.Sum(x => x.Value.Count) > 0)
                 return;
 
-            m_messageEnqueuedEvent.Wait();
+            Thread.Sleep(10);
+            //m_messageEnqueuedEvent.Wait();
         }
 
         public void Resume()

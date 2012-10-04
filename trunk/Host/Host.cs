@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows;
 using BiM.Behaviors.Data;
 using BiM.Core.Config;
 using BiM.Core.I18n;
@@ -15,7 +16,7 @@ using NLog;
 
 namespace BiM.Host
 {
-    public static class Program
+    public static class Host
     {
         [Configurable("DofusDataPath")]
         public static string DofusDataPath = @"C:\Program Files (x86)\Dofus 2\app\data\common";
@@ -44,6 +45,7 @@ namespace BiM.Host
         [Configurable("RealAuthPort")]
         public static int RealAuthPort = 5555;
 
+        public static event UnhandledExceptionEventHandler UnhandledException;
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private const string ConfigPath = "./config.xml";
@@ -88,19 +90,6 @@ namespace BiM.Host
             private set;
         }
 
-        //private static void Main(string[] args)
-        //{
-        //    Initialize();
-
-        //    Start();
-
-        //    Console.WriteLine("Enter or Ctrl+C to stop");
-
-        //    Console.Read();
-
-        //    Stop();
-        //}
-
         public static void Initialize()
         {
             if (Initialized)
@@ -122,7 +111,6 @@ namespace BiM.Host
             Config.Load();
 
             logger.Info("{0} loaded", Path.GetFileName(Config.FilePath));
-
 
 
             var d2oSource = new D2OSource();
@@ -185,6 +173,7 @@ namespace BiM.Host
         {
             if (!Running)
                 return;
+
             Running = false;
 
             if (Config != null)
@@ -209,8 +198,15 @@ namespace BiM.Host
             }
             finally
             {
-                Console.WriteLine("Press enter to exit");
-                Console.Read();
+                if (UnhandledException != null)
+                {
+                    UnhandledException(sender, e);
+                }
+                else
+                {
+                    Console.WriteLine("Press enter to exit");
+                    Console.Read();
+                }
 
                 Environment.Exit(-1);
             }

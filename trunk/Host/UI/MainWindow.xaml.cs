@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BiM.Behaviors;
+using BiM.Host.UI.Bot;
+using BiM.Host.UI.MDI;
 
 namespace BiM.Host
 {
@@ -28,28 +31,52 @@ namespace BiM.Host
             InitializeComponent();
         }
 
-        protected override void OnActivated(EventArgs e)
-        {
-            // temp
-            if (!Program.Initialized && !m_initialized)
-            {
-                m_initialized = true;
-                Task.Factory.StartNew(
-                    () =>
-                        {
-                            Program.Initialize();
-                            Program.Start();
-                        });
-            }
-
-            base.OnActivated(e);
-        }
-
         protected override void OnInitialized(EventArgs e)
-        {            
-            
+        {
+            Task.Factory.StartNew(InitializeHost);
 
             base.OnInitialized(e);
+        }
+
+        private void InitializeHost()
+        {
+            Host.Initialize();
+
+            BotManager.Instance.BotAdded += OnBotAdded;
+            BotManager.Instance.BotRemoved += OnBotRemoved;
+
+            Host.Start();
+        }
+
+        private void OnBotAdded(BotManager manager, Bot bot)
+        {
+            Dispatcher.Invoke(new Action(() => AddChild(bot)));
+        }
+
+
+        private void OnBotRemoved(BotManager manager, Bot bot)
+        {
+            Dispatcher.Invoke(new Action(() => RemoveChild(bot)));
+        }
+
+        public void AddChild(Bot bot)
+        {
+            var child = new MdiChild();
+            child.Title = "Bot";
+            child.Content = new BotControl(bot);
+
+            MdiContainer.Children.Add(child);
+        }
+
+        public void RemoveChild(Bot bot)
+        {
+            var childs = MdiContainer.Children.
+                Where(entry => entry.Content is BotControl && ( entry.Content as BotControl ).Bot == bot).ToArray();
+
+            foreach (var child in childs)
+            {
+                child.Close();
+            }
         }
     }
 }

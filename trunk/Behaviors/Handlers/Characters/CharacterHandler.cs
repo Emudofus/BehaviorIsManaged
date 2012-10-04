@@ -6,10 +6,17 @@ namespace BiM.Behaviors.Handlers.Characters
 {
     public class CharacterHandler
     {
+        [MessageHandler(typeof (CharactersListMessage))]
+        public static void HandleCharactersListMessage(Bot bot, CharactersListMessage message)
+        {
+            bot.ClientInformations.Update(message);
+            bot.Display = DisplayState.CharacterSelection;
+        }
+
         [MessageHandler(typeof(CharacterSelectedSuccessMessage))]
         public static void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
         {
-            bot.Character = new PlayedCharacter(bot, message.infos);
+            bot.SetPlayedCharacter(new PlayedCharacter(bot, message.infos));
         }
 
         [MessageHandler(typeof(CharacterStatsListMessage))]

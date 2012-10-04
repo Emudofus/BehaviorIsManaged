@@ -81,6 +81,7 @@
     <Compile Include="Data\DLMSource.cs" />
     <Compile Include="Data\IDataSource.cs" />
     <Compile Include="Authentification\ClientInformations.cs" />
+    <Compile Include="DisplayState.cs" />
     <Compile Include="Game\Actors\ContextActor.cs" />
     <Compile Include="Game\Actors\Fighters\CharacterFighter.cs" />
     <Compile Include="Game\Actors\Fighters\Fighter.cs" />
