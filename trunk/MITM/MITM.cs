@@ -23,8 +23,10 @@ namespace BiM.MITM
         public MITM(MITMConfiguration configuration)
         {
             m_configuration = configuration;
-            AuthConnections = new ClientManager<ConnectionMITM>(DnsExtensions.GetIPEndPointFromHostName(m_configuration.FakeAuthHost, m_configuration.FakeAuthPort), CreateAuthClient);
-            WorldConnections = new ClientManager<ConnectionMITM>(DnsExtensions.GetIPEndPointFromHostName(m_configuration.FakeWorldHost, m_configuration.FakeWorldPort), CreateWorldClient);
+            AuthConnections = new ClientManager<ConnectionMITM>(
+                DnsExtensions.GetIPEndPointFromHostName(m_configuration.FakeAuthHost, m_configuration.FakeAuthPort, AddressFamily.InterNetwork), CreateAuthClient);
+            WorldConnections = new ClientManager<ConnectionMITM>(
+                DnsExtensions.GetIPEndPointFromHostName(m_configuration.FakeWorldHost, m_configuration.FakeWorldPort, AddressFamily.InterNetwork), CreateWorldClient);
 
             AuthConnections.ClientConnected += OnAuthClientConnected;
             AuthConnections.ClientDisconnected += OnAuthClientDisconnected;
