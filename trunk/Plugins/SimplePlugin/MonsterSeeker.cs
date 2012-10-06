@@ -34,14 +34,14 @@ namespace SimplePlugin
                     if (!alreadySignaled.Contains(monster))
                     {
                         alreadySignaled.Add(monster);
-                        
-                        bot.ChatManager.PrintMessageToClient(String.Format("Le monstre <b>'{0}'</b> a été trouvé sur cette carte.", monster), System.Drawing.Color.Green);
+
+                        bot.Character.SendMessage(String.Format("Le monstre <b>'{0}'</b> a été trouvé sur cette carte.", monster), System.Drawing.Color.Green);
                     }
                 }
                 string archi = SeekedArchiMonsterInGroup(@group, bot);
                 if (!String.IsNullOrEmpty(archi))
                 {
-                    bot.ChatManager.PrintMessageToClient(String.Format("L'archimonstre <b>'{0}'</b> a été trouvé sur cette carte.", archi), System.Drawing.Color.Red);
+                    bot.Character.SendMessage(String.Format("L'archimonstre <b>'{0}'</b> a été trouvé sur cette carte.", archi), System.Drawing.Color.Red);
                 }
             }
         }
@@ -97,34 +97,34 @@ namespace SimplePlugin
         {
             if (parameters.Length != 1)
             {
-                bot.ChatManager.PrintMessageToClient("Invalid use. Use help command for more informations.", System.Drawing.Color.Firebrick);
+                bot.Character.SendMessage("Invalid use. Use help command for more informations.", System.Drawing.Color.Firebrick);
                 return;
             }
             if (MonsterSeeker.AddMonster(parameters[0].ToLowerInvariant()))
-                bot.ChatManager.PrintMessageToClient(String.Format("Le monstre '{0}' est désormais recherché.", parameters[0]), System.Drawing.Color.Green);
+                bot.Character.SendMessage(String.Format("Le monstre '{0}' est désormais recherché.", parameters[0]), System.Drawing.Color.Green);
             else
-                bot.ChatManager.PrintMessageToClient(String.Format("Le monstre '{0}' est déjà recherché.", parameters[0]), System.Drawing.Color.DarkSlateGray);
+                bot.Character.SendMessage(String.Format("Le monstre '{0}' est déjà recherché.", parameters[0]), System.Drawing.Color.DarkSlateGray);
         }
 
         internal static void HandleStopCommand(string[] parameters, Bot bot)
         {
             if (parameters.Length != 1)
             {
-                bot.ChatManager.PrintMessageToClient("Invalid use. Use help command for more informations.", System.Drawing.Color.Firebrick);
+                bot.Character.SendMessage("Invalid use. Use help command for more informations.", System.Drawing.Color.Firebrick);
                 return;
             }
             if (MonsterSeeker.RemoveMonster(parameters[0].ToLowerInvariant()))
-                bot.ChatManager.PrintMessageToClient(String.Format("Le monstre '{0}' n'est désormais plus recherché.", parameters[0]), System.Drawing.Color.Green);
+                bot.Character.SendMessage(String.Format("Le monstre '{0}' n'est désormais plus recherché.", parameters[0]), System.Drawing.Color.Green);
             else
-                bot.ChatManager.PrintMessageToClient(String.Format("Le monstre '{0}' n'était pas recherché.", parameters[0]), System.Drawing.Color.DarkSlateGray);
+                bot.Character.SendMessage(String.Format("Le monstre '{0}' n'était pas recherché.", parameters[0]), System.Drawing.Color.DarkSlateGray);
         }
 
         internal static void HandleListCommand(string[] parameters, Bot bot)
         {
             if (MonsterSeeker.SeekedMonsters.Count > 0)
-                bot.ChatManager.PrintMessageToClient(String.Format("Les monstres suivants sont recherchés :\n{0}", MonsterSeeker.SeekedMonsters.Aggregate((a, b) => a + ", " + b)), System.Drawing.Color.DarkSlateGray);
+                bot.Character.SendMessage(String.Format("Les monstres suivants sont recherchés :\n{0}", MonsterSeeker.SeekedMonsters.Aggregate((a, b) => a + ", " + b)), System.Drawing.Color.DarkSlateGray);
             else
-                bot.ChatManager.PrintMessageToClient("Aucun monstre n'est recherché.", System.Drawing.Color.DarkSlateGray);
+                bot.Character.SendMessage("Aucun monstre n'est recherché.", System.Drawing.Color.DarkSlateGray);
         }
     }
 }

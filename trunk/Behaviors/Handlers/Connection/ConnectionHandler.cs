@@ -18,6 +18,12 @@ namespace BiM.Behaviors.Handlers.Connection
             bot.ClientInformations.Update(message);
         }
 
+        [MessageHandler(typeof (IdentificationFailedMessage))]
+        public static void HandleIdentificationFailedMessage(Bot bot, IdentificationFailedMessage message)
+        {
+            bot.ClientInformations.Update(message);
+        }
+
         [MessageHandler(typeof(IdentificationFailedBannedMessage))]
         public static void HandleIdentificationFailedBannedMessage(Bot bot, IdentificationFailedBannedMessage message)
         {

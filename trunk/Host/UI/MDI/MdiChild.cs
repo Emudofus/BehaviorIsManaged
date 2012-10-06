@@ -36,7 +36,8 @@ namespace BiM.Host.UI.MDI
         /// </summary>
         /// <returns>The identifier for the WPF.MDI.MdiChild.ContentProperty property.</returns>
         public static readonly DependencyProperty ContentProperty =
-            DependencyProperty.Register("Content", typeof (UIElement), typeof (MdiChild));
+            DependencyProperty.Register("Content", typeof(UIElement), typeof(MdiChild));
+
 
         /// <summary>
         /// Identifies the WPF.MDI.MdiChild.TitleProperty dependency property.
@@ -605,13 +606,17 @@ namespace BiM.Host.UI.MDI
         /// <param name="e">The <see cref="System.Windows.Controls.Primitives.DragDeltaEventArgs"/> instance containing the event data.</param>
         private void ResizeLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (Width - e.HorizontalChange < MinWidth)
+            if (Width - e.HorizontalChange < MinWidth ||
+                Width - e.HorizontalChange < Content.DesiredSize.Width)
                 return;
 
             double newLeft = e.HorizontalChange;
 
             if (Position.X + newLeft < 0)
                 newLeft = 0 - Position.X;
+
+            if (double.IsNaN(Width))
+                Width = ActualWidth;
 
             Width -= newLeft;
             Position = new Point(Position.X + newLeft, Position.Y);
@@ -627,13 +632,17 @@ namespace BiM.Host.UI.MDI
         /// <param name="e">The <see cref="System.Windows.Controls.Primitives.DragDeltaEventArgs"/> instance containing the event data.</param>
         private void ResizeTop_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (Height - e.VerticalChange < MinHeight)
+            if (Height - e.VerticalChange < MinHeight ||
+                Height - e.HorizontalChange < Content.DesiredSize.Height)
                 return;
 
             double newTop = e.VerticalChange;
 
             if (Position.Y + newTop < 0)
                 newTop = 0 - Position.Y;
+
+            if (double.IsNaN(Height))
+                Height = ActualHeight;
 
             Height -= newTop;
             Position = new Point(Position.X, Position.Y + newTop);
@@ -649,8 +658,12 @@ namespace BiM.Host.UI.MDI
         /// <param name="e">The <see cref="System.Windows.Controls.Primitives.DragDeltaEventArgs"/> instance containing the event data.</param>
         private void ResizeRight_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (Width + e.HorizontalChange < MinWidth)
+            if (Width + e.HorizontalChange < MinWidth ||
+                Width + e.HorizontalChange < Content.DesiredSize.Width)
                 return;
+
+            if (double.IsNaN(Width))
+                Width = ActualWidth;
 
             Width += e.HorizontalChange;
 
@@ -665,8 +678,12 @@ namespace BiM.Host.UI.MDI
         /// <param name="e">The <see cref="System.Windows.Controls.Primitives.DragDeltaEventArgs"/> instance containing the event data.</param>
         private void ResizeBottom_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            if (Height + e.VerticalChange < MinHeight)
+            if (Height + e.VerticalChange < MinHeight ||
+                Height + e.HorizontalChange < Content.DesiredSize.Height)
                 return;
+
+            if (double.IsNaN(Height))
+                Height = ActualHeight;
 
             Height += e.VerticalChange;
 

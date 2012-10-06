@@ -24,7 +24,7 @@ namespace BiM.Host.UI.MDI
 
         #endregion
 
-        private static ResourceDictionary currentResourceDictionary;
+        private static ResourceDictionary m_currentResourceDictionary;
 
         #region Dependency Properties
 
@@ -134,7 +134,7 @@ namespace BiM.Host.UI.MDI
         /// </summary>
         internal double InnerHeight
         {
-            get { return ActualHeight - _topPanel.ActualHeight; }
+            get { return ActualHeight - m_topPanel.ActualHeight; }
         }
 
         #endregion
@@ -144,24 +144,24 @@ namespace BiM.Host.UI.MDI
         /// <summary>
         /// Contains window buttons in maximized mode.
         /// </summary>
-        private readonly Border _buttons;
+        private readonly Border m_buttons;
 
         /// <summary>
         /// Contains user-specified element.
         /// </summary>
-        private readonly Border _menu;
+        private readonly Border m_menu;
 
         /// <summary>
         /// Container for _buttons and _menu.
         /// </summary>
-        private readonly Panel _topPanel;
+        private readonly Panel m_topPanel;
 
-        private readonly Canvas _windowCanvas;
+        private readonly Canvas m_windowCanvas;
 
         /// <summary>
         /// Offset for new window.
         /// </summary>
-        private double _windowOffset;
+        private double m_windowOffset;
 
         /// <summary>
         /// Gets or sets the child elements.
@@ -189,23 +189,26 @@ namespace BiM.Host.UI.MDI
             Children.CollectionChanged += Children_CollectionChanged;
 
             var gr = new Grid();
-            gr.RowDefinitions.Add(new RowDefinition {Height = GridLength.Auto});
+            gr.RowDefinitions.Add(new RowDefinition()
+            {
+                Height = GridLength.Auto
+            });
             gr.RowDefinitions.Add(new RowDefinition());
 
-            _topPanel = new DockPanel {Background = SystemColors.MenuBrush};
-            _topPanel.Children.Add(_menu = new Border());
-            DockPanel.SetDock(_menu, Dock.Left);
-            _topPanel.Children.Add(_buttons = new Border());
-            DockPanel.SetDock(_buttons, Dock.Right);
-            _topPanel.SizeChanged += MdiContainer_SizeChanged;
-            _topPanel.Children.Add(new UIElement());
-            gr.Children.Add(_topPanel);
+            m_topPanel = new DockPanel {Background = SystemColors.MenuBrush};
+            m_topPanel.Children.Add(m_menu = new Border());
+            DockPanel.SetDock(m_menu, Dock.Left);
+            m_topPanel.Children.Add(m_buttons = new Border());
+            DockPanel.SetDock(m_buttons, Dock.Right);
+            m_topPanel.SizeChanged += MdiContainer_SizeChanged;
+            m_topPanel.Children.Add(new UIElement());
+            gr.Children.Add(m_topPanel);
 
             var sv = new ScrollViewer
                          {
-                             Content = _windowCanvas = new Canvas(),
-                             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-                             VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                             Content = m_windowCanvas = new Canvas(),
+                             HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
+                             VerticalScrollBarVisibility = ScrollBarVisibility.Visible
                          };
             gr.Children.Add(sv);
             Grid.SetRow(sv, 1);
@@ -261,11 +264,11 @@ namespace BiM.Host.UI.MDI
                 wnd.Deactivated += MdiContainer_Deactivated;
             }
 
-            _windowCanvas.Width = _windowCanvas.ActualWidth;
-            _windowCanvas.Height = _windowCanvas.ActualHeight;
+            m_windowCanvas.Width = m_windowCanvas.ActualWidth;
+            m_windowCanvas.Height = m_windowCanvas.ActualHeight;
 
-            _windowCanvas.VerticalAlignment = VerticalAlignment.Top;
-            _windowCanvas.HorizontalAlignment = HorizontalAlignment.Left;
+            m_windowCanvas.VerticalAlignment = VerticalAlignment.Top;
+            m_windowCanvas.HorizontalAlignment = HorizontalAlignment.Left;
 
             InvalidateSize();
         }
@@ -345,20 +348,20 @@ namespace BiM.Host.UI.MDI
                         mdiChild.Loaded += (s, a) => ActiveMdiChild = mdiChild;
 
                         if (mdiChild.Position.X < 0 || mdiChild.Position.Y < 0)
-                            mdiChild.Position = new Point(_windowOffset, _windowOffset);
-                        _windowCanvas.Children.Add(mdiChild);
+                            mdiChild.Position = new Point(m_windowOffset, m_windowOffset);
+                        m_windowCanvas.Children.Add(mdiChild);
 
-                        _windowOffset += WindowOffset;
-                        if (_windowOffset + mdiChild.Width > ActualWidth)
-                            _windowOffset = 0;
-                        if (_windowOffset + mdiChild.Height > ActualHeight)
-                            _windowOffset = 0;
+                        m_windowOffset += WindowOffset;
+                        if (m_windowOffset + mdiChild.Width > ActualWidth)
+                            m_windowOffset = 0;
+                        if (m_windowOffset + mdiChild.Height > ActualHeight)
+                            m_windowOffset = 0;
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     {
                         var oldChild = (MdiChild) e.OldItems[0];
-                        _windowCanvas.Children.Remove(oldChild);
+                        m_windowCanvas.Children.Remove(oldChild);
                         MdiChild newChild = GetTopChild();
 
                         ActiveMdiChild = newChild;
@@ -367,7 +370,7 @@ namespace BiM.Host.UI.MDI
                     }
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    _windowCanvas.Children.Clear();
+                    m_windowCanvas.Children.Clear();
                     break;
             }
             InvalidateSize();
@@ -396,12 +399,41 @@ namespace BiM.Host.UI.MDI
                     largestPoint.Y = farPosition.Y;
             }
 
-            if (_windowCanvas.Width != largestPoint.X)
-                _windowCanvas.Width = largestPoint.X;
+            if (m_windowCanvas.Width != largestPoint.X)
+                m_windowCanvas.Width = largestPoint.X;
 
-            if (_windowCanvas.Height != largestPoint.Y)
-                _windowCanvas.Height = largestPoint.Y;
+            if (m_windowCanvas.Height != largestPoint.Y)
+                m_windowCanvas.Height = largestPoint.Y;
         }
+
+        /*protected override Size MeasureOverride(Size constraint)
+        {
+            var availableSize = new Size(double.PositiveInfinity, double.PositiveInfinity);
+
+            double maxHeight = 0;
+            double maxWidth = 0;
+
+            foreach (MdiChild element in Children)
+            {
+                if (element != null)
+                {
+                    element.Measure(availableSize);
+                    double left = Canvas.GetLeft(element);
+                    double top = Canvas.GetTop(element);
+                    left += element.DesiredSize.Width;
+                    top += element.DesiredSize.Height;
+
+                    maxWidth = maxWidth < left ? left : maxWidth;
+                    maxHeight = maxHeight < top ? top : maxHeight;
+                }
+            }
+
+            return new Size
+                       {
+                           Height = maxHeight,
+                           Width = maxWidth
+                       };
+        }*/
 
         /// <summary>
         /// Gets MdiChild with maximum ZIndex.
@@ -445,16 +477,16 @@ namespace BiM.Host.UI.MDI
             if (max_mode)
                 mdiContainer.ActiveMdiChild.WindowState = WindowState.Normal;
 
-            if (currentResourceDictionary != null)
-                Application.Current.Resources.MergedDictionaries.Remove(currentResourceDictionary);
+            if (m_currentResourceDictionary != null)
+                Application.Current.Resources.MergedDictionaries.Remove(m_currentResourceDictionary);
 
             switch (themeType)
             {
                 case ThemeType.Luna:
-                    Application.Current.Resources.MergedDictionaries.Add(currentResourceDictionary = new ResourceDictionary {Source = new Uri(@"/BiM.Host;component/UI/MDI/Themes/Luna.xaml", UriKind.Relative)});
+                    Application.Current.Resources.MergedDictionaries.Add(m_currentResourceDictionary = new ResourceDictionary {Source = new Uri(@"/BiM.Host;component/UI/MDI/Themes/Luna.xaml", UriKind.Relative)});
                     break;
                 case ThemeType.Aero:
-                    Application.Current.Resources.MergedDictionaries.Add(currentResourceDictionary = new ResourceDictionary
+                    Application.Current.Resources.MergedDictionaries.Add(m_currentResourceDictionary = new ResourceDictionary
                     {
                         Source = new Uri(@"/BiM.Host;component/UI/MDI/Themes/Aero.xaml", UriKind.Relative)
                     });
@@ -475,7 +507,7 @@ namespace BiM.Host.UI.MDI
             var mdiContainer = (MdiContainer) sender;
             var menu = (UIElement) e.NewValue;
 
-            mdiContainer._menu.Child = menu;
+            mdiContainer.m_menu.Child = menu;
         }
 
         /// <summary>
@@ -682,7 +714,7 @@ namespace BiM.Host.UI.MDI
             var mdiContainer = (MdiContainer) sender;
             var panel = (Panel) e.NewValue;
 
-            mdiContainer._buttons.Child = panel;
+            mdiContainer.m_buttons.Child = panel;
 
             if (mdiContainer.MdiChildTitleChanged != null)
                 mdiContainer.MdiChildTitleChanged(mdiContainer, new RoutedEventArgs());

@@ -8,7 +8,6 @@ using BiM.Core.Messages;
 using BiM.Core.Network;
 using BiM.Core.Threading;
 using NLog;
-using BiM.Behaviors.Managers;
 
 namespace BiM.Behaviors
 {
@@ -55,17 +54,10 @@ namespace BiM.Behaviors
             Dispatcher = messageDispatcher;
             ConnectionType = ClientConnectionType.Disconnected;
             ClientInformations = new ClientInformations();
-            ChatManager = new Managers.ChatManager(this);
             Display = DisplayState.None;
         }
 
         public MessageDispatcher Dispatcher
-        {
-            get;
-            private set;
-        }
-
-        public ChatManager ChatManager
         {
             get;
             private set;
@@ -125,7 +117,7 @@ namespace BiM.Behaviors
             {
                 logger.Fatal(ex);
 
-                Dispose();
+                Stop();
             }
 
             base.OnTick();

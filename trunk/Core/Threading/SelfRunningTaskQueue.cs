@@ -47,7 +47,7 @@ namespace BiM.Core.Threading
             get { return m_running; }
             protected set
             {
-                m_running = value; logger.Debug("TaskQueue.Running = {0}", value);
+                m_running = value;
             }
         }
 

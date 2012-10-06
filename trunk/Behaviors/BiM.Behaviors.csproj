@@ -175,7 +175,6 @@
     <Compile Include="Handlers\Context\RolePlayHandler.cs" />
     <Compile Include="Handlers\Regen\RegenHandler.cs" />
     <Compile Include="Handlers\Spells\SpellHandler.cs" />
-    <Compile Include="Managers\ChatManager.cs" />
     <Compile Include="Messages\BotAddedMessage.cs" />
     <Compile Include="Messages\BotRemovedMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

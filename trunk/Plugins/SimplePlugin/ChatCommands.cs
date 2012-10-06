@@ -14,7 +14,7 @@ namespace SimplePlugin
             {
                 message.BlockNetworkSend();// do not send this message to the server
 
-                bot.ChatManager.SendMessageToClient(string.Format("Hello {0} you are on sub area {1}",
+                bot.Character.SendMessage(string.Format("Hello {0} you are on sub area {1}",
                     bot.Character.Name, bot.Character.Map.SubArea.Name));
             }
         }

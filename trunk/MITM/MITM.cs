@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using BiM.Behaviors;
@@ -88,7 +89,6 @@ namespace BiM.MITM
 
             BotManager.Instance.RegisterBot(bot);
 
-
             return client;
         }
 
@@ -121,10 +121,7 @@ namespace BiM.MITM
 
         private void OnAuthClientDisconnected(ConnectionMITM client)
         {
-            // stop the bot after it ends processing stuff
-            if (client.Bot.ExpectedDisconnection)
-                client.Bot.AddMessage(client.Bot.Stop);
-            else client.Bot.Dispose();
+            client.Bot.AddMessage(client.Bot.Stop);
         }
 
         private void OnWorldClientConnected(ConnectionMITM client)
@@ -138,7 +135,7 @@ namespace BiM.MITM
 
         private void OnWorldClientDisconnected(ConnectionMITM client)
         {
-            client.Bot.Dispose();
+            client.Bot.Stop();
         }
 
         private void OnAuthClientMessageReceived(Client client, NetworkMessage message)
@@ -197,8 +194,8 @@ namespace BiM.MITM
             client.Bot.CancelAllMessages(); // avoid to handle message from the auth client.
             client.Bot.Start();
 
-            ( client.Bot.Dispatcher as NetworkMessageDispatcher ).Client = client;
-            ( client.Bot.Dispatcher as NetworkMessageDispatcher ).Server = client.Server;
+            ( (NetworkMessageDispatcher) client.Bot.Dispatcher ).Client = client;
+            ( (NetworkMessageDispatcher) client.Bot.Dispatcher ).Server = client.Server;
 
             try
             {
@@ -207,13 +204,30 @@ namespace BiM.MITM
             catch (Exception)
             {
                 logger.Error("Cannot connect to {0}:{1}.", tuple.Item2.address, tuple.Item2.port);
-                client.Bot.Dispose();
+                client.Bot.Stop();
                 return;
             }
 
             logger.Debug("Bot retrieved with ticket {0}", message.ticket);
         }
 
+        [MessageHandler(typeof(IdentificationMessage))]
+        public static void HandleIdentificationMessage(Bot bot, IdentificationMessage message)
+        {
+            // note : is it really necessary ?
+
+            var existingInstances = BotManager.Instance.Bots.
+                Where(entry => entry != bot && entry.ClientInformations != null && entry.ClientInformations.Login == message.login).ToArray();
+
+            if (existingInstances.Length > 1)
+                logger.Error(string.Format("Found {0} instances of Bot with login {1} (expected 0 or 1)", existingInstances.Length, message.login));
+
+            foreach (var existingBot in existingInstances)
+            {
+                // we remove this instance and use the new one instead
+                existingBot.Dispose();
+            }
+        }
 
         [MessageHandler(typeof(SelectedServerDataMessage), FromFilter = ListenerEntry.Server)]
         private void HandleSelectedServerDataMessage(Bot bot, SelectedServerDataMessage message)

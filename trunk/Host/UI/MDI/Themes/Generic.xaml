@@ -10,8 +10,6 @@
   <SolidColorBrush x:Key="InnerBorderBrush" Color="#FFF6F6F6" />
 
   <Style TargetType="{x:Type MDI:MdiChild}">
-    <Setter Property="Width" Value="300" />
-    <Setter Property="Height" Value="300" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type MDI:MdiChild}">

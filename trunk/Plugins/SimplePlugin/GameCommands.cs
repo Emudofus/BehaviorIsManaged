@@ -19,7 +19,7 @@ namespace SimplePlugin
         internal static void OnHelpCommand(string[] parameters, Bot bot)
         {
             foreach (string line in GetHelpCommands())
-                bot.ChatManager.PrintMessageToClient(line, System.Drawing.Color.MidnightBlue);
+                bot.Character.SendMessage(line, System.Drawing.Color.MidnightBlue);
         }
 
         public static void CreateTchatCommand(string name, string help, Action<string[], Bot> action)
@@ -90,7 +90,7 @@ namespace SimplePlugin
             if (m_commands.Count(entry => entry.CommandName == commandName) == 1)
                 m_commands.Where(entry => entry.CommandName == commandName).First().Action(parameters.ToArray(), bot);
             else
-                bot.ChatManager.PrintMessageToClient(String.Format("The tchat command <b>{0}</b> doesn't exist.", commandName), System.Drawing.Color.Red);
+                bot.Character.SendMessage(String.Format("The tchat command <b>{0}</b> doesn't exist.", commandName), System.Drawing.Color.Red);
         }
     }
 }

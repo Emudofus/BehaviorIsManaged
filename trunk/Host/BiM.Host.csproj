@@ -96,6 +96,9 @@
     <Compile Include="UI\Bot\ServerSelection.xaml.cs">
       <DependentUpon>ServerSelection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Converters\ComparisonBinding.cs" />
+    <Compile Include="UI\Converters\ConstantAdderConverter.cs" />
+    <Compile Include="UI\Converters\IsNullConverter.cs" />
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -241,6 +244,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -78,7 +78,8 @@ namespace BiM.Core.Config
             writer.WriteStartElement(NodeName);
             writer.WriteAttributeString(AttributeName, Name);
 
-            new XmlSerializer(m_value.GetType()).Serialize(writer, m_value);
+            if (m_value != null)
+                new XmlSerializer(m_value.GetType()).Serialize(writer, m_value);
             IsSynchronised = true;
 
             writer.WriteEndElement();

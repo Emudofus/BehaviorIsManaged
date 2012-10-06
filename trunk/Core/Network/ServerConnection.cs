@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -9,10 +10,8 @@ using NLog;
 
 namespace BiM.Core.Network
 {
-    public class ServerConnection : IClient
+    public class ServerConnection : IClient, INotifyPropertyChanged
     {
-        private string m_host;
-        private int m_port;
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly BigEndianReader m_buffer = new BigEndianReader();
@@ -74,8 +73,21 @@ namespace BiM.Core.Network
 
         public string IP
         {
-            get { return string.Format("{0}:{1}", m_host, m_port); }
+            get { return string.Format("{0}:{1}", Host, Port); }
         }
+
+        public int Port
+        {
+            get;
+            private set;
+        }
+
+        public string Host
+        {
+            get;
+            private set;
+        }
+
 
         /// <summary>
         /// Last activity as a socket client (since last packet received sent )
@@ -109,9 +121,14 @@ namespace BiM.Core.Network
                 Log(LogLevel.Fatal, "Socket already closed");
                 return;
             }
+            else if (Socket.Connected)
+            {
+                Log(LogLevel.Fatal, "Socket already connected");
+                return;
+            }
 
-            m_host = host;
-            m_port = port;
+            Host = host;
+            Port = port;
             Socket.Connect(host, port);
             OnClientConnected();
 
@@ -125,7 +142,7 @@ namespace BiM.Core.Network
 
             Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-            Connect(m_host, m_port);
+            Connect(Host, Port);
         }
 
         /// <summary>
@@ -273,5 +290,7 @@ namespace BiM.Core.Network
         {
             return string.Concat("<", IP, ">");
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

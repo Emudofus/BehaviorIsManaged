@@ -78,7 +78,19 @@ namespace BiM.Behaviors.Authentification
             set;
         }
 
-        public DateTime BanEndDate
+        public DateTime? BanEndDate
+        {
+            get;
+            set;
+        }
+
+        public IdentificationFailureReasonEnum? IdentificationFailureReason
+        {
+            get;
+            set;
+        }
+
+        public bool Banned
         {
             get;
             set;
@@ -229,8 +241,18 @@ namespace BiM.Behaviors.Authentification
         {
             if (msg == null) throw new ArgumentNullException("msg");
             BanEndDate = msg.banEndDate.UnixTimestampToDateTime();
+            Banned = true;
 
             logger.Warn("F*** I'm banned :( for {0}", BanEndDate - DateTime.Now);
+        }
+
+        public void Update(IdentificationFailedMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            IdentificationFailureReason = (IdentificationFailureReasonEnum)msg.reason;
+
+            if (IdentificationFailureReason == IdentificationFailureReasonEnum.BANNED)
+                Banned = true;
         }
 
         public void Update(IdentificationSuccessMessage msg)

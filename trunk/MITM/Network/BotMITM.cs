@@ -22,9 +22,26 @@ namespace BiM.MITM.Network
             set;
         }
 
+        public bool Identified
+        {
+            get;
+            set;
+        }
+
         public void ChangeConnection(ConnectionMITM connection)
         {
             Connection = connection;
+        }
+
+        public override void Stop()
+        {
+            if (!Running)
+                return;
+
+            if (Connection != null)
+                Connection.Disconnect();
+
+            base.Stop();
         }
 
         public override void Dispose()
