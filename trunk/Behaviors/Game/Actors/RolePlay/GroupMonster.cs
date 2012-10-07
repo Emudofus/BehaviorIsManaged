@@ -13,24 +13,58 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
     {
         private Monster[] m_monsters;
 
-        public GroupMonster(GameRolePlayGroupMonsterInformations gameRolePlayGroupMonsterInformations, Map map)
+        public GroupMonster(GameRolePlayGroupMonsterInformations informations, Map map)
         {
-            Id = gameRolePlayGroupMonsterInformations.contextualId;
-            Look = gameRolePlayGroupMonsterInformations.look;
-            Position = new ObjectPosition(map, gameRolePlayGroupMonsterInformations.disposition);
+            Id = informations.contextualId;
+            Look = informations.look;
+            Position = new ObjectPosition(map, informations.disposition);
+            AgeBonus = informations.ageBonus;
+            LootShare = informations.lootShare;
+            AlignmentSide = informations.alignmentSide;
+            KeyRingBonus = informations.keyRingBonus;
 
             // Gets monsters infos.
-            List<Monster> monsters = new List<Monster>();
-            // Main monster.
-            monsters.Add(new Monster(gameRolePlayGroupMonsterInformations.staticInfos.mainCreatureLightInfos.creatureGenericId));
+            var monsters = new List<Monster>();
+            // Main monster, his look correspond to the group monster look
+            monsters.Add(Leader = new Monster(informations.staticInfos.mainCreatureLightInfos, informations.look));
             // Other monsters of the group.
-            monsters.AddRange(gameRolePlayGroupMonsterInformations.staticInfos.underlings.Select(entry => new Monster(entry.creatureGenericId)));
+            monsters.AddRange(informations.staticInfos.underlings.Select(entry => new Monster(entry)));
             m_monsters = monsters.ToArray();
         }
 
         public Monster[] Monsters
         {
             get { return m_monsters; }
+        }
+
+        public Monster Leader
+        {
+            get;
+            private set;
+        }
+
+        public short AgeBonus
+        {
+            get;
+            set;
+        }
+
+        public sbyte LootShare
+        {
+            get;
+            set;
+        }
+
+        public sbyte AlignmentSide
+        {
+            get;
+            set;
+        }
+
+        public bool KeyRingBonus
+        {
+            get;
+            set;
         }
     }
 }

@@ -1,17 +1,15 @@
 ﻿using System.Drawing;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BiM.Behaviors;
 using BiM.Behaviors.Game.Actors;
-using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 
-namespace SimplePlugin
+namespace SimplePlugin.Handlers
 {
     public class PathfindersComparer
     {

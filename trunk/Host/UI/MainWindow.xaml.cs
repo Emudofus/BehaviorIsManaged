@@ -3,8 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using BiM.Behaviors;
+using BiM.Core.Messages;
 using BiM.Host.UI.Bot;
 using BiM.Host.UI.MDI;
+using BiM.Protocol.Messages;
+using NLog;
 
 namespace BiM.Host.UI
 {
@@ -31,6 +34,7 @@ namespace BiM.Host.UI
         private void InitializeHost()
         {
             Host.Initialize();
+            MessageDispatcher.RegisterSharedContainer(this);
 
             BotManager.Instance.BotAdded += OnBotAdded;
             BotManager.Instance.BotRemoved += OnBotRemoved;
@@ -45,7 +49,41 @@ namespace BiM.Host.UI
 
         private void OnBotRemoved(BotManager manager, Behaviors.Bot bot)
         {
-            Dispatcher.Invoke(new Action(() => RemoveChild(bot)));
+            // Dispatcher.Invoke(new Action(() => RemoveChild(bot)));
+            // note : remove the window only if another bot with the same name is created
+        }
+
+        [MessageHandler(typeof(IdentificationMessage))]
+        public void HandleIdentificationMessage(Behaviors.Bot bot, IdentificationMessage message)
+        {
+            Dispatcher.Invoke(new Action(() => CloseChildByLogin(message.login)));
+        }
+
+        private void CloseChildByLogin(string login)
+        {
+            foreach (var child in MdiContainer.Children.ToArray())
+            {
+                if (child.Content == null)
+                    child.Close();
+
+                else if (child.Content is BotControl)
+                {
+                    var childBot = ( (BotControl)child.Content ).Bot;
+
+                    if (childBot.Disposed && ( childBot.ClientInformations == null || string.IsNullOrEmpty(childBot.ClientInformations.Login) ))
+                        child.Close();
+                    else if (childBot.ClientInformations != null && childBot.ClientInformations.Login == login.ToLower())
+                    {
+                        if (!childBot.Disposed)
+                            // wtf cannot log it ?!
+                            ;//logger.Error("A bot with the same login ({0}) is already opened and not disposed !");
+                        else
+                        {
+                            child.Close();
+                        }
+                    }
+                }
+            }
         }
 
         public void AddChild(Behaviors.Bot bot)
@@ -54,7 +92,19 @@ namespace BiM.Host.UI
             child.Title = "Bot";
             child.Content = new BotControl(bot);
 
+            child.Closed += OnChildClosed;
+
             MdiContainer.Children.Add(child);
+        }
+
+        private void OnChildClosed(object sender, RoutedEventArgs e)
+        {
+            var child = (MdiChild)sender;
+
+            if (child.Content != null)
+            {
+                ( (BotControl)child.Content ).Bot.Dispose();
+            }
         }
 
         public void RemoveChild(Behaviors.Bot bot)
@@ -64,6 +114,7 @@ namespace BiM.Host.UI
 
             foreach (var child in childs)
             {
+                child.Content = null;
                 child.Close();
             }
         }

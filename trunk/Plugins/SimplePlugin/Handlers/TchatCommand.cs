@@ -1,7 +1,7 @@
 ﻿using System;
 using BiM.Behaviors;
 
-namespace SimplePlugin
+namespace SimplePlugin.Handlers
 {
     public class TchatCommand
     {

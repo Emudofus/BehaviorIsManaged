@@ -1,31 +1,27 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
 using BiM.Behaviors;
-using BiM.Behaviors.Messages;
 using BiM.Core.Config;
 using BiM.Core.Messages;
-using BiM.Core.Network;
 using BiM.Core.Reflection;
-using BiM.Host.Messages;
-using BiM.MITM;
 
-namespace SimplePlugin
+namespace SimplePlugin.Handlers
 {
     public static class PacketsLogger
     {
+        static PacketsLogger()
+        {
+            BotManager.Instance.BotAdded += OnBotAdded;
+        }
+
         [Configurable("AllowLogging")]
         public static bool AllowLogging = false;
 
         private static ObjectDumper m_dumper = new ObjectDumper(2, true, false, BindingFlags.Public | BindingFlags.Instance |
             BindingFlags.GetField | BindingFlags.FlattenHierarchy);
 
-        [MessageHandler(typeof(BotAddedMessage))]
-        public static void Initialize(Bot bot, BotAddedMessage message)
+        public static void OnBotAdded(BotManager sender, Bot bot)
         {
             if (AllowLogging)
                 bot.Dispatcher.MessageDispatched += OnMessageDispatched;

@@ -10,8 +10,7 @@ _ReSharper.*/
 # Output path
 bin/
 obj/
-/trunk/Run/Debug
-/trunk/Run/Release
+
 
 #TestUnit
 TestResults/

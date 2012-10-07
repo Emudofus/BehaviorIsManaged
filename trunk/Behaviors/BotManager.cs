@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using BiM.Behaviors.Messages;
 using BiM.Core.Reflection;
 using NLog.Config;
 using NLog.Layouts;
@@ -22,8 +21,6 @@ namespace BiM.Behaviors
         {
             Action<BotManager, Bot> handler = BotAdded;
             if (handler != null) handler(this, bot);
-
-            bot.SendLocal(new BotAddedMessage());
         }
 
         public event Action<BotManager, Bot> BotRemoved;
@@ -32,8 +29,6 @@ namespace BiM.Behaviors
         {
             Action<BotManager, Bot> handler = BotRemoved;
             if (handler != null) handler(this, bot);
-
-            bot.SendLocal(new BotRemovedMessage());
         }
 
         private readonly List<Bot> m_bots = new List<Bot>();

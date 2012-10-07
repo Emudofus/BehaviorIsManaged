@@ -1,27 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BiM.Behaviors.Data;
+﻿using BiM.Behaviors.Data;
+using BiM.Protocol.Data;
+using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
 {
     public class Monster
     {
         private readonly Protocol.Data.Monster m_monster;
-        private readonly Protocol.Data.MonsterRace m_race;
-        private readonly Protocol.Data.MonsterSuperRace m_superRace;
+        private readonly MonsterRace m_race;
+        private readonly MonsterSuperRace m_superRace;
+        private readonly MonsterGrade m_monsterGrade;
 
-        public Monster(int id)
+        public Monster(MonsterInGroupInformations informations)
+            : this(informations, informations.look)
         {
-            m_monster = DataProvider.Instance.Get<Protocol.Data.Monster>(id);
-            m_race = DataProvider.Instance.Get<Protocol.Data.MonsterRace>(m_monster.race);
-            m_superRace = DataProvider.Instance.Get<Protocol.Data.MonsterSuperRace>(m_race.superRaceId);
+        }
+
+        public Monster(MonsterInGroupLightInformations informations, EntityLook look)
+        {
+            Look = look;
+            m_monster = DataProvider.Instance.Get<Protocol.Data.Monster>(informations.creatureGenericId);
+            m_monsterGrade = m_monster.grades[informations.grade - 1];
+            m_race = DataProvider.Instance.Get<MonsterRace>(m_monster.race);
+            m_superRace = DataProvider.Instance.Get<MonsterSuperRace>(m_race.superRaceId);
+
         }
 
         public int Id
         {
             get { return m_monster.id; }
+        }
+
+        public EntityLook Look
+        {
+            get;
+            private set;
+        }
+
+        public Protocol.Data.Monster MonsterTemplate
+        {
+            get { return m_monster; }
+        }
+
+        public MonsterGrade Grade
+        {
+            get { return m_monsterGrade; }
+        }
+
+        public MonsterRace Race
+        {
+            get { return m_race; }
+        }
+
+        public MonsterSuperRace SuperRace
+        {
+            get { return m_superRace; }
         }
 
         public string Name
@@ -34,7 +67,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             get { return m_monster.isBoss; }
         }
 
-        public string Race
+        public string RaceName
         {
             get { return DataProvider.Instance.Get<string>(m_race.nameId); }
         }
@@ -44,7 +77,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             get { return m_race.id == 78 && m_superRace.id == 20; }
         }
 
-        public string SuperRace
+        public string SuperRaceName
         {
             get { return DataProvider.Instance.Get<string>(m_superRace.nameId); }
         }

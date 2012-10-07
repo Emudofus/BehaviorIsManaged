@@ -35,6 +35,14 @@ namespace BiM.Host.UI.Bot
             
         }
 
+        /// <summary>
+        /// Returns true when the associated bot is disposed and not usable anymore
+        /// </summary>
+        public bool IsDeadWindow
+        {
+            get { return Bot.Disposed; }
+        }
+
         public Behaviors.Bot Bot
         {
             get;

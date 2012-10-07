@@ -233,7 +233,7 @@ namespace BiM.Behaviors.Authentification
             if (msg == null) throw new ArgumentNullException("msg");
             Version = msg.version;
             Lang = msg.lang;
-            Login = msg.login;
+            Login = msg.login.ToLower(); // always ToLower() for login
             Credentials = msg.credentials.ToArray();
         }
 

@@ -148,8 +148,8 @@ namespace BiM.Core.Threading
                 if (Interlocked.CompareExchange(ref m_currentThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
                 {
                     long timerStart = m_queueTimer.ElapsedMilliseconds;
-                    var updateDt = (int) (timerStart - m_lastUpdate);
-                    m_lastUpdate = (int) timerStart;
+                    var updateDt = (int)( timerStart - m_lastUpdate );
+                    m_lastUpdate = (int)timerStart;
 
                     // do stuff here
 
@@ -208,7 +208,7 @@ namespace BiM.Core.Threading
                     long timerStop = m_queueTimer.ElapsedMilliseconds;
 
                     bool updateLagged = timerStop - timerStart > UpdateInterval;
-                    long callbackTimeout = updateLagged ? 0 : ((timerStart + UpdateInterval) - timerStop);
+                    long callbackTimeout = updateLagged ? 0 : ( ( timerStart + UpdateInterval ) - timerStop );
 
                     Interlocked.Exchange(ref m_currentThreadId, 0);
 
@@ -218,9 +218,10 @@ namespace BiM.Core.Threading
                     if (Running)
                     {
                         // re-register the Update-callback
-                        m_updateTask = Task.Factory.StartNewDelayed((int) callbackTimeout, Tick);
+                        m_updateTask = Task.Factory.StartNewDelayed((int)callbackTimeout, Tick);
                     }
                 }
+                else Debug.WriteLine("");
             }
             catch (Exception ex)
             {

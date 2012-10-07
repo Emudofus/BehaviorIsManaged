@@ -2,7 +2,7 @@
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 
-namespace SimplePlugin
+namespace SimplePlugin.Handlers
 {
     public static class ChatCommands
     {

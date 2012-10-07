@@ -8,12 +8,17 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
     public class Npc : RolePlayActor
     {
-        public Npc(GameRolePlayNpcWithQuestInformations gameRolePlayNpcWithQuestInformations, Map map)
+        public Npc(GameRolePlayNpcWithQuestInformations informations, Map map)
+            : this ((GameRolePlayNpcInformations)informations, map)
         {
+
         }
 
-        public Npc(GameRolePlayNpcInformations gameRolePlayNpcWithQuestInformations, Map map)
+        public Npc(GameRolePlayNpcInformations informations, Map map)
         {
+            Id = informations.contextualId;
+            Look = informations.look;
+            Position = new ObjectPosition(map, informations.disposition);
         }
     }
 }

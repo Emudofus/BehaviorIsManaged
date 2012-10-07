@@ -6,7 +6,7 @@ using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using BiM.Behaviors;
 
-namespace SimplePlugin
+namespace SimplePlugin.Handlers
 {
     public static class GameCommands
     {

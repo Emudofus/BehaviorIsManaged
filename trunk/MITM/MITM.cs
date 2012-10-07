@@ -121,7 +121,9 @@ namespace BiM.MITM
 
         private void OnAuthClientDisconnected(ConnectionMITM client)
         {
-            client.Bot.AddMessage(client.Bot.Stop);
+            if (client.Bot.ExpectedDisconnection)
+                client.Bot.AddMessage(client.Bot.Stop);
+            else client.Bot.Dispose();
         }
 
         private void OnWorldClientConnected(ConnectionMITM client)
@@ -135,7 +137,7 @@ namespace BiM.MITM
 
         private void OnWorldClientDisconnected(ConnectionMITM client)
         {
-            client.Bot.Stop();
+            client.Bot.Dispose();
         }
 
         private void OnAuthClientMessageReceived(Client client, NetworkMessage message)
@@ -209,24 +211,6 @@ namespace BiM.MITM
             }
 
             logger.Debug("Bot retrieved with ticket {0}", message.ticket);
-        }
-
-        [MessageHandler(typeof(IdentificationMessage))]
-        public static void HandleIdentificationMessage(Bot bot, IdentificationMessage message)
-        {
-            // note : is it really necessary ?
-
-            var existingInstances = BotManager.Instance.Bots.
-                Where(entry => entry != bot && entry.ClientInformations != null && entry.ClientInformations.Login == message.login).ToArray();
-
-            if (existingInstances.Length > 1)
-                logger.Error(string.Format("Found {0} instances of Bot with login {1} (expected 0 or 1)", existingInstances.Length, message.login));
-
-            foreach (var existingBot in existingInstances)
-            {
-                // we remove this instance and use the new one instead
-                existingBot.Dispose();
-            }
         }
 
         [MessageHandler(typeof(SelectedServerDataMessage), FromFilter = ListenerEntry.Server)]

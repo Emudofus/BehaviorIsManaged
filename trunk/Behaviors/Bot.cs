@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using BiM.Behaviors.Authentification;
 using BiM.Behaviors.Game.Actors.RolePlay;
-using BiM.Behaviors.Messages;
+using BiM.Behaviors.Settings;
 using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Network;
@@ -23,6 +23,12 @@ namespace BiM.Behaviors
         #endregion
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private bool m_disposed;
+
+        public bool Disposed
+        {
+            get { return m_disposed; }
+        }
 
 
         public event LogHandler LogNotified;
@@ -63,6 +69,12 @@ namespace BiM.Behaviors
             private set;
         }
 
+        public BotSettings Settings
+        {
+            get;
+            private set;
+        }
+
         public ClientConnectionType ConnectionType
         {
             get;
@@ -95,12 +107,30 @@ namespace BiM.Behaviors
 
         public void SetPlayedCharacter(PlayedCharacter character)
         {
+            if (m_disposed)
+                throw new Exception("Bot instance is disposed");
+
             if (character == null) throw new ArgumentNullException("character");
             if (Character != null)
                 throw new Exception("Character already selected");
 
             Character = character;
             OnCharactersSelected(character);
+        }
+
+        public void LoadSettings(string path)
+        {
+            if (Settings != null)
+                throw new Exception("Settings already loaded");
+
+            Settings = new BotSettings(path);
+            Settings.Load();
+        }
+
+        public void SaveSettings()
+        {
+            if (Settings != null)
+                Settings.Save();
         }
 
         protected override void OnTick()
@@ -136,6 +166,11 @@ namespace BiM.Behaviors
             message.From = ListenerEntry.Local;
 
             Dispatcher.Enqueue(message, this);
+
+            if (Disposed)
+                logger.Error("Error the message {0} wont be dispatched because the bot {1} is disposed !", message, this);
+            else if (!Running)
+                logger.Warn("Warning, enqueue {0} but the bot is stopped, the message will be processed once the bot {1} restart", message, this);
         }
 
         /// <summary>
@@ -171,6 +206,11 @@ namespace BiM.Behaviors
             if (message == null) throw new ArgumentNullException("message");
 
             Dispatcher.Enqueue(message, this);
+
+            if (Disposed)
+                logger.Error("Error the message {0} wont be dispatched because the bot {1} is disposed !", message, this);
+            else if (!Running)
+                logger.Warn("Warning, enqueue {0} but the bot is stopped, the message will be processed once the bot {1} restart", message, this);
         }
 
         public void RegisterHandler(object handler)
@@ -187,6 +227,9 @@ namespace BiM.Behaviors
         {
             if (Running)
                 return;
+
+            if (m_disposed)
+                throw new Exception("Cannot start a disposed bot instance");
 
             if (Dispatcher.Stopped)
                 Dispatcher.Resume();
@@ -211,6 +254,11 @@ namespace BiM.Behaviors
 
         public virtual void Dispose()
         {
+            if (m_disposed)
+                return;
+
+            m_disposed = true;
+
             Stop();
 
             if (Dispatcher != null)
@@ -223,6 +271,12 @@ namespace BiM.Behaviors
 
         public override string ToString()
         {
+            if (Character != null && !string.IsNullOrEmpty(Character.Name))
+                return Character.Name;
+
+            if (ClientInformations != null && !string.IsNullOrEmpty(ClientInformations.Login))
+                return ClientInformations.Login;
+
             return "Bot";
         }
 

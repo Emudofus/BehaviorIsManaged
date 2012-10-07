@@ -1,5 +1,6 @@
 ﻿using System;
 using BiM.Host.Plugins;
+using SimplePlugin.Handlers;
 
 namespace SimplePlugin
 {

@@ -1,14 +1,17 @@
 ﻿using BiM.Behaviors;
-using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 
-namespace SimplePlugin
+namespace SimplePlugin.Handlers
 {
     public class UnSharedHandlerTest
     {
-        [MessageHandler(typeof(BotAddedMessage))]
-        public static void OnBotAdded(Bot bot, BotAddedMessage message)
+        static UnSharedHandlerTest()
+        {
+            BotManager.Instance.BotAdded += OnBotAdded;
+        }
+
+        public static void OnBotAdded(BotManager sender, Bot bot)
         {
             bot.RegisterHandler(new HandlerClass());
         } 
