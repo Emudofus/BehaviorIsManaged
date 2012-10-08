@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using BiM.Behaviors;
 using BiM.Behaviors.Data;
 using BiM.Core.Config;
 using BiM.Core.I18n;
@@ -146,6 +147,8 @@ namespace BiM.Host
 
             DispatcherTask = new DispatcherTask(new MessageDispatcher(), MITM);
             DispatcherTask.Start(); // we have to start it now to dispatch the initialization msg
+
+            BotManager.Instance.Initialize();
 
             var msg = new HostInitializationMessage();
             DispatcherTask.Dispatcher.Enqueue(msg, MITM);

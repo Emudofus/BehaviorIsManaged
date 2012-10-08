@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using BiM.Behaviors;
+using BiM.Behaviors.Messages;
 using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Reflection;
@@ -10,21 +11,18 @@ namespace SimplePlugin.Handlers
 {
     public static class PacketsLogger
     {
-        static PacketsLogger()
-        {
-            BotManager.Instance.BotAdded += OnBotAdded;
-        }
-
         [Configurable("AllowLogging")]
         public static bool AllowLogging = false;
 
         private static ObjectDumper m_dumper = new ObjectDumper(2, true, false, BindingFlags.Public | BindingFlags.Instance |
             BindingFlags.GetField | BindingFlags.FlattenHierarchy);
 
-        public static void OnBotAdded(BotManager sender, Bot bot)
+
+        [MessageHandler(typeof(BotAddedMessage))]
+        public static void OnBotAdded(object sender, BotAddedMessage message)
         {
             if (AllowLogging)
-                bot.Dispatcher.MessageDispatched += OnMessageDispatched;
+                message.Bot.Dispatcher.MessageDispatched += OnMessageDispatched;
         }
 
         private static void OnMessageDispatched(MessageDispatcher dispatcher, Message message)

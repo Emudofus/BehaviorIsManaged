@@ -104,27 +104,24 @@ namespace BiM.Core.Network
             private set;
         }
 
-        public void Log(LogLevel level, string message, params object[] args)
+        /// <summary>
+        /// True whenever the server has sent at least one packet
+        /// </summary>
+        public bool IsResponding
         {
-            var log = new LogEventInfo(level, "", CultureInfo.CurrentCulture, message, args);
-
-
-            var handler = LogMessage;
-            if (handler != null)
-                handler(this, log);
+            get;
+            private set;
         }
 
         public void Connect(string host, int port)
         {
             if (Socket == null)
             {
-                Log(LogLevel.Fatal, "Socket already closed");
-                return;
+                throw new Exception("Socket already closed");
             }
             else if (Socket.Connected)
             {
-                Log(LogLevel.Fatal, "Socket already connected");
-                return;
+                throw new Exception("Socket already connected");
             }
 
             Host = host;
@@ -231,6 +228,8 @@ namespace BiM.Core.Network
             {
                 if (!IsConnected)
                     return;
+
+                IsResponding = true;
 
                 if (args.BytesTransferred <= 0 ||
                     args.SocketError != SocketError.Success)

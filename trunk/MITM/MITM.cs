@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using BiM.Behaviors;
+using BiM.Core.Config;
 using BiM.Core.Extensions;
 using BiM.Core.Messages;
 using BiM.Core.Network;
@@ -16,6 +17,9 @@ namespace BiM.MITM
 {
     public class MITM
     {
+        [Configurable("ServerConnectionTimeout", "Timeout in seconds before closing the connection")]
+        public static int ServerConnectionTimeout = 4;
+
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private readonly MITMConfiguration m_configuration;
@@ -129,7 +133,7 @@ namespace BiM.MITM
         private void OnWorldClientConnected(ConnectionMITM client)
         {
             // todo : config
-            client.Send(new ProtocolRequired(1459, 1459));
+            client.Send(new ProtocolRequired(1467, 1467));
             client.Send(new HelloGameMessage());
 
             logger.Debug("World client connected");
@@ -210,7 +214,24 @@ namespace BiM.MITM
                 return;
             }
 
+            // unblock the connection (fix #14)
+            client.SendToServer(new BasicPingMessage());
+
+            client.Bot.CallDelayed(ServerConnectionTimeout * 1000, () => OnServerConnectionTimedOut(client));
             logger.Debug("Bot retrieved with ticket {0}", message.ticket);
+        }
+
+        private void OnServerConnectionTimedOut(ConnectionMITM connection)
+        {
+            if (!connection.Server.IsConnected)
+                logger.Error("Cannot etablish a connection to the server ({0}). Time out {1}ms", connection.Server.IP, ServerConnectionTimeout * 1000);
+            else
+            {
+                logger.Warn("Send a BasicPingMessage to unblock the server connection");
+
+                // unblock the connection (fix #14)
+                connection.SendToServer(new BasicPingMessage());
+            }
         }
 
         [MessageHandler(typeof(SelectedServerDataMessage), FromFilter = ListenerEntry.Server)]

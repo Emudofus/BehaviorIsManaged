@@ -1,4 +1,5 @@
 ﻿using BiM.Behaviors;
+using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
@@ -7,22 +8,18 @@ namespace SimplePlugin.Handlers
 {
     internal static class WelcomeMessageRegister
     {
-        static WelcomeMessageRegister()
+        [MessageHandler(typeof(BotAddedMessage))]
+        public static void OnBotAdded(object sender, BotAddedMessage message)
         {
-            BotManager.Instance.BotAdded += OnBotAdded;
-        }
-
-        private static void OnBotAdded(BotManager sender, Bot bot)
-        {
-            bot.RegisterHandler(new WelcomeMessage());
-        }
+            message.Bot.RegisterHandler(new WelcomeMessage());
+        } 
     }
 
     public class WelcomeMessage
     {
-        private static bool m_messageSent;
+        private bool m_messageSent;
         [MessageHandler(typeof(GameContextCreateMessage))]
-        public static void HandleGameContextCreateMessage(Bot bot, GameContextCreateMessage message)
+        public void HandleGameContextCreateMessage(Bot bot, GameContextCreateMessage message)
         {
             if (!m_messageSent)
             {

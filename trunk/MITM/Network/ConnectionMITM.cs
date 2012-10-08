@@ -11,9 +11,6 @@ namespace BiM.MITM.Network
     /// </summary>
     public class ConnectionMITM : Client
     {
-        [Configurable("ServerConnectionTimeout", "Timeout in seconds before closing the connection")]
-        public static int ServerConnectionTimeout = 20;
-
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public ConnectionMITM(Socket clientSocket, IMessageBuilder messageBuilder)

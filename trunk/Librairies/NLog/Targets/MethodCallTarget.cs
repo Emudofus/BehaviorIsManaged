@@ -31,6 +31,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection.Emit;
+
 namespace NLog.Targets
 {
     using System;
@@ -70,7 +74,11 @@ namespace NLog.Targets
         /// <docgen category='Invocation Options' order='10' />
         public string MethodName { get; set; }
 
-        private MethodInfo Method { get; set; }
+        private Delegate Method
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Initializes the target.
@@ -82,7 +90,7 @@ namespace NLog.Targets
             if (this.ClassName != null && this.MethodName != null)
             {
                 Type targetType = Type.GetType(this.ClassName);
-                this.Method = targetType.GetMethod(this.MethodName);
+                this.Method = CreateDelegate(targetType.GetMethod(this.MethodName), Parameters.Select(entry => entry.Type).ToArray());
             }
             else
             {
@@ -98,8 +106,37 @@ namespace NLog.Targets
         {
             if (this.Method != null) 
             {
-                this.Method.Invoke(null, parameters);
+                this.Method.DynamicInvoke(parameters);
             }
+        }
+
+        private static Delegate CreateDelegate(MethodInfo method, params Type[] delegParams)
+        {
+            var methodParams = method.GetParameters().Select(p => p.ParameterType).ToArray();
+
+            if (delegParams.Length != methodParams.Length)
+                throw new Exception("Method parameters count != delegParams.Length");
+
+            if (!method.IsStatic)
+                throw new Exception("Method must be static");
+
+            var dynamicMethod = new DynamicMethod(string.Empty, null, delegParams, true);
+            var ilGenerator = dynamicMethod.GetILGenerator();
+
+            for (var i = 0; i < delegParams.Length; i++)
+            {
+                ilGenerator.Emit(OpCodes.Ldarg, i);
+                if (delegParams[i] != methodParams[i])
+                    if (methodParams[i].IsSubclassOf(delegParams[i]) || methodParams[i].GetInterface(delegParams[i].FullName) != null)
+                        ilGenerator.Emit(methodParams[i].IsClass ? OpCodes.Castclass : OpCodes.Unbox, methodParams[i]);
+                    else
+                        throw new Exception(string.Format("Cannot cast {0} to {1}", methodParams[i].Name, delegParams[i].Name));
+            }
+
+            ilGenerator.Emit(OpCodes.Call, method);
+
+            ilGenerator.Emit(OpCodes.Ret);
+            return dynamicMethod.CreateDelegate(Expression.GetActionType(delegParams));
         }
     }
 }

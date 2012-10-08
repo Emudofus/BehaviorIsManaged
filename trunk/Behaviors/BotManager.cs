@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using BiM.Behaviors.Messages;
+using BiM.Core.Messages;
 using BiM.Core.Reflection;
 using NLog.Config;
 using NLog.Layouts;
@@ -13,6 +15,9 @@ namespace BiM.Behaviors
     {
         public void Initialize()
         {
+            InterBotDispatcher = new MessageDispatcher();
+            DispatcherTask = new DispatcherTask(InterBotDispatcher, this);
+            DispatcherTask.Start();
         }
 
         public event Action<BotManager, Bot> BotAdded;
@@ -21,6 +26,8 @@ namespace BiM.Behaviors
         {
             Action<BotManager, Bot> handler = BotAdded;
             if (handler != null) handler(this, bot);
+
+            InterBotDispatcher.Enqueue(new BotAddedMessage(bot));
         }
 
         public event Action<BotManager, Bot> BotRemoved;
@@ -29,6 +36,8 @@ namespace BiM.Behaviors
         {
             Action<BotManager, Bot> handler = BotRemoved;
             if (handler != null) handler(this, bot);
+
+            InterBotDispatcher.Enqueue(new BotRemovedMessage(bot));
         }
 
         private readonly List<Bot> m_bots = new List<Bot>();
@@ -36,6 +45,18 @@ namespace BiM.Behaviors
         public ReadOnlyCollection<Bot> Bots
         {
             get { return m_bots.AsReadOnly(); }
+        }
+
+        public DispatcherTask DispatcherTask
+        {
+            get;
+            private set;
+        }
+
+        public MessageDispatcher InterBotDispatcher
+        {
+            get;
+            private set;
         }
 
         public void RegisterBot(Bot bot)

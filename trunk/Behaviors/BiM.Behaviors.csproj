@@ -175,6 +175,8 @@
     <Compile Include="Handlers\Context\RolePlayHandler.cs" />
     <Compile Include="Handlers\Regen\RegenHandler.cs" />
     <Compile Include="Handlers\Spells\SpellHandler.cs" />
+    <Compile Include="Messages\BotAddedMessage.cs" />
+    <Compile Include="Messages\BotRemovedMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\BotSettings.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />
@@ -198,7 +200,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Game\Mounts\" />
-    <Folder Include="Messages\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

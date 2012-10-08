@@ -175,8 +175,7 @@ namespace BiM.Core.Messages
 
             var parameters = method.GetParameters();
 
-            if (parameters.Length != 2 ||
-                !parameters[1].ParameterType.IsSubclassOf(typeof(Message)))
+            if ((parameters.Length != 2 || !parameters[1].ParameterType.IsSubclassOf(typeof(Message))))
             {
                 throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler(object, Message)", method));
             }
