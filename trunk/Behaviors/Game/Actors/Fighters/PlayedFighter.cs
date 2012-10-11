@@ -1,7 +1,9 @@
 ﻿using System;
+using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Alignement;
 using BiM.Behaviors.Game.Fights;
+using BiM.Behaviors.Game.Stats;
 using BiM.Protocol.Data;
 using BiM.Protocol.Types;
 
@@ -13,7 +15,6 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             : base(fight)
         {
             Character = character;
-            Fight = fight;
 
             if (character.Position != null)
                 Position = character.Position.Clone();
@@ -35,6 +36,13 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             get { return Character.Look; }
             protected set { }
+        }
+        public override IMinimalStats Stats
+        {
+            get
+            {
+                return Character.Stats;
+            }
         }
 
         public override AlignmentInformations Alignment

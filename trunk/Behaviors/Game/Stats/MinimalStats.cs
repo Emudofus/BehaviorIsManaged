@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
 
@@ -8,11 +9,17 @@ namespace BiM.Behaviors.Game.Stats
     /// <summary>
     /// Stats fields used in fight
     /// </summary>
-    public class MinimalStats
+    public class MinimalStats : IMinimalStats, INotifyPropertyChanged
     {
         public MinimalStats(GameFightMinimalStats stats)
         {
             Update(stats);
+        }
+
+        public int Initiative
+        {
+            get;
+            set;
         }
 
         public int Health
@@ -27,13 +34,109 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
-        public short CurrentAP
+        public int MaxHealthBase
         {
             get;
             set;
         }
 
-        public short CurrentMP
+        public int PermanentDamagePercent
+        {
+            get;
+            set;
+        }
+
+        public int TackleBlock
+        {
+            get;
+            set;
+        }
+
+        public int TackleEvade
+        {
+            get;
+            set;
+        }
+
+        public int DodgeAPProbability
+        {
+            get;
+            set;
+        }
+
+        public int DodgeMPProbability
+        {
+            get;
+            set;
+        }
+
+        public int NeutralResistPercent
+        {
+            get;
+            set;
+        }
+
+        public int EarthResistPercent
+        {
+            get;
+            set;
+        }
+
+        public int WaterResistPercent
+        {
+            get;
+            set;
+        }
+
+        public int AirResistPercent
+        {
+            get;
+            set;
+        }
+
+        public int FireResistPercent
+        {
+            get;
+            set;
+        }
+
+        public int NeutralElementReduction
+        {
+            get;
+            set;
+        }
+
+        public int EarthElementReduction
+        {
+            get;
+            set;
+        }
+
+        public int WaterElementReduction
+        {
+            get;
+            set;
+        }
+
+        public int AirElementReduction
+        {
+            get;
+            set;
+        }
+
+        public int FireElementReduction
+        {
+            get;
+            set;
+        }
+
+        public int CurrentAP
+        {
+            get;
+            set;
+        }
+
+        public int CurrentMP
         {
             get;
             set;
@@ -41,12 +144,14 @@ namespace BiM.Behaviors.Game.Stats
 
         public int MaxAP
         {
-            get { return this[PlayerField.AP]; }
+            get;
+            set;
         }
 
         public int MaxMP
         {
-            get { return this[PlayerField.MP]; }
+            get;
+            set;
         }
 
         public GameActionFightInvisibilityStateEnum InvisibilityState
@@ -54,29 +159,6 @@ namespace BiM.Behaviors.Game.Stats
             get;
             set;
         }
-
-        public Dictionary<PlayerField, int> Fields
-        {
-            get;
-            set;
-        }
-
-        public int this[PlayerField name]
-        {
-            get
-            {
-                int value;
-                return Fields.TryGetValue(name, out value) ? value : default(int);
-            }
-            set
-            {
-                if (!Fields.ContainsKey(name))
-                    Fields.Add(name, value);
-                else
-                    Fields[name] = value;
-            }
-        }
-
 
         public void Update(GameFightMinimalStats stats)
         {
@@ -86,26 +168,33 @@ namespace BiM.Behaviors.Game.Stats
             MaxHealth = stats.maxLifePoints;
             CurrentAP = stats.actionPoints;
             CurrentMP = stats.movementPoints;
-
-            this[PlayerField.AP] = stats.maxActionPoints;
-            this[PlayerField.MP] = stats.maxMovementPoints;
-            this[PlayerField.PermanentDamagePercent] = stats.permanentDamagePercent;
-            this[PlayerField.TackleBlock] = stats.tackleBlock;
-            this[PlayerField.TackleEvade] = stats.tackleEvade;
-            this[PlayerField.DodgeAPProbability] = stats.dodgePALostProbability;
-            this[PlayerField.DodgeMPProbability] = stats.dodgePMLostProbability;
-            this[PlayerField.NeutralResistPercent] = stats.neutralElementResistPercent;
-            this[PlayerField.EarthResistPercent] = stats.earthElementResistPercent;
-            this[PlayerField.WaterResistPercent] = stats.waterElementResistPercent;
-            this[PlayerField.AirResistPercent] = stats.airElementResistPercent;
-            this[PlayerField.FireResistPercent] = stats.fireElementResistPercent;
-            this[PlayerField.NeutralElementReduction] = stats.neutralElementReduction;
-            this[PlayerField.EarthElementReduction] = stats.earthElementReduction;
-            this[PlayerField.WaterElementReduction] = stats.waterElementReduction;
-            this[PlayerField.AirElementReduction] = stats.airElementReduction;
-            this[PlayerField.FireElementReduction] = stats.fireElementReduction;
+            MaxAP = stats.maxActionPoints;
+            MaxMP = stats.maxMovementPoints;
+            PermanentDamagePercent = stats.permanentDamagePercent;
+            TackleBlock = stats.tackleBlock;
+            TackleEvade = stats.tackleEvade;
+            DodgeAPProbability = stats.dodgePALostProbability;
+            DodgeMPProbability = stats.dodgePMLostProbability;
+            NeutralResistPercent = stats.neutralElementResistPercent;
+            EarthResistPercent = stats.earthElementResistPercent;
+            WaterResistPercent = stats.waterElementResistPercent;
+            AirResistPercent = stats.airElementResistPercent;
+            FireResistPercent = stats.fireElementResistPercent;
+            NeutralElementReduction = stats.neutralElementReduction;
+            EarthElementReduction = stats.earthElementReduction;
+            WaterElementReduction = stats.waterElementReduction;
+            AirElementReduction = stats.airElementReduction;
+            FireElementReduction = stats.fireElementReduction;
 
             InvisibilityState = (GameActionFightInvisibilityStateEnum) stats.invisibilityState;
         }
+
+        public void Update(GameFightMinimalStatsPreparation stats)
+        {
+            Update((GameFightMinimalStats)stats);
+            Initiative = stats.initiative;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

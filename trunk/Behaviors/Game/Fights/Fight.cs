@@ -34,6 +34,8 @@ namespace BiM.Behaviors.Game.Fights
 
             if (msg.timeMaxBeforeFightStart > 0)
                 Phase = FightPhase.Placement;
+
+            TimeLine = new TimeLine(this);
         }
 
         public int Id
@@ -203,7 +205,8 @@ namespace BiM.Behaviors.Game.Fights
             if (evnt != null)
                 evnt(this, TimeLine.CurrentPlayer);
 
-            TimeLine.CurrentPlayer.NotifyTurnStarted();
+            if (TimeLine.CurrentPlayer != null)
+                TimeLine.CurrentPlayer.NotifyTurnStarted();
         }
 
         public void EndTurn()
@@ -215,7 +218,8 @@ namespace BiM.Behaviors.Game.Fights
                 evnt(this, TimeLine.CurrentPlayer);
 
 
-            TimeLine.CurrentPlayer.NotifyTurnEnded();
+            if(TimeLine.CurrentPlayer != null)
+                TimeLine.CurrentPlayer.NotifyTurnEnded();
         }
 
         public bool HasFightStarted()
@@ -226,7 +230,11 @@ namespace BiM.Behaviors.Game.Fights
         public void AddFighter(Fighter fighter)
         {
             if (fighter == null) throw new ArgumentNullException("fighter");
+
             fighter.Team.AddFighter(fighter);
+
+            if (Phase == FightPhase.Placement)
+                TimeLine.RefreshTimeLine();
         }
 
         public void AddFighter(GameFightFighterInformations fighter)
@@ -235,11 +243,24 @@ namespace BiM.Behaviors.Game.Fights
 
             Bot bot = BotManager.Instance.GetCurrentBot();
 
-            // do not add character twice
-            if (fighter.contextualId == bot.Character.Id)
-                return;
+            var existingFighter = GetFighter(fighter.contextualId);
 
-            AddFighter(CreateFighter(fighter));
+            if (existingFighter != null)
+            {
+                existingFighter.Update(fighter);
+            }
+            else
+            {
+                // just update the team because it's not done
+                if (fighter.contextualId == bot.Character.Id)
+                {
+                    bot.Character.Fighter.SetTeam(GetTeam(fighter.teamId));
+                }
+                else
+                {
+                    AddFighter(CreateFighter(fighter));
+                }
+            }
         }
 
         public bool RemoveFighter(Fighter fighter)
@@ -387,6 +408,9 @@ namespace BiM.Behaviors.Game.Fights
                     fighter.Update(msg.informations as GameFightFighterInformations);
                 }
             }
+
+            if (Phase == FightPhase.Placement)
+                TimeLine.RefreshTimeLine();
         }
 
         public void Update(GameFightTurnListMessage msg)

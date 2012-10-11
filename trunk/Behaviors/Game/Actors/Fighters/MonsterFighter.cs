@@ -12,6 +12,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
     public class MonsterFighter : Fighter
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private string m_name;
 
         public MonsterFighter(GameFightMonsterInformations msg, Fight fight)
         {
@@ -22,7 +23,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Team = fight.GetTeam((FightTeamColor) msg.teamId);
             IsAlive = msg.alive;
             MonsterTemplate = DataProvider.Instance.Get<Monster>(msg.creatureGenericId);
-            MonsterGrade = MonsterTemplate.grades[msg.creatureGrade];
+            MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
             Stats = new MinimalStats(msg.stats);
         }
 
@@ -30,6 +31,17 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             get;
             protected set;
+        }
+
+        public override string Name
+        {
+            get
+            {
+                return m_name ?? (m_name = DataProvider.Instance.Get<string>(MonsterTemplate.nameId));
+            }
+            protected set
+            {
+            }
         }
 
         public MonsterGrade MonsterGrade

@@ -49,6 +49,12 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameMapMovementMessage))]
         public static void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
         {
+            if (bot.Character.Context == null)
+            {
+                logger.Error("Context is null as processing movement");
+                return;
+            }
+
             var actor = bot.Character.Context.GetContextActor(message.actorId);
 
             if (actor == null)

@@ -71,7 +71,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             protected set;
         }
 
-        public virtual MinimalStats Stats
+        public virtual IMinimalStats Stats
         {
             get;
             protected set;
@@ -117,7 +117,9 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public virtual void Update(GameFightFighterInformations informations)
         {
             IsAlive = informations.alive;
+
             Stats.Update(informations.stats);
+
             Update(informations.disposition);
         }
     }

@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.Fighters;
+using BiM.Behaviors.Game.Stats;
 using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Game.Fights
 {
     public class TimeLine
     {
-        private List<Fighter> m_fighters = new List<Fighter>();
+        private ObservableCollection<Fighter> m_fighters = new ObservableCollection<Fighter>();
         private ReadOnlyObservableCollection<Fighter> m_readOnlyFighters;
 
         public TimeLine(Fight fight)
         {
             Fight = fight;
             Index = -1;
-            m_readOnlyFighters = new ReadOnlyObservableCollection<Fighter>(new ObservableCollection<Fighter>(m_fighters));
+            m_readOnlyFighters = new ReadOnlyObservableCollection<Fighter>(m_fighters);
         }
 
         public Fight Fight
@@ -25,6 +26,9 @@ namespace BiM.Behaviors.Game.Fights
             private set;
         }
 
+        /// <summary>
+        /// This list is ordered by the fighters turns
+        /// </summary>
         public ReadOnlyObservableCollection<Fighter> Fighters
         {
             get
@@ -119,13 +123,69 @@ namespace BiM.Behaviors.Game.Fights
             return Fighters[index];
         }
 
+        private int GetRealInitiative(Fighter fighter)
+        {
+            return fighter.Stats.Initiative * fighter.Stats.Health / fighter.Stats.MaxHealth;
+        }
+
+        public void RefreshTimeLine()
+        {
+            IOrderedEnumerable<Fighter> redFighters = Fight.RedTeam.Fighters.
+              OrderByDescending(GetRealInitiative);
+            IOrderedEnumerable<Fighter> blueFighters = Fight.BlueTeam.Fighters.
+                OrderByDescending(GetRealInitiative);
+
+            bool redFighterFirst = !(Fight.RedTeam.Fighters.Count == 0 || Fight.BlueTeam.Fighters.Count == 0) &&
+                GetRealInitiative(redFighters.First()) > GetRealInitiative(blueFighters.First());
+
+            IEnumerator<Fighter> redEnumerator = redFighters.GetEnumerator();
+            IEnumerator<Fighter> blueEnumerator = blueFighters.GetEnumerator();
+            var timeLine = new List<Fighter>();
+
+            bool hasRed;
+            bool hasBlue = false;
+            while (( hasRed = redEnumerator.MoveNext() ) | ( hasBlue = blueEnumerator.MoveNext() ))
+            {
+                if (redFighterFirst)
+                {
+                    if (hasRed)
+                        timeLine.Add(redEnumerator.Current);
+
+                    if (hasBlue)
+                        timeLine.Add(blueEnumerator.Current);
+                }
+                else
+                {
+                    if (hasBlue)
+                        timeLine.Add(blueEnumerator.Current);
+
+                    if (hasRed)
+                        timeLine.Add(redEnumerator.Current);
+                }
+            }
+
+            m_fighters.Clear();
+            foreach (var fighter in timeLine)
+            {
+                m_fighters.Add(fighter);
+            }
+        }
+
+        public void RefreshTimeLine(IEnumerable<int> ids)
+        {
+            var timeLine = ids.Select(entry => Fight.GetFighter(entry));
+
+            m_fighters.Clear();
+            foreach (var fighter in timeLine)
+            {
+                m_fighters.Add(fighter);
+            }
+        }
+
         public void Update(GameFightSynchronizeMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            var timeLine = msg.fighters.Select(entry => Fight.GetFighter(entry.contextualId));
-
-            m_fighters.Clear();
-            m_fighters.AddRange(timeLine);
+            RefreshTimeLine(msg.fighters.Select(x => x.contextualId));
         }
     }
 }

@@ -75,6 +75,9 @@ namespace BiM.Behaviors.Game.Fights
 
         public void AddFighter(Fighter fighter)
         {
+            if (Fighters.Any(x => x.Id == fighter.Id))
+                throw new Exception(string.Format("Fighter with id {0} already exists", fighter.Id));
+
             m_fighters.Add(fighter);
 
             var evnt = FighterAdded;

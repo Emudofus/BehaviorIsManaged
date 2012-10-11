@@ -6,9 +6,22 @@ namespace BiM.Behaviors.Game.Stats
 {
     public class StatsRow : INotifyPropertyChanged
     {
+        private readonly Action<StatsRow> m_onChanged;
+
         public StatsRow()
         {
             
+        }
+
+        public StatsRow(PlayerField field)
+        {
+            Field = field;
+        }
+
+        internal StatsRow(PlayerField field, Action<StatsRow> onChanged)
+            : this(field)
+        {
+            m_onChanged = onChanged;
         }
 
         public StatsRow(CharacterBaseCharacteristic characteristic)
@@ -30,9 +43,9 @@ namespace BiM.Behaviors.Game.Stats
             Field = field;
         }
 
-        public StatsRow(short @base)
+        internal StatsRow(CharacterBaseCharacteristic characteristic, PlayerField field, Action<StatsRow> onChanged)
         {
-            Base = @base;
+            m_onChanged = onChanged;
         }
 
         public PlayerField Field
@@ -41,25 +54,25 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
-        public short Base
+        public int Base
         {
             get;
             set;
         }
 
-        public short Equipements
+        public int Equipements
         {
             get;
             set;
         }
 
-        public short AlignBonus
+        public int AlignBonus
         {
             get;
             set;
         }
 
-        public short Context
+        public int Context
         {
             get;
             set;
@@ -90,6 +103,28 @@ namespace BiM.Behaviors.Game.Stats
             return s1.Total - s2.Total;
         }
 
+        public void Update(CharacterBaseCharacteristic characteristic)
+        {
+            Base = characteristic.@base;
+            Equipements = characteristic.objectsAndMountBonus;
+            Context = characteristic.contextModif;
+            AlignBonus = characteristic.alignGiftBonus;
+        }
+
+        public void Update(int @base)
+        {
+            @Base = @base;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            if (m_onChanged != null)
+                m_onChanged(this);
+
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) handler(this, e);
+        }
     }
 }
