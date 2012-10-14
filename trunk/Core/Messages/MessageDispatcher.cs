@@ -321,6 +321,11 @@ namespace BiM.Core.Messages
             m_nonSharedHandlers[assembly][messageType].Add(new MessageHandler(container, containerType, messageType, attribute, action, tokenType));
         }
 
+        public bool HasNonSharedContainer(Type type)
+        {
+            return m_nonSharedHandlers.Any(assembly => assembly.Value.Any(x => x.Key == type));
+        }
+
         public void UnRegisterNonShared(Type type)
         {
             foreach (var dict in m_nonSharedHandlers.Values)

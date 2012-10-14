@@ -153,9 +153,22 @@ namespace BiM.Behaviors
             base.OnTick();
         }
 
-        public void AddHandler(object handler)
+        public void AddHandler(object handler, bool checkUnique = true)
         {
+            if (checkUnique && Dispatcher.HasNonSharedContainer(handler.GetType()))
+                return;
+
             Dispatcher.RegisterNonShared(handler);
+        }
+
+        public void HasHandler<T>()
+        {
+            return; Dispatcher.HasNonSharedContainer(typeof(T));
+        }
+
+        public void RemoveHandler(object handler)
+        {
+            Dispatcher.UnRegisterNonShared(handler);
         }
 
         public void RemoveHandler<T>()
@@ -223,15 +236,6 @@ namespace BiM.Behaviors
                 logger.Warn("Warning, enqueue {0} but the bot is stopped, the message will be processed once the bot {1} restart", message, this);
         }
 
-        public void RegisterHandler(object handler)
-        {
-            Dispatcher.RegisterNonShared(handler);
-        }
-
-        public void UnRegisterHandler(object handler)
-        {
-            Dispatcher.UnRegisterNonShared(handler);
-        }
 
         public override void Start()
         {
