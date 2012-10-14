@@ -145,6 +145,7 @@
     <Compile Include="Game\Shortcuts\EmoteShortcut.cs" />
     <Compile Include="Game\Shortcuts\GeneralShortcut.cs" />
     <Compile Include="Game\Shortcuts\GeneralShortcutBar.cs" />
+    <Compile Include="Game\Shortcuts\ItemPresetShortcut.cs" />
     <Compile Include="Game\Shortcuts\ItemShortcut.cs" />
     <Compile Include="Game\Shortcuts\Shortcut.cs" />
     <Compile Include="Game\Shortcuts\ShortcutBar.cs" />
@@ -197,6 +198,7 @@
     <Compile Include="Handlers\Context\MapMovementHandler.cs" />
     <Compile Include="Handlers\Context\RolePlayHandler.cs" />
     <Compile Include="Handlers\Regen\RegenHandler.cs" />
+    <Compile Include="Handlers\Shortcuts\ShortcutHandler.cs" />
     <Compile Include="Handlers\Spells\SpellHandler.cs" />
     <Compile Include="Messages\BotAddedMessage.cs" />
     <Compile Include="Messages\BotRemovedMessage.cs" />

@@ -328,7 +328,7 @@ namespace BiM.Core.Messages
                 var handlers = dict.Values; // copy
                 foreach (var handler in handlers)
                 {
-                    handler.RemoveAll(entry => entry.Container.GetType() == type);
+                    handler.RemoveAll(entry => entry.Container != null && entry.Container.GetType() == type);
                 }
             }
         }

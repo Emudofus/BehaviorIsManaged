@@ -132,7 +132,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             var range =  (int) (spell.rangeCanBeBoosted ? Stats.Range + spell.range : spell.range);
 
-            if (range > spell.minRange)
+            if (range < spell.minRange)
                 return (int) spell.minRange;
 
             return range;
@@ -151,8 +151,14 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public void Update(EntityDispositionInformations disposition)
         {
             if (disposition == null) throw new ArgumentNullException("disposition");
-            Position.Cell = Map.Cells[disposition.cellId];
-            Position.Direction = (DirectionsEnum) disposition.direction;
+
+            if (Position == null)
+                Position = new ObjectPosition(Fight.Map, Fight.Map.Cells[disposition.cellId], (DirectionsEnum)disposition.direction);
+            else
+            {
+                Position.Cell = Map.Cells[disposition.cellId];
+                Position.Direction = (DirectionsEnum)disposition.direction;
+            }
         }
 
         public virtual void Update(GameFightFighterInformations informations)

@@ -52,7 +52,7 @@ namespace BiM.Behaviors.Game.Items
 
         public Item GetItem(int guid)
         {
-            throw new NotImplementedException();
+            return Items.FirstOrDefault(x => x.Guid == guid);
         }
 
         public Item GetItem(CharacterInventoryPositionEnum position)

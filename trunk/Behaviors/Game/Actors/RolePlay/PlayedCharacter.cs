@@ -375,7 +375,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public void Update(ShortcutBarContentMessage msg)
         {
-            // todo
+            if (((ShortcutBarEnum)msg.barType) == ShortcutBarEnum.GENERAL_SHORTCUT_BAR)
+                GeneralShortcuts.Update(msg);
+            else
+                SpellShortcuts.Update(msg);
         }
 
         public void Update(EmoteListMessage msg)

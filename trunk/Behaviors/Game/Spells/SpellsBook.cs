@@ -11,18 +11,19 @@ namespace BiM.Behaviors.Game.Spells
     {
         public SpellsBook(PlayedCharacter owner)
         {
-            Owner = owner;
+            if (owner == null) throw new ArgumentNullException("owner");
+            Character = owner;
             Spells = new ObservableCollection<Spell>();
         }
 
         public SpellsBook(PlayedCharacter owner, SpellListMessage list)
+            : this (owner)
         {
             if (list == null) throw new ArgumentNullException("list");
-            Owner = owner;
             Update(list);
         }
 
-        public PlayedCharacter Owner
+        public PlayedCharacter Character
         {
             get;
             set;
@@ -47,7 +48,7 @@ namespace BiM.Behaviors.Game.Spells
 
         public Spell GetSpell(int id)
         {
-            throw new NotImplementedException();
+            return Spells.FirstOrDefault(x => x.Template.id == id);
         }
 
         public bool CanUpgradeSpell(Spell spell)
@@ -63,7 +64,12 @@ namespace BiM.Behaviors.Game.Spells
         public void Update(SpellListMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Spells = new ObservableCollection<Spell>(msg.spells.Select(entry => new Spell(entry)));
+            Spells.Clear();
+            foreach (var spell in msg.spells.Select(entry => new Spell(entry)))
+            {
+                Spells.Add(spell);
+            }
+
             SpellPrevisualization = msg.spellPrevisualization;
         }
 
