@@ -73,6 +73,30 @@ namespace BiM.Behaviors.Game.Fights
             private set;
         }
 
+        public bool IsSecret
+        {
+            get;
+            private set;
+        }
+
+        public bool IsClosed
+        {
+            get;
+            private set;
+        }
+
+        public bool IsRestrictedToParty
+        {
+            get;
+            private set;
+        }
+
+        public bool IsHelpRequested
+        {
+            get;
+            private set;
+        }
+
         public void AddFighter(Fighter fighter)
         {
             if (Fighters.Any(x => x.Id == fighter.Id))
@@ -145,6 +169,40 @@ namespace BiM.Behaviors.Game.Fights
             TeamType = (TeamTypeEnum) team.teamTypeId;
             
             // don't care about the figthers infos
+        }
+
+        public void Update(GameFightOptionStateUpdateMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+
+            if (msg.fightId != Fight.Id)
+            {
+                logger.Warn("(GameFightOptionStateUpdateMessage) Incorrect fightid {0} instead of {1}", msg.fightId, Id);
+                return;
+            }
+
+            if (msg.teamId != (int)Id)
+            {
+                logger.Warn("(GameFightOptionStateUpdateMessage) Incorrect teamid {0} instead of {1}", msg.fightId, Id);
+                return;
+            }
+
+          
+            switch ((FightOptionsEnum)msg.option)
+            {
+                case FightOptionsEnum.FIGHT_OPTION_SET_SECRET:
+                    IsSecret = msg.state;
+                    break;
+                case FightOptionsEnum.FIGHT_OPTION_ASK_FOR_HELP:
+                    IsHelpRequested = msg.state;
+                    break;
+                case FightOptionsEnum.FIGHT_OPTION_SET_CLOSED:
+                    IsClosed = msg.state;
+                    break;
+                case FightOptionsEnum.FIGHT_OPTION_SET_TO_PARTY_ONLY:
+                    IsRestrictedToParty = msg.state;
+                    break;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

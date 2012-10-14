@@ -19,17 +19,19 @@ namespace FightPlugin
 
         private static void OnFightJoined(PlayedCharacter character, Fight fight)
         {
-            character.Fight.TurnStarted += OnTurnStarted;
+            character.Fighter.TurnStarted += OnTurnStarted;
         }
 
         private static void OnFightLeft(PlayedCharacter character, Fight fight)
         {
-            character.Fight.TurnStarted -= OnTurnStarted;
+            character.Fighter.TurnStarted -= OnTurnStarted;
         }
 
-        private static void OnTurnStarted(Fight fight, Fighter fighter)
+        private static void OnTurnStarted(Fighter fighter)
         {
             var bot = BotManager.Instance.GetCurrentBot();
+
+
 
             bot.Character.SendMessage(string.Format("This is '{0}' turn.", fighter.Name), Color.Violet);
         }

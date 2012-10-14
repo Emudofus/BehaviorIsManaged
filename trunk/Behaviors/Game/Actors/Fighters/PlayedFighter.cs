@@ -4,7 +4,9 @@ using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Alignement;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Stats;
+using BiM.Behaviors.Game.World;
 using BiM.Protocol.Data;
+using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
@@ -82,6 +84,48 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
             Team = team;
             Team.AddFighter(this);
+        }
+
+        public bool CanCastSpell(Spells.Spell spell, Fighter fighter)
+        {
+            return CanCastSpell(spell, fighter.Cell);
+        }
+
+        public bool CanCastSpell(Spells.Spell spell, Cell cell)
+        {
+            // todo spells modifications
+            // todo states
+
+            // todo LoS
+
+            if (!IsPlaying())
+                return false;
+
+            if (spell.LevelTemplate.apCost > Stats.CurrentAP)
+                return false;
+
+            if (!IsInSpellRange(cell, spell.LevelTemplate))
+                return false;
+
+            return true;
+        }
+
+        public bool CastSpell(Spells.Spell spell, Cell cell)
+        {
+            if (!CanCastSpell(spell, cell))
+                return false;
+
+            Character.Bot.SendToServer(new GameActionFightCastRequestMessage((short) spell.Template.id, cell.Id));
+
+            return true;
+        }
+
+        public void PassTurn()
+        {
+            if (IsPlaying())
+            {
+                Character.Bot.SendToServer(new GameFightTurnFinishMessage());
+            }
         }
     }
 }

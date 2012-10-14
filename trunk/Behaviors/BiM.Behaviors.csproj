@@ -123,6 +123,8 @@
     <Compile Include="Game\Fights\Spectator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Game\Fights\SpellCast.cs" />
+    <Compile Include="Game\Fights\SpellCastHistory.cs" />
     <Compile Include="Game\Fights\TimeLine.cs" />
     <Compile Include="Game\Guilds\Guild.cs" />
     <Compile Include="Game\Guilds\GuildInformations.cs" />
@@ -140,7 +142,25 @@
     <Compile Include="Game\Movements\TimedPath.cs" />
     <Compile Include="Game\Movements\TimedPathElement.cs" />
     <Compile Include="Game\Movements\VelocityConfiguration.cs" />
+    <Compile Include="Game\Shortcuts\EmoteShortcut.cs" />
+    <Compile Include="Game\Shortcuts\GeneralShortcut.cs" />
+    <Compile Include="Game\Shortcuts\GeneralShortcutBar.cs" />
+    <Compile Include="Game\Shortcuts\ItemShortcut.cs" />
+    <Compile Include="Game\Shortcuts\Shortcut.cs" />
     <Compile Include="Game\Shortcuts\ShortcutBar.cs" />
+    <Compile Include="Game\Shortcuts\SmileyShortcut.cs" />
+    <Compile Include="Game\Shortcuts\SpellShortcut.cs" />
+    <Compile Include="Game\Shortcuts\SpellShortcutBar.cs" />
+    <Compile Include="Game\Spells\Shapes\Cone.cs" />
+    <Compile Include="Game\Spells\Shapes\Cross.cs" />
+    <Compile Include="Game\Spells\Shapes\HalfLozenge.cs" />
+    <Compile Include="Game\Spells\Shapes\IShape.cs" />
+    <Compile Include="Game\Spells\Shapes\Line.cs" />
+    <Compile Include="Game\Spells\Shapes\Lozenge.cs" />
+    <Compile Include="Game\Spells\Shapes\Single.cs" />
+    <Compile Include="Game\Spells\Shapes\SpellShapeEnum.cs" />
+    <Compile Include="Game\Spells\Shapes\Square.cs" />
+    <Compile Include="Game\Spells\Shapes\Zone.cs" />
     <Compile Include="Game\Spells\Spell.cs" />
     <Compile Include="Game\Spells\SpellsBook.cs" />
     <Compile Include="Game\Stats\IMinimalStats.cs" />

@@ -18,23 +18,27 @@ namespace BiM.Behaviors.Game.Stats
                          {
                              {PlayerField.Initiative, new StatsRow(PlayerField.Initiative, x => OnPropertyChanged("Initiative"))},
                              {PlayerField.Prospecting, new StatsRow(PlayerField.Prospecting)},
-                             {PlayerField.AP, new StatsRow(PlayerField.AP, x =>
-                                                                                        {
-                                                                                            OnPropertyChanged("MaxAP");
-                                                                                            OnPropertyChanged("AP");
-                                                                                        })},
-                             {PlayerField.MP, new StatsRow(PlayerField.MP, x =>
-                                                                                          {
-                                                                                              OnPropertyChanged("MaxMP");
-                                                                                              OnPropertyChanged("MP");
-                                                                                          })},
+                             {
+                                 PlayerField.AP, new StatsRow(PlayerField.AP, x =>
+                                                                                  {
+                                                                                      OnPropertyChanged("MaxAP");
+                                                                                      OnPropertyChanged("AP");
+                                                                                  })
+                                 },
+                             {
+                                 PlayerField.MP, new StatsRow(PlayerField.MP, x =>
+                                                                                  {
+                                                                                      OnPropertyChanged("MaxMP");
+                                                                                      OnPropertyChanged("MP");
+                                                                                  })
+                                 },
                              {PlayerField.Strength, new StatsRow(PlayerField.Strength, x => OnPropertyChanged("Strength"))},
                              {PlayerField.Vitality, new StatsRow(PlayerField.Vitality, x => OnPropertyChanged("Vitality"))},
                              {PlayerField.Wisdom, new StatsRow(PlayerField.Wisdom, x => OnPropertyChanged("Wisdom"))},
                              {PlayerField.Chance, new StatsRow(PlayerField.Chance, x => OnPropertyChanged("Chance"))},
                              {PlayerField.Agility, new StatsRow(PlayerField.Agility, x => OnPropertyChanged("Agility"))},
                              {PlayerField.Intelligence, new StatsRow(PlayerField.Intelligence, x => OnPropertyChanged("Intelligence"))},
-                             {PlayerField.Range, new StatsRow(PlayerField.Range)},
+                             {PlayerField.Range, new StatsRow(PlayerField.Range, x => OnPropertyChanged("Range"))},
                              {PlayerField.SummonLimit, new StatsRow(PlayerField.SummonLimit)},
                              {PlayerField.DamageReflection, new StatsRow(PlayerField.DamageReflection)},
                              {PlayerField.CriticalHit, new StatsRow(PlayerField.CriticalHit)},
@@ -172,11 +176,6 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
-        public int Initiative
-        {
-            get { return this[PlayerField.Initiative].Total; }
-        }
-
         public StatsRow AP
         {
             get { return this[PlayerField.AP]; }
@@ -233,7 +232,18 @@ namespace BiM.Behaviors.Game.Stats
             }
         }
 
+        public GameActionFightInvisibilityStateEnum InvisibilityState
+        {
+            get;
+            set;
+        }
+
         #region IMinimalStats Members
+
+        public int Initiative
+        {
+            get { return this[PlayerField.Initiative].Total; }
+        }
 
         public int Health
         {
@@ -261,6 +271,11 @@ namespace BiM.Behaviors.Game.Stats
         public int MaxMP
         {
             get { return this[PlayerField.MP].Total; }
+        }
+
+        public int Range
+        {
+            get { return this[PlayerField.Range].Total; }
         }
 
         public int PermanentDamagePercent
@@ -351,12 +366,6 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
-        public GameActionFightInvisibilityStateEnum InvisibilityState
-        {
-            get;
-            set;
-        }
-
         public void Update(GameFightMinimalStats stats)
         {
             if (stats == null) throw new ArgumentNullException("stats");
@@ -365,11 +374,11 @@ namespace BiM.Behaviors.Game.Stats
             MaxHealth = stats.maxLifePoints;
             MaxHealthBase = stats.baseMaxLifePoints;
             InvisibilityState = (GameActionFightInvisibilityStateEnum) stats.invisibilityState;
-            
+
 
             this[PlayerField.AP].Update(stats.actionPoints);
             this[PlayerField.MP].Update(stats.movementPoints);
-          
+
             this[PlayerField.PermanentDamagePercent].Update(stats.permanentDamagePercent);
             this[PlayerField.TackleBlock].Update(stats.tackleBlock);
             this[PlayerField.TackleEvade].Update(stats.tackleEvade);
@@ -474,7 +483,7 @@ namespace BiM.Behaviors.Game.Stats
             this[PlayerField.PvpFireElementReduction].Update(stats.pvpFireElementReduction);
 
             SpellsModifications.Clear();
-            foreach (var spell in stats.spellModifications.Select(entry => new SpellModification(entry)))
+            foreach (SpellModification spell in stats.spellModifications.Select(entry => new SpellModification(entry)))
             {
                 SpellsModifications.Add(spell);
             }

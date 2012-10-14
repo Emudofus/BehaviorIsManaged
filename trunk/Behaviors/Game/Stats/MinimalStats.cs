@@ -40,6 +40,12 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
+        public int Range
+        {
+            get;
+            set;
+        }
+
         public int PermanentDamagePercent
         {
             get;

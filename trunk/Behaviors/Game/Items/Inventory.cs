@@ -18,10 +18,10 @@ namespace BiM.Behaviors.Game.Items
         }
 
         public Inventory(PlayedCharacter owner, InventoryContentMessage inventory)
+            : this (owner)
         {
             if (owner == null) throw new ArgumentNullException("owner");
             if (inventory == null) throw new ArgumentNullException("inventory");
-            Owner = owner;
             Kamas = inventory.kamas;
 
             Update(inventory);
@@ -93,7 +93,12 @@ namespace BiM.Behaviors.Game.Items
         public void Update(InventoryContentMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Items = new ObservableCollection<Item>(msg.objects.Select(entry => new Item(entry)));
+            Items.Clear();
+
+            foreach (var item in msg.objects.Select(entry => new Item(entry)))
+            {
+                Items.Add(item);
+            }
         }
 
         public void Update(SetUpdateMessage msg)

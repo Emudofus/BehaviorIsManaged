@@ -4,7 +4,6 @@ namespace BiM.Behaviors.Game.Stats
 {
     public interface IMinimalStats
     {
-
         int Initiative
         {
             get;
@@ -41,6 +40,11 @@ namespace BiM.Behaviors.Game.Stats
         }
 
         int MaxMP
+        {
+            get;
+        }
+
+        int Range
         {
             get;
         }

@@ -153,6 +153,16 @@ namespace BiM.Behaviors
             base.OnTick();
         }
 
+        public void AddHandler(object handler)
+        {
+            Dispatcher.RegisterNonShared(handler);
+        }
+
+        public void RemoveHandler<T>()
+        {
+            Dispatcher.UnRegisterNonShared(typeof(T));
+        }
+
         public void Send(Message message)
         {
             if (message == null) throw new ArgumentNullException("message");

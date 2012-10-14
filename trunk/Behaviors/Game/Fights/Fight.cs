@@ -120,6 +120,7 @@ namespace BiM.Behaviors.Game.Fights
             private set;
         }
 
+
         #region IContext Members
 
         /// <summary>
@@ -443,6 +444,19 @@ namespace BiM.Behaviors.Game.Fights
                     fighter.IsAlive = false;
                 }
             }
+        }
+
+        public void Update(GameFightOptionStateUpdateMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+
+            if (msg.fightId != Id)
+            {
+                logger.Warn("(GameFightOptionStateUpdateMessage) Incorrect fightid {0} instead of {1}", msg.fightId, Id);
+                return;
+            }
+
+            GetTeam(msg.teamId).Update(msg);
         }
     }
 }

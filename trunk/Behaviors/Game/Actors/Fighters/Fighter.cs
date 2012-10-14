@@ -2,6 +2,7 @@
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Stats;
 using BiM.Behaviors.Game.World;
+using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
 
@@ -9,10 +10,15 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public abstract class Fighter : ContextActor
     {
+        protected Fighter()
+        {
+            CastsHistory = new SpellCastHistory(this);
+        }
+
         public delegate void TurnHandler(Fighter fighter);
         public event TurnHandler TurnStarted;
 
-        public void NotifyTurnStarted()
+        internal void NotifyTurnStarted()
         {
             TurnHandler handler = TurnStarted;
             if (handler != null) handler( this);
@@ -20,10 +26,21 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
         public event TurnHandler TurnEnded;
 
-        public void NotifyTurnEnded()
+        internal void NotifyTurnEnded()
         {
             TurnHandler handler = TurnEnded;
             if (handler != null) handler(this);
+        }
+
+        public delegate void SpellCastHandler(Fighter fighter, SpellCast cast);
+        public event SpellCastHandler SpellCasted;
+
+        internal void NotifySpellCasted(SpellCast cast)
+        {
+            CastsHistory.AddSpellCast(cast);
+
+            SpellCastHandler handler = SpellCasted;
+            if (handler != null) handler(this, cast);
         }
 
         private bool m_isReady;
@@ -77,6 +94,12 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             protected set;
         }
 
+        public SpellCastHistory CastsHistory
+        {
+            get;
+            protected set;
+        }
+
         public override IContext Context
         {
             get { return Fight; }
@@ -103,6 +126,24 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public virtual bool CanPlay()
         {
             return IsAlive;
+        }
+
+        public int GetRealSpellRange(SpellLevel spell)
+        {
+            var range =  (int) (spell.rangeCanBeBoosted ? Stats.Range + spell.range : spell.range);
+
+            if (range > spell.minRange)
+                return (int) spell.minRange;
+
+            return range;
+        }
+
+        public bool IsInSpellRange(Cell cell, SpellLevel spell)
+        {
+            var range = GetRealSpellRange(spell);
+            var dist = Cell.DistanceTo(cell);
+
+            return dist >= spell.minRange && dist <= range;
         }
 
         public event Action<Fighter, bool> ReadyStateChanged;

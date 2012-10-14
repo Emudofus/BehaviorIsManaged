@@ -12,6 +12,7 @@ using BiM.Behaviors.Game.Shortcuts;
 using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
+using BiM.Behaviors.Handlers.Context;
 using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
@@ -29,7 +30,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public event FightJoinedHandler FightJoined;
 
 
-        private void NotifyFightJoined(Fight fight)
+        private void OnFightJoined(Fight fight)
         {
             var evnt = FightJoined;
             if (evnt != null)
@@ -39,7 +40,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public delegate void FightLeftHandler(PlayedCharacter character, Fight fight);
         public event FightLeftHandler FightLeft;
 
-        private void NotifyFightLeft(Fight fight)
+        private void OnFightLeft(Fight fight)
         {
             var evnt = FightLeft;
             if (evnt != null)
@@ -62,7 +63,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Inventory = new Inventory(this);
             Stats = new Stats.PlayerStats(this);
             SpellsBook = new SpellsBook(this);
-            Shortcuts = new ShortcutBar(this);
+            SpellShortcuts = new SpellShortcutBar(this);
+            GeneralShortcuts = new GeneralShortcutBar(this);
             Jobs = new List<Job>();
             Emotes = new List<Emoticon>();
         }
@@ -76,7 +78,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public Breed Breed
         {
             get;
-            set;
+            private set;
         }
 
         /// <summary>
@@ -85,55 +87,61 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public bool Sex
         {
             get;
-            set;
+            private set;
         }
 
         public int Level
         {
             get;
-            set;
+            private set;
         }
 
         public Stats.PlayerStats Stats
         {
             get;
-            set;
+            private set;
         }
 
         public Inventory Inventory
         {
             get;
-            set;
+            private set;
         }
 
         public SpellsBook SpellsBook
         {
             get;
-            set;
+            private set;
         }
 
-        public ShortcutBar Shortcuts
+        public SpellShortcutBar SpellShortcuts
         {
             get;
-            set;
+            private set;
+        }
+
+        public GeneralShortcutBar GeneralShortcuts
+        {
+            get;
+            private set;
         }
 
         public List<Emoticon> Emotes
         {
             get;
-            set;
+            private set;
         }
 
         public List<Jobs.Job> Jobs
         {
             get;
-            set;
+            private set;
         }
 
         public Guild Guild
         {
             get;
-            set;
+            private set;
         }
 
         public override World.IContext Context
@@ -327,7 +335,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             var fight = new Fight(message, Map);
             Fighter = new PlayedFighter(this, fight);
 
-            NotifyFightJoined(Fight);
+            Bot.AddHandler(new FightHandler());
+            OnFightJoined(Fight);
         }
 
         public void LeaveFight()
@@ -343,7 +352,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 // todo : have to leave fight
             }
 
-            NotifyFightLeft(Fight);
+            Bot.RemoveHandler<FightHandler>();
+            OnFightLeft(Fight);
 
             Fighter = null;
         }
