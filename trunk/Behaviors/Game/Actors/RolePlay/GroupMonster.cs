@@ -44,6 +44,11 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             private set;
         }
 
+        public int Level
+        {
+            get { return (int) Monsters.Sum(x => x.Grade.level); }
+        }
+
         public short AgeBonus
         {
             get;

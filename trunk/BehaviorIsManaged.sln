@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FightPlugin", "Plugins\Figh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DofusProtocolBuilder", "DofusProtocolBuilder\DofusProtocolBuilder.csproj", "{BCF93302-7EEB-4ECE-9EC2-033B51747192}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowManager", "Plugins\WindowManager\WindowManager.csproj", "{181A8480-E624-4A4F-9614-D34AE3B770BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -154,6 +156,19 @@ Global
 		{BCF93302-7EEB-4ECE-9EC2-033B51747192}.Release|x64.ActiveCfg = Release|x86
 		{BCF93302-7EEB-4ECE-9EC2-033B51747192}.Release|x86.ActiveCfg = Release|x86
 		{BCF93302-7EEB-4ECE-9EC2-033B51747192}.Release|x86.Build.0 = Release|x86
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Debug|x86.ActiveCfg = Debug|x86
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Debug|x86.Build.0 = Debug|x86
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Release|x64.ActiveCfg = Release|Any CPU
+		{181A8480-E624-4A4F-9614-D34AE3B770BF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -161,5 +176,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F32A93A9-27A2-4D09-8B94-22B0FC0178EC} = {84645BD0-5049-499A-A0A5-5BE7827823F3}
 		{CE15B20F-B533-4ECB-B118-D1CC9BEE060A} = {84645BD0-5049-499A-A0A5-5BE7827823F3}
+		{181A8480-E624-4A4F-9614-D34AE3B770BF} = {84645BD0-5049-499A-A0A5-5BE7827823F3}
 	EndGlobalSection
 EndGlobal

@@ -4,6 +4,7 @@ using System.Linq;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.World;
+using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
@@ -11,8 +12,18 @@ using NLog;
 
 namespace BiM.Behaviors.Game.Fights
 {
-    public class Fight : IContext
+    public class Fight : IContext, IMapDataProvider
     {
+        public delegate void StateChangedHandler(Fight fight, FightPhase phase);
+        public event StateChangedHandler StateChanged;
+
+        protected void OnStateChanged(FightPhase phase)
+        {
+            StateChangedHandler handler = StateChanged;
+            if (handler != null) handler(this, phase);
+        }
+
+
         public delegate void TurnHandler(Fight fight, Fighter fighter);
         public event TurnHandler TurnStarted;
         public event TurnHandler TurnEnded;
@@ -167,6 +178,7 @@ namespace BiM.Behaviors.Game.Fights
 
         #endregion
 
+
         public FightTeam GetTeam(sbyte color)
         {
             return GetTeam((FightTeamColor) color);
@@ -180,6 +192,12 @@ namespace BiM.Behaviors.Game.Fights
                 throw new Exception(string.Format("Color {0} is not a valid team id !", color));
         }
 
+        protected void SetPhase(FightPhase phase)
+        {
+            Phase = phase;
+            OnStateChanged(phase);
+        }
+
         public void StartFight()
         {
             if (Phase != FightPhase.Placement)
@@ -188,14 +206,14 @@ namespace BiM.Behaviors.Game.Fights
                 return;
             }
 
-            Phase = FightPhase.Fighting;
+            SetPhase(FightPhase.Fighting);
             StartTime = DateTime.Now;
         }
 
         public void EndFight(GameFightEndMessage message)
         {
             if (message == null) throw new ArgumentNullException("message");
-            Phase = FightPhase.Ended;
+            SetPhase(FightPhase.Ended);
 
             // todo : manage the panel
         }
@@ -346,6 +364,8 @@ namespace BiM.Behaviors.Game.Fights
 
             RedTeam.Update(msg);
             BlueTeam.Update(msg);
+
+            SetPhase(FightPhase.Placement);
         }
 
         public void Update(GameEntitiesDispositionMessage msg)
@@ -470,6 +490,43 @@ namespace BiM.Behaviors.Game.Fights
             }
 
             GetTeam(msg.teamId).Update(msg);
+        }
+
+        public bool IsActor(Cell cell)
+        {
+            return GetConcatedFighters().Any(x => x.Cell == cell);
+        }
+
+        public bool IsCellMarked(Cell cell)
+        {
+            return false;
+        }
+
+        public object[] GetMarks(Cell cell)
+        {
+            return new object[0];
+        }
+
+        public bool IsCellWalkable(Cell cell, bool throughEntities = false, Cell previousCell = null)
+        {
+            if (!cell.Walkable)
+                return false;
+
+            if (cell.NonWalkableDuringFight)
+                return false;
+
+            // compare the floors
+            if (Map.UsingNewMovementSystem && previousCell != null)
+            {
+                var floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
+
+                if (cell.MoveZone != previousCell.MoveZone || cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff > Map.ElevationTolerance)
+                    return false;
+            }
+
+            // todo : LoS
+
+            return true;
         }
     }
 }

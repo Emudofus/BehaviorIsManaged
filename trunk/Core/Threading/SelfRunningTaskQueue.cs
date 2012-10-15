@@ -118,6 +118,7 @@ namespace BiM.Core.Threading
         public SimplerTimer CallPeriodically(int delayMillis, Action callback)
         {
             var timer = new SimplerTimer(0, delayMillis, callback);
+            timer.Start();
             AddTimer(timer);
             return timer;
         }
@@ -125,6 +126,7 @@ namespace BiM.Core.Threading
         public SimplerTimer CallDelayed(int delayMillis, Action callback)
         {
             var timer = new SimplerTimer(delayMillis, 0, callback);
+            timer.Start();
             AddTimer(timer);
             return timer;
         }

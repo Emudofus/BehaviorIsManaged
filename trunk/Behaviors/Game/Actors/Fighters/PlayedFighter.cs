@@ -5,6 +5,7 @@ using BiM.Behaviors.Game.Alignement;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Stats;
 using BiM.Behaviors.Game.World;
+using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Protocol.Data;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
@@ -86,6 +87,23 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Team.AddFighter(this);
         }
 
+        public void ChangePrePlacement(Cell cell)
+        {
+            if (Fight.Phase != FightPhase.Placement)
+            {
+                logger.Warn("Call ChangePrePlacement({0}) but the fight is not in placement phase", cell);
+                return;
+            }
+
+            if (Array.IndexOf(Team.PlacementCells, cell) == -1)
+            {
+                logger.Error("Placement {0} isn't valid", cell);
+                return;
+            }
+
+            Character.Bot.SendToServer(new GameFightPlacementPositionRequestMessage(cell.Id));
+        }
+
         public bool CanCastSpell(Spells.Spell spell, Fighter fighter)
         {
             return CanCastSpell(spell, fighter.Cell);
@@ -118,6 +136,23 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Character.Bot.SendToServer(new GameActionFightCastRequestMessage((short) spell.Template.id, cell.Id));
 
             return true;
+        }
+
+        public void Move(Cell cell)
+        {
+            Move(cell, Stats.CurrentMP);
+        }
+
+        public void Move(Cell cell, int mp)
+        {
+            if(!IsPlaying())
+                return;
+
+            var pathfinding = new Pathfinder(Map, Fight, false);
+            var path = pathfinding.FindPath(Cell, cell, false, Stats.CurrentMP > mp ? Stats.CurrentMP : mp);
+
+            if (NotifyStartMoving(path))
+                Character.Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
         }
 
         public void PassTurn()

@@ -2,6 +2,7 @@
 {
     public enum FightPhase
     {
+        None,
         Placement,
         Fighting,
         Ended

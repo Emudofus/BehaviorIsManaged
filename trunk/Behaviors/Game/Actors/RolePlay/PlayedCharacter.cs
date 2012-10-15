@@ -47,6 +47,15 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 evnt(this, fight);
         }
 
+        public delegate void MapJoinedHandler(PlayedCharacter character, Map map);
+        public event MapJoinedHandler MapJoined;
+
+        private void OnMapJoined(Map map)
+        {
+            MapJoinedHandler handler = MapJoined;
+            if (handler != null) handler(this, map);
+        }
+
         public PlayedCharacter(Bot bot, CharacterBaseInformations informations)
         {
             if (informations == null) throw new ArgumentNullException("informations");
@@ -298,6 +307,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             Map = map;
             Context = map;
+
+            OnMapJoined(map);
         }
 
         // We don't really need to handle the contexts

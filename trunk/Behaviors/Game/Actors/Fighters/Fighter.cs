@@ -158,6 +158,11 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             return dist >= spell.minRange && dist <= range;
         }
 
+        public FightTeam GetOpposedTeam()
+        {
+            return Fight.GetTeam(Team.Id == FightTeamColor.Blue ? FightTeamColor.Red : FightTeamColor.Blue);
+        }
+
         public event Action<Fighter, bool> ReadyStateChanged;
 
         public virtual void Update(GameFightFighterInformations informations)

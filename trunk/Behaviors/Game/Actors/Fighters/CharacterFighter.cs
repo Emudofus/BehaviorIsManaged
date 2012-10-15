@@ -12,7 +12,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public class CharacterFighter : Fighter
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        protected static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         protected CharacterFighter(Fight fight)
         {
