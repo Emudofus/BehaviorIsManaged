@@ -23,7 +23,7 @@ namespace WindowManager
     public class WindowDetector
     {
         private readonly Bot m_bot;
-        private const int DelayToCloseWindow = 500;
+        private const int DelayToCloseWindow = 1000;
 
         private Process m_botProcess;
 

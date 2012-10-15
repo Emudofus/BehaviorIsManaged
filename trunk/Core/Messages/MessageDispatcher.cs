@@ -34,34 +34,38 @@ namespace BiM.Core.Messages
             public object Container
             {
                 get;
-                set;
+                private set;
             }
 
             public Type ContainerType
             {
                 get;
-                set;
+                private set;
             }
 
             public Type MessageType
             {
                 get;
-                set;
+                private set;
             }
 
             public MessageHandlerAttribute Attribute
             {
                 get;
-                set;
+                private set;
             }
 
             public Action<object, object, Message> Action
             {
                 get;
-                set;
+                private set;
             }
 
-            public Type TokenType { get; set; }
+            public Type TokenType
+            {
+                get;
+                private set;
+            }
         }
 
         private SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>> m_messagesToDispatch = new SortedDictionary<MessagePriority, Queue<Tuple<Message, object>>>();
