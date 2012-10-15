@@ -12,6 +12,10 @@ using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Core.Threading;
 using BiM.Protocol.Messages;
+using System;
+using BiM.Behaviors.Game.Movements;
+using BiM.Behaviors.Game.Actors;
+using NLog;
 
 namespace FightPlugin
 {
@@ -46,6 +50,8 @@ namespace FightPlugin
         private readonly Bot m_bot;
         private PlayedFighter m_character;
         private SimplerTimer m_checkTimer;
+        private bool m_sit = false;
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public AutoFight(Bot bot)
         {
@@ -65,9 +71,41 @@ namespace FightPlugin
             m_checkTimer = character.Bot.CallPeriodically(4 * 1000, CheckMonsters);
         }
 
+        private void Sit()
+        {
+            if (!m_sit)
+            {
+                m_bot.Character.Say("/sit");
+                m_sit = true;
+
+                m_bot.Character.StartMoving += StandUp;
+            }
+        }
+
+        private void StandUp(ContextActor sender, MovementBehavior path)
+        {
+            m_sit = false;
+            m_bot.Character.StartMoving -= StandUp;
+        }
+
+
         private void CheckMonsters()
         {
-            var monster = m_bot.Character.Map.Actors.OfType<GroupMonster>().OrderBy(x => x.Level).FirstOrDefault();
+            if ((m_bot.Character.Stats.Health * 3) < m_bot.Character.Stats.MaxHealth)
+            {
+                if (!m_sit)
+                {
+                    m_bot.Character.SendMessage("Character health too low");
+
+                    m_bot.CallDelayed(500, Sit);
+                }
+
+                return;
+            }
+
+            var monster = m_bot.Character.Map.Actors.OfType<GroupMonster>()
+                .Where(x => x.Level < m_bot.Character.Level * 2)
+                .OrderBy(x => x.Level).FirstOrDefault();
 
             if (monster != null)
             {
@@ -89,7 +127,9 @@ namespace FightPlugin
         {
             if (phase == FightPhase.Placement)
             {
-                m_bot.SendToServer(new GameFightReadyMessage(true));
+                m_bot.CallDelayed(500, PlaceToWeakestEnemy);
+
+                m_bot.CallDelayed(2500, new Action(() => m_bot.SendToServer(new GameFightReadyMessage(true))));
             }
         }
 
@@ -104,12 +144,12 @@ namespace FightPlugin
         {
             var bot = BotManager.Instance.GetCurrentBot();
 
-            StartIA();
+            StartAI();
         }
 
-        private void StartIA()
+        private void StartAI()
         {
-            var nearestMonster = GetNearestEnnemy();
+            var nearestMonster = GetNearestEnemy();
             var shortcut = m_character.Character.SpellShortcuts.Get(1);
 
             if (shortcut == null)
@@ -138,6 +178,19 @@ namespace FightPlugin
             }
 
             m_character.PassTurn();
+        }
+
+        private void PlaceToWeakestEnemy()
+        {
+            var enemy = m_character.GetOpposedTeam().Fighters.OrderBy(x => x.Level).FirstOrDefault();
+            if (enemy == null)
+            {
+                logger.Warn("PlaceToWeakestEnemy : enemy is null");
+                return;
+            }
+
+            var cell = m_bot.Character.Fighter.Team.PlacementCells.OrderBy(x => x.DistanceTo(enemy.Cell)).FirstOrDefault();
+            m_bot.Character.Fighter.ChangePrePlacement(cell);
         }
 
         private void MoveNear(Fighter fighter, int mp)
@@ -169,7 +222,7 @@ namespace FightPlugin
             m_character.Move(dest);
         }
 
-        private Fighter GetNearestEnnemy()
+        private Fighter GetNearestEnemy()
         {
             var ennemyTeam = m_character.GetOpposedTeam();
 
