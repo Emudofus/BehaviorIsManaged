@@ -200,7 +200,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (cell == null) throw new ArgumentNullException("cell");
 
             var pathfinder = new Pathfinder(Map, Map);
-            var path = pathfinder.FindPath(Position.Cell, cell, true);
+            var path = pathfinder.FindPath(Cell, cell, true);
 
             if (IsMoving())
                 CancelMove();
@@ -216,7 +216,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             NotifyStopMoving(true);
 
-            Bot.SendToServer(new GameMapMovementCancelMessage(Position.Cell.Id));
+            Bot.SendToServer(new GameMapMovementCancelMessage(Cell.Id));
         }
 
         #endregion
@@ -293,7 +293,13 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         #endregion
 
         #region Contexts
-        
+
+        public void EnterMap(Map map)
+        {
+            Map = map;
+            Context = map;
+        }
+
         // We don't really need to handle the contexts
 
         public bool IsInContext()
@@ -322,7 +328,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public void TryStartFightWith(GroupMonster monster)
         {
             // todo
-            var cell = monster.Position.Cell;
+            var cell = monster.Cell;
 
             Move(cell);
         }
@@ -335,6 +341,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             var fight = new Fight(message, Map);
             Fighter = new PlayedFighter(this, fight);
 
+            Context = Fight;
             Bot.AddHandler(new FightHandler());
             OnFightJoined(Fight);
         }
@@ -352,6 +359,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 // todo : have to leave fight
             }
 
+            Context = Map;
             Bot.RemoveHandler<FightHandler>();
             OnFightLeft(Fight);
 
@@ -414,7 +422,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public void Update(GameRolePlayCharacterInformations msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Position = new ObjectPosition(Map, Map.Cells[msg.disposition.cellId], (DirectionsEnum) msg.disposition.direction);
+            Update(msg.disposition);
             Update(msg.humanoidInfo);
 
             Name = msg.name;
@@ -430,7 +438,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public void Update(GameFightPlacementPossiblePositionsMessage msg)
         {
             if (msg == null) throw new ArgumentException("msg");
-            Fighter.SetTeam(Fight.GetTeam((FightTeamColor) msg.teamNumber));
+
+            if (Fighter.Team == null)
+                Fighter.SetTeam(Fight.GetTeam((FightTeamColor) msg.teamNumber));
+
             Fight.Update(msg);
         }
     }

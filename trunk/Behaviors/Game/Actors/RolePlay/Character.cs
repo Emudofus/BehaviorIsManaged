@@ -22,7 +22,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             // do not care about this warnings, this ctor is never called by his inheriter
             Id = characterInformations.contextualId;
             Look = characterInformations.look;
-            Position = new ObjectPosition(map, characterInformations.disposition);
+            Map = map;
+            Update(characterInformations.disposition);
             Name = characterInformations.name;
             Alignement = new AlignmentInformations(characterInformations.alignmentInfos);
         }

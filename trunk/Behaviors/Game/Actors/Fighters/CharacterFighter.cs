@@ -24,7 +24,8 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Id = msg.contextualId;
             Fight = fight;
             Look = msg.look;
-            Position = new ObjectPosition(Fight.Map, msg.disposition);
+            Map = fight.Map;
+            Update(msg.disposition);
             Team = fight.GetTeam((FightTeamColor) msg.teamId);
             IsAlive = msg.alive;
             Alignment = new AlignmentInformations(msg.alignmentInfos);
@@ -55,7 +56,8 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             if (msg == null) throw new ArgumentNullException("msg");
             Id = msg.contextualId;
             Look = msg.look;
-            Position.Update(msg.disposition);
+            Map = Fight.Map;
+            Update(msg.disposition);
             IsAlive = msg.alive;
             Alignment = new AlignmentInformations(msg.alignmentInfos);
             Breed = DataProvider.Instance.Get<Breed>(msg.breed);

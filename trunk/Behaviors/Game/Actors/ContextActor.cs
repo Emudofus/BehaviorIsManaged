@@ -36,10 +36,10 @@ namespace BiM.Behaviors.Game.Actors
         {
             Movement = movement;
 
-            if (Movement.StartCell != Position.Cell)
+            if (Movement.StartCell != Cell)
             {
-                logger.Warn("Actor start cell incorrect for this moving path Position={0}, StartPath={1}", Position.Cell, Movement.StartCell);
-                Position.Cell = Movement.StartCell;
+                logger.Warn("Actor start cell incorrect for this moving path Position={0}, StartPath={1}", Cell, Movement.StartCell);
+                Cell = Movement.StartCell;
             }
 
             var handler = StartMoving;
@@ -62,10 +62,14 @@ namespace BiM.Behaviors.Game.Actors
                 Movement.Cancel();
 
                 var element = Movement.TimedPath.GetCurrentElement();
-                Position = new ObjectPosition(Map, element.CurrentCell, element.Direction);
+                Cell = element.CurrentCell;
+                Direction = element.Direction;
             }
             else
-                Position = MovementPath.EndPosition.Clone();
+            {
+                Cell = Movement.EndCell;
+                Direction = Movement.EndDirection;
+            }
 
             var movement = Movement;
             Movement = null;

@@ -21,22 +21,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public override IContext Context
         {
-            get
-            {
-                return Map;
-            }
-            protected set
-            {
-                
-            }
-        }
-
-        public Map Map
-        {
             get;
-            set;
+            protected set;
         }
-
        
         public override void Dispose()
         {

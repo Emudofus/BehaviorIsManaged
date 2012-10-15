@@ -41,8 +41,14 @@ namespace FightPlugin
         {
             var bot = BotManager.Instance.GetCurrentBot();
 
-            if (bot != null && bot.Character.IsFighting())
-                OnFightJoined(bot.Character, bot.Character.Fight);
+            if (bot != null)
+            {
+                bot.Character.FightJoined += OnFightJoined;
+                bot.Character.FightLeft += OnFightLeft;
+
+                if (bot.Character.IsFighting())
+                    OnFightJoined(bot.Character, bot.Character.Fight);
+            }
         }
 
         [MessageHandler(typeof(CharacterSelectedSuccessMessage))]

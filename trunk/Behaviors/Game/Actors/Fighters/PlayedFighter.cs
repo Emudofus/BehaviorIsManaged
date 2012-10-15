@@ -17,9 +17,9 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             : base(fight)
         {
             Character = character;
-
-            if (character.Position != null)
-                Position = character.Position.Clone();
+            Map = character.Map;
+            Cell = character.Cell;
+            Direction = character.Direction;
         }
 
         public PlayedCharacter Character

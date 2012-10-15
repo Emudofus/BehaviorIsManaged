@@ -140,8 +140,8 @@ namespace BiM.Behaviors
                 Dispatcher.ProcessDispatching(this);
 
                 // note : not the correct way for the moment
-                if (Character != null && Character.Map != null)
-                    Character.Map.Tick(0);
+                if (Character != null && Character.Context != null)
+                    Character.Context.Tick(0);
             }
             catch (Exception ex)
             {
@@ -161,9 +161,9 @@ namespace BiM.Behaviors
             Dispatcher.RegisterNonShared(handler);
         }
 
-        public void HasHandler<T>()
+        public bool HasHandler<T>()
         {
-            return; Dispatcher.HasNonSharedContainer(typeof(T));
+            return Dispatcher.HasNonSharedContainer(typeof(T));
         }
 
         public void RemoveHandler(object handler)

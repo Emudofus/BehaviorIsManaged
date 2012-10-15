@@ -141,6 +141,20 @@ namespace BiM.Behaviors.Game.Fights
             return null;
         }
 
+        public void Tick(int dt)
+        {
+            if (RedTeam != null)
+                foreach (var fighter in RedTeam.Fighters)
+                {
+                    fighter.Tick(dt);
+                }
+            if (BlueTeam != null)
+                foreach (var fighter in BlueTeam.Fighters)
+                {
+                    fighter.Tick(dt);
+                }
+        }
+
         public ContextActor GetContextActor(int id)
         {
             return GetFighter(id);
@@ -148,7 +162,7 @@ namespace BiM.Behaviors.Game.Fights
 
         public ContextActor[] GetContextActors(Cell cell)
         {
-            return GetConcatedFighters().Where(entry => entry.Position.Cell == cell).Cast<ContextActor>().ToArray();
+            return GetConcatedFighters().Where(entry => entry.Cell == cell).Cast<ContextActor>().ToArray();
         }
 
         #endregion
@@ -212,15 +226,14 @@ namespace BiM.Behaviors.Game.Fights
 
         public void EndTurn()
         {
-            TimeLine.ResetCurrentPlayer();
-
             var evnt = TurnEnded;
             if (evnt != null)
                 evnt(this, TimeLine.CurrentPlayer);
 
-
-            if(TimeLine.CurrentPlayer != null)
+            if (TimeLine.CurrentPlayer != null)
                 TimeLine.CurrentPlayer.NotifyTurnEnded();
+
+            TimeLine.ResetCurrentPlayer();
         }
 
         public bool HasFightStarted()
@@ -313,17 +326,17 @@ namespace BiM.Behaviors.Game.Fights
         public Fighter GetFighter(Cell cell)
         {
             // i assume 2 fighters can be on the same cell (i.g if someone carry someone)
-            return GetConcatedFighters().FirstOrDefault(entry => entry.Position.Cell == cell);
+            return GetConcatedFighters().FirstOrDefault(entry => entry.Cell == cell);
         }
 
         public Fighter[] GetFighters(Cell centerCell, int radius)
         {
-            return GetConcatedFighters().Where(entry => entry.Position.Cell.IsInRadius(centerCell, radius)).ToArray();
+            return GetConcatedFighters().Where(entry => entry.Cell.IsInRadius(centerCell, radius)).ToArray();
         }
 
         public Fighter[] GetFighters(Cell centerCell, int minRadius, int radius)
         {
-            return GetConcatedFighters().Where(entry => entry.Position.Cell.IsInRadius(centerCell, minRadius, radius)).ToArray();
+            return GetConcatedFighters().Where(entry => entry.Cell.IsInRadius(centerCell, minRadius, radius)).ToArray();
         }
 
         public void Update(GameFightPlacementPossiblePositionsMessage msg)

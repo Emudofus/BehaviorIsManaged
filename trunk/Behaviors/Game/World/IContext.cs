@@ -8,5 +8,7 @@ namespace BiM.Behaviors.Game.World
         ContextActor GetContextActor(int id);
         ContextActor[] GetContextActors(Cell cell);
         ContextActor RemoveContextActor(int id);
+
+        void Tick(int dt);
     }
 }

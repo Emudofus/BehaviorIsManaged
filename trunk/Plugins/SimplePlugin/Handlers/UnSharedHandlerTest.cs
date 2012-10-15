@@ -10,7 +10,7 @@ namespace SimplePlugin.Handlers
         [MessageHandler(typeof(BotAddedMessage))]
         public static void OnBotAdded(object sender, BotAddedMessage message)
         {
-            message.Bot.RegisterHandler(new HandlerClass());
+            message.Bot.AddHandler(new HandlerClass());
         } 
     }
 
@@ -26,7 +26,7 @@ namespace SimplePlugin.Handlers
             }
             else if (message.content == ".nop")
             {
-                bot.UnRegisterHandler(this);
+                bot.RemoveHandler(this);
                 message.BlockNetworkSend();
             }
         } 

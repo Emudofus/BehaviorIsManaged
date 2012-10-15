@@ -17,7 +17,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             Id = informations.contextualId;
             Look = informations.look;
-            Position = new ObjectPosition(map, informations.disposition);
+            Map = map;
+            Update(informations.disposition);
             AgeBonus = informations.ageBonus;
             LootShare = informations.lootShare;
             AlignmentSide = informations.alignmentSide;

@@ -177,7 +177,6 @@
     <Compile Include="Game\Actors\RolePlay\GroupMonster.cs" />
     <Compile Include="Game\World\IContext.cs" />
     <Compile Include="Game\World\Map.cs" />
-    <Compile Include="Game\World\ObjectPosition.cs" />
     <Compile Include="Game\World\Pathfinding\CellInformation.cs" />
     <Compile Include="Game\World\Pathfinding\CellInformationProvider.cs" />
     <Compile Include="Game\World\Pathfinding\IMapDataProvider.cs" />

@@ -9,7 +9,7 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(CurrentMapMessage))]
         public static void HandleCurrentMapMessage(Bot bot, CurrentMapMessage message)
         {
-            bot.Character.Map = new Map(message.mapId, message.mapKey);
+            bot.Character.EnterMap(new Map(message.mapId, message.mapKey));
         }
 
         [MessageHandler(typeof(MapComplementaryInformationsDataMessage))]

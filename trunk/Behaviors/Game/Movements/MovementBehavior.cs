@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
+using BiM.Protocol.Enums;
 
 namespace BiM.Behaviors.Game.Movements
 {
@@ -35,10 +36,7 @@ namespace BiM.Behaviors.Game.Movements
 
         public double CurrentVelocity
         {
-            get
-            {
-                return TimedPath.GetCurrentVelocity();
-            }
+            get { return TimedPath.GetCurrentVelocity(); }
         }
 
         public Path MovementPath
@@ -55,6 +53,12 @@ namespace BiM.Behaviors.Game.Movements
         public Cell EndCell
         {
             get { return MovementPath.End; }
+        }
+
+
+        public DirectionsEnum EndDirection
+        {
+            get { return MovementPath.GetEndCellDirection(); }
         }
 
         public TimedPath TimedPath
@@ -74,6 +78,12 @@ namespace BiM.Behaviors.Game.Movements
             get { return TimedPath.Elements[TimedPath.Elements.Count - 1].EndTime; }
         }
 
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
         public void Start()
         {
             Start(DateTime.Now);
@@ -83,10 +93,10 @@ namespace BiM.Behaviors.Game.Movements
         {
             StartTime = startTime;
             TimedPath = TimedPath.Create(MovementPath,
-                VelocityConfiguration.HorizontalVelocity,
-                VelocityConfiguration.VerticalVelocity,
-                VelocityConfiguration.LinearVelocity,
-                StartTime);
+                                         VelocityConfiguration.HorizontalVelocity,
+                                         VelocityConfiguration.VerticalVelocity,
+                                         VelocityConfiguration.LinearVelocity,
+                                         StartTime);
         }
 
         public void Cancel()
@@ -98,7 +108,5 @@ namespace BiM.Behaviors.Game.Movements
         {
             return DateTime.Now >= EndTime || Canceled;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

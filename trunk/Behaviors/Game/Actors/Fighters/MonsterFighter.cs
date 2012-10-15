@@ -19,7 +19,8 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Id = msg.contextualId;
             Fight = fight;
             Look = msg.look;
-            Position = new ObjectPosition(Fight.Map, msg.disposition);
+            Map = fight.Map;
+            Update(msg.disposition);
             Team = fight.GetTeam((FightTeamColor) msg.teamId);
             IsAlive = msg.alive;
             MonsterTemplate = DataProvider.Instance.Get<Monster>(msg.creatureGenericId);
@@ -61,7 +62,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             if (msg == null) throw new ArgumentNullException("msg");
             Id = msg.contextualId;
             Look = msg.look;
-            Position.Update(msg.disposition);
+            Update(msg.disposition);
             IsAlive = msg.alive;
             MonsterTemplate = DataProvider.Instance.Get<Monster>(msg.creatureGenericId);
             MonsterGrade = MonsterTemplate.grades[msg.creatureGrade];

@@ -28,7 +28,7 @@ namespace SimplePlugin.Handlers
 
 
             var pathfinder = new Pathfinder(bot.Character.Map, bot.Character.Map);
-            var botPath = pathfinder.FindPath(bot.Character.Position.Cell, clientPath.End, true);
+            var botPath = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
 
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client
             //bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), botPath.Cells.Select(entry => entry.Id).ToArray()));

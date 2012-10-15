@@ -10,7 +10,6 @@ namespace BiM.Behaviors.Game.World.Pathfinding
     {
         private Cell[] m_cellsPath;
         private PathElement[] m_compressedPath;
-        private ObjectPosition m_endPathPosition;
 
         /// <summary>
         /// Constructs the Path instance from the complete path as a list of cell
@@ -54,11 +53,6 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         public Cell[] Cells
         {
             get { return m_cellsPath; }
-        }
-
-        public ObjectPosition EndPosition
-        {
-            get { return m_endPathPosition ?? (m_endPathPosition = new ObjectPosition(Map, End, GetEndCellDirection())); }
         }
 
         public int MPCost
@@ -121,7 +115,6 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 return;
 
             m_cellsPath = m_cellsPath.Take(index).ToArray();
-            m_endPathPosition = new ObjectPosition(Map, End, GetEndCellDirection());
         }
 
         private PathElement[] BuildCompressedPath()

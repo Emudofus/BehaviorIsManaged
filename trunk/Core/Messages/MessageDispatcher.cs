@@ -323,7 +323,7 @@ namespace BiM.Core.Messages
 
         public bool HasNonSharedContainer(Type type)
         {
-            return m_nonSharedHandlers.Any(assembly => assembly.Value.Any(x => x.Key == type));
+            return m_nonSharedHandlers.Any(assembly => assembly.Value.Any(x => x.Value.Any(handler => handler.ContainerType == type)));
         }
 
         public void UnRegisterNonShared(Type type)
@@ -333,7 +333,7 @@ namespace BiM.Core.Messages
                 var handlers = dict.Values; // copy
                 foreach (var handler in handlers)
                 {
-                    handler.RemoveAll(entry => entry.Container != null && entry.Container.GetType() == type);
+                    handler.RemoveAll(entry => entry.ContainerType == type);
                 }
             }
         }

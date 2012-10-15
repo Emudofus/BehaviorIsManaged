@@ -11,7 +11,7 @@ namespace SimplePlugin.Handlers
         [MessageHandler(typeof(BotAddedMessage))]
         public static void OnBotAdded(object sender, BotAddedMessage message)
         {
-            message.Bot.RegisterHandler(new WelcomeMessage());
+            message.Bot.AddHandler(new WelcomeMessage());
         } 
     }
 

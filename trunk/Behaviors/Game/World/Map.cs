@@ -197,7 +197,7 @@ namespace BiM.Behaviors.Game.World
 
         public ContextActor[] GetContextActors(Cell cell)
         {
-            return Actors.Where(entry => entry.Position != null && entry.Position.Cell == cell).Select(entry => (ContextActor)entry).ToArray();
+            return Actors.Where(entry => entry.Cell == cell).Select(entry => (ContextActor)entry).ToArray();
         }
 
         /// <summary>
@@ -320,7 +320,7 @@ namespace BiM.Behaviors.Game.World
 
         public bool IsActor(Cell cell)
         {
-            return Actors.Any(entry => entry.Position != null && entry.Position.Cell == cell);
+            return Actors.Any(entry => entry.Cell == cell);
         }
 
         public bool IsCellMarked(Cell cell)

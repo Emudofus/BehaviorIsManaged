@@ -28,6 +28,9 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
         internal void NotifyTurnEnded()
         {
+            if (IsMoving())
+                NotifyStopMoving(false);
+
             TurnHandler handler = TurnEnded;
             if (handler != null) handler(this);
         }
@@ -100,13 +103,22 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             protected set;
         }
 
+        public override Map Map
+        {
+            get
+            {
+                return Fight.Map;
+            }
+            protected set
+            {
+            }
+        }
+
         public override IContext Context
         {
             get { return Fight; }
             protected set
             {
-                // not used
-                Fight = (Fight) value;
             }
         }
 
@@ -147,19 +159,6 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         }
 
         public event Action<Fighter, bool> ReadyStateChanged;
-
-        public void Update(EntityDispositionInformations disposition)
-        {
-            if (disposition == null) throw new ArgumentNullException("disposition");
-
-            if (Position == null)
-                Position = new ObjectPosition(Fight.Map, Fight.Map.Cells[disposition.cellId], (DirectionsEnum)disposition.direction);
-            else
-            {
-                Position.Cell = Map.Cells[disposition.cellId];
-                Position.Direction = (DirectionsEnum)disposition.direction;
-            }
-        }
 
         public virtual void Update(GameFightFighterInformations informations)
         {
