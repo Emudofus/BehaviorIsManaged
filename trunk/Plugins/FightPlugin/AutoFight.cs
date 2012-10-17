@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Timers;
 using BiM.Behaviors;
+using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Fights;
+using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.Spells.Shapes;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
@@ -24,12 +26,11 @@ namespace FightPlugin
         [MessageHandler(typeof(ChatClientMultiMessage))]
         public static void HandleChatMessage(Bot bot, ChatClientMultiMessage message)
         {
-            // if the client sends ".hello" in the chat
             if (message.content == ".fight on")
             {
                 message.BlockNetworkSend();// do not send this message to the server
 
-                bot.AddHandler(new AutoFight(bot));
+                bot.AddFrame(new AutoFight(bot));
                 bot.Character.SendMessage("Auto fight started");
             }
             else if (message.content == ".fight off")
@@ -37,7 +38,7 @@ namespace FightPlugin
                 message.BlockNetworkSend();// do not send this message to the server
 
 
-                bot.RemoveHandler<AutoFight>();
+                bot.RemoveFrame<AutoFight>();
                 bot.Character.SendMessage("Auto fight stopped");
 
             }
@@ -45,17 +46,17 @@ namespace FightPlugin
     }
 
 
-    internal class AutoFight
+    internal class AutoFight : Frame<AutoFight>
     {
-        private readonly Bot m_bot;
         private PlayedFighter m_character;
         private SimplerTimer m_checkTimer;
         private bool m_sit = false;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private ContextActor.MoveStopHandler m_stopMovingDelegate;
 
         public AutoFight(Bot bot)
+            : base (bot)
         {
-            m_bot = bot;
             bot.Character.FightJoined += OnFightJoined;
             bot.Character.FightLeft += OnFightLeft;
             bot.Character.MapJoined += OnMapJoined;
@@ -75,41 +76,41 @@ namespace FightPlugin
         {
             if (!m_sit)
             {
-                m_bot.Character.Say("/sit");
+                Bot.Character.Say("/sit");
                 m_sit = true;
 
-                m_bot.Character.StartMoving += StandUp;
+                Bot.Character.StartMoving += StandUp;
             }
         }
 
         private void StandUp(ContextActor sender, MovementBehavior path)
         {
             m_sit = false;
-            m_bot.Character.StartMoving -= StandUp;
+            Bot.Character.StartMoving -= StandUp;
         }
 
 
         private void CheckMonsters()
         {
-            if ((m_bot.Character.Stats.Health * 3) < m_bot.Character.Stats.MaxHealth)
+            if ((Bot.Character.Stats.Health * 3) < Bot.Character.Stats.MaxHealth)
             {
                 if (!m_sit)
                 {
-                    m_bot.Character.SendMessage("Character health too low");
+                    Bot.Character.SendMessage("Character health too low");
 
-                    m_bot.CallDelayed(500, Sit);
+                    Bot.CallDelayed(500, Sit);
                 }
 
                 return;
             }
 
-            var monster = m_bot.Character.Map.Actors.OfType<GroupMonster>()
-                .Where(x => x.Level < m_bot.Character.Level * 2)
+            var monster = Bot.Character.Map.Actors.OfType<GroupMonster>()
+                .Where(x => x.Level < Bot.Character.Level * 2)
                 .OrderBy(x => x.Level).FirstOrDefault();
 
             if (monster != null)
             {
-                m_bot.Character.TryStartFightWith(monster);
+                Bot.Character.TryStartFightWith(monster);
             }
         }
 
@@ -127,9 +128,9 @@ namespace FightPlugin
         {
             if (phase == FightPhase.Placement)
             {
-                m_bot.CallDelayed(500, PlaceToWeakestEnemy);
+                Bot.CallDelayed(500, PlaceToWeakestEnemy);
 
-                m_bot.CallDelayed(2500, new Action(() => m_bot.SendToServer(new GameFightReadyMessage(true))));
+                Bot.CallDelayed(2500, new Action(() => Bot.SendToServer(new GameFightReadyMessage(true))));
             }
         }
 
@@ -167,15 +168,35 @@ namespace FightPlugin
 
             if (m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate))
             {
-                m_character.CastSpell(shortcut.GetSpell(), nearestMonster.Cell);
+                m_character.CastSpell(spell, nearestMonster.Cell);
                 MoveFar();
+
+                m_character.PassTurn();
             }
             else
             {
                 MoveNear(nearestMonster, (int)( m_character.Cell.DistanceTo(nearestMonster.Cell) - m_character.GetRealSpellRange(spell.LevelTemplate) ));
-                m_character.CastSpell(shortcut.GetSpell(), nearestMonster.Cell);
-                MoveFar();
+
+                // wait until the movement ends
+                if (m_stopMovingDelegate != null)
+                {
+                    Bot.Character.Fighter.StopMoving -= m_stopMovingDelegate;
+                    m_stopMovingDelegate = null;
+                }
+
+                m_stopMovingDelegate = (sender, behavior, canceled) => OnStopMoving(spell, nearestMonster);
+                Bot.Character.Fighter.StopMoving += m_stopMovingDelegate;
             }
+
+        }
+
+        private void OnStopMoving(Spell spell, Fighter enemy)
+        {
+            Bot.Character.Fighter.StopMoving -= m_stopMovingDelegate;
+            m_stopMovingDelegate = null;
+
+            m_character.CastSpell(spell, enemy.Cell);
+            MoveFar();
 
             m_character.PassTurn();
         }
@@ -189,8 +210,8 @@ namespace FightPlugin
                 return;
             }
 
-            var cell = m_bot.Character.Fighter.Team.PlacementCells.OrderBy(x => x.DistanceTo(enemy.Cell)).FirstOrDefault();
-            m_bot.Character.Fighter.ChangePrePlacement(cell);
+            var cell = Bot.Character.Fighter.Team.PlacementCells.OrderBy(x => x.DistanceTo(enemy.Cell)).FirstOrDefault();
+            Bot.Character.Fighter.ChangePrePlacement(cell);
         }
 
         private void MoveNear(Fighter fighter, int mp)
@@ -207,7 +228,7 @@ namespace FightPlugin
         {
             var ennemies = m_character.GetOpposedTeam().Fighters;
 
-            var shape = new HalfLozenge(0, (byte) m_character.Stats.CurrentMP);
+            var shape = new Lozenge(0, (byte) m_character.Stats.CurrentMP);
             var possibleCells = shape.GetCells(m_character.Cell, m_character.Map);
             var orderedCells = from cell in possibleCells
                                where m_character.Fight.IsCellWalkable(cell, false, m_character.Cell)
@@ -239,6 +260,29 @@ namespace FightPlugin
             }
 
             return nearestFighter;
+        }
+
+
+        public void Attached(MessageDispatcher dispatcher)
+        {
+            
+        }
+
+        public void Dettached(MessageDispatcher dispatcher)
+        {
+            if (Bot.Character != null)
+            {
+                Bot.Character.FightJoined -= OnFightJoined;
+                Bot.Character.FightLeft -= OnFightLeft;
+                Bot.Character.MapJoined -= OnMapJoined;
+            } 
+            
+            if (m_character != null)
+            {
+                m_character.TurnStarted -= OnTurnStarted;
+                m_character.Fight.StateChanged -= OnStateChanged;
+                m_character = null;
+            }
         }
     }
 }

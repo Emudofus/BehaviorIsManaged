@@ -353,7 +353,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Fighter = new PlayedFighter(this, fight);
 
             Context = Fight;
-            Bot.AddHandler(new FightHandler());
+            Bot.Dispatcher.RegisterNonShared(new FightHandler());
             OnFightJoined(Fight);
         }
 
@@ -371,7 +371,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
 
             Context = Map;
-            Bot.RemoveHandler<FightHandler>();
+            Bot.Dispatcher.UnRegisterNonShared(typeof(FightHandler));
             OnFightLeft(Fight);
 
             Fighter = null;

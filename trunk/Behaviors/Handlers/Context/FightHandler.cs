@@ -33,7 +33,7 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameFightOptionStateUpdateMessage))]
         public void HandleGameFightOptionStateUpdateMessage(Bot bot, GameFightOptionStateUpdateMessage message)
         {
-
+            bot.Character.Fight.Update(message);
         }
 
         [MessageHandler(typeof(GameFightShowFighterMessage))]

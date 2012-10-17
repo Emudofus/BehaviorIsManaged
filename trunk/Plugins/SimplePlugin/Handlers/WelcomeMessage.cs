@@ -1,4 +1,5 @@
 ﻿using BiM.Behaviors;
+using BiM.Behaviors.Frames;
 using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Protocol.Enums;
@@ -11,13 +12,19 @@ namespace SimplePlugin.Handlers
         [MessageHandler(typeof(BotAddedMessage))]
         public static void OnBotAdded(object sender, BotAddedMessage message)
         {
-            message.Bot.AddHandler(new WelcomeMessage());
+            message.Bot.AddFrame(new WelcomeMessage(message.Bot));
         } 
     }
 
-    public class WelcomeMessage
+    public class WelcomeMessage : Frame<WelcomeMessage>
     {
         private bool m_messageSent;
+
+        public WelcomeMessage(Bot bot)
+            : base(bot)
+        {
+        }
+
         [MessageHandler(typeof(GameContextCreateMessage))]
         public void HandleGameContextCreateMessage(Bot bot, GameContextCreateMessage message)
         {

@@ -217,7 +217,7 @@ namespace BiM.MITM
             // unblock the connection (fix #14)
             client.SendToServer(new BasicPingMessage());
 
-            client.Bot.CallDelayed(ServerConnectionTimeout * 1000, () => OnServerConnectionTimedOut(client));
+            client.TimeOutTimer = client.Bot.CallDelayed(ServerConnectionTimeout * 1000, () => OnServerConnectionTimedOut(client));
             logger.Debug("Bot retrieved with ticket {0}", message.ticket);
         }
 
@@ -267,6 +267,10 @@ namespace BiM.MITM
             message.BlockNetworkSend();
 
             bot.SendToServer(new AuthenticationTicketMessage("fr", bot.ClientInformations.ConnectionTicket));
+
+            var timer = ( (BotMITM)bot ).Connection.TimeOutTimer;
+            if (timer != null)
+                timer.Dispose();
         }
     }
 }

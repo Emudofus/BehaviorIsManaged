@@ -160,7 +160,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public static void RegisterShared(MethodInfo method, object container)
+        private static void RegisterShared(MethodInfo method, object container)
         {
             var attributes = method.GetCustomAttributes(typeof(MessageHandlerAttribute), false) as MessageHandlerAttribute[];
 
@@ -170,7 +170,7 @@ namespace BiM.Core.Messages
             RegisterShared(method, container, attributes);
         }
 
-        public static void RegisterShared(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
+        private static void RegisterShared(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
         {
             if (method == null) throw new ArgumentNullException("method");
             if (attributes == null || attributes.Length == 0)
@@ -185,7 +185,7 @@ namespace BiM.Core.Messages
             }
 
             if (!method.IsStatic && container == null)
-                throw new ArgumentException("You must give an object container if the method is static");
+                return;
 
             Action<object, object, Message> handlerDelegate;
             try
@@ -203,7 +203,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public static void RegisterShared(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
+        private static void RegisterShared(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
         {
             if (attribute == null) throw new ArgumentNullException("attribute");
             if (action == null) throw new ArgumentNullException("action");
@@ -274,7 +274,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public void RegisterNonShared(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
+        private void RegisterNonShared(MethodInfo method, object container, params MessageHandlerAttribute[] attributes)
         {
             if (method == null) throw new ArgumentNullException("method");
             if (attributes == null || attributes.Length == 0)
@@ -289,7 +289,7 @@ namespace BiM.Core.Messages
             }
 
             if (!method.IsStatic && container == null)
-                throw new ArgumentException("You must give an object container if the method is static");
+                return;
 
             Action<object, object, Message> handlerDelegate;
             try
@@ -307,7 +307,7 @@ namespace BiM.Core.Messages
             }
         }
 
-        public void RegisterNonShared(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
+        private void RegisterNonShared(Type messageType, Type containerType, MessageHandlerAttribute attribute, Action<object, object, Message> action, Type tokenType, object container = null)
         {
             if (attribute == null) throw new ArgumentNullException("attribute");
             if (action == null) throw new ArgumentNullException("action");

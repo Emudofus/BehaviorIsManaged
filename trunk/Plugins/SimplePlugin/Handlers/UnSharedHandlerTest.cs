@@ -1,4 +1,5 @@
 ﻿using BiM.Behaviors;
+using BiM.Behaviors.Frames;
 using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
@@ -10,12 +11,17 @@ namespace SimplePlugin.Handlers
         [MessageHandler(typeof(BotAddedMessage))]
         public static void OnBotAdded(object sender, BotAddedMessage message)
         {
-            message.Bot.AddHandler(new HandlerClass());
+            message.Bot.AddFrame(new HandlerClass(message.Bot));
         } 
     }
 
-    public class HandlerClass
+    public class HandlerClass : Frame<HandlerClass>
     {
+        public HandlerClass(Bot bot)
+            : base(bot)
+        {
+        }
+
         [MessageHandler(typeof(ChatClientMultiMessage))]
         public void HandleChatClientMultiMessage(Bot bot, ChatClientMultiMessage message)
         {
@@ -26,7 +32,7 @@ namespace SimplePlugin.Handlers
             }
             else if (message.content == ".nop")
             {
-                bot.RemoveHandler(this);
+                bot.RemoveFrame(this);
                 message.BlockNetworkSend();
             }
         } 

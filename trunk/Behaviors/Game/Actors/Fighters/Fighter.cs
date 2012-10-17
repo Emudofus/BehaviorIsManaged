@@ -153,7 +153,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public bool IsInSpellRange(Cell cell, SpellLevel spell)
         {
             var range = GetRealSpellRange(spell);
-            var dist = Cell.DistanceTo(cell);
+            var dist = Cell.ManhattanDistanceTo(cell);
 
             return dist >= spell.minRange && dist <= range;
         }

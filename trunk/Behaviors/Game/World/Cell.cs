@@ -368,11 +368,11 @@ namespace BiM.Behaviors.Game.World
         public IEnumerable<Cell> GetAdjacentCells(Func<Cell, bool> predicate)
         {
             var southEast = Map.Cells[Point.X + 1, Point.Y];
-            if (IsInMap(southEast.X, southEast.Y) && predicate(southEast))
+            if (southEast != null && predicate(southEast))
                 yield return southEast;
 
             var southWest =  Map.Cells[Point.X, Point.Y - 1];
-            if (IsInMap(southWest.X, southWest.Y) && predicate(southWest))
+            if (southWest != null && predicate(southWest))
                 yield return southWest;
 
             var northEast =  Map.Cells[Point.X, Point.Y + 1];

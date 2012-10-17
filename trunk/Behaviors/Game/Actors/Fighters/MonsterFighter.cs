@@ -65,7 +65,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Update(msg.disposition);
             IsAlive = msg.alive;
             MonsterTemplate = DataProvider.Instance.Get<Monster>(msg.creatureGenericId);
-            MonsterGrade = MonsterTemplate.grades[msg.creatureGrade];
+            MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
         }
 
         public override void Update(GameFightFighterInformations informations)

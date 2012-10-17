@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using BiM.Behaviors.Authentification;
+using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Settings;
 using BiM.Core.Config;
@@ -47,6 +51,8 @@ namespace BiM.Behaviors
             CharacterSelectedHandler handler = CharactersSelected;
             if (handler != null) handler(this, character);
         }
+
+        private List<IFrame> m_frames = new List<IFrame>(); 
 
         public Bot()
             : this(new MessageDispatcher())
@@ -97,6 +103,11 @@ namespace BiM.Behaviors
         {
             get;
             private set;
+        }
+
+        public ReadOnlyCollection<IFrame> Frames
+        {
+            get { return m_frames.AsReadOnly(); }
         }
 
         public override string Name
@@ -153,29 +164,84 @@ namespace BiM.Behaviors
             base.OnTick();
         }
 
-        public void AddHandler(object handler, bool checkUnique = true)
+        #region Frames
+        public bool AddFrame(IFrame frame)
         {
-            if (checkUnique && Dispatcher.HasNonSharedContainer(handler.GetType()))
-                return;
+            if (HasFrame(frame.GetType()))
+                return false;
 
-            Dispatcher.RegisterNonShared(handler);
+            m_frames.Add(frame);
+            frame.OnAttached();
+
+            return true;
         }
 
-        public bool HasHandler<T>()
+        public bool RemoveFrame(IFrame frame)
         {
-            return Dispatcher.HasNonSharedContainer(typeof(T));
+            if (m_frames.Remove(frame))
+            {
+                frame.OnDetached();
+                return true;
+            }
+
+            return false;
         }
 
-        public void RemoveHandler(object handler)
+        public bool RemoveFrame<T>()
         {
-            Dispatcher.UnRegisterNonShared(handler);
+            return RemoveFrame(typeof(T));
         }
 
-        public void RemoveHandler<T>()
+        public bool RemoveFrame(Type type)
         {
-            Dispatcher.UnRegisterNonShared(typeof(T));
+            var frames = m_frames.Where(entry => entry.GetType().IsInstanceOfType(type)).ToArray();
+
+            if (frames.Length > 1)
+            {
+                logger.Warn("Found {0} frames of type {1} (1 or 0 expected)", frames.Length, type);
+            }
+
+            return frames.Select(RemoveFrame).All(x => x);
         }
 
+        public bool HasFrame(Type type)
+        {
+            return m_frames.Any(x => x.GetType().IsInstanceOfType(type));
+        }
+
+        public bool HasFrame<T>()
+        {
+            return HasFrame(typeof(T));
+        }
+
+        public IFrame GetFrame(Type type)
+        {
+            var frames = m_frames.Where(entry => entry.GetType().IsInstanceOfType(type)).ToArray();
+
+            if (frames.Length > 1)
+            {
+                logger.Warn("Found {0} frames of type {1} (1 or 0 expected)", frames.Length, type);
+            }
+
+            return frames.FirstOrDefault();
+        }
+
+
+        public T GetFrame<T>()
+        {
+            var frames = m_frames.OfType<T>().ToArray();
+
+            if (frames.Length > 1)
+            {
+                logger.Warn("Found {0} frames of type {1} (1 or 0 expected)", frames.Length, typeof(T));
+            }
+
+            return frames.FirstOrDefault();
+        }
+
+        #endregion
+
+    
         public void Send(Message message)
         {
             if (message == null) throw new ArgumentNullException("message");

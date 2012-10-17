@@ -1,7 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 using BiM.Behaviors;
+using BiM.Behaviors.Frames;
 using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.MITM.Network;
@@ -16,20 +19,19 @@ namespace WindowManager
         public static void OnCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
         {
             if (bot.Dispatcher is NetworkMessageDispatcher)
-                bot.AddHandler(new WindowDetector(bot));
+                bot.AddFrame(new WindowDetector(bot));
         } 
     }
 
-    public class WindowDetector
+    public class WindowDetector : Frame<WindowDetector>
     {
-        private readonly Bot m_bot;
         private const int DelayToCloseWindow = 1000;
 
         private Process m_botProcess;
 
         public WindowDetector(Bot bot)
+            : base (bot)
         {
-            m_bot = bot;
             m_botProcess = ClientFinder.GetProcessUsingPort(( (IPEndPoint) ( (ConnectionMITM)( (NetworkMessageDispatcher)bot.Dispatcher ).Client ).Socket.RemoteEndPoint ).Port);
         }
 
@@ -52,12 +54,17 @@ namespace WindowManager
 
         public void CloseWindow(int delay = DelayToCloseWindow)
         {
-            m_bot.CallDelayed(DelayToCloseWindow, InternalCloseWindow);
+            Bot.CallDelayed(DelayToCloseWindow, InternalCloseWindow);
         }
 
         private void InternalCloseWindow()
         {
             User32Wrapper.SendKey(m_botProcess.MainWindowHandle, Keys.Enter);
+        }
+
+        public void SendKey(Keys key)
+        {
+            User32Wrapper.SendKey(m_botProcess.MainWindowHandle, key);
         }
     }
 }

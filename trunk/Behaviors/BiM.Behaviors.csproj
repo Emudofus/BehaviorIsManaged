@@ -84,6 +84,8 @@
     <Compile Include="Data\IDataSource.cs" />
     <Compile Include="Authentification\ClientInformations.cs" />
     <Compile Include="DisplayState.cs" />
+    <Compile Include="Frames\Frame.cs" />
+    <Compile Include="Frames\IFrame.cs" />
     <Compile Include="Game\Actors\ContextActor.cs" />
     <Compile Include="Game\Actors\Fighters\CharacterFighter.cs" />
     <Compile Include="Game\Actors\Fighters\Fighter.cs" />

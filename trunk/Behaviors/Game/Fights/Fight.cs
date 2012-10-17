@@ -377,9 +377,7 @@ namespace BiM.Behaviors.Game.Fights
                 Fighter fighter = GetFighter(disposition.id);
 
                 // seems like the client don't cares
-                if (fighter == null)
-                    logger.Error(string.Format("(GameEntitiesDispositionMessage) Fight {0} not found", disposition.id));
-                else
+                if (fighter != null)
                     fighter.Update(disposition);
             }
         }
@@ -482,13 +480,7 @@ namespace BiM.Behaviors.Game.Fights
         public void Update(GameFightOptionStateUpdateMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-
-            if (msg.fightId != Id)
-            {
-                logger.Warn("(GameFightOptionStateUpdateMessage) Incorrect fightid {0} instead of {1}", msg.fightId, Id);
-                return;
-            }
-
+            Id = msg.fightId;
             GetTeam(msg.teamId).Update(msg);
         }
 

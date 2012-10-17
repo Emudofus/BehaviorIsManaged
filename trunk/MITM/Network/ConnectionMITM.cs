@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using BiM.Core.Config;
 using BiM.Core.Network;
+using BiM.Core.Threading;
 using NLog;
 
 namespace BiM.MITM.Network
@@ -42,6 +43,12 @@ namespace BiM.MITM.Network
         {
             get;
             private set;
+        }
+
+        public SimplerTimer TimeOutTimer
+        {
+            get;
+            set;
         }
 
         /// <summary>
