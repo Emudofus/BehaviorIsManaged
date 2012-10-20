@@ -25,14 +25,10 @@ namespace BiM.Host.UI.Bot
         public BotControl(Behaviors.Bot bot)
         {
             Bot = bot;
+            GameUIView = new GameUI(bot);
+            CharacterSelectionView = new CharacterSelection(bot);
+            ServerSelectionView = new ServerSelection(bot);
             InitializeComponent();
-
-            bot.CharactersSelected += OnCharacterSelected;
-        }
-
-        private void OnCharacterSelected(Behaviors.Bot bot, PlayedCharacter character)
-        {
-            
         }
 
         /// <summary>
@@ -49,5 +45,22 @@ namespace BiM.Host.UI.Bot
             private set;
         }
 
+        public GameUI GameUIView
+        {
+            get;
+            private set;
+        }
+
+        public CharacterSelection CharacterSelectionView
+        {
+            get;
+            private set;
+        }
+
+        public ServerSelection ServerSelectionView
+        {
+            get;
+            private set;
+        }
     }
 }

@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using BiM.Behaviors.Game.Actors.Fighters;
+using BiM.Core.Collections;
 
 namespace BiM.Behaviors.Game.Fights
 {
     public class SpellCastHistory
     {
-        private ObservableCollection<SpellCast> m_casts = new ObservableCollection<SpellCast>();
-        private ReadOnlyObservableCollection<SpellCast> m_readOnlyCasts;
+        private ObservableCollectionMT<SpellCast> m_casts = new ObservableCollectionMT<SpellCast>();
+        private ReadOnlyObservableCollectionMT<SpellCast> m_readOnlyCasts;
 
         public SpellCastHistory(Fighter fighter)
         {
             Fighter = fighter;
-            m_readOnlyCasts = new ReadOnlyObservableCollection<SpellCast>(m_casts);
+            m_readOnlyCasts = new ReadOnlyObservableCollectionMT<SpellCast>(m_casts);
         }
 
         public Fighter Fighter
@@ -21,7 +22,7 @@ namespace BiM.Behaviors.Game.Fights
             private set;
         }
 
-        public ReadOnlyObservableCollection<SpellCast> Casts
+        public ReadOnlyObservableCollectionMT<SpellCast> Casts
         {
             get
             {

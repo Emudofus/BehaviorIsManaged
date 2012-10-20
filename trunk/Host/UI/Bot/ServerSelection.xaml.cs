@@ -19,9 +19,16 @@ namespace BiM.Host.UI.Bot
     /// </summary>
     public partial class ServerSelection : UserControl
     {
-        public ServerSelection()
+        public ServerSelection(Behaviors.Bot bot)
         {
+            Bot = bot;
             InitializeComponent();
+        }
+
+        public Behaviors.Bot Bot
+        {
+            get;
+            private set;
         }
     }
 }

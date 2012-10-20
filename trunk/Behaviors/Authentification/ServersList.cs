@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using BiM.Core.Collections;
 using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Authentification
 {
     public class ServersList : INotifyPropertyChanged
     {
-        private readonly ObservableCollection<ServersListEntry> m_collection;
-        private readonly ReadOnlyObservableCollection<ServersListEntry> m_readOnlyCollection;
+        private readonly ObservableCollectionMT<ServersListEntry> m_collection;
+        private readonly ReadOnlyObservableCollectionMT<ServersListEntry> m_readOnlyCollection;
 
-        public ReadOnlyObservableCollection<ServersListEntry> Servers
+        public ReadOnlyObservableCollectionMT<ServersListEntry> Servers
         {
             get { return m_readOnlyCollection; }
         }
@@ -29,8 +30,8 @@ namespace BiM.Behaviors.Authentification
         {
             if (msg == null) throw new ArgumentNullException("msg");
 
-            m_collection = new ObservableCollection<ServersListEntry>(msg.servers.Select(entry => new ServersListEntry(entry)));
-            m_readOnlyCollection = new ReadOnlyObservableCollection<ServersListEntry>(m_collection);
+            m_collection = new ObservableCollectionMT<ServersListEntry>(msg.servers.Select(entry => new ServersListEntry(entry)));
+            m_readOnlyCollection = new ReadOnlyObservableCollectionMT<ServersListEntry>(m_collection);
         }
 
         public void Update(ServerStatusUpdateMessage msg)

@@ -1,0 +1,30 @@
+﻿namespace BiM.Behaviors.Game.Items
+{
+    public enum ItemSuperTypeEnum
+    {
+        SUPERTYPE_UNKNOWN_0,
+        SUPERTYPE_AMULET,
+        SUPERTYPE_WEAPON,
+        SUPERTYPE_RING,
+        SUPERTYPE_BELT,
+        SUPERTYPE_BOOTS,
+        SUPERTYPE_UNKNOWN_5,
+        SUPERTYPE_SHIELD,
+        SUPERTYPE_WEAPON_7,
+        SUPERTYPE_UNKNOWN_8,
+        SUPERTYPE_HAT,
+        SUPERTYPE_CAPE,
+        SUPERTYPE_PET,
+        SUPERTYPE_DOFUS,
+        SUPERTYPE_UNKNOWN_13,
+        SUPERTYPE_QUEST,
+        SUPERTYPE_UNKNOWN_15,
+        SUPERTYPE_UNKNOWN_16,
+        SUPERTYPE_UNKNOWN_17,
+        SUPERTYPE_UNKNOWN_18,
+        SUPERTYPE_UNKNOWN_19,
+        SUPERTYPE_UNKNOWN_20,
+        SUPERTYPE_UNKNOWN_21,
+        SUPERTYPE_UNKNOWN_22,
+    }
+}

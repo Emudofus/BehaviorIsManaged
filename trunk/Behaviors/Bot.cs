@@ -15,7 +15,7 @@ using NLog;
 
 namespace BiM.Behaviors
 {
-    public class Bot : SelfRunningTaskQueue, INotifyPropertyChanged
+    public class Bot : SelfRunningTaskQueue
     {
         [Configurable("DefaultBotTick", "The interval (ms) between two message dispatching")]
         public static int DefaultBotTick = 100;
@@ -359,7 +359,5 @@ namespace BiM.Behaviors
 
             return "Bot";
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

@@ -24,5 +24,11 @@ namespace BiM.Behaviors.Handlers.Characters
         {
             bot.Character.Update(message);
         }
+
+        [MessageHandler(typeof(SetCharacterRestrictionsMessage))]
+        public static void HandleSetCharacterRestrictionsMessage(Bot bot, SetCharacterRestrictionsMessage message)
+        {
+            bot.Character.Update(message);
+        }
     }
 }

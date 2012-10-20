@@ -110,6 +110,18 @@
     <Compile Include="Game\Chat\ChatMessageClient.cs" />
     <Compile Include="Game\Chat\ChatMessageServer.cs" />
     <Compile Include="Game\Contacts\ContactsBook.cs" />
+    <Compile Include="Game\Effects\EffectBase.cs" />
+    <Compile Include="Game\Effects\EffectCreature.cs" />
+    <Compile Include="Game\Effects\EffectDate.cs" />
+    <Compile Include="Game\Effects\EffectDice.cs" />
+    <Compile Include="Game\Effects\EffectDuration.cs" />
+    <Compile Include="Game\Effects\EffectInteger.cs" />
+    <Compile Include="Game\Effects\EffectLadder.cs" />
+    <Compile Include="Game\Effects\EffectMinMax.cs" />
+    <Compile Include="Game\Effects\EffectMount.cs" />
+    <Compile Include="Game\Effects\EffectsEnum.cs" />
+    <Compile Include="Game\Effects\EffectString.cs" />
+    <Compile Include="Game\Effects\SpellTargetType.cs" />
     <Compile Include="Game\Fights\Fight.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -132,6 +144,7 @@
     <Compile Include="Game\Guilds\GuildInformations.cs" />
     <Compile Include="Game\Guilds\GuildEmblem.cs" />
     <Compile Include="Game\Items\Inventory.cs" />
+    <Compile Include="Game\Items\ItemSuperTypeEnum.cs" />
     <Compile Include="Game\Items\ItemToSellInHumanShop.cs" />
     <Compile Include="Game\Items\Item.cs" />
     <Compile Include="Game\Items\ItemBase.cs" />
@@ -198,6 +211,7 @@
     <Compile Include="Handlers\Context\FightHandler.cs" />
     <Compile Include="Handlers\Context\MapMovementHandler.cs" />
     <Compile Include="Handlers\Context\RolePlayHandler.cs" />
+    <Compile Include="Handlers\Inventory\InventoryHandler.cs" />
     <Compile Include="Handlers\Regen\RegenHandler.cs" />
     <Compile Include="Handlers\Shortcuts\ShortcutHandler.cs" />
     <Compile Include="Handlers\Spells\SpellHandler.cs" />

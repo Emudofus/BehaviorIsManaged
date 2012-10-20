@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Movements;
+using BiM.Core.Collections;
 using BiM.Protocol.Data;
 using BiM.Protocol.Types;
 using BiM.Core.Extensions;
@@ -29,9 +30,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             GuildInformations = new GuildInformations(human.guildInformations);
         }
 
-        private ObservableCollection<EntityLook> m_followingCharactersLook = new ObservableCollection<EntityLook>();
+        private ObservableCollectionMT<EntityLook> m_followingCharactersLook = new ObservableCollectionMT<EntityLook>();
 
-        public ObservableCollection<EntityLook> FollowingCharactersLook
+        public ObservableCollectionMT<EntityLook> FollowingCharactersLook
         {
             get
             {
@@ -87,7 +88,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public void Update(HumanInformations human)
         {
-            m_followingCharactersLook = new ObservableCollection<EntityLook>(human.followingCharactersLook);
+            m_followingCharactersLook = new ObservableCollectionMT<EntityLook>(human.followingCharactersLook);
             Emote = human.emoteId > 0 ?
                 DataProvider.Instance.Get<Emoticon>(human.emoteId) : null;
             EmoteStartTime = human.emoteStartTime > 0 ?

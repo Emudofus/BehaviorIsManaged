@@ -70,13 +70,16 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="zlib.net">
       <HintPath>..\Librairies\zlib.net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections\LockFreeQueue.cs" />
+    <Compile Include="Collections\ObservableCollectionMT.cs" />
     <Compile Include="Collections\PriorityQueueB.cs" />
+    <Compile Include="Collections\ReadOnlyObservableCollectionMT.cs" />
     <Compile Include="Config\ConfigNode.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="Config\ConfigurableAttribute.cs" />

@@ -3,17 +3,22 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Core.Collections;
 using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Game.Spells
 {
     public class SpellsBook : INotifyPropertyChanged
     {
+        private ObservableCollectionMT<Spell> m_spells;
+        private ReadOnlyObservableCollectionMT<Spell> m_readOnlySpells; 
+
         public SpellsBook(PlayedCharacter owner)
         {
             if (owner == null) throw new ArgumentNullException("owner");
             Character = owner;
-            Spells = new ObservableCollection<Spell>();
+            m_spells = new ObservableCollectionMT<Spell>();
+            m_readOnlySpells = new ReadOnlyObservableCollectionMT<Spell>(m_spells);
         }
 
         public SpellsBook(PlayedCharacter owner, SpellListMessage list)
@@ -29,10 +34,9 @@ namespace BiM.Behaviors.Game.Spells
             set;
         }
 
-        public ObservableCollection<Spell> Spells
+        public ReadOnlyObservableCollectionMT<Spell> Spells
         {
-            get;
-            set;
+            get { return m_readOnlySpells; }
         }
 
         public bool SpellPrevisualization
@@ -64,10 +68,11 @@ namespace BiM.Behaviors.Game.Spells
         public void Update(SpellListMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Spells.Clear();
+
+            m_spells.Clear();
             foreach (var spell in msg.spells.Select(entry => new Spell(entry)))
             {
-                Spells.Add(spell);
+                m_spells.Add(spell);
             }
 
             SpellPrevisualization = msg.spellPrevisualization;

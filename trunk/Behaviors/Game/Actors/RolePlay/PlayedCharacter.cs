@@ -386,11 +386,6 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         #region Update Method
 
-        public void Update(InventoryContentMessage msg)
-        {
-            if (msg == null) throw new ArgumentNullException("msg");
-            Inventory.Update(msg);
-        }
 
         public void Update(ShortcutBarContentMessage msg)
         {

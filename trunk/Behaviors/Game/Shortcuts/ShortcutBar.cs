@@ -2,21 +2,22 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Core.Collections;
 using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Shortcuts
 {
     public class ShortcutBar<T> where T : Shortcut
     {
-        private ObservableCollection<T> m_shortcuts; 
-        private ReadOnlyObservableCollection<T> m_readOnlyShortcuts; 
+        private ObservableCollectionMT<T> m_shortcuts; 
+        private ReadOnlyObservableCollectionMT<T> m_readOnlyShortcuts; 
 
         public ShortcutBar(PlayedCharacter character)
         {
             if (character == null) throw new ArgumentNullException("character");
             Character = character;
-            m_shortcuts = new ObservableCollection<T>();
-            m_readOnlyShortcuts = new ReadOnlyObservableCollection<T>(m_shortcuts);
+            m_shortcuts = new ObservableCollectionMT<T>();
+            m_readOnlyShortcuts = new ReadOnlyObservableCollectionMT<T>(m_shortcuts);
         }
 
         public PlayedCharacter Character
@@ -25,7 +26,7 @@ namespace BiM.Behaviors.Game.Shortcuts
             set;
         }
 
-        public ReadOnlyObservableCollection<T> Shortcuts
+        public ReadOnlyObservableCollectionMT<T> Shortcuts
         {
             get { return m_readOnlyShortcuts; }
         }

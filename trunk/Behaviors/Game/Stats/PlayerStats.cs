@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Core.Collections;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
 
@@ -86,7 +87,7 @@ namespace BiM.Behaviors.Game.Stats
                              {PlayerField.PvpAirElementReduction, new StatsRow(PlayerField.PvpAirElementReduction, x => OnPropertyChanged("AirElementReduction"))},
                              {PlayerField.PvpFireElementReduction, new StatsRow(PlayerField.PvpFireElementReduction, x => OnPropertyChanged("FireElementReduction"))},
                          };
-            SpellsModifications = new ObservableCollection<SpellModification>();
+            SpellsModifications = new ObservableCollectionMT<SpellModification>();
             InvisibilityState = GameActionFightInvisibilityStateEnum.VISIBLE;
         }
 
@@ -116,7 +117,7 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
-        public ObservableCollection<SpellModification> SpellsModifications
+        public ObservableCollectionMT<SpellModification> SpellsModifications
         {
             get;
             set;

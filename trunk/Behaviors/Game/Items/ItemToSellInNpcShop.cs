@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using BiM.Behaviors.Data;
+using BiM.Core.Collections;
 using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Items
@@ -9,7 +10,7 @@ namespace BiM.Behaviors.Game.Items
         public ItemToSellInNpcShop(ObjectItemToSellInNpcShop item)
         {
             Template = DataProvider.Instance.Get<Protocol.Data.Item>(item.objectGID);
-            Effects = new ObservableCollection<ObjectEffect>(item.effects);
+            Effects = new ObservableCollectionMT<ObjectEffect>(item.effects);
             PowerRate = item.powerRate;
             OverMax = item.overMax;
             ObjectPrice = item.objectPrice;

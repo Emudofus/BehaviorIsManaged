@@ -6,6 +6,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBlock>Character Selection</TextBlock>  
+        <Label HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontSize="14"
+             Width="250">
+            <TextBlock TextWrapping="WrapWithOverflow" TextAlignment="Center">
+          <TextBlock.Text>
+              Selecting a character ...
+          </TextBlock.Text>
+            </TextBlock>
+        </Label>
     </Grid>
 </UserControl>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ using NLog;
 
 namespace BiM.Core.Threading
 {
-    public class SelfRunningTaskQueue
+    public class SelfRunningTaskQueue : INotifyPropertyChanged
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -230,5 +231,7 @@ namespace BiM.Core.Threading
                 logger.FatalException(string.Format("Failed to run TaskQueue callback for \"{0}\"", Name), ex);
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

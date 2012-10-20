@@ -4,20 +4,21 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Stats;
+using BiM.Core.Collections;
 using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Game.Fights
 {
     public class TimeLine
     {
-        private ObservableCollection<Fighter> m_fighters = new ObservableCollection<Fighter>();
-        private ReadOnlyObservableCollection<Fighter> m_readOnlyFighters;
+        private ObservableCollectionMT<Fighter> m_fighters = new ObservableCollectionMT<Fighter>();
+        private ReadOnlyObservableCollectionMT<Fighter> m_readOnlyFighters;
 
         public TimeLine(Fight fight)
         {
             Fight = fight;
             Index = -1;
-            m_readOnlyFighters = new ReadOnlyObservableCollection<Fighter>(m_fighters);
+            m_readOnlyFighters = new ReadOnlyObservableCollectionMT<Fighter>(m_fighters);
         }
 
         public Fight Fight
@@ -29,7 +30,7 @@ namespace BiM.Behaviors.Game.Fights
         /// <summary>
         /// This list is ordered by the fighters turns
         /// </summary>
-        public ReadOnlyObservableCollection<Fighter> Fighters
+        public ReadOnlyObservableCollectionMT<Fighter> Fighters
         {
             get
             {
