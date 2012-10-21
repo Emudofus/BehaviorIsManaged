@@ -127,9 +127,9 @@ namespace BiM.Behaviors.Game.Effects
         }
 
         public EffectBase(ObjectEffect effect)
-            : this(DataProvider.Instance.Get<EffectInstance>(effect.actionId))
         {
-
+            Id = effect.actionId;
+            m_template = DataProvider.Instance.Get<Effect>(Id);
         }
 
         public EffectBase(EffectInstance effect)

@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Handlers\ChatCommands.cs" />
     <Compile Include="Handlers\GameCommands.cs" />
+    <Compile Include="Handlers\GatherTest.cs" />
     <Compile Include="Handlers\MonsterSeeker.cs" />
     <Compile Include="Handlers\PacketsLogger.cs" />
     <Compile Include="Handlers\PathfindersComparer.cs" />

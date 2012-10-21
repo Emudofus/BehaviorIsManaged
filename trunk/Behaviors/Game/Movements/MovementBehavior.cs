@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Protocol.Enums;
@@ -8,6 +9,17 @@ namespace BiM.Behaviors.Game.Movements
 {
     public class MovementBehavior : INotifyPropertyChanged
     {
+        /*public delegate void PathCompletedHandler(MovementBehavior path, ContextActor actor);
+
+        public event PathCompletedHandler Completed;
+
+        public void NotifyCompleted(ContextActor actor)
+        {
+            PathCompletedHandler handler = Completed;
+            if (handler != null) handler(this, actor);
+        }*/
+
+
         public static VelocityConfiguration FantomMovementBehavior = new VelocityConfiguration(0.000980392, 0.00117647, 0.000147059);
         public static VelocityConfiguration MountedMovementBehavior = new VelocityConfiguration(0.005, 0.00833333, 00740741);
         public static VelocityConfiguration ParableMovementBehavior = new VelocityConfiguration(0.002, 0.00222222, 0.0025);

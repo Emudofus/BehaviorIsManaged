@@ -105,6 +105,11 @@ namespace BiM.Behaviors.Game.Items
             return Items.FirstOrDefault(x => x.Guid == guid);
         }
 
+        public Item GetItemByTemplate(int templateId)
+        {
+            return Items.FirstOrDefault(x => x.Template.id == templateId);
+        }
+
         public Item GetItem(CharacterInventoryPositionEnum position)
         {
             return Items.FirstOrDefault(x => x.Position == position);

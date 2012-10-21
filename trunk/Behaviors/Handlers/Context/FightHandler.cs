@@ -1,4 +1,5 @@
 ﻿using BiM.Behaviors.Data;
+using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Spells;
 using BiM.Core.Messages;
@@ -8,9 +9,14 @@ using NLog;
 
 namespace BiM.Behaviors.Handlers.Context
 {
-    public class FightHandler
+    public class FightHandler : Frame<FightHandler>
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public FightHandler(Bot bot)
+            : base(bot)
+        {
+        }
 
         [MessageHandler(typeof(GameFightStartingMessage))]
         public static void HandleGameFightStartingMessage(Bot bot, GameFightStartingMessage message)

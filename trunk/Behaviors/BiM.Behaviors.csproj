@@ -143,6 +143,10 @@
     <Compile Include="Game\Guilds\Guild.cs" />
     <Compile Include="Game\Guilds\GuildInformations.cs" />
     <Compile Include="Game\Guilds\GuildEmblem.cs" />
+    <Compile Include="Game\Interactives\InteractiveAction.cs" />
+    <Compile Include="Game\Interactives\InteractiveObject.cs" />
+    <Compile Include="Game\Interactives\InteractiveSkill.cs" />
+    <Compile Include="Game\Interactives\InteractiveState.cs" />
     <Compile Include="Game\Items\Inventory.cs" />
     <Compile Include="Game\Items\ItemSuperTypeEnum.cs" />
     <Compile Include="Game\Items\ItemToSellInHumanShop.cs" />
@@ -212,6 +216,7 @@
     <Compile Include="Handlers\Context\MapMovementHandler.cs" />
     <Compile Include="Handlers\Context\RolePlayHandler.cs" />
     <Compile Include="Handlers\Inventory\InventoryHandler.cs" />
+    <Compile Include="Handlers\Jobs\JobHandler.cs" />
     <Compile Include="Handlers\Regen\RegenHandler.cs" />
     <Compile Include="Handlers\Shortcuts\ShortcutHandler.cs" />
     <Compile Include="Handlers\Spells\SpellHandler.cs" />

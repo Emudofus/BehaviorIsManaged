@@ -175,7 +175,7 @@ namespace FightPlugin
             }
             else
             {
-                MoveNear(nearestMonster, (int)( m_character.Cell.DistanceTo(nearestMonster.Cell) - m_character.GetRealSpellRange(spell.LevelTemplate) ));
+                MoveNear(nearestMonster, (int)( m_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - m_character.GetRealSpellRange(spell.LevelTemplate) ));
 
                 // wait until the movement ends
                 if (m_stopMovingDelegate != null)
@@ -210,13 +210,13 @@ namespace FightPlugin
                 return;
             }
 
-            var cell = Bot.Character.Fighter.Team.PlacementCells.OrderBy(x => x.DistanceTo(enemy.Cell)).FirstOrDefault();
+            var cell = Bot.Character.Fighter.Team.PlacementCells.OrderBy(x => x.ManhattanDistanceTo(enemy.Cell)).FirstOrDefault();
             Bot.Character.Fighter.ChangePrePlacement(cell);
         }
 
         private void MoveNear(Fighter fighter, int mp)
         {
-            var dest = fighter.Cell.GetAdjacentCells().OrderBy(cell => cell.DistanceTo(m_character.Cell)).FirstOrDefault();
+            var dest = fighter.Cell.GetAdjacentCells().OrderBy(cell => cell.ManhattanDistanceTo(m_character.Cell)).FirstOrDefault();
 
             if (dest == null)
                 return;
@@ -232,7 +232,7 @@ namespace FightPlugin
             var possibleCells = shape.GetCells(m_character.Cell, m_character.Map);
             var orderedCells = from cell in possibleCells
                                where m_character.Fight.IsCellWalkable(cell, false, m_character.Cell)
-                               orderby ennemies.Sum(x => cell.DistanceTo(x.Cell)) descending
+                               orderby ennemies.Sum(x => cell.ManhattanDistanceTo(x.Cell)) descending
                                select cell;
 
             var dest = orderedCells.FirstOrDefault();
@@ -253,7 +253,7 @@ namespace FightPlugin
                 if (nearestFighter == null)
                     nearestFighter = ennemy;
 
-                else if (m_character.Cell.DistanceTo(ennemy.Cell) < nearestFighter.Cell.DistanceTo(m_character.Cell))
+                else if (m_character.Cell.ManhattanDistanceTo(ennemy.Cell) < nearestFighter.Cell.ManhattanDistanceTo(m_character.Cell))
                 {
                     nearestFighter = ennemy;
                 }

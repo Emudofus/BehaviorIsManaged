@@ -7,12 +7,14 @@ using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Alignement;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Guilds;
+using BiM.Behaviors.Game.Interactives;
 using BiM.Behaviors.Game.Items;
 using BiM.Behaviors.Game.Shortcuts;
 using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Behaviors.Handlers.Context;
+using BiM.Core.Collections;
 using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
@@ -56,6 +58,14 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (handler != null) handler(this, map);
         }
 
+        private ObservableCollectionMT<Job> m_jobs;
+        private ReadOnlyObservableCollectionMT<Job> m_readOnlyJobs;
+
+        private ObservableCollectionMT<Emoticon> m_emotes;
+        private ReadOnlyObservableCollectionMT<Emoticon> m_readOnlyEmotes;
+
+        private InteractiveSkill m_useAfterMove;
+
         public PlayedCharacter(Bot bot, CharacterBaseInformations informations)
         {
             if (informations == null) throw new ArgumentNullException("informations");
@@ -74,8 +84,11 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             SpellsBook = new SpellsBook(this);
             SpellShortcuts = new SpellShortcutBar(this);
             GeneralShortcuts = new GeneralShortcutBar(this);
-            Jobs = new List<Job>();
-            Emotes = new List<Emoticon>();
+
+            m_jobs = new ObservableCollectionMT<Job>();
+            m_readOnlyJobs = new ReadOnlyObservableCollectionMT<Job>(m_jobs);
+            m_emotes = new ObservableCollectionMT<Emoticon>();
+            m_readOnlyEmotes = new ReadOnlyObservableCollectionMT<Emoticon>(m_emotes);
         }
 
         public Bot Bot
@@ -135,34 +148,20 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             private set;
         }
 
-        public List<Emoticon> Emotes
+        public ReadOnlyObservableCollectionMT<Emoticon> Emotes
         {
-            get;
-            private set;
+            get { return m_readOnlyEmotes; }
         }
 
-        public List<Jobs.Job> Jobs
+        public ReadOnlyObservableCollectionMT<Job> Jobs
         {
-            get;
-            private set;
+            get { return m_readOnlyJobs; }
         }
 
         public Guild Guild
         {
             get;
             private set;
-        }
-
-        public override World.IContext Context
-        {
-            get
-            {
-                return base.Context;
-            }
-            protected set
-            {
-                base.Context = value;
-            }
         }
 
         public byte RegenRate
@@ -195,18 +194,23 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public bool CanMove()
         {
-            return Map != null;
+            return Map != null && !IsFighting();
         }
 
-        public void Move(short cellId)
+        public bool Move(short cellId)
         {
             if (CanMove())
-                Move(Map.Cells[cellId]);
+                return Move(Map.Cells[cellId]);
+
+            return false;
         }
 
-        public void Move(Cell cell)
+        public bool Move(Cell cell)
         {
             if (cell == null) throw new ArgumentNullException("cell");
+
+            if (!CanMove())
+                return false;
 
             var pathfinder = new Pathfinder(Map, Map);
             var path = pathfinder.FindPath(Cell, cell, true);
@@ -214,8 +218,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (IsMoving())
                 CancelMove();
 
-            if (NotifyStartMoving(path))
-                Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
+            Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
+            return true;
         }
 
         public void CancelMove()
@@ -226,6 +230,19 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             NotifyStopMoving(true);
 
             Bot.SendToServer(new GameMapMovementCancelMessage(Cell.Id));
+        }
+
+        public override void NotifyStopMoving(bool canceled)
+        {
+            base.NotifyStopMoving(canceled);
+
+            if (m_useAfterMove != null)
+            {
+                var skill = m_useAfterMove;
+                Bot.AddMessage(() => UseInteractiveObject(skill)); // call next tick
+                m_useAfterMove = null;
+            }
+
         }
 
         #endregion
@@ -282,6 +299,47 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         #endregion
 
+        #region Interactives
+        public bool UseInteractiveObject(InteractiveSkill skill)
+        {
+            m_useAfterMove = null;
+
+            if (!Map.Interactives.Contains(skill.Interactive) || !skill.IsEnabled())
+                return false;
+
+            if (skill.Interactive.Cell != null && !skill.Interactive.Cell.IsAdjacentTo(Cell))
+            {
+                var cell = skill.Interactive.Cell.GetAdjacentCells(x => Map.CanStopOnCell(x)).
+                    OrderBy(x => x.ManhattanDistanceTo(Cell)).FirstOrDefault();
+
+                if (cell == null)
+                    return false;
+
+                if (Move(cell))
+                {
+                    m_useAfterMove = skill;
+                    return true;
+                }
+            }
+            else
+            {
+                Bot.SendToServer(new InteractiveUseRequestMessage(skill.Interactive.Id, skill.Id));
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        #region Jobs
+        public Job GetJob(int id)
+        {
+            return m_jobs.FirstOrDefault(x => x.JobTemplate.id == id);
+        }
+
+        #endregion
+
         #region Cells Highlighting
 
         public void HighlightCell(Cell cell, Color color)
@@ -308,6 +366,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Map = map;
             Context = map;
 
+            Bot.AddFrame(new RolePlayHandler(Bot));
             OnMapJoined(map);
         }
 
@@ -330,6 +389,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             if (lastContext == GameContextEnum.FIGHT && IsFighting())
                 LeaveFight();
+
+            Bot.RemoveFrame<RolePlayHandler>();
+            Bot.RemoveFrame<FightHandler>();
         }
 
         #endregion
@@ -353,7 +415,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Fighter = new PlayedFighter(this, fight);
 
             Context = Fight;
-            Bot.Dispatcher.RegisterNonShared(new FightHandler());
+            Bot.AddFrame(new FightHandler(Bot));
             OnFightJoined(Fight);
         }
 
@@ -371,7 +433,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
 
             Context = Map;
-            Bot.Dispatcher.UnRegisterNonShared(typeof(FightHandler));
+            Bot.RemoveFrame<FightHandler>();
             OnFightLeft(Fight);
 
             Fighter = null;
@@ -398,13 +460,21 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public void Update(EmoteListMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Emotes = msg.emoteIds.Select(entry => DataProvider.Instance.Get<Emoticon>(entry)).ToList();
+            m_emotes.Clear();
+            foreach (var emoteId in msg.emoteIds)
+            {
+                m_emotes.Add(DataProvider.Instance.Get<Emoticon>(emoteId));
+            }
         }
 
         public void Update(JobDescriptionMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Jobs = msg.jobsDescription.Select(entry => new Jobs.Job(this, entry)).ToList();
+            m_jobs.Clear();
+            foreach (var job in msg.jobsDescription)
+            {
+                m_jobs.Add(new Job(this, job));
+            }
         }
 
         public void Update(SetCharacterRestrictionsMessage msg)

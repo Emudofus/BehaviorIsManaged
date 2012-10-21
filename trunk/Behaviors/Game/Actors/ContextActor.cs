@@ -72,6 +72,7 @@ namespace BiM.Behaviors.Game.Actors
             }
 
             var movement = Movement;
+
             Movement = null;
 
             var handler = StopMoving;
@@ -134,16 +135,13 @@ namespace BiM.Behaviors.Game.Actors
         {
             base.Tick(dt);
 
+            /* client do it itself
             if (Movement != null && Movement.IsEnded())
-                NotifyStopMoving(false);
+                NotifyStopMoving(false);*/
         }
 
         public bool IsMoving()
         {
-            // not sure if it is good :/
-            if (Movement != null && Movement.IsEnded())
-                NotifyStopMoving(false);
-
             return Movement != null;
         }
 

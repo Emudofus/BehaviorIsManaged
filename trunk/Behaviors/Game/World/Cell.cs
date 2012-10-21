@@ -206,18 +206,20 @@ namespace BiM.Behaviors.Game.World
 
         public bool IsInRadius(Cell cell, int radius)
         {
-            return DistanceTo(cell) <= radius;
+            return ManhattanDistanceTo(cell) <= radius;
         }
 
         public bool IsInRadius(Cell cell, int minRadius, int radius)
         {
-            var dist = DistanceTo(cell);
+            var dist = ManhattanDistanceTo(cell);
             return dist >= minRadius && dist <= radius;
         }
 
-        public bool IsAdjacentTo(Cell cell)
+        public bool IsAdjacentTo(Cell cell, bool diagonal = true)
         {
-            return ManhattanDistanceTo(cell) == 1;
+            var dist = diagonal ? DistanceTo(cell) : ManhattanDistanceTo(cell);
+
+            return dist == 1;
         }
 
         public static bool IsInMap(Cell cell)

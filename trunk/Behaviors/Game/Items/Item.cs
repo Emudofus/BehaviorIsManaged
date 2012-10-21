@@ -92,6 +92,11 @@ namespace BiM.Behaviors.Game.Items
             private set;
         }
 
+        public bool IsEquiped()
+        {
+            return Position != CharacterInventoryPositionEnum.INVENTORY_POSITION_NOT_EQUIPED;
+        }
+
         public void Update(ObjectItem item)
         {
             if (item == null) throw new ArgumentNullException("item");

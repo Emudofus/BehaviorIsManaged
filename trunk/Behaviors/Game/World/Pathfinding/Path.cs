@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using BiM.Behaviors.Game.Actors;
+using BiM.Behaviors.Game.Movements;
 using BiM.Protocol.Enums;
 
 namespace BiM.Behaviors.Game.World.Pathfinding
@@ -57,8 +59,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
         public int MPCost
         {
-            // not the start cell
-            get { return m_cellsPath.Length - 1; }
+            get { return (int)Start.ManhattanDistanceTo(End); }
         }
 
         public bool IsEmpty()

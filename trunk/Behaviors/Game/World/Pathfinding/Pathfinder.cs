@@ -63,7 +63,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             
         private static double GetHeuristic(Cell pointA, Cell pointB)
         {
-            return EstimateHeuristic * pointA.DistanceTo(pointB);
+            return EstimateHeuristic * pointA.ManhattanDistanceTo(pointB);
         }
 
         public Pathfinder(Map map, IMapDataProvider mapDataProvider, bool throughEntities = true, bool useLogNodeSearch = false)

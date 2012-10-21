@@ -194,7 +194,7 @@ namespace BiM.Behaviors
 
         public bool RemoveFrame(Type type)
         {
-            var frames = m_frames.Where(entry => entry.GetType().IsInstanceOfType(type)).ToArray();
+            var frames = m_frames.Where(entry => entry.GetType().IsAssignableFrom(type)).ToArray();
 
             if (frames.Length > 1)
             {
@@ -206,7 +206,7 @@ namespace BiM.Behaviors
 
         public bool HasFrame(Type type)
         {
-            return m_frames.Any(x => x.GetType().IsInstanceOfType(type));
+            return m_frames.Any(x => x.GetType().IsAssignableFrom(type));
         }
 
         public bool HasFrame<T>()
@@ -216,7 +216,7 @@ namespace BiM.Behaviors
 
         public IFrame GetFrame(Type type)
         {
-            var frames = m_frames.Where(entry => entry.GetType().IsInstanceOfType(type)).ToArray();
+            var frames = m_frames.Where(entry => entry.GetType().IsAssignableFrom(type)).ToArray();
 
             if (frames.Length > 1)
             {
