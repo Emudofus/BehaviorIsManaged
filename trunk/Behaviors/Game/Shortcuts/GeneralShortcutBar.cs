@@ -1,5 +1,6 @@
 ﻿using System;
 using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 
@@ -10,6 +11,12 @@ namespace BiM.Behaviors.Game.Shortcuts
         public GeneralShortcutBar(PlayedCharacter character)
             : base(character)
         {
+        }
+
+
+        public override ShortcutBarEnum BarType
+        {
+            get { return ShortcutBarEnum.GENERAL_SHORTCUT_BAR; }
         }
 
         public void Add(ShortcutObjectItem item)
@@ -44,14 +51,25 @@ namespace BiM.Behaviors.Game.Shortcuts
                 Add(shortcut as ShortcutSmiley);
         }
 
-        public void Update(ShortcutBarContentMessage content)
+        public override void Update(ShortcutBarContentMessage content)
         {
             if (content == null) throw new ArgumentNullException("content");
             Clear();
-            foreach (var shortcut in content.shortcuts)
+            foreach (Protocol.Types.Shortcut shortcut in content.shortcuts)
             {
                 Add(shortcut);
             }
+        }
+
+        public override void Update(ShortcutBarRefreshMessage message)
+        {
+            if (message == null) throw new ArgumentNullException("message");
+            if ((ShortcutBarEnum) message.barType != BarType)
+                return;
+
+            GeneralShortcut shortcut = Get(message.shortcut.slot);
+            if (shortcut != null)
+                shortcut.Update(message.shortcut);
         }
     }
 }

@@ -108,6 +108,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers\ChangeMapTester.cs" />
     <Compile Include="Handlers\ChatCommands.cs" />
     <Compile Include="Handlers\GameCommands.cs" />
     <Compile Include="Handlers\GatherTest.cs" />

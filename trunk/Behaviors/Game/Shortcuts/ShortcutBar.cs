@@ -3,11 +3,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Core.Collections;
+using BiM.Protocol.Enums;
+using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Shortcuts
 {
-    public class ShortcutBar<T> where T : Shortcut
+    public abstract class ShortcutBar<T>
+        where T : Shortcut
     {
         private ObservableCollectionMT<T> m_shortcuts; 
         private ReadOnlyObservableCollectionMT<T> m_readOnlyShortcuts; 
@@ -23,7 +26,12 @@ namespace BiM.Behaviors.Game.Shortcuts
         public PlayedCharacter Character
         {
             get;
-            set;
+            protected set;
+        }
+
+        public abstract ShortcutBarEnum BarType
+        {
+            get;
         }
 
         public ReadOnlyObservableCollectionMT<T> Shortcuts
@@ -60,5 +68,8 @@ namespace BiM.Behaviors.Game.Shortcuts
         {
             m_shortcuts.Clear();
         }
+
+        public abstract void Update(ShortcutBarContentMessage content);
+        public abstract void Update(ShortcutBarRefreshMessage message);
     }
 }

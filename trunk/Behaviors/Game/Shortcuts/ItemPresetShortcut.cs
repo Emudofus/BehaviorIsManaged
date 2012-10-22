@@ -1,17 +1,30 @@
-﻿using BiM.Behaviors.Game.Actors.RolePlay;
+﻿using BiM.Behaviors.Data;
+using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Protocol.Data;
 using BiM.Protocol.Types;
-using Item = BiM.Behaviors.Game.Items.Item;
 
 namespace BiM.Behaviors.Game.Shortcuts
 {
     public class ItemPresetShortcut : GeneralShortcut
     {
         public ItemPresetShortcut(PlayedCharacter character, ShortcutObjectPreset shortcut)
-            : base(shortcut.slot)
+            : base(character, shortcut.slot)
         {
             PresetId = shortcut.presetId;
         }
 
-        public int PresetId { get; set; }
+        public int PresetId
+        {
+            get;
+            private set;
+        }
+
+        public override void Update(Protocol.Types.Shortcut shortcut)
+        {
+            base.Update(shortcut);
+
+            if (shortcut is ShortcutObjectPreset)
+                PresetId = ( shortcut as ShortcutObjectPreset ).presetId;
+        }
     }
 }

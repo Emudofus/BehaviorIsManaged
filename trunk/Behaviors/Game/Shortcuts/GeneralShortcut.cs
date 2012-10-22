@@ -1,14 +1,11 @@
-﻿namespace BiM.Behaviors.Game.Shortcuts
+﻿using BiM.Behaviors.Game.Actors.RolePlay;
+
+namespace BiM.Behaviors.Game.Shortcuts
 {
     public abstract class GeneralShortcut : Shortcut
     {
-        public GeneralShortcut()
-        {
-            
-        }
-
-        public GeneralShortcut(int slot)
-            : base (slot)
+        public GeneralShortcut(PlayedCharacter character, int slot)
+            : base(character, slot)
         {
             
         }
@@ -22,6 +19,11 @@
         {
             // todo
             return CanUse();
+        }
+
+        public virtual void Update(Protocol.Types.Shortcut shortcut)
+        {
+            Slot = shortcut.slot;
         }
     }
 }

@@ -44,11 +44,11 @@ namespace BiM.Behaviors
         }
 
         public delegate void CharacterSelectedHandler(Bot bot, PlayedCharacter character);
-        public event CharacterSelectedHandler CharactersSelected;
+        public event CharacterSelectedHandler CharacterSelected;
 
-        protected void OnCharactersSelected(PlayedCharacter character)
+        protected void OnCharacterSelected(PlayedCharacter character)
         {
-            CharacterSelectedHandler handler = CharactersSelected;
+            CharacterSelectedHandler handler = CharacterSelected;
             if (handler != null) handler(this, character);
         }
 
@@ -126,7 +126,7 @@ namespace BiM.Behaviors
                 throw new Exception("Character already selected");
 
             Character = character;
-            OnCharactersSelected(character);
+            OnCharacterSelected(character);
         }
 
         public void LoadSettings(string path)

@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class CellList
+    public class CellList : IEnumerable<Cell>
     {
         private readonly Cell[] m_cells;
         private readonly Dictionary<Point, Cell> m_cellsByPoint = new Dictionary<Point, Cell>();
@@ -62,6 +63,16 @@ namespace BiM.Behaviors.Game.World
         public Cell this[int x, int y]
         {
             get { return this[new Point(x, y)]; }
+        }
+
+        public IEnumerator<Cell> GetEnumerator()
+        {
+            return m_cells.AsEnumerable().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

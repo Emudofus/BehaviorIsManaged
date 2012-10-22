@@ -65,6 +65,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         private ReadOnlyObservableCollectionMT<Emoticon> m_readOnlyEmotes;
 
         private InteractiveSkill m_useAfterMove;
+        private int? m_nextMap;
 
         public PlayedCharacter(Bot bot, CharacterBaseInformations informations)
         {
@@ -238,11 +239,75 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             if (m_useAfterMove != null)
             {
-                var skill = m_useAfterMove;
-                Bot.AddMessage(() => UseInteractiveObject(skill)); // call next tick
+                if (!canceled)
+                {
+                    var skill = m_useAfterMove;
+                    Bot.AddMessage(() => UseInteractiveObject(skill)); // call next tick
+                }
+
                 m_useAfterMove = null;
             }
 
+            if (m_nextMap != null)
+            {
+                if (!canceled)
+                {
+                    var id = m_nextMap.Value;
+                    Bot.AddMessage(() => Bot.SendToServer(new ChangeMapMessage(id)));
+                }
+
+                m_nextMap = null;
+            }
+        }
+
+        public bool ChangeMap(MapNeighbour neighbour)
+        {
+            var neighbourId = GetNeighbourId(neighbour);
+            if (neighbourId < 0)
+                return false;
+
+            var mapChangeData = Map.MapChangeDatas[neighbour];
+            var cells = Map.Cells.Where(x => x != Cell && ( x.MapChangeData & mapChangeData ) != 0 && Map.IsCellWalkable(x)).
+                OrderBy(x => x.DistanceTo(Cell));
+
+            Path path = null;
+            var pathfinder = new Pathfinder(Map, Map, true, true);
+            var enumerator = cells.GetEnumerator();
+            bool found = false;
+            while ((path == null || path.IsEmpty()) && (found = enumerator.MoveNext()))
+            {
+                path = pathfinder.FindPath(Cell, enumerator.Current, true);
+            }
+
+            if (found)
+            {
+                if (Move(enumerator.Current))
+                {
+                    m_nextMap = neighbourId;
+                    return true;
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+
+        private int GetNeighbourId(MapNeighbour neighbour)
+        {
+            switch (neighbour)
+            {
+                case MapNeighbour.Top:
+                    return Map.TopNeighbourId;
+                case MapNeighbour.Bottom:
+                    return Map.BottomNeighbourId;
+                case MapNeighbour.Right:
+                    return Map.RightNeighbourId;
+                case MapNeighbour.Left:
+                    return Map.LeftNeighbourId;
+                default:
+                    return -1;
+            }
         }
 
         #endregion
@@ -337,6 +402,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             return m_jobs.FirstOrDefault(x => x.JobTemplate.id == id);
         }
+        #endregion
+
+        #region Shortcuts
 
         #endregion
 

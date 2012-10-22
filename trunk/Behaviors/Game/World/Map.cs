@@ -38,6 +38,23 @@ namespace BiM.Behaviors.Game.World
         private readonly ReadOnlyObservableCollectionMT<RolePlayActor> m_readOnlyActors;
         private readonly ReadOnlyObservableCollectionMT<InteractiveObject> m_readOnlyInteractives;
 
+        // not used
+        /*public static readonly Dictionary<MapNeighbour, int[]> MapChangeDatas = new Dictionary<MapNeighbour, int[]>
+        {
+            {MapNeighbour.Right, new [] {1, 2, 128}},
+            {MapNeighbour.Left, new [] {8, 16, 32}},
+            {MapNeighbour.Top, new [] {32, 64, 128}},
+            {MapNeighbour.Bottom, new [] {2, 4, 8}},
+        };*/
+
+        public static readonly Dictionary<MapNeighbour, int> MapChangeDatas = new Dictionary<MapNeighbour, int>
+        {
+            {MapNeighbour.Right, 1},
+            {MapNeighbour.Left, 16},
+            {MapNeighbour.Top, 64},
+            {MapNeighbour.Bottom, 4},
+        };
+
         public Map(int id)
             : this(id, GenericDecryptionKey)
         {

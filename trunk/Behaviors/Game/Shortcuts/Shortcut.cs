@@ -1,21 +1,25 @@
-﻿namespace BiM.Behaviors.Game.Shortcuts
+﻿using BiM.Behaviors.Game.Actors.RolePlay;
+
+namespace BiM.Behaviors.Game.Shortcuts
 {
     public abstract class Shortcut
     {
-        public Shortcut()
+        public Shortcut(PlayedCharacter character, int slot)
         {
-            
+            Character = character;
+            Slot = slot;
         }
 
-        public Shortcut(int slot)
+        public PlayedCharacter Character
         {
-            Slot = slot;
+            get;
+            protected set;
         }
 
         public int Slot
         {
             get;
-            set;
+            protected set;
         }
     }
 }

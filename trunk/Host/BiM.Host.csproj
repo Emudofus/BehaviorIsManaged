@@ -84,6 +84,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="I18n\ClientLanguageDetector.cs" />
     <Compile Include="SettingsLoader.cs" />
     <Compile Include="UI\Bot\BotControl.xaml.cs">
       <DependentUpon>BotControl.xaml</DependentUpon>

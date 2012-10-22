@@ -11,5 +11,24 @@ namespace BiM.Behaviors.Handlers.Shortcuts
         {
             bot.Character.Update(message);
         }
+
+        [MessageHandler(typeof (ShortcutBarRefreshMessage))]
+        public static void HandleShortcutBarRefreshMessage(Bot bot, ShortcutBarRefreshMessage message)
+        {
+            if (message.barType == (int)bot.Character.GeneralShortcuts.BarType)
+                bot.Character.GeneralShortcuts.Update(message);
+            else
+                bot.Character.SpellShortcuts.Update(message);
+        }
+
+        [MessageHandler(typeof(ShortcutBarRemovedMessage))]
+        public static void HandleShortcutBarRemovedMessage(Bot bot, ShortcutBarRemovedMessage message)
+        {
+            if (message.barType == (int) bot.Character.GeneralShortcuts.BarType)
+                bot.Character.GeneralShortcuts.Remove(message.slot);
+            else
+                bot.Character.SpellShortcuts.Remove(message.slot);
+
+        }
     }
 }

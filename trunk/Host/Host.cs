@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using BiM.Behaviors;
@@ -156,6 +157,18 @@ namespace BiM.Host
             msg.Wait();
 
             Initialized = true;
+        }
+
+        public static void ChangeLanguage(Languages language)
+        {
+            var source = DataProvider.Instance.Sources.OfType<D2ISource>().FirstOrDefault();
+
+            if (source != null)
+            {
+                source.DefaultLanguage = language;
+            }
+
+            // todo : update the gui
         }
 
         private static void OnProcessExit(object sender, EventArgs e)

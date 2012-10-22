@@ -42,7 +42,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         public static int EstimateHeuristic = 10;
         public static int DiagonalCost = 15;
         public static int HorizontalCost = 10;
-        public static int SearchLimit = 500;
+        public static int SearchLimit = 330;
 
         private static readonly DirectionsEnum[] Directions = new[]
             {

@@ -7,19 +7,30 @@ namespace BiM.Behaviors.Game.Shortcuts
     public class SpellShortcut : Shortcut
     {
         public SpellShortcut(PlayedCharacter character, ShortcutSpell shortcut)
-            : base(shortcut.slot)
+            : base(character, shortcut.slot)
         {
             Character = character;
             SpellId = shortcut.spellId;
         }
 
-        public PlayedCharacter Character { get; private set; }
-
-        public int SpellId { get; private set; }
+        public int SpellId
+        {
+            get;
+            private set;
+        }
 
         public Spell GetSpell()
         {
             return Character.SpellsBook.GetSpell(SpellId);
+        }
+
+        public void Update(Protocol.Types.Shortcut shortcut)
+        {
+            Slot = shortcut.slot;
+            if (shortcut is ShortcutSpell)
+            {
+                SpellId = (shortcut as ShortcutSpell).spellId;
+            }
         }
     }
 }
