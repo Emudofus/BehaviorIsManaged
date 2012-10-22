@@ -92,11 +92,14 @@ namespace BiM.Host.Plugins
                         initialized = true;
 
                         RegisterPlugin(pluginContext);
-
-                        logger.Info("Plugin '{0}' loaded", pluginContext.Plugin.Name);
                     }
                 }
             }
+
+            if (initialized)
+                logger.Info("Plugin '{0}' loaded", pluginContext.Plugin.Name);
+            else
+                logger.Error("Plugin {0} has no IPlugin entry point", pluginContext.PluginAssembly.GetName().Name);
 
             return pluginContext;
         }

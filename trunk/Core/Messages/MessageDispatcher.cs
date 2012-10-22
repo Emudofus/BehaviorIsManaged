@@ -184,7 +184,7 @@ namespace BiM.Core.Messages
                 throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler(object, Message)", method));
             }
 
-            if (!method.IsStatic && container == null)
+            if (!method.IsStatic && container == null || method.IsStatic && container != null)
                 return;
 
             Action<object, object, Message> handlerDelegate;
@@ -288,7 +288,7 @@ namespace BiM.Core.Messages
                 throw new ArgumentException(string.Format("Method handler {0} has incorrect parameters. Right definition is Handler(object, Message)", method));
             }
 
-            if (!method.IsStatic && container == null)
+            if (!method.IsStatic && container == null || method.IsStatic && container != null)
                 return;
 
             Action<object, object, Message> handlerDelegate;

@@ -53,12 +53,12 @@ namespace BiM.Host
         private const string ConfigPath = "./config.xml";
 
         private static List<Assembly> m_hierarchy = new List<Assembly>()
-        {
+        {   
             Assembly.Load("BiM.Core"),
             Assembly.Load("BiM.Protocol"),
             Assembly.Load("BiM.Behaviors"),
             Assembly.Load("BiM.MITM"),
-            Assembly.Load("BiM.Host"),
+            Assembly.Load("BiM.Host"), 
             // plugins come next
         };
 
@@ -91,6 +91,7 @@ namespace BiM.Host
             get;
             private set;
         }
+
 
         public static void Initialize()
         {
