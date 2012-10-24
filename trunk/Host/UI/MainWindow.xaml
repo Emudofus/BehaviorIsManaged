@@ -1,27 +1,46 @@
 ﻿<Window x:Class="BiM.Host.UI.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:my="clr-namespace:BiM.Host" Title="MainWindow" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" SizeToContent="Manual" xmlns:mdi="clr-namespace:BiM.Host.UI.MDI" ResizeMode="CanResize"
-        Height="500" Width="650">
+        Title="MainWindow" mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avalonDock="http://avalondock.codeplex.com"
+        ResizeMode="CanResize" Height="541" Width="836">
   <DockPanel>
-    <Menu DockPanel.Dock="Top" IsMainMenu="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Menu Name="Menu" DockPanel.Dock="Top" IsMainMenu="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       <MenuItem Header="_Fichier" />
       <MenuItem Header="_Plugins" />
       <MenuItem Header="_Préférences" />
       <MenuItem Header="_Aide" />
     </Menu>
-    <ListBox DockPanel.Dock="Left" MinWidth="80">
-    </ListBox>
-    <mdi:MdiContainer x:Name="MdiContainer" DockPanel.Dock="Right">
-      <mdi:MdiChild Title="Logs" MinHeight="250" MinWidth="300" Height="300" Width="350" Position="100,70">
-        <RichTextBox Name="Console" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+    <avalonDock:DockingManager AllowMixedOrientation="True">
+      <avalonDock:DockingManager.Theme>
+        <avalonDock:AeroTheme/>
+      </avalonDock:DockingManager.Theme>
+      <avalonDock:LayoutRoot>
+        <avalonDock:LayoutPanel Orientation="Horizontal">
+          <avalonDock:LayoutDocumentPaneGroup>
+            <avalonDock:LayoutDocumentPane x:Name="BotsPane">
+
+            </avalonDock:LayoutDocumentPane>
+          </avalonDock:LayoutDocumentPaneGroup>
+        </avalonDock:LayoutPanel>
+
+        <avalonDock:LayoutRoot.BottomSide>
+          <avalonDock:LayoutAnchorSide>
+            <avalonDock:LayoutAnchorGroup>
+              <avalonDock:LayoutAnchorable Title="Logs" ContentId="Logs" IsVisible="true" >
+                <RichTextBox Name="Console" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                          ScrollViewer.VerticalScrollBarVisibility="Visible">
-              <RichTextBox.Resources>
-                <Style TargetType="{x:Type Paragraph}">
-                  <Setter Property="Margin" Value="0" />
-                </Style>
-              </RichTextBox.Resources>
-            </RichTextBox>
-      </mdi:MdiChild>
-    </mdi:MdiContainer>
+                  <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                      <Setter Property="Margin" Value="0" />
+                    </Style>
+                  </RichTextBox.Resources>
+                </RichTextBox>
+              </avalonDock:LayoutAnchorable>
+            </avalonDock:LayoutAnchorGroup>
+          </avalonDock:LayoutAnchorSide>
+        </avalonDock:LayoutRoot.BottomSide>
+      </avalonDock:LayoutRoot>
+    </avalonDock:DockingManager>
   </DockPanel>
 </Window>

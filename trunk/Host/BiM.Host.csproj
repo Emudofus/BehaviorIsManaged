@@ -111,11 +111,7 @@
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\MDI\MdiLayout.cs" />
-    <Compile Include="UI\MDI\ThemeType.cs" />
-    <Compile Include="UI\MDI\ClosingEventArgs.cs" />
-    <Compile Include="UI\MDI\MdiChild.cs" />
-    <Compile Include="UI\MDI\MdiContainer.cs" />
+    <Compile Include="UI\UIManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Behaviors\BiM.Behaviors.csproj">
@@ -125,6 +121,14 @@
     <ProjectReference Include="..\Core\BiM.Core.csproj">
       <Project>{2D0B3716-72B4-457B-8F61-4F7A2A200A57}</Project>
       <Name>BiM.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Librairies\AvalonDock.Themes.Aero\AvalonDock.Themes.Aero.csproj">
+      <Project>{BA72CCE0-A9FB-4995-B496-7FEC5C87B85B}</Project>
+      <Name>AvalonDock.Themes.Aero</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Librairies\AvalonDock\AvalonDock.csproj">
+      <Project>{DB81988F-E0F2-45A0-A1FD-8C37F3D35244}</Project>
+      <Name>AvalonDock</Name>
     </ProjectReference>
     <ProjectReference Include="..\Librairies\NLog\NLog.netfx40.csproj">
       <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
@@ -150,59 +154,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="UI\MDI\Themes\Aero\Close.png" />
-    <Resource Include="UI\MDI\Themes\Aero\Maximize.png" />
-    <Resource Include="UI\MDI\Themes\Aero\MaximizedClose.png" />
-    <Resource Include="UI\MDI\Themes\Aero\MaximizedMinimize.png" />
-    <Resource Include="UI\MDI\Themes\Aero\MaximizedRestore.png" />
-    <Resource Include="UI\MDI\Themes\Aero\Minimize.png" />
-    <Resource Include="UI\MDI\Themes\Aero\Restore.png" />
-    <Resource Include="UI\MDI\Themes\Luna\BottomLeftFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\BottomLeftUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\BottomMiddleFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\BottomMiddleUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\BottomRightFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\BottomRightUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\CloseDown.png" />
-    <Resource Include="UI\MDI\Themes\Luna\CloseNormalFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\CloseNormalUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\CloseOver.png" />
-    <Resource Include="UI\MDI\Themes\Luna\LeftFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\LeftUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizedClose.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizeDisabledFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizeDisabledUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizedMinimize.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizeDown.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizedRestore.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizeNormalFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizeNormalUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MaximizeOver.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizeDisabledFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizeDisabledUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizedLeftFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizedLeftUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizedMiddleFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizedMiddleUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizeDown.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizedRightFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizedRightUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizeNormal.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizeNormalFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizeNormalUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\MinimizeOver.png" />
-    <Resource Include="UI\MDI\Themes\Luna\RestoreDown.png" />
-    <Resource Include="UI\MDI\Themes\Luna\RestoreNormalFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\RestoreNormalUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\RestoreOver.png" />
-    <Resource Include="UI\MDI\Themes\Luna\RightFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\RightUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\TopLeftFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\TopLeftUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\TopMiddleFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\TopMiddleUnfocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\TopRightFocused.png" />
-    <Resource Include="UI\MDI\Themes\Luna\TopRightUnfocused.png" />
     <None Include="app.config" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -230,18 +181,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\MDI\Themes\Aero.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\MDI\Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\MDI\Themes\Luna.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
