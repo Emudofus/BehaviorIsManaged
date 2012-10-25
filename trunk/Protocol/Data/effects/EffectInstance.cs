@@ -1,6 +1,6 @@
 
 
-// Generated on 09/23/2012 22:14:39
+// Generated on 10/25/2012 10:42:59
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -22,7 +22,6 @@ namespace BiM.Protocol.Data
         public uint zoneSize;
         public uint zoneShape;
         public uint zoneMinSize;
-        public Boolean rawZoneInit;
-        public String rawZone;
+        public string rawZone;
     }
 }

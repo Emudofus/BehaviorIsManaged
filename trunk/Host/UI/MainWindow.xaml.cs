@@ -22,7 +22,7 @@ namespace BiM.Host.UI
         // temp
         private static bool m_initialized = false;
 
-        internal MainWindow()
+        public MainWindow()
         {
             InitializeComponent();
         }

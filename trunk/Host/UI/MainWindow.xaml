@@ -27,7 +27,7 @@
         <avalonDock:LayoutRoot.BottomSide>
           <avalonDock:LayoutAnchorSide>
             <avalonDock:LayoutAnchorGroup>
-              <avalonDock:LayoutAnchorable Title="Logs" ContentId="Logs" IsVisible="true" >
+              <avalonDock:LayoutAnchorable Title="Logs" ContentId="Logs" >
                 <RichTextBox Name="Console" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                          ScrollViewer.VerticalScrollBarVisibility="Visible">
                   <RichTextBox.Resources>

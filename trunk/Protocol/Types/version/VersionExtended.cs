@@ -1,6 +1,6 @@
 
 
-// Generated on 09/23/2012 22:27:11
+// Generated on 10/25/2012 10:42:58
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace BiM.Protocol.Types
         {
         }
         
-        public VersionExtended(sbyte major, sbyte minor, sbyte release, ushort revision, sbyte patch, sbyte buildType, sbyte install, sbyte technology)
+        public VersionExtended(sbyte major, sbyte minor, sbyte release, int revision, sbyte patch, sbyte buildType, sbyte install, sbyte technology)
          : base(major, minor, release, revision, patch, buildType)
         {
             this.install = install;

@@ -1,6 +1,6 @@
 
 
-// Generated on 09/23/2012 22:27:11
+// Generated on 10/25/2012 10:42:58
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace BiM.Protocol.Types
         public sbyte major;
         public sbyte minor;
         public sbyte release;
-        public ushort revision;
+        public int revision;
         public sbyte patch;
         public sbyte buildType;
         
@@ -27,7 +27,7 @@ namespace BiM.Protocol.Types
         {
         }
         
-        public Version(sbyte major, sbyte minor, sbyte release, ushort revision, sbyte patch, sbyte buildType)
+        public Version(sbyte major, sbyte minor, sbyte release, int revision, sbyte patch, sbyte buildType)
         {
             this.major = major;
             this.minor = minor;
@@ -42,7 +42,7 @@ namespace BiM.Protocol.Types
             writer.WriteSByte(major);
             writer.WriteSByte(minor);
             writer.WriteSByte(release);
-            writer.WriteUShort(revision);
+            writer.WriteInt(revision);
             writer.WriteSByte(patch);
             writer.WriteSByte(buildType);
         }
@@ -58,9 +58,9 @@ namespace BiM.Protocol.Types
             release = reader.ReadSByte();
             if (release < 0)
                 throw new Exception("Forbidden value on release = " + release + ", it doesn't respect the following condition : release < 0");
-            revision = reader.ReadUShort();
-            if (revision < 0 || revision > 65535)
-                throw new Exception("Forbidden value on revision = " + revision + ", it doesn't respect the following condition : revision < 0 || revision > 65535");
+            revision = reader.ReadInt();
+            if (revision < 0)
+                throw new Exception("Forbidden value on revision = " + revision + ", it doesn't respect the following condition : revision < 0");
             patch = reader.ReadSByte();
             if (patch < 0)
                 throw new Exception("Forbidden value on patch = " + patch + ", it doesn't respect the following condition : patch < 0");

@@ -83,21 +83,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
-    <Compile Include="Parsing\AccessModifiers.cs" />
-    <Compile Include="Parsing\ClassInfo.cs" />
-    <Compile Include="Parsing\Elements\ControlStatement.cs" />
-    <Compile Include="Parsing\Elements\ControlType.cs" />
-    <Compile Include="Parsing\Elements\ForEachStatement.cs" />
-    <Compile Include="Parsing\Elements\ForStatement.cs" />
-    <Compile Include="Parsing\Elements\InvokeExpression.cs" />
-    <Compile Include="Parsing\Elements\IStatement.cs" />
-    <Compile Include="Parsing\Elements\UnknownStatement.cs" />
-    <Compile Include="Parsing\Elements\AssignationStatement.cs" />
-    <Compile Include="Parsing\EnumInfo.cs" />
-    <Compile Include="Parsing\FieldInfo.cs" />
-    <Compile Include="Parsing\MethodInfo.cs" />
-    <Compile Include="Parsing\Parser.cs" />
-    <Compile Include="Parsing\PropertyInfo.cs" />
+    <Compile Include="Profiles\Parsing\AccessModifiers.cs" />
+    <Compile Include="Profiles\Parsing\ClassInfo.cs" />
+    <Compile Include="Profiles\Parsing\Elements\ControlStatement.cs" />
+    <Compile Include="Profiles\Parsing\Elements\ControlType.cs" />
+    <Compile Include="Profiles\Parsing\Elements\ForEachStatement.cs" />
+    <Compile Include="Profiles\Parsing\Elements\ForStatement.cs" />
+    <Compile Include="Profiles\Parsing\Elements\InvokeExpression.cs" />
+    <Compile Include="Profiles\Parsing\Elements\IStatement.cs" />
+    <Compile Include="Profiles\Parsing\Elements\UnknownStatement.cs" />
+    <Compile Include="Profiles\Parsing\Elements\AssignationStatement.cs" />
+    <Compile Include="Profiles\Parsing\EnumInfo.cs" />
+    <Compile Include="Profiles\Parsing\FieldInfo.cs" />
+    <Compile Include="Profiles\Parsing\MethodInfo.cs" />
+    <Compile Include="Profiles\Parsing\Parser.cs" />
+    <Compile Include="Profiles\Parsing\PropertyInfo.cs" />
     <Compile Include="Profiles\DatacenterProfile.cs" />
     <Compile Include="Profiles\EnumsProfile.cs" />
     <Compile Include="Profiles\MessagesProfile.cs" />

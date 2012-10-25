@@ -1,13 +1,13 @@
 
 
-// Generated on 09/23/2012 21:40:25
+// Generated on 10/25/2012 10:43:02
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
 
 namespace BiM.Protocol.Data
 {
-    [D2OClass("Hint")]
+    [D2OClass("Hints")]
     public class Hint : IDataObject
     {
         private const String MODULE = "Hints";

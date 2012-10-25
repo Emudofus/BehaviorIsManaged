@@ -1,13 +1,13 @@
 
 
-// Generated on 09/23/2012 21:40:20
+// Generated on 10/25/2012 10:43:00
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
 
 namespace BiM.Protocol.Data
 {
-    [D2OClass("Interactive")]
+    [D2OClass("Interactives")]
     public class Interactive : IDataObject
     {
         private const String MODULE = "Interactives";

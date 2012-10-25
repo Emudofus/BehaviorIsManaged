@@ -1,19 +1,16 @@
 
 
-// Generated on 09/23/2012 21:40:20
+// Generated on 10/25/2012 10:43:00
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
 
 namespace BiM.Protocol.Data
 {
-    [D2OClass("ItemType")]
+    [D2OClass("ItemTypes")]
     public class ItemType : IDataObject
     {
         private const String MODULE = "ItemTypes";
-        public uint zoneSize;
-        public uint zoneShape;
-        public uint zoneMinSize;
         public int id;
         public uint nameId;
         public uint superTypeId;

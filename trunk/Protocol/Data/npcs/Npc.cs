@@ -1,13 +1,13 @@
 
 
-// Generated on 09/23/2012 21:40:24
+// Generated on 10/25/2012 10:43:01
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
 
 namespace BiM.Protocol.Data
 {
-    [D2OClass("Npc")]
+    [D2OClass("Npcs")]
     public class Npc : IDataObject
     {
         private const String MODULE = "Npcs";
