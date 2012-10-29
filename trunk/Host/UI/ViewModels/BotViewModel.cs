@@ -4,79 +4,44 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using AvalonDock.Layout;
 using BiM.Core.Collections;
-using BiM.Core.Reflection;
-using BiM.Host.UI.ViewModels;
-using BiM.Host.UI.Views;
+using BiM.Core.Messages;
+using BiM.Protocol.Messages;
+using Bot = BiM.Behaviors.Bot;
 
-namespace BiM.Host.UI
+namespace BiM.Host.UI.ViewModels
 {
-    public class UIManager : Singleton<UIManager>
+    public class BotViewModel : PaneViewModel, IDisposable
     {
-        private ObservableCollectionMT<object> m_documents = new ObservableCollectionMT<object>();
-        private ReadOnlyObservableCollectionMT<object> m_readOnlyDocuments; 
-        private Dictionary<object, Assembly> m_documentsAssembly = new Dictionary<object, Assembly>();
+        private readonly ObservableCollectionMT<object> m_documents = new ObservableCollectionMT<object>();
+        private readonly Dictionary<object, Assembly> m_documentsAssembly = new Dictionary<object, Assembly>();
+        private readonly ReadOnlyObservableCollectionMT<object> m_readOnlyDocuments;
 
-        public UIManager()
+        public BotViewModel(Bot bot)
         {
             m_readOnlyDocuments = new ReadOnlyObservableCollectionMT<object>(m_documents);
             m_documents.CollectionChanged += OnDocumentsChanged;
             DocumentTemplateSelector = new DocumentTemplateSelector();
             DocumentStyleSelector = new DocumentStyleSelector();
 
-            MainWindow.Initialized += OnInitialized;
-
+            Bot = bot;
+            Title = bot.ClientInformations.Login;
+            bot.Dispatcher.RegisterNonShared(this);
         }
 
-        private void OnInitialized(object sender, EventArgs e)
+        public Behaviors.Bot Bot
         {
-            InitializeSelectors();
-
-            Task.Factory.StartNew(() =>
-                              {
-                                  Host.Initialize();
-                                  Host.Start();
-                              });
+            get;
+            private set;
         }
 
-        private void InitializeSelectors()
-        {
-            DocumentTemplateSelector.AddTemplate(typeof(BotViewModel), (DataTemplate)MainWindow.Resources["BotViewTemplate"]);
-            DocumentStyleSelector.AddStyle(typeof(BotViewModel), (Style)MainWindow.Resources["BotViewStyle"]);
-        }
-
-        private void Dispatch(Action action)
-        {
-            MainWindow.Dispatcher.Invoke(action);
-        }
-
-        private void OnDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
-                foreach (var item in e.OldItems)
-                {
-                    m_documentsAssembly.Remove(item);
-                }
-            }
-
-            else if (e.Action == NotifyCollectionChangedAction.Reset)
-            {
-                m_documentsAssembly.Clear();
-            }
-        }
-
+        #region Documents
         public ReadOnlyObservableCollection<object> Documents
         {
-            get
-            {
-                return m_readOnlyDocuments;
-            }
+            get { return m_readOnlyDocuments; }
         }
 
         public DocumentTemplateSelector DocumentTemplateSelector
@@ -91,38 +56,48 @@ namespace BiM.Host.UI
             private set;
         }
 
+        private void OnDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (object item in e.OldItems)
+                {
+                    m_documentsAssembly.Remove(item);
+                }
+            }
+
+            else if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                m_documentsAssembly.Clear();
+            }
+        }
+
         public void AddDocument(object document)
         {
-            lock (m_documents)
-            {
-                m_documents.Add(document);
-            }
+            m_documents.Add(document);
+
             if (!m_documentsAssembly.ContainsKey(document))
                 m_documentsAssembly.Add(document, Assembly.GetCallingAssembly());
         }
 
         public void AddDocument(LayoutDocument document)
         {
-            lock (m_documents)
-            {
-                m_documents.Add(document);
-            }
+            m_documents.Add(document);
+
             if (!m_documentsAssembly.ContainsKey(document))
                 m_documentsAssembly.Add(document, Assembly.GetCallingAssembly());
         }
 
         public LayoutDocument AddDocument(object document, string title)
         {
-            var layout = new LayoutDocument()
-            {
-                Content = document,
-                Title = title,
-            };
+            var layout = new LayoutDocument
+                             {
+                                 Content = document,
+                                 Title = title,
+                             };
 
-            lock (m_documents)
-            {
-                m_documents.Add(document);
-            }
+            m_documents.Add(layout);
+
             if (!m_documentsAssembly.ContainsKey(document))
                 m_documentsAssembly.Add(document, Assembly.GetCallingAssembly());
 
@@ -131,23 +106,21 @@ namespace BiM.Host.UI
 
         public LayoutDocument AddDocument(object document, string title, ImageSource icon)
         {
-            var layout = new LayoutDocument()
-            {
-                Content = document,
-                Title = title,
-                IconSource = icon
-            };
+            var layout = new LayoutDocument
+                             {
+                                 Content = document,
+                                 Title = title,
+                                 IconSource = icon
+                             };
 
-            lock (m_documents)
-            {
-                m_documents.Add(document);
-            }
+            m_documents.Add(layout);
+
             if (!m_documentsAssembly.ContainsKey(document))
                 m_documentsAssembly.Add(document, Assembly.GetCallingAssembly());
 
             return layout;
         }
-        
+
         public void AddDocument(object document, DataTemplate template)
         {
             if (!DocumentTemplateSelector.HasTemplate(document))
@@ -155,10 +128,8 @@ namespace BiM.Host.UI
                 DocumentTemplateSelector.AddTemplate(document, template);
             }
 
-            lock (m_documents)
-            {
-                m_documents.Add(document);
-            }
+            m_documents.Add(document);
+
             if (!m_documentsAssembly.ContainsKey(document))
                 m_documentsAssembly.Add(document, Assembly.GetCallingAssembly());
         }
@@ -170,10 +141,8 @@ namespace BiM.Host.UI
                 DocumentStyleSelector.AddStyle(document, style);
             }
 
-            lock (m_documents)
-            {
-                m_documents.Add(document);
-            }
+            m_documents.Add(document);
+
             if (!m_documentsAssembly.ContainsKey(document))
                 m_documentsAssembly.Add(document, Assembly.GetCallingAssembly());
         }
@@ -189,19 +158,18 @@ namespace BiM.Host.UI
             {
                 DocumentTemplateSelector.AddTemplate(document, template);
             }
-            lock (m_documents)
-            {
-                m_documents.Add(document);
-            }
+
+            m_documents.Add(document);
+
             if (!m_documentsAssembly.ContainsKey(document))
                 m_documentsAssembly.Add(document, Assembly.GetCallingAssembly());
         }
 
         public void RemoveDocumentsFrom(Assembly assembly)
         {
-            var documentsToRemove = m_documentsAssembly.Where(x => x.Value == assembly).Select(x => x.Key).ToArray();
+            object[] documentsToRemove = m_documentsAssembly.Where(x => x.Value == assembly).Select(x => x.Key).ToArray();
 
-            foreach (var document in documentsToRemove)
+            foreach (object document in documentsToRemove)
             {
                 RemoveDocument(document);
             }
@@ -209,11 +177,7 @@ namespace BiM.Host.UI
 
         public bool RemoveDocument(object document)
         {
-            bool removed;
-            lock (m_documents)
-            {
-                removed = m_documents.Remove(document);
-            }
+            bool removed = m_documents.Remove(document);
 
             if (removed)
             {
@@ -223,29 +187,24 @@ namespace BiM.Host.UI
 
             return removed;
         }
+        #endregion
 
-        public MainWindow MainWindow
+        #region Handlers
+
+        [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
+        public void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
         {
-            get
-            {
-                return (MainWindow)Application.Current.MainWindow;
-            }
+            Title = bot.Character.Name;
         }
 
-        public BotViewModel GetBotViewModel(Behaviors.Bot bot)
-        {
-            lock (m_documents)
-            {
-                return m_documents.FirstOrDefault(x => x is BotViewModel && ( x as BotViewModel ).Bot == bot) as BotViewModel;
-            }
-        }
+        #endregion
 
-        public BotViewModel[] GetBotsViewModel()
+        public void Dispose()
         {
-            lock (m_documents)
-            {
-                return m_documents.OfType<BotViewModel>().ToArray();
-            }
+            if (Bot != null)
+                Bot.Dispatcher.UnRegisterNonShared(this);
+
+            UIManager.Instance.RemoveDocument(this);
         }
     }
 }

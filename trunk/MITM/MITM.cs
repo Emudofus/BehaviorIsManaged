@@ -120,6 +120,9 @@ namespace BiM.MITM
                 return;
             }
 
+            // unblock the connection (fix #14)
+            client.SendToServer(new BasicPingMessage());
+
             logger.Debug("Auth client connected");
         }
 

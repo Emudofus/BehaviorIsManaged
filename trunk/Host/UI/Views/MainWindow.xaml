@@ -1,9 +1,20 @@
-﻿<Window x:Class="BiM.Host.UI.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+﻿<Window x:Class="BiM.Host.UI.Views.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" mc:Ignorable="d" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:avalonDock="http://avalondock.codeplex.com"
+        xmlns:avalonDock="http://avalondock.codeplex.com" xmlns:Converters="clr-namespace:BiM.Host.UI.Converters" xmlns:Views="clr-namespace:BiM.Host.UI.Views"
         ResizeMode="CanResize" Height="541" Width="836">
+  <Window.Resources>
+    <DataTemplate x:Key="BotViewTemplate">
+      <Views:BotControl></Views:BotControl>
+    </DataTemplate>
+    <Style TargetType="{x:Type avalonDock:LayoutItem}" x:Key="BotViewStyle">
+      <Setter Property="Title" Value="{Binding Model.Title}"/>
+      <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
+      <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
+      <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
+    </Style>
+  </Window.Resources>
   <DockPanel>
     <Menu Name="Menu" DockPanel.Dock="Top" IsMainMenu="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       <MenuItem Header="_Fichier" />
@@ -11,19 +22,19 @@
       <MenuItem Header="_Préférences" />
       <MenuItem Header="_Aide" />
     </Menu>
-    <avalonDock:DockingManager AllowMixedOrientation="True">
+    <avalonDock:DockingManager AllowMixedOrientation="True"
+                               DocumentsSource="{Binding Documents}">
       <avalonDock:DockingManager.Theme>
         <avalonDock:AeroTheme/>
       </avalonDock:DockingManager.Theme>
+      <avalonDock:DockingManager.LayoutItemTemplateSelector>
+        <Binding Path="DocumentTemplateSelector"/>
+      </avalonDock:DockingManager.LayoutItemTemplateSelector>
+      <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+        <Binding Path="DocumentStyleSelector"/>
+      </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
       <avalonDock:LayoutRoot>
-        <avalonDock:LayoutPanel Orientation="Horizontal">
-          <avalonDock:LayoutDocumentPaneGroup>
-            <avalonDock:LayoutDocumentPane x:Name="BotsPane">
-
-            </avalonDock:LayoutDocumentPane>
-          </avalonDock:LayoutDocumentPaneGroup>
-        </avalonDock:LayoutPanel>
-
+        
         <avalonDock:LayoutRoot.BottomSide>
           <avalonDock:LayoutAnchorSide>
             <avalonDock:LayoutAnchorGroup>

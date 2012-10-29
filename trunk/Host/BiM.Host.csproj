@@ -84,24 +84,20 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers\BotRegister.cs" />
     <Compile Include="I18n\ClientLanguageDetector.cs" />
     <Compile Include="SettingsLoader.cs" />
-    <Compile Include="UI\Bot\BotControl.xaml.cs">
+    <Compile Include="UI\Views\BotControl.xaml.cs">
       <DependentUpon>BotControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Bot\CharacterSelection.xaml.cs">
-      <DependentUpon>CharacterSelection.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Bot\GameUI.xaml.cs">
-      <DependentUpon>GameUI.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Bot\ServerSelection.xaml.cs">
-      <DependentUpon>ServerSelection.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="UI\Converters\DebugConverter.cs" />
+    <Compile Include="UI\DocumentStyleSelector.cs" />
+    <Compile Include="UI\DocumentTemplateSelector.cs" />
+    <Compile Include="UI\ViewModels\BotViewModel.cs" />
     <Compile Include="UI\Converters\ComparisonBinding.cs" />
     <Compile Include="UI\Converters\ConstantAdderConverter.cs" />
     <Compile Include="UI\Converters\IsNullConverter.cs" />
-    <Compile Include="UI\MainWindow.xaml.cs">
+    <Compile Include="UI\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Messages\HostInitializationMessage.cs" />
@@ -111,7 +107,10 @@
     <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\UIHelper.cs" />
     <Compile Include="UI\UIManager.cs" />
+    <Compile Include="UI\ViewModels\PaneViewModel.cs" />
+    <Compile Include="UI\ViewModels\ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Behaviors\BiM.Behaviors.csproj">
@@ -164,34 +163,21 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="UI\Bot\BotControl.xaml">
+    <Page Include="UI\Views\BotControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Bot\CharacterSelection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Bot\GameUI.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Bot\ServerSelection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\MainWindow.xaml">
+    <Page Include="UI\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Images\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <Target Name="AfterCompile">
+    <NotifyPropertyWeaverMsBuildTask.WeavingTask />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <UsingTask TaskName="NotifyPropertyWeaverMsBuildTask.WeavingTask" AssemblyFile="$([MSBuild]::Unescape($(SolutionDir)))Librairies\NotifyPropertyWeaverMsBuildTask.dll" />
 </Project>
