@@ -87,6 +87,9 @@
     <Compile Include="Handlers\BotRegister.cs" />
     <Compile Include="I18n\ClientLanguageDetector.cs" />
     <Compile Include="SettingsLoader.cs" />
+    <Compile Include="UI\DataTemplates.cs" />
+    <Compile Include="UI\DockContainer.cs" />
+    <Compile Include="UI\ViewModels\GeneralTabViewModel.cs" />
     <Compile Include="UI\Views\BotControl.xaml.cs">
       <DependentUpon>BotControl.xaml</DependentUpon>
     </Compile>
@@ -97,6 +100,11 @@
     <Compile Include="UI\Converters\ComparisonBinding.cs" />
     <Compile Include="UI\Converters\ConstantAdderConverter.cs" />
     <Compile Include="UI\Converters\IsNullConverter.cs" />
+    <Compile Include="UI\Views\GeneralTab.xaml.cs">
+      <DependentUpon>GeneralTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\IDocked.cs" />
+    <Compile Include="UI\Views\IView.cs" />
     <Compile Include="UI\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -110,7 +118,7 @@
     <Compile Include="UI\UIHelper.cs" />
     <Compile Include="UI\UIManager.cs" />
     <Compile Include="UI\ViewModels\PaneViewModel.cs" />
-    <Compile Include="UI\ViewModels\ViewModelBase.cs" />
+    <Compile Include="UI\ViewModels\IViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Behaviors\BiM.Behaviors.csproj">
@@ -163,7 +171,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="UI\DataTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Views\BotControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\GeneralTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

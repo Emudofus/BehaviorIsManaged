@@ -28,7 +28,11 @@ namespace BiM.Host.Handlers
             }
 
             var model = new BotViewModel(bot);
-            UIManager.Instance.AddDocument(model);
+            var layout = UIManager.Instance.AddDocument(model, () => new BotControl());
+            layout.Title = bot.ClientInformations.Login;
+
+            layout = model.AddDocument(new GeneralTabViewModel(bot), () => new GeneralTab());
+            layout.Title = "General";
         } 
     }
 }

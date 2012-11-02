@@ -4,41 +4,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:avalonDock="http://avalondock.codeplex.com" xmlns:Converters="clr-namespace:BiM.Host.UI.Converters" xmlns:Views="clr-namespace:BiM.Host.UI.Views"
         ResizeMode="CanResize" Height="541" Width="836">
-  <Window.Resources>
-    <DataTemplate x:Key="BotViewTemplate">
-      <Views:BotControl></Views:BotControl>
-    </DataTemplate>
-    <Style TargetType="{x:Type avalonDock:LayoutItem}" x:Key="BotViewStyle">
-      <Setter Property="Title" Value="{Binding Model.Title}"/>
-      <Setter Property="ToolTip" Value="{Binding Model.FilePath}"/>
-      <Setter Property="IconSource" Value="{Binding Model.IconSource}"/>
-      <Setter Property="ContentId" Value="{Binding Model.ContentId}"/>
-    </Style>
-  </Window.Resources>
   <DockPanel>
-    <Menu Name="Menu" DockPanel.Dock="Top" IsMainMenu="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-      <MenuItem Header="_Fichier" />
-      <MenuItem Header="_Plugins" />
-      <MenuItem Header="_Préférences" />
-      <MenuItem Header="_Aide" />
-    </Menu>
     <avalonDock:DockingManager AllowMixedOrientation="True"
                                DocumentsSource="{Binding Documents}">
       <avalonDock:DockingManager.Theme>
         <avalonDock:AeroTheme/>
       </avalonDock:DockingManager.Theme>
-      <avalonDock:DockingManager.LayoutItemTemplateSelector>
-        <Binding Path="DocumentTemplateSelector"/>
-      </avalonDock:DockingManager.LayoutItemTemplateSelector>
-      <avalonDock:DockingManager.LayoutItemContainerStyleSelector>
-        <Binding Path="DocumentStyleSelector"/>
-      </avalonDock:DockingManager.LayoutItemContainerStyleSelector>
+      
       <avalonDock:LayoutRoot>
+        <avalonDock:LayoutPanel>
+          <avalonDock:LayoutDocumentPane x:Name="DocumentPane">
+
+          </avalonDock:LayoutDocumentPane>
+        </avalonDock:LayoutPanel>
         
         <avalonDock:LayoutRoot.BottomSide>
           <avalonDock:LayoutAnchorSide>
             <avalonDock:LayoutAnchorGroup>
-              <avalonDock:LayoutAnchorable Title="Logs" ContentId="Logs" >
+              <avalonDock:LayoutAnchorable Title="General Logs" ContentId="Logs" >
                 <RichTextBox Name="Console" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                          ScrollViewer.VerticalScrollBarVisibility="Visible">
                   <RichTextBox.Resources>
