@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using BiM.Behaviors.Data;
 using BiM.Core.Extensions;
+using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
@@ -21,6 +23,18 @@ namespace BiM.Behaviors.Authentification
             set;
         }
 
+        public Server Server
+        {
+            get;
+            set;
+        }
+
+        private string m_name;
+
+        public string Name
+        {
+            get { return m_name ?? (m_name = DataProvider.Instance.Get<string>(Server.nameId)); }
+        }
 
         public ServerStatusEnum Status
         {
@@ -61,6 +75,7 @@ namespace BiM.Behaviors.Authentification
             IsSelectable = server.isSelectable;
             CharactersCount = server.charactersCount;
             Date = server.date.UnixTimestampToDateTime();
+            Server = DataProvider.Instance.Get<Server>(server.id);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using AvalonDock.Layout;
 using BiM.Core.Collections;
 using BiM.Core.Reflection;
+using BiM.Host.UI.Helpers;
 using BiM.Host.UI.ViewModels;
 using BiM.Host.UI.Views;
 
@@ -55,7 +56,7 @@ namespace BiM.Host.UI
         {
             lock (DocumentPane.Children)
             {
-                return DocumentPane.Children.Where(x => x.Content is BotViewModel).
+                return DocumentPane.Children.Where(x => x.Content is BotControl).
                     Select(x => (x.Content as BotControl).ViewModel).ToArray();
             }
         }

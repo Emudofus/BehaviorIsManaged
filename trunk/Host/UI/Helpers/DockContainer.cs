@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using AvalonDock.Layout;
-using BiM.Core.Collections;
 using BiM.Host.UI.ViewModels;
 using BiM.Host.UI.Views;
 
-namespace BiM.Host.UI
+namespace BiM.Host.UI.Helpers
 {
     public abstract class DockContainer<T> : IViewModel<T>
         where T : IView
@@ -80,7 +77,16 @@ namespace BiM.Host.UI
                 foreach (var child in DocumentPane.Children.ToArray())
                 {
                     if (child.Content == document)
-                        removed = DocumentPane.Children.Remove(child);
+                    {
+                        if (View.Dispatcher.CheckAccess())
+                        {
+                            removed = DocumentPane.Children.Remove(child);
+                        }
+                        else
+                        {
+                            View.Dispatcher.Invoke(new Func<bool>(() => removed = DocumentPane.Children.Remove(child)));
+                        }
+                    }
                 }
             }
 

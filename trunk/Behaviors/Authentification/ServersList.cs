@@ -8,30 +8,19 @@ using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Authentification
 {
-    public class ServersList : INotifyPropertyChanged
+    public class ServersList : ReadOnlyObservableCollectionMT<ServersListEntry>
     {
-        private readonly ObservableCollectionMT<ServersListEntry> m_collection;
-        private readonly ReadOnlyObservableCollectionMT<ServersListEntry> m_readOnlyCollection;
-
-        public ReadOnlyObservableCollectionMT<ServersListEntry> Servers
-        {
-            get { return m_readOnlyCollection; }
-        }
-
         public ServersListEntry this[ushort id]
         {
             get
             {
-                return m_collection.FirstOrDefault(entry => entry.Id == id);
+                return Items.FirstOrDefault(entry => entry.Id == id);
             }
         }
 
         public ServersList(ServersListMessage msg)
+            : base (new ObservableCollection<ServersListEntry>(msg.servers.Select(entry => new ServersListEntry(entry))))
         {
-            if (msg == null) throw new ArgumentNullException("msg");
-
-            m_collection = new ObservableCollectionMT<ServersListEntry>(msg.servers.Select(entry => new ServersListEntry(entry)));
-            m_readOnlyCollection = new ReadOnlyObservableCollectionMT<ServersListEntry>(m_collection);
         }
 
         public void Update(ServerStatusUpdateMessage msg)
@@ -43,7 +32,5 @@ namespace BiM.Behaviors.Authentification
 
             server.Update(msg.server);
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

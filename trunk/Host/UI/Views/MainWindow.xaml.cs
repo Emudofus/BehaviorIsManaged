@@ -26,5 +26,10 @@ namespace BiM.Host.UI.Views
             get;
             set;
         }
+
+        private void OnDockingManagerLoaded(object sender, RoutedEventArgs e)
+        {
+            GeneralTab.IsActive = true;
+        }
     }
 }

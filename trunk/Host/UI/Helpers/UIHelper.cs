@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 
-namespace BiM.Host.UI
+namespace BiM.Host.UI.Helpers
 {
     public class UIHelper
     {

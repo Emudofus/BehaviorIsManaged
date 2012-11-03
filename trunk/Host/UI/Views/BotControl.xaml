@@ -1,6 +1,6 @@
 ﻿<UserControl x:Class="BiM.Host.UI.Views.BotControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:vm="clr-namespace:BiM.Host.UI.ViewModels"  mc:Ignorable="d"
-             xmlns:avalondock="http://avalondock.codeplex.com" xmlns:Views="clr-namespace:BiM.Host.UI.Views" DataContext="{Binding vm:BotViewModel.ViewModel, RelativeSource={RelativeSource Mode=Self}}">
+             xmlns:avalondock="http://avalondock.codeplex.com">
   <Grid MinHeight="350" MinWidth="450">
     <avalondock:DockingManager DocumentsSource="{Binding Documents}" AllowMixedOrientation="true">
       <avalondock:LayoutRoot>

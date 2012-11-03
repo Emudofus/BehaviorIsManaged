@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace BiM.Host.UI
+namespace BiM.Host.UI.Helpers
 {
     public class DocumentStyleSelector : StyleSelector
     {

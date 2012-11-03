@@ -10,6 +10,7 @@ using System.Windows.Media;
 using AvalonDock.Layout;
 using BiM.Core.Collections;
 using BiM.Core.Messages;
+using BiM.Host.UI.Helpers;
 using BiM.Host.UI.Views;
 using BiM.Protocol.Messages;
 using Bot = BiM.Behaviors.Bot;
@@ -58,7 +59,7 @@ namespace BiM.Host.UI.ViewModels
             if (Bot != null)
                 Bot.Dispatcher.UnRegisterNonShared(this);
 
-            UIManager.Instance.RemoveDocument(this);
+            UIManager.Instance.RemoveDocument(View);
         }
 
         public LayoutContent Parent
