@@ -1,0 +1,69 @@
+﻿<UserControl x:Class="BasicPlugin.ServerSelection.ServerSelectionView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Authentification="clr-namespace:BiM.Behaviors.Authentification;assembly=BiM.Behaviors" xmlns:Behaviors="clr-namespace:BiM.Behaviors;assembly=BiM.Behaviors"
+             xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase" mc:Ignorable="d"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity" xmlns:Helpers="clr-namespace:BiM.Host.UI.Helpers;assembly=BiM.Host"
+             xmlns:UI="clr-namespace:BasicPlugin.ServerSelection" xmlns:Types="clr-namespace:BiM.Protocol.Types;assembly=BiM.Protocol" d:DesignHeight="300"
+             d:DesignWidth="300">
+  <UserControl.Resources>
+    <CollectionViewSource x:Key="ServersSorted" Source="{Binding Bot.ClientInformations.ServersList}">
+      <CollectionViewSource.SortDescriptions>
+        <ComponentModel:SortDescription PropertyName="CharactersCount" Direction="Descending" />
+      </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+    <Helpers:BindingProxy x:Key="Proxy" Data="{Binding}" />
+  </UserControl.Resources>
+  <ListBox ItemsSource="{Binding Source={StaticResource ServersSorted}}" HorizontalContentAlignment="Stretch">
+    <ListBox.ItemTemplate>
+      <DataTemplate DataType="{x:Type Authentification:ServersListEntry}">
+        <ContentControl>
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="MouseDoubleClick">
+              <i:InvokeCommandAction Command="{Binding Path=Data.SelectServerCommand, Source={StaticResource ResourceKey=Proxy}}" CommandParameter="{Binding}" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+          <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True" Background="Transparent"
+                     Tag="{Binding}">
+            <DockPanel.ContextMenu>
+              <ContextMenu>
+                <MenuItem Command="{Binding Path=Data.SelectServerCommand, Source={StaticResource ResourceKey=Proxy}}" 
+                          CommandParameter="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}">
+                  <MenuItem.Header>
+                    <TextBlock Text="{Binding Name, StringFormat='Connect to \'{0}\''}" />
+                  </MenuItem.Header>
+                </MenuItem>
+              </ContextMenu>
+            </DockPanel.ContextMenu>
+            <UniformGrid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Rows="1" DockPanel.Dock="Right">
+              <UniformGrid.Resources>
+                <UI:CharacterCounterConverter x:Key="CharacterCounter" />
+                <Style TargetType="{x:Type Ellipse}">
+                  <Setter Property="Width" Value="20" />
+                  <Setter Property="Height" Value="20" />
+                  <Setter Property="StrokeThickness" Value="2" />
+                  <Setter Property="Stroke" Value="Black" />
+                  <Setter Property="Margin" Value="3" />
+                  <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="True">
+                      <Setter Property="Fill" Value="OrangeRed" />
+                    </Trigger>
+                  </Style.Triggers>
+                </Style>
+              </UniformGrid.Resources>
+              <Ellipse IsEnabled="{Binding CharactersCount, Converter={StaticResource ResourceKey=CharacterCounter}, ConverterParameter=1}" />
+              <Ellipse IsEnabled="{Binding CharactersCount, Converter={StaticResource ResourceKey=CharacterCounter}, ConverterParameter=2}" />
+              <Ellipse IsEnabled="{Binding CharactersCount, Converter={StaticResource ResourceKey=CharacterCounter}, ConverterParameter=3}" />
+              <Ellipse IsEnabled="{Binding CharactersCount, Converter={StaticResource ResourceKey=CharacterCounter}, ConverterParameter=4}" />
+              <Ellipse IsEnabled="{Binding CharactersCount, Converter={StaticResource ResourceKey=CharacterCounter}, ConverterParameter=5}" />
+            </UniformGrid>
+            <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DockPanel.Dock="Left">
+              <TextBlock Text="{Binding Name}" FontSize="20" TextAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+              <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource ResourceKey=StatusConverter}}" TextAlignment="Center" />
+            </StackPanel>
+          </DockPanel>
+
+        </ContentControl>
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
+</UserControl>

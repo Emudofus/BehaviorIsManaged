@@ -189,7 +189,7 @@ namespace BiM.Behaviors.Authentification
             get { return ServerTimeReference + (DateTime.Now - m_referenceTimeChange); }
         }
 
-        public CharactersListMessage CharactersList
+        public CharactersList CharactersList
         {
             get;
             set;
@@ -310,8 +310,7 @@ namespace BiM.Behaviors.Authentification
         public void Update(CharactersListMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            CharactersList = msg;
-
+            CharactersList = new CharactersList(msg);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

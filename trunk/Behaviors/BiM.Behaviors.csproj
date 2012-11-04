@@ -71,6 +71,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentification\CharactersList.cs" />
+    <Compile Include="Authentification\CharactersListEntry.cs" />
     <Compile Include="Authentification\ServersList.cs" />
     <Compile Include="Authentification\ServersListEntry.cs" />
     <Compile Include="Bot.cs" />
