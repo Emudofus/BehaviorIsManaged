@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using BiM.Behaviors.Game.Actors;
+using BiM.Behaviors.Game.Actors.Interfaces;
 using BiM.Behaviors.Game.World;
 using BiM.Core.Extensions;
 using BiM.Protocol.Enums;
@@ -49,7 +51,7 @@ namespace BiM.Behaviors.Game.Chat
 
         public ContextActor TryGetSender(IContext context)
         {
-            throw new NotImplementedException();
+            return context.Actors.FirstOrDefault(entry => ( entry is INamed && ( entry as INamed ).Name == SenderName ) || entry.Id == SenderId);
         }
 
         public DateTime SentTime

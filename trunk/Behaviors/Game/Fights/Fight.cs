@@ -166,6 +166,14 @@ namespace BiM.Behaviors.Game.Fights
                 }
         }
 
+        public IEnumerable<ContextActor> Actors
+        {
+            get
+            {
+                return GetConcatedFighters();
+            }
+        }
+
         public ContextActor GetContextActor(int id)
         {
             return GetFighter(id);

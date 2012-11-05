@@ -6,6 +6,7 @@
              xmlns:UI="clr-namespace:BasicPlugin.ServerSelection" xmlns:Types="clr-namespace:BiM.Protocol.Types;assembly=BiM.Protocol" d:DesignHeight="300"
              d:DesignWidth="300">
   <UserControl.Resources>
+    <UI:ServerStatusColorConverter x:Key="StatusConverter"/>
     <CollectionViewSource x:Key="ServersSorted" Source="{Binding Bot.ClientInformations.ServersList}">
       <CollectionViewSource.SortDescriptions>
         <ComponentModel:SortDescription PropertyName="CharactersCount" Direction="Descending" />

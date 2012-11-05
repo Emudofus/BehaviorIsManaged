@@ -90,6 +90,14 @@ namespace BiM.Behaviors.Game.World
             }
         }
 
+        IEnumerable<ContextActor> IContext.Actors
+        {
+            get
+            {
+                return m_readOnlyActors;
+            }
+        }
+
         public ReadOnlyObservableCollectionMT<RolePlayActor> Actors
         {
             get { return m_readOnlyActors; }

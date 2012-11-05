@@ -339,7 +339,14 @@ namespace BiM.Behaviors
 
             m_disposed = true;
 
-            Stop();
+            Stop(); 
+            
+            foreach (var frame in m_frames)
+            {
+                frame.OnDetached();
+            }
+
+            m_frames.Clear();
 
             if (Dispatcher != null)
                 Dispatcher.Dispose();

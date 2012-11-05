@@ -22,6 +22,7 @@
       <Button Content="Delete" Command="{Binding DeleteCharacterCommand}" CommandParameter="{Binding ElementName=CharacterListBox, Path=SelectedItem}"/>
     </UniformGrid>
     <ListBox x:Name="CharacterListBox" ItemsSource="{Binding Source={StaticResource CharactersSorted}}" HorizontalContentAlignment="Stretch" DockPanel.Dock="Top">
+ 
     <ListBox.ItemTemplate>
         <DataTemplate DataType="{x:Type Authentification:CharactersListEntry}">
         <ContentControl>

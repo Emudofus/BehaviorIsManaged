@@ -31,7 +31,7 @@ namespace BiM.Behaviors.Game.World
         {
             get
             {
-                if (id <= 0 || id >= m_cells.Length)
+                if (id < 0 || id >= m_cells.Length)
                     return null;
 
                 return m_cells[id];

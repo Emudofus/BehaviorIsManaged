@@ -24,8 +24,8 @@ namespace BiM.Host.UI.Views
             set
             {
                 m_viewModel = value;
-                ( (FrameworkElement)Content ).DataContext = null;
-                ((FrameworkElement) Content).DataContext = value;
+                DataContext = null;
+                DataContext = value;
             }
         }
 

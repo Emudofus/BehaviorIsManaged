@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
+using BiM.Core.Messages;
 using BiM.Protocol.Enums;
 
 namespace BiM.Behaviors.Game.Chat
 {
-    public abstract class ChatMessage : INotifyPropertyChanged
+    public abstract class ChatMessage : Message, INotifyPropertyChanged
     {
         // note : I have to encapsulate this protocol part because ChatAbstractServerMessage and ChatAbstractClientMessage
         // are not bound, and this is not good

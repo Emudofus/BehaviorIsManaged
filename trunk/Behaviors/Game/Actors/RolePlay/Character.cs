@@ -6,7 +6,7 @@ using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
 {
-    public class Character : Humanoid, IAlignedActor
+    public class Character : Humanoid, IAlignedActor, IPlayer
     {
         public Character()
         {

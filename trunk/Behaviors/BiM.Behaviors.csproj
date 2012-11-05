@@ -95,6 +95,8 @@
     <Compile Include="Game\Actors\Fighters\PlayedFighter.cs" />
     <Compile Include="Game\Actors\Fighters\SummonedFighter.cs" />
     <Compile Include="Game\Actors\Interfaces\IAlignedActor.cs" />
+    <Compile Include="Game\Actors\Interfaces\INamed.cs" />
+    <Compile Include="Game\Actors\Interfaces\IPlayer.cs" />
     <Compile Include="Game\Actors\RolePlay\Character.cs" />
     <Compile Include="Game\Actors\RolePlay\Humanoid.cs" />
     <Compile Include="Game\Actors\RolePlay\Merchant.cs" />
@@ -213,6 +215,7 @@
     <Compile Include="Game\World\WorldMap.cs" />
     <Compile Include="Handlers\Basics\BasicHandler.cs" />
     <Compile Include="Handlers\Characters\CharacterHandler.cs" />
+    <Compile Include="Handlers\Chat\ChatHandler.cs" />
     <Compile Include="Handlers\Connection\ConnectionHandler.cs" />
     <Compile Include="Handlers\Context\ContextHandler.cs" />
     <Compile Include="Handlers\Context\FightHandler.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using BiM.Behaviors.Game.Actors.Interfaces;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Stats;
 using BiM.Behaviors.Game.World;
@@ -8,7 +9,7 @@ using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
-    public abstract class Fighter : ContextActor
+    public abstract class Fighter : ContextActor, INamed
     {
         protected Fighter()
         {

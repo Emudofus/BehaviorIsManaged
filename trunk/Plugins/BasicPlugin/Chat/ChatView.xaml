@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="BasicPlugin.Chat.ChatView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Chat="clr-namespace:BasicPlugin.Chat" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:Enums="clr-namespace:BiM.Protocol.Enums;assembly=BiM.Protocol" mc:Ignorable="d" d:DesignHeight="300"
+             d:DesignWidth="300">
+  
+  <UserControl.Resources>
+    <TextBlock x:Key="HelpText">
+      <Run>You can add the folowing macros in your text, they will be automatically replaced</Run><LineBreak/>
+      <Bold>##counter##</Bold> : Replaced with a number increased each message (avoid the flood restriction)<LineBreak/>
+      <Bold>##character##</Bold> : Replaced with the name of the character you whisp (only in whisper)<LineBreak/>
+    </TextBlock>
+  </UserControl.Resources>
+
+  <Grid FocusManager.FocusedElement="{Binding ElementName=ButtonEnter}">
+    <Grid.RowDefinitions>
+      <RowDefinition />
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+
+    <DockPanel Grid.Row="0">
+      <DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
+        <ComboBox Width="120" Margin="3" DockPanel.Dock="Left" ItemsSource="{Binding AvailableChannels}" SelectedIndex="0" SelectedItem="{Binding Channel, Mode=TwoWay}" />
+        <Button Margin="3" Name="ButtonEnter" DockPanel.Dock="Right" Padding="3,0,3,0" Command="{Binding SendTextCommand}">Enter</Button>
+        <StackPanel Orientation="Horizontal">
+          <StackPanel.Style>
+            <Style TargetType="StackPanel">
+              <Setter Property="Visibility" Value="Collapsed"/>
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding Channel}" Value="PSEUDO_CHANNEL_PRIVATE">
+                  <DataTrigger.Setters>
+                    <Setter Property="Visibility" Value="Visible"/>
+                  </DataTrigger.Setters>
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </StackPanel.Style>
+          <TextBlock Margin="3" VerticalAlignment="Center"> To : </TextBlock>
+          <TextBox Margin="3" Text="{Binding ReceiverName, Mode=TwoWay}"/>
+        </StackPanel>
+        <TextBox Margin="3" Text="{Binding TextToSend, Mode=TwoWay}" KeyUp="OnTextKeyUp" />
+      </DockPanel>
+      <RichTextBox Name="ChatTextBox" VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
+        <RichTextBox.Resources>
+          <Style TargetType="{x:Type Paragraph}">
+            <Setter Property="Margin" Value="0" />
+          </Style>
+        </RichTextBox.Resources>
+      </RichTextBox>
+    </DockPanel>
+
+    <GroupBox Grid.Row="2">
+      <GroupBox.Resources>
+        <Chat:BoolToStatus x:Key="BoolToStatus"/>
+      </GroupBox.Resources>
+      <GroupBox.Header>
+        <StackPanel Orientation="Horizontal">
+          <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsFloodEnabled, Mode=TwoWay}"/>
+          <TextBlock VerticalAlignment="Center" Margin="3,0,3,0" Text="{Binding IsFloodEnabled, StringFormat='Flood ({0})', Converter={StaticResource BoolToStatus}}" />
+        </StackPanel>
+      </GroupBox.Header>
+      <DockPanel LastChildFill="True">
+        <UniformGrid Rows="2" DockPanel.Dock="Bottom">
+          <Button Margin="3" Content="Add" Command="{Binding AddFloodEntryCommand}"/>
+          <Button Margin="3" Content="Remove" Command="{Binding RemoveFloodEntryCommand}"/>
+          <Button Margin="3" Content="Start Flood" Command="{Binding StartFloodCommand}"/>
+          <Button Margin="3" Content="Stop Flood" Command="{Binding StopFloodCommand}"/>
+        </UniformGrid>
+      <ListBox DockPanel.Dock="Top" Margin="3" HorizontalContentAlignment="Stretch" ItemsSource="{Binding FloodEntries}" SelectedItem="{Binding SelectedEntry, Mode=TwoWay}">
+          <ListBox.ItemTemplate>
+          <DataTemplate DataType="{x:Type Chat:FloodEntry}">
+            <DockPanel LastChildFill="True">
+                <DockPanel.Style>
+                  <Style TargetType="DockPanel">
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding DataContext.IsFloodEnabled, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" Value="True">
+                        <DataTrigger.Setters>
+                          <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger.Setters>
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </DockPanel.Style>
+                  <CheckBox Margin="3" IsChecked="{Binding IsEnabled, Mode=TwoWay}" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+              <DockPanel Margin="3" DockPanel.Dock="Right">
+                <xctk:DropDownButton Margin="3" DockPanel.Dock="Top" Content="Select channels ..." HorizontalContentAlignment="Stretch" >
+                  <xctk:DropDownButton.DropDownContent>
+                    <ItemsControl ItemsSource="{Binding Channels}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type Chat:FloodedChannel}">
+                          <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
+                            <CheckBox Margin="3,0,3,0" VerticalAlignment="Center" DockPanel.Dock="Left" IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
+                            <TextBlock Foreground="Black" Margin="3,0,3,0" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Right" Text="{Binding Channel}"/>
+                          </DockPanel>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </xctk:DropDownButton.DropDownContent>
+                </xctk:DropDownButton>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Right">
+                  <RadioButton Margin="3" IsChecked="{Binding UseTimer, Mode=TwoWay}">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Margin="0,0,3,0" VerticalAlignment="Center" Text="Timer"/>
+                      <xctk:IntegerUpDown Value="{Binding Timer}" Minimum="1" Increment="2" />
+                    </StackPanel>
+                  </RadioButton>
+                  <RadioButton VerticalAlignment="Center" IsChecked="{Binding OnCharacterEnterMap, Mode=TwoWay}" Content="Character Enter"/>
+                </StackPanel>
+              </DockPanel>
+              <TextBox Text="{Binding Text, Mode=TwoWay}" Height="40" MinWidth="200" DockPanel.Dock="Left" ToolTip="{StaticResource HelpText}" 
+                       ToolTipService.InitialShowDelay="500" ToolTipService.ShowDuration="10000"/>
+            </DockPanel>
+          </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </GroupBox>
+    <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="Gray" Margin="0,3,0,3"></GridSplitter>
+  </Grid>
+</UserControl>

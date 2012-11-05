@@ -10,7 +10,7 @@ using NLog;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
-    public class CharacterFighter : Fighter
+    public class CharacterFighter : Fighter, IPlayer
     {
         protected static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
