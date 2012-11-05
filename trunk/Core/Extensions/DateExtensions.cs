@@ -8,13 +8,18 @@ namespace BiM.Core.Extensions
 
         public static double DateTimeToUnixTimestamp(this DateTime dateTime)
         {
-            return ( dateTime - new DateTime(1970, 1, 1).ToLocalTime() ).TotalSeconds;
+            return ( dateTime - new DateTime(1970, 1, 1).ToLocalTime() ).TotalMilliseconds;
+        }
+
+        public static int DateTimeToUnixTimestampSeconds(this DateTime dateTime)
+        {
+            return (int) ( dateTime - new DateTime(1970, 1, 1).ToLocalTime() ).TotalSeconds;
         }
 
         public static DateTime UnixTimestampToDateTime(this double unixTimeStamp)
         {
             var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
         }
 

@@ -10,6 +10,7 @@
       <Bold>##counter##</Bold> : Replaced with a number increased each message (avoid the flood restriction)<LineBreak/>
       <Bold>##character##</Bold> : Replaced with the name of the character you whisp (only in whisper)<LineBreak/>
     </TextBlock>
+    <Chat:ChannelNameConverter x:Key="ChannelNameConverter"/>
   </UserControl.Resources>
 
   <Grid FocusManager.FocusedElement="{Binding ElementName=ButtonEnter}">
@@ -21,7 +22,13 @@
 
     <DockPanel Grid.Row="0">
       <DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
-        <ComboBox Width="120" Margin="3" DockPanel.Dock="Left" ItemsSource="{Binding AvailableChannels}" SelectedIndex="0" SelectedItem="{Binding Channel, Mode=TwoWay}" />
+        <ComboBox Width="120" Margin="3" DockPanel.Dock="Left" ItemsSource="{Binding AvailableChannels}" SelectedIndex="0" SelectedItem="{Binding Channel, Mode=TwoWay}">
+          <ComboBox.ItemTemplate>
+            <DataTemplate DataType="{x:Type Enums:ChatActivableChannelsEnum}">
+              <TextBlock Text="{Binding Converter={StaticResource ChannelNameConverter}}"/>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
         <Button Margin="3" Name="ButtonEnter" DockPanel.Dock="Right" Padding="3,0,3,0" Command="{Binding SendTextCommand}">Enter</Button>
         <StackPanel Orientation="Horizontal">
           <StackPanel.Style>
@@ -92,7 +99,8 @@
                         <DataTemplate DataType="{x:Type Chat:FloodedChannel}">
                           <DockPanel LastChildFill="True" HorizontalAlignment="Stretch">
                             <CheckBox Margin="3,0,3,0" VerticalAlignment="Center" DockPanel.Dock="Left" IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
-                            <TextBlock Foreground="Black" Margin="3,0,3,0" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Right" Text="{Binding Channel}"/>
+                            <TextBlock Foreground="Black" Margin="3,0,3,0" VerticalAlignment="Center" HorizontalAlignment="Left" DockPanel.Dock="Right"
+                                       Text="{Binding Channel, Converter={StaticResource ChannelNameConverter}}"/>
                           </DockPanel>
                         </DataTemplate>
                       </ItemsControl.ItemTemplate>

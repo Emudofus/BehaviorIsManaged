@@ -56,7 +56,6 @@ namespace BasicPlugin.Chat
             {(ChatActivableChannelsEnum)666, ColorFromHtmlCode("FF0000")},
         };
 
-        private Dictionary<ChatActivableChannelsEnum, string> m_channelsNames = new Dictionary<ChatActivableChannelsEnum, string>();
 
         private string m_wordFrom = DataProvider.Instance.Get<string>("ui.chat.from");
         private string m_wordTo = DataProvider.Instance.Get<string>("ui.chat.to");
@@ -85,15 +84,12 @@ namespace BasicPlugin.Chat
                                         ChatActivableChannelsEnum.PSEUDO_CHANNEL_PRIVATE,
                                     };
 
-            var channels = Enum.GetValues(typeof(ChatActivableChannelsEnum));
-            foreach (ChatActivableChannelsEnum channel in channels)
-            {
-                var data = DataProvider.Instance.Get<ChatChannel>((int)channel);
-                m_channelsNames.Add(channel, DataProvider.Instance.Get<string>(data.nameId));
-            }
+
 
             m_floodEntries = new ObservableCollection<FloodEntry>();
             m_readOnlyFloodEntries = new ReadOnlyObservableCollection<FloodEntry>(m_floodEntries);
+
+            m_channelNameConverter = new ChannelNameConverter();
         }
 
         public bool IsFloodEnabled
@@ -141,6 +137,9 @@ namespace BasicPlugin.Chat
         {
             get { return m_readOnlyFloodEntries; }
         }
+
+        private ChannelNameConverter m_channelNameConverter;
+
 
         #region SendTextCommand
 
@@ -413,10 +412,7 @@ namespace BasicPlugin.Chat
 
         private string GetChannelName(ChatActivableChannelsEnum channel)
         {
-            if (!m_channelsNames.ContainsKey(channel))
-                return "?";
-
-            return m_channelsNames[channel];
+            return m_channelNameConverter.GetChannelName(channel);
         }
 
         private Color GetChannelColor(ChatActivableChannelsEnum channel)
@@ -441,6 +437,7 @@ namespace BasicPlugin.Chat
             BotViewModel viewModel = Bot.GetViewModel();
             LayoutDocument layout = viewModel.AddDocument(this, () => new ChatView());
             layout.Title = "Chat";
+            View.Dispatcher.Invoke(new Action(() => m_channelNameConverter = View.Resources["ChannelNameConverter"] as ChannelNameConverter));
         }
 
         public override void OnDetached()

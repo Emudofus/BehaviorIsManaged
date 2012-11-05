@@ -95,6 +95,7 @@
       <DependentUpon>DeletionDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Chat\BoolToStatus.cs" />
+    <Compile Include="Chat\ChannelNameConverter.cs" />
     <Compile Include="Chat\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
