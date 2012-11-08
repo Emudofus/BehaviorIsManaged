@@ -34,6 +34,20 @@
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/STICK_COMMENT/@EntryValue">False</s:Boolean>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_LIMIT/@EntryValue">200</s:Int64>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/JavaScriptCodeFormatting/JavaScriptFormatOther/ALIGN_MULTIPLE_DECLARATION/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderRegionName/@EntryValue">License GNU GPL</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue">$FILENAME$&#xD;
+&#xD;
+Copyright (C) $CURRENT_YEAR$ - BehaviorIsManaged&#xD;
+&#xD;
+This program is free software; you can redistribute it and/or modify it &#xD;
+under the terms of the GNU General Public License as published by the Free Software Foundation;&#xD;
+either version 2 of the License, or (at your option) any later version.&#xD;
+&#xD;
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; &#xD;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. &#xD;
+See the GNU General Public License for more details. &#xD;
+You should have received a copy of the GNU General Public License along with this program; &#xD;
+if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/Generate/=Constructor/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/Generate/=Constructor/Options/=XmlDocumentation/@EntryIndexedValue">False</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/Generate/=Equality/@KeyIndexDefined">True</s:Boolean>

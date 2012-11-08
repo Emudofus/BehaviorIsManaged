@@ -1,4 +1,19 @@
-﻿using System;
+﻿#region License GNU GPL
+// D2ISource.cs
+// 
+// Copyright (C) 2012 - BehaviorIsManaged
+// 
+// This program is free software; you can redistribute it and/or modify it 
+// under the terms of the GNU General Public License as published by the Free Software Foundation;
+// either version 2 of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+// See the GNU General Public License for more details. 
+// You should have received a copy of the GNU General Public License along with this program; 
+// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#endregion
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,19 +51,19 @@ namespace BiM.Behaviors.Data
             set;
         }
 
-        private Dictionary<Languages, I18NFile> m_readers = new Dictionary<Languages, I18NFile>(); 
+        private Dictionary<Languages, D2IFile> m_readers = new Dictionary<Languages, D2IFile>(); 
 
         public void AddReaders(string directory)
         {
             foreach (var d2iFile in Directory.EnumerateFiles(directory).Where(entry => entry.EndsWith(".d2i")))
             {
-                var reader = new I18NFile(d2iFile);
+                var reader = new D2IFile(d2iFile);
 
                 AddReader(reader);
             }
         }
 
-        public void AddReader(I18NFile d2iFile)
+        public void AddReader(D2IFile d2iFile)
         {
             var file = Path.GetFileNameWithoutExtension(d2iFile.FilePath);
 
@@ -63,7 +78,7 @@ namespace BiM.Behaviors.Data
             AddReader(d2iFile, m_langsShortcuts[lang.ToLower()]);
         }
 
-        public void AddReader(I18NFile d2iFile, Languages language)
+        public void AddReader(D2IFile d2iFile, Languages language)
         {
             m_readers.Add(language, d2iFile);
 

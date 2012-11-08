@@ -1,4 +1,19 @@
-﻿using System;
+﻿#region License GNU GPL
+// Host.cs
+// 
+// Copyright (C) 2012 - BehaviorIsManaged
+// 
+// This program is free software; you can redistribute it and/or modify it 
+// under the terms of the GNU General Public License as published by the Free Software Foundation;
+// either version 2 of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+// See the GNU General Public License for more details. 
+// You should have received a copy of the GNU General Public License along with this program; 
+// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#endregion
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,12 +22,16 @@ using System.Reflection;
 using System.Windows;
 using BiM.Behaviors;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Game.Items.Icons;
+using BiM.Behaviors.Messages;
 using BiM.Core.Config;
 using BiM.Core.I18n;
+using BiM.Core.Machine;
 using BiM.Core.Messages;
-using BiM.Host.Messages;
 using BiM.Host.Plugins;
 using BiM.MITM;
+using BiM.Protocol.Data;
+using BiM.Protocol.Tools;
 using BiM.Protocol.Tools.D2p;
 using NLog;
 
@@ -20,14 +39,25 @@ namespace BiM.Host
 {
     public static class Host
     {
+        private static string m_dofusPath;
+
+        [Configurable("FindDofusPathAuto", "When true the dofus path will be find automatically")]
+        public static bool FindDofusPathAuto = true;
+
+        [Configurable("DofusBasePath")]
+        public static string DofusBasePath = @"C:\Program Files (x86)\Dofus 2\";
+
         [Configurable("DofusDataPath")]
-        public static string DofusDataPath = @"C:\Program Files (x86)\Dofus 2\app\data\common";
+        public static string DofusDataPath = @"app\data\common";
 
         [Configurable("DofusMapsD2P")]
-        public static string DofusMapsD2P = @"C:\Program Files (x86)\Dofus 2\app\content\maps\maps0.d2p";
+        public static string DofusMapsD2P = @"app\content\maps\maps0.d2p";
 
         [Configurable("DofusI18NPath")]
-        public static string DofusI18NPath = @"C:\Program Files (x86)\Dofus 2\app\data\i18n";
+        public static string DofusI18NPath = @"app\data\i18n";
+
+        [Configurable("DofusItemIconPath")]
+        public static string DofusItemIconPath = @"app\content\gfx\items\bitmap0.d2p";
 
         [Configurable("BotAuthHost")]
         public static string BotAuthHost = "localhost";
@@ -95,6 +125,9 @@ namespace BiM.Host
 
         public static void Initialize()
         {
+            var decoder = new StringPatternDecoder("#1{~1 à ~2}#2", new object[] { 1, 2 });
+            Debug.WriteLine(decoder.Decode());
+
             if (Initialized)
                 return;
 
@@ -117,16 +150,18 @@ namespace BiM.Host
 
 
             var d2oSource = new D2OSource();
-            d2oSource.AddReaders(DofusDataPath);
+            d2oSource.AddReaders(Path.Combine(GetDofusPath(), DofusDataPath));
             DataProvider.Instance.AddSource(d2oSource);
 
-            var maps = new D2PSource(new D2pFile(DofusMapsD2P));
+            var maps = new D2PSource(new D2pFile(Path.Combine(GetDofusPath(), DofusMapsD2P)));
             DataProvider.Instance.AddSource(maps);
 
-            // todo : langs
             var d2iSource = new D2ISource(Languages.English);
-            d2iSource.AddReaders(DofusI18NPath);
+            d2iSource.AddReaders(Path.Combine(GetDofusPath(), DofusI18NPath));
             DataProvider.Instance.AddSource(d2iSource);
+
+            var itemIconSource = new ItemIconSource(Path.Combine(GetDofusPath(), DofusItemIconPath));
+            DataProvider.Instance.AddSource(itemIconSource);
 
             MITM = new MITM.MITM(new MITMConfiguration
                                      {
@@ -172,10 +207,33 @@ namespace BiM.Host
             // todo : update the gui
         }
 
-        private static void OnProcessExit(object sender, EventArgs e)
+        public static string GetDofusPath()
         {
-            Stop();
+            if (m_dofusPath == null)
+            {
+                if (!FindDofusPathAuto)
+                    return m_dofusPath = DofusBasePath;
+
+                var programFiles = OSInfo.GetProgramFiles();
+
+                if (Directory.Exists(Path.Combine(programFiles, "Dofus2")))
+                    m_dofusPath = Path.Combine(programFiles, "Dofus2");
+                else if (Directory.Exists(Path.Combine(programFiles, "Dofus 2")))
+                    m_dofusPath = Path.Combine(programFiles, "Dofus 2");
+                else
+                {
+                    programFiles = OSInfo.GetProgramFilesX86();
+
+                    if (Directory.Exists(Path.Combine(programFiles, "Dofus2")))
+                        m_dofusPath = Path.Combine(programFiles, "Dofus2");
+                    else if (Directory.Exists(Path.Combine(programFiles, "Dofus 2")))
+                        m_dofusPath = Path.Combine(programFiles, "Dofus 2");
+                }
+            }
+
+            return m_dofusPath;
         }
+
 
         public static void Start()
         {
@@ -193,6 +251,8 @@ namespace BiM.Host
 
             Running = false;
 
+            BotManager.Instance.RemoveAll();
+
             if (Config != null)
                 Config.Save();
 
@@ -203,6 +263,11 @@ namespace BiM.Host
                 DispatcherTask.Stop();
 
             PluginManager.Instance.UnLoadAllPlugins();
+        }
+
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            Stop();
         }
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

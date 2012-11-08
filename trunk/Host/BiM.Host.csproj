@@ -71,6 +71,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Librairies\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -88,6 +92,7 @@
     <Compile Include="I18n\ClientLanguageDetector.cs" />
     <Compile Include="SettingsLoader.cs" />
     <Compile Include="UI\BotExtensions.cs" />
+    <Compile Include="UI\Helpers\ActiveGroupingCollectionView.cs" />
     <Compile Include="UI\Helpers\ApplicationInfo.cs" />
     <Compile Include="UI\Helpers\BindingProxy.cs" />
     <Compile Include="UI\Helpers\DelegateCommand.cs" />
@@ -112,7 +117,6 @@
     <Compile Include="UI\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Messages\HostInitializationMessage.cs" />
     <Compile Include="Plugins\IPlugin.cs" />
     <Compile Include="Plugins\PluginBase.cs" />
     <Compile Include="Plugins\PluginContext.cs" />
@@ -143,6 +147,10 @@
     <ProjectReference Include="..\Librairies\NLog\NLog.netfx40.csproj">
       <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
       <Name>NLog.netfx40</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Librairies\WPFToolkit.Extended\WPFToolkit.Extended.csproj">
+      <Project>{72E591D6-8F83-4D8C-8F67-9C325E623234}</Project>
+      <Name>WPFToolkit.Extended</Name>
     </ProjectReference>
     <ProjectReference Include="..\MITM\BiM.MITM.csproj">
       <Project>{B402EFFE-08A0-48B7-98B0-72904C2ABEEA}</Project>
@@ -189,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
+    <Folder Include="Messages\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterCompile">

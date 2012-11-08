@@ -1,4 +1,19 @@
-﻿using System;
+﻿#region License GNU GPL
+// CharacterSelectionViewModel.cs
+// 
+// Copyright (C) 2012 - BehaviorIsManaged
+// 
+// This program is free software; you can redistribute it and/or modify it 
+// under the terms of the GNU General Public License as published by the Free Software Foundation;
+// either version 2 of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+// See the GNU General Public License for more details. 
+// You should have received a copy of the GNU General Public License along with this program; 
+// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#endregion
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
@@ -73,6 +88,7 @@ namespace BasicPlugin.CharacterSelection
 
         #region CreateCharacterCommand
 
+        private CharacterCreationDialog m_characterCreationDialog;
         private CharacterCreationData m_characterCreationData;
         private DelegateCommand m_createCharacterCommand;
 
@@ -88,17 +104,20 @@ namespace BasicPlugin.CharacterSelection
 
         private void OnCreateCharacter(object parameter)
         {
-            var dialog = new CharacterCreationDialog();
+            if (m_characterCreationDialog != null && m_characterCreationDialog.Visibility == Visibility.Visible)
+                m_characterCreationDialog.Close();
+
+            m_characterCreationDialog = new CharacterCreationDialog();
 
             if (m_characterCreationData != null)
-                dialog.Data = m_characterCreationData;
+                m_characterCreationDialog.Data = m_characterCreationData;
             else
             {
-                dialog.Data.EnabledBreeds = Bot.ClientInformations.AvailableBreeds;
-                m_characterCreationData = dialog.Data;
+                m_characterCreationDialog.Data.EnabledBreeds = Bot.ClientInformations.AvailableBreeds;
+                m_characterCreationData = m_characterCreationDialog.Data;
             }
 
-            if (dialog.ShowDialog() == true)
+            if (m_characterCreationDialog.ShowDialog() == true)
             {
                 int[] colors = new int[5];
                 colors[0] = m_characterCreationData.Color1Used ? ColorToInt(m_characterCreationData.Color1) : -1;
@@ -122,6 +141,7 @@ namespace BasicPlugin.CharacterSelection
 
         #region DeleteCharacterCommand
 
+        private DeletionDialog m_deletionDialog;
         private DelegateCommand m_deleteCharacterCommand;
 
         public DelegateCommand DeleteCharacterCommand
@@ -139,16 +159,19 @@ namespace BasicPlugin.CharacterSelection
             if (parameter == null || !CanDeleteCharacter(parameter))
                 return;
 
+            if (m_deletionDialog != null && m_deletionDialog.Visibility == Visibility.Visible)
+                m_deletionDialog.Close();
+
             var character = (CharactersListEntry)parameter;
             if (character.Level >= 20)
             {
-                var dialog = new DeletionDialog();
-                dialog.CharacterName = character.Name;
-                dialog.SecretQuestion = Bot.ClientInformations.SecretQuestion;
+                m_deletionDialog = new DeletionDialog();
+                m_deletionDialog.CharacterName = character.Name;
+                m_deletionDialog.SecretQuestion = Bot.ClientInformations.SecretQuestion;
 
-                if (dialog.ShowDialog() == true)
+                if (m_deletionDialog.ShowDialog() == true)
                 {
-                    Bot.SendToServer(new CharacterDeletionRequestMessage(character.Id, Cryptography.GetMD5Hash(character.Id + "~" + dialog.SecretAnswer)));
+                    Bot.SendToServer(new CharacterDeletionRequestMessage(character.Id, Cryptography.GetMD5Hash(character.Id + "~" + m_deletionDialog.SecretAnswer)));
                 }
             }
             else if (MessageService.ShowYesNoQuestion(View, string.Format("Are you sure you want to delete {0} ?", character.Name)))
@@ -202,6 +225,7 @@ namespace BasicPlugin.CharacterSelection
             var botViewModel = Bot.GetViewModel();
             var layout = botViewModel.AddDocument(this, () => new CharacterSelectionView());
             layout.Title = "Characters";
+            layout.CanClose = false;
         }
 
         public override void OnDetached()
@@ -210,6 +234,18 @@ namespace BasicPlugin.CharacterSelection
 
             var viewModel = Bot.GetViewModel();
             viewModel.RemoveDocument(View);
+
+            if (m_deletionDialog != null && m_deletionDialog.Visibility == Visibility.Visible)
+            {
+                View.Dispatcher.Invoke(new Action(m_deletionDialog.Close));
+                m_deletionDialog = null;
+            }
+
+            if (m_characterCreationDialog != null && m_characterCreationDialog.Visibility == Visibility.Visible)
+            {
+                View.Dispatcher.Invoke(new Action(m_characterCreationDialog.Close));
+                m_characterCreationDialog = null;
+            }
         }
     }
 }

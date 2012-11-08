@@ -85,6 +85,7 @@
     <Compile Include="Config\ConfigurableAttribute.cs" />
     <Compile Include="Config\ConfigVariable.cs" />
     <Compile Include="Cryptography\Cryptography.cs" />
+    <Compile Include="Machine\OSInfo.cs" />
     <Compile Include="Extensions\DateExtensions.cs" />
     <Compile Include="Extensions\DnsExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />

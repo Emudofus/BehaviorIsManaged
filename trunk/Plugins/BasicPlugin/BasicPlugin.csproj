@@ -72,6 +72,7 @@
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Librairies\System.Windows.Interactivity.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -101,6 +102,16 @@
     </Compile>
     <Compile Include="Chat\ChatViewModel.cs" />
     <Compile Include="Chat\FloodEntry.cs" />
+    <Compile Include="Inventory\ColorByOperatorConverter.cs" />
+    <Compile Include="Inventory\InputNumberDialog.xaml.cs">
+      <DependentUpon>InputNumberDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Inventory\InventoryView.xaml.cs">
+      <DependentUpon>InventoryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Inventory\InventoryViewModel.cs" />
+    <Compile Include="Inventory\IsEquipedBoolConverter.cs" />
+    <Compile Include="Inventory\ItemEffectStyleSelector.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerSelection\CharacterCounterConverter.cs" />
@@ -169,11 +180,20 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Inventory\InputNumberDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Inventory\InventoryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ServerSelection\ServerSelectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterCompile">
     <NotifyPropertyWeaverMsBuildTask.WeavingTask />

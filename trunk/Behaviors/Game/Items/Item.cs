@@ -1,4 +1,19 @@
-﻿using System;
+﻿#region License GNU GPL
+// Item.cs
+// 
+// Copyright (C) 2012 - BehaviorIsManaged
+// 
+// This program is free software; you can redistribute it and/or modify it 
+// under the terms of the GNU General Public License as published by the Free Software Foundation;
+// either version 2 of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+// See the GNU General Public License for more details. 
+// You should have received a copy of the GNU General Public License along with this program; 
+// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#endregion
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using BiM.Behaviors.Data;
@@ -13,16 +28,14 @@ namespace BiM.Behaviors.Game.Items
 {
     public class Item : ItemBase
     {
-        private string m_name;
         private ReadOnlyObservableCollectionMT<EffectBase> m_readOnlyEffects;
         private ObservableCollectionMT<EffectBase> m_effects;
-        private string m_description;
-        private ItemType m_type;
+
 
         public Item(ObjectItem item)
+            : base(item.objectGID)
         {
             Guid = item.objectUID;
-            Template = DataProvider.Instance.Get<Protocol.Data.Item>(item.objectGID);
             m_effects = new ObservableCollectionMT<EffectBase>(item.effects.Select(EffectBase.CreateInstance));
             m_readOnlyEffects = new ReadOnlyObservableCollectionMT<EffectBase>(m_effects);
             Quantity = item.quantity;
@@ -31,36 +44,11 @@ namespace BiM.Behaviors.Game.Items
             Position = (CharacterInventoryPositionEnum) item.position;
         }
 
-        public Protocol.Data.Item Template
+
+        public int Guid
         {
             get;
-            private set;
-        }
-
-        public ItemType Type
-        {
-            get
-            {
-                return m_type ?? ( m_type = DataProvider.Instance.Get<ItemType>(Template.typeId) );
-            }
-        }
-
-        public string Name
-        {
-            get { return m_name ?? (m_name = DataProvider.Instance.Get<string>(Template.nameId)); }
-        }
-
-        public string Description
-        {
-            get
-            {
-                return m_description ?? ( m_description = DataProvider.Instance.Get<string>(Template.descriptionId) );
-            }
-        }
-
-        public ItemSuperTypeEnum SuperType
-        {
-            get { return (ItemSuperTypeEnum) Type.superTypeId; }
+            protected set;
         }
 
         public ReadOnlyObservableCollectionMT<EffectBase> Effects
@@ -72,6 +60,11 @@ namespace BiM.Behaviors.Game.Items
         {
             get;
             private set;
+        }
+
+        public bool IsUsable
+        {
+            get { return Template.usable; }
         }
 
         public int Quantity
@@ -92,9 +85,14 @@ namespace BiM.Behaviors.Game.Items
             private set;
         }
 
-        public bool IsEquiped()
+        public uint TotalWeight
         {
-            return Position != CharacterInventoryPositionEnum.INVENTORY_POSITION_NOT_EQUIPED;
+            get { return (uint) (UnityWeight*Quantity); }
+        }
+
+        public bool IsEquipped
+        {
+            get { return Position != CharacterInventoryPositionEnum.INVENTORY_POSITION_NOT_EQUIPED; }
         }
 
         public void Update(ObjectItem item)

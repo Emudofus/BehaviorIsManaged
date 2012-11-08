@@ -1,0 +1,177 @@
+﻿<UserControl x:Class="BasicPlugin.Inventory.InventoryView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:Items="clr-namespace:BiM.Behaviors.Game.Items;assembly=BiM.Behaviors" xmlns:Inventory="clr-namespace:BasicPlugin.Inventory"
+             xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase" xmlns:Effects="clr-namespace:BiM.Behaviors.Game.Effects;assembly=BiM.Behaviors"
+             xmlns:Helpers="clr-namespace:BiM.Host.UI.Helpers;assembly=BiM.Host" mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+  <UserControl.Resources>
+    <Inventory:ColorByOperatorConverter x:Key="ColorByOperatorConverter"/>
+    <Inventory:IsEquipedBoolConverter x:Key="IsEquipedBoolConverter" />
+    <CollectionViewSource x:Key="GroupedItems" Source="{Binding Bot.Character.Inventory.Items}"
+                          CollectionViewType="{x:Type Helpers:ActiveGroupingCollectionView}">
+      <CollectionViewSource.GroupDescriptions>
+        <PropertyGroupDescription PropertyName="IsEquipped" Converter="{StaticResource IsEquipedBoolConverter}" />
+      </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
+      <Helpers:BindingProxy Data="{Binding}" x:Key="Proxy"/>
+  </UserControl.Resources>
+  <DockPanel>
+    <UniformGrid DockPanel.Dock="Bottom">
+      <Button Content="Use" Command="{Binding UseCommand}" CommandParameter="{Binding ElementName=ListBoxItems, Path=SelectedItem}"/>
+      <Button CommandParameter="{Binding ElementName=ListBoxItems, Path=SelectedItem}">
+        <Button.Style>
+          <Style TargetType="Button">
+            <Setter Property="Command" Value="{Binding EquipItemCommand}"/>
+            <Setter Property="Content" Value="Equip"/>
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ElementName=ListBoxItems, Path=SelectedItem.IsEquipped}" Value="True">
+                <DataTrigger.Setters>
+                  <Setter Property="Command" Value="{Binding UnEquipCommand}"/>
+                  <Setter Property="Content" Value="Unequip"/>
+                </DataTrigger.Setters>
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
+      <Button Content="Delete" Command="{Binding RemoveItemCommand}" CommandParameter="{Binding ElementName=ListBoxItems, Path=SelectedItem}"/>
+      <Button Content="Drop" Command="{Binding DropItemCommand}" CommandParameter="{Binding ElementName=ListBoxItems, Path=SelectedItem}"/>
+    </UniformGrid>
+    <ListBox ItemsSource="{Binding Source={StaticResource GroupedItems}}" Name="ListBoxItems" HorizontalContentAlignment="Stretch" SelectionChanged="OnSelectedItemChanged">
+      <ListBox.Resources>
+        <Inventory:ItemEffectStyleSelector x:Key="ItemEffectStyleSelector" />
+      </ListBox.Resources>
+      <ListBox.GroupStyle>
+        <GroupStyle>
+          <GroupStyle.HeaderTemplate>
+            <DataTemplate DataType="Group">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Line Grid.Column="0" Margin="3" X2="1" Stretch="Fill" VerticalAlignment="Center" HorizontalAlignment="Stretch" StrokeThickness="2" Stroke="LightBlue" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Name}" FontSize="22" Foreground="BlueViolet" />
+                <Line Grid.Column="2" Margin="3" X2="1" Stretch="Fill" VerticalAlignment="Center" HorizontalAlignment="Stretch" StrokeThickness="2" Stroke="LightBlue" />
+              </Grid>
+            </DataTemplate>
+          </GroupStyle.HeaderTemplate>
+        </GroupStyle>
+      </ListBox.GroupStyle>
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="{x:Type Items:Item}">
+          <DockPanel LastChildFill="True" Tag="{Binding}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+            <DockPanel.ContextMenu>
+              <ContextMenu Loaded="OnContextMenuLoaded">
+                <MenuItem CommandParameter="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}">
+                  <MenuItem.Style>
+                    <Style TargetType="MenuItem">
+                      <Setter Property="Command" Value="{Binding Path=Data.EquipItemCommand, Source={StaticResource ResourceKey=Proxy}}"/>
+                      <Setter Property="Header">
+                        <Setter.Value>
+                          <TextBlock Text="{Binding Name, StringFormat='Equip \'{0}\''}" />
+                        </Setter.Value>
+                      </Setter>
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=PlacementTarget.Tag.IsEquipped, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}" Value="True">
+                          <DataTrigger.Setters>
+                            <Setter Property="Command" Value="{Binding Path=Data.UnEquipCommand, Source={StaticResource ResourceKey=Proxy}}"/>
+                            <Setter Property="Header">
+                              <Setter.Value>
+                                <TextBlock Text="{Binding Name, StringFormat='Unequip \'{0}\''}" />
+                              </Setter.Value>
+                            </Setter>
+                          </DataTrigger.Setters>
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </MenuItem.Style>
+                </MenuItem>
+                <MenuItem Command="{Binding Path=Data.RemoveItemCommand, Source={StaticResource ResourceKey=Proxy}}" 
+                          CommandParameter="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}">
+                  <MenuItem.Header>
+                    <TextBlock Text="{Binding Name, StringFormat='Delete \'{0}\''}" />
+                  </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Command="{Binding Path=Data.DropItemCommand, Source={StaticResource ResourceKey=Proxy}}" 
+                          CommandParameter="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}">
+                  <MenuItem.Header>
+                    <TextBlock Text="{Binding Name, StringFormat='Drop \'{0}\''}" />
+                  </MenuItem.Header>
+                </MenuItem>
+                <MenuItem Command="{Binding Path=Data.UseCommand, Source={StaticResource ResourceKey=Proxy}}" 
+                          CommandParameter="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}">
+                  <MenuItem.Header>
+                    <TextBlock Text="{Binding Name, StringFormat='Use \'{0}\''}" />
+                  </MenuItem.Header>
+                </MenuItem>
+              </ContextMenu>
+            </DockPanel.ContextMenu>
+            <DockPanel DockPanel.Dock="Top" LastChildFill="True">
+
+              <Image Name="IconImage" Source="{Binding Icon.Image}" Margin="3" DockPanel.Dock="Left" />
+              <StackPanel DockPanel.Dock="Right" Orientation="Vertical" VerticalAlignment="Center">
+                <TextBlock Margin="5,0,5,0" Text="{Binding Level, StringFormat='Level : {0}'}" Foreground="BlueViolet" FontSize="14" />
+                <TextBlock Margin="5,0,3,0" Text="{Binding TotalWeight, StringFormat='Weight : {0}'}" Foreground="Brown" />
+                <TextBlock Margin="3,0,5,0" Text="{Binding UnityWeight, StringFormat='({0} per unit)'}" Foreground="Brown" />
+
+              </StackPanel>
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="3,0,3,0" Text="{Binding Name}" DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="18" Foreground="Orange" />
+                <TextBlock Margin="3,0,3,0" Text="{Binding Quantity, StringFormat='(x{0})'}" DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="14" Foreground="Green" />
+              </StackPanel>
+            </DockPanel>
+
+            <DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
+              <DockPanel.Style>
+                <Style TargetType="DockPanel">
+                  <Setter Property="Visibility" Value="Collapsed" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                      <DataTrigger.Setters>
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger.Setters>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </DockPanel.Style>
+              <ContentControl Width="{Binding Width, ElementName=IconImage}" Margin="{Binding Margin, ElementName=IconImage}" />
+              <DockPanel DockPanel.Dock="Right" LastChildFill="True">
+                <DockPanel.Resources>
+                  <CollectionViewSource x:Key="SortedEffects" Source="{Binding Effects}">
+                    <CollectionViewSource.SortDescriptions>
+                      <ComponentModel:SortDescription PropertyName="Priority" />
+                    </CollectionViewSource.SortDescriptions>
+                  </CollectionViewSource>
+                </DockPanel.Resources>
+                <Expander Name="ExpanderText" DockPanel.Dock="Top" Header="Description">
+                  <TextBlock Margin="3" TextWrapping="Wrap" MaxWidth="{Binding ElementName=ExpanderText, Path=ActualWidth}" Text="{Binding Description}" />
+                </Expander>
+                <ListBox Margin="3" ItemsSource="{Binding Source={StaticResource SortedEffects}}" ItemContainerStyleSelector="{StaticResource ItemEffectStyleSelector}">
+                  <ListBox.Style>
+                    <Style TargetType="ListBox">
+                      <Setter Property="Visibility" Value="Visible" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding Effects.Count}" Value="0">
+                          <DataTrigger.Setters>
+                            <Setter Property="Visibility" Value="Collapsed" />
+                          </DataTrigger.Setters>
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </ListBox.Style>
+                  <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type Effects:EffectBase}">
+                      <TextBlock Text="{Binding Description}" Foreground="{Binding Operator, Converter={StaticResource ColorByOperatorConverter}}" />
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </DockPanel>
+            </DockPanel>
+          </DockPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+</UserControl>

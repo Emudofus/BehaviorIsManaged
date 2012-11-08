@@ -1,4 +1,19 @@
-﻿using System;
+﻿#region License GNU GPL
+// Inventory.cs
+// 
+// Copyright (C) 2012 - BehaviorIsManaged
+// 
+// This program is free software; you can redistribute it and/or modify it 
+// under the terms of the GNU General Public License as published by the Free Software Foundation;
+// either version 2 of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+// See the GNU General Public License for more details. 
+// You should have received a copy of the GNU General Public License along with this program; 
+// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#endregion
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -127,29 +142,37 @@ namespace BiM.Behaviors.Game.Items
 
             if (!HasItem(item))
             {
-                logger.Error("Cannot move item {0} because the item is not own", item.Name);
+                //logger.Error("Cannot move item {0} because the item is not own", item.Name);
                 return false;
             }
 
             if (quantity > item.Quantity)
             {
-                logger.Error("Cannot move item {0} because the moved quantity ({1}) is greater than the actual item quantity", item.Name, quantity, item.Quantity);
+                //logger.Error("Cannot move item {0} because the moved quantity ({1}) is greater than the actual item quantity", item.Name, quantity, item.Quantity);
                 return false;
             }
 
             if (position != CharacterInventoryPositionEnum.INVENTORY_POSITION_NOT_EQUIPED && quantity != 1)
             {
-                logger.Error("Cannot equip item {0} because the moved quantity > 1", item.Name);
+                //logger.Error("Cannot equip item {0} because the moved quantity > 1", item.Name);
                 return false;
             }
 
-            if (m_itemsPositioningRules.ContainsKey(item.SuperType) && !m_itemsPositioningRules[item.SuperType].Contains(position))
+            if (position != CharacterInventoryPositionEnum.INVENTORY_POSITION_NOT_EQUIPED && m_itemsPositioningRules.ContainsKey(item.SuperType) && !m_itemsPositioningRules[item.SuperType].Contains(position))
             {
-                logger.Error("Cannot equip item {0} to {1} because the excepted position is {2}", item.Name, position, m_itemsPositioningRules[item.SuperType][0]);
+                //logger.Error("Cannot equip item {0} to {1} because the excepted position is {2}", item.Name, position, m_itemsPositioningRules[item.SuperType][0]);
                 return false;
             }
 
             return true;
+        }
+
+        public bool CanEquip(Item item)
+        {
+            if (!m_itemsPositioningRules.ContainsKey(item.SuperType))
+                return false;
+
+            return CanMove(item, m_itemsPositioningRules[item.SuperType].First(), 1);
         }
 
         public bool Equip(Item item)
@@ -180,12 +203,7 @@ namespace BiM.Behaviors.Game.Items
             return true;
         }
 
-        public bool Delete(Item item)
-        {
-            return Delete(item, item.Quantity);
-        }
-
-        public bool Delete(Item item, int quantity)
+        public bool CanDelete(Item item)
         {
             if (Owner.IsFighting() && Owner.Fight.Phase != FightPhase.Placement)
                 return false;
@@ -193,7 +211,31 @@ namespace BiM.Behaviors.Game.Items
             if (!HasItem(item))
                 return false;
 
+            return true;
+        }
+
+        public bool Delete(Item item)
+        {
+            return Delete(item, item.Quantity);
+        }
+
+        public bool Delete(Item item, int quantity)
+        {
+            if (!CanDelete(item))
+                return false;
+
             Owner.Bot.SendToServer(new ObjectDeleteMessage(item.Guid, quantity));
+            return true;
+        }
+
+        public bool CanDrop(Item item)
+        {
+            if (!( Owner.Context is Map ))
+                return false;
+
+            if (!HasItem(item))
+                return false;
+
             return true;
         }
 
@@ -204,10 +246,7 @@ namespace BiM.Behaviors.Game.Items
 
         public bool Drop(Item item, int quantity)
         {
-            if (!(Owner.Context is Map))
-                return false;
-
-            if (!HasItem(item))
+            if (!CanDrop(item))
                 return false;
 
             // todo : check if near cells are free
@@ -216,12 +255,23 @@ namespace BiM.Behaviors.Game.Items
             return true;
         }
 
-        public bool Use(Item item)
+        public bool CanUse(Item item)
         {
+            if (!item.IsUsable)
+                return false;
+
             if (Owner.IsFighting() && Owner.Fight.Phase != FightPhase.Placement)
                 return false;
 
             if (!HasItem(item))
+                return false;
+
+            return true;
+        }
+
+        public bool Use(Item item)
+        {
+            if (!CanUse(item))
                 return false;
 
             Owner.Bot.SendToServer(new ObjectUseMessage(item.Guid));
