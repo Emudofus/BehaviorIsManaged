@@ -143,9 +143,13 @@ namespace BiM.MITM
 
         private void OnAuthClientDisconnected(ConnectionMITM client)
         {
-            if (client.Bot.ExpectedDisconnection)
-                client.Bot.AddMessage(client.Bot.Stop);
-            else client.Bot.Dispose();
+            client.Bot.AddMessage(() =>
+                {
+                    if (client.Bot.ExpectedDisconnection)
+                        client.Bot.Stop();
+                    else
+                        client.Bot.Dispose();
+                });
         }
 
         private void OnWorldClientConnected(ConnectionMITM client)
@@ -159,7 +163,7 @@ namespace BiM.MITM
 
         private void OnWorldClientDisconnected(ConnectionMITM client)
         {
-            client.Bot.Dispose();
+            client.Bot.AddMessage(client.Bot.Dispose);
         }
 
         private void OnAuthClientMessageReceived(Client client, NetworkMessage message)

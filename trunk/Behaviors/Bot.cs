@@ -78,10 +78,17 @@ namespace BiM.Behaviors
             : base(DefaultBotTick)
         {
             if (messageDispatcher == null) throw new ArgumentNullException("messageDispatcher");
+            Id = -1;
             Dispatcher = messageDispatcher;
             ConnectionType = ClientConnectionType.Disconnected;
             ClientInformations = new ClientInformations();
             Display = DisplayState.None;
+        }
+
+        public int Id
+        {
+            get;
+            internal set;
         }
 
         public MessageDispatcher Dispatcher
@@ -353,6 +360,7 @@ namespace BiM.Behaviors
                 return;
 
             m_disposed = true;
+            Id = -1;
 
             Stop(); 
             

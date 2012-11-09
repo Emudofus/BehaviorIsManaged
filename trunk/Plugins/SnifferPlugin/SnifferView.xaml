@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="SnifferPlugin.SnifferView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SnifferPlugin" xmlns:avalondock="http://avalondock.codeplex.com" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" mc:Ignorable="d" d:DesignHeight="300"
+             d:DesignWidth="300">
+  <UserControl.Resources>
+    <avalondock:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <CollectionViewSource x:Key="Messages" Source="{Binding Messages}">
+      
+    </CollectionViewSource>
+  </UserControl.Resources>
+  <DockPanel>
+    <DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
+      <CheckBox Margin="3" VerticalAlignment="Center" Content="See properties" IsChecked="{Binding SeeProperties, Mode=TwoWay}" />
+      <Button Margin="3" VerticalAlignment="Center" Content="Export" DockPanel.Dock="Right" Command="{Binding ExportCommand}"/>
+      <xctk:WatermarkTextBox VerticalAlignment="Center" Watermark="Search ..."  Margin="3"
+                             Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=Explicit}" LostFocus="OnSearchTextBoxLostFocus" KeyUp="OnSearchTextBoxKeyUp"/>
+    </DockPanel>
+    <TreeView Margin="3"  ItemsSource="{Binding Source={StaticResource Messages}}">
+      <TreeView.ItemContainerStyle>
+        <Style TargetType="{x:Type TreeViewItem}">
+          <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource BoolToVisibilityConverter}}"/>
+        </Style>
+      </TreeView.ItemContainerStyle>
+      <TreeView.ItemTemplate>
+        <HierarchicalDataTemplate DataType="{x:Type local:ObjectDumpNode}" ItemsSource="{Binding Childrens}">
+          <TextBlock Text="{Binding Text}"/>
+        </HierarchicalDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
+  </DockPanel>
+</UserControl>

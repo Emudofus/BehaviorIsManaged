@@ -76,18 +76,26 @@ namespace BiM.Behaviors
 
         public void RegisterBot(Bot bot)
         {
-            m_bots.Add(bot);
+            lock (m_bots)
+            {
+                var index = m_bots.Count;
+                m_bots.Add(bot);
+                bot.Id = index;
 
-            OnBotAdded(bot);
+                OnBotAdded(bot);
+            }
         }
 
         public void RemoveBot(Bot bot)
         {
-            if (!bot.Disposed)
-                bot.Dispose();
+            lock (m_bots)
+            {
+                if (!bot.Disposed)
+                    bot.Dispose();
 
-            if (m_bots.Remove(bot))
-                OnBotRemoved(bot);
+                if (m_bots.Remove(bot))
+                    OnBotRemoved(bot);
+            }
         }
 
         public Bot GetCurrentBot()

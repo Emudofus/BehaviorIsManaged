@@ -17,6 +17,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using BiM.Behaviors;
+using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Host.UI;
 using BiM.Host.UI.ViewModels;
@@ -27,27 +28,25 @@ namespace BiM.Host.Handlers
 {
     public class BotRegister
     {
-        [MessageHandler(typeof (IdentificationMessage))]
-        public static void HandleIdentificationMessage(Bot bot, IdentificationMessage message)
+        [MessageHandler(typeof (BotAddedMessage))]
+        public static void HandleBotAddedMessage(object dummy, BotAddedMessage message)
+        {
+            var model = new BotViewModel(message.Bot);
+            var layout = UIManager.Instance.AddDocument(model, () => new BotControl());
+            layout.Title = "Bot #" + message.Bot.Id;
+
+            layout = model.AddDocument(new GeneralTabViewModel(message.Bot), () => new GeneralTab());
+            layout.Title = "General";
+        }
+
+        [MessageHandler(typeof (BotRemovedMessage))]
+        public static void HandleBotRemovedMessage(object dummy, BotRemovedMessage message)
         {
             var models = UIManager.Instance.GetBotsViewModel();
-            var matching = models.FirstOrDefault(x => x.Bot != null && 
-                x.Bot.ClientInformations != null && 
-                x.Bot.ClientInformations.Login.Equals(message.login, StringComparison.OrdinalIgnoreCase));
-
+            var matching = models.FirstOrDefault(x => x.Bot == message.Bot);
 
             if (matching != null)
-            {
-                matching.Bot.Dispose();
                 matching.Dispose();
-            }
-
-            var model = new BotViewModel(bot);
-            var layout = UIManager.Instance.AddDocument(model, () => new BotControl());
-            layout.Title = bot.ClientInformations.Login;
-
-            layout = model.AddDocument(new GeneralTabViewModel(bot), () => new GeneralTab());
-            layout.Title = "General";
-        } 
+        }
     }
 }
