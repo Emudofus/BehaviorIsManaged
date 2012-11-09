@@ -211,6 +211,8 @@
     <Compile Include="Game\World\Pathfinding\IOpenList.cs" />
     <Compile Include="Game\World\Pathfinding\LinearOpenList.cs" />
     <Compile Include="Game\World\Pathfinding\LogOpenList.cs" />
+    <Compile Include="Game\World\Pathfinding\Maps\MapPathElement.cs" />
+    <Compile Include="Game\World\Pathfinding\Maps\MapPathfinder.cs" />
     <Compile Include="Game\World\Pathfinding\Path.cs" />
     <Compile Include="Game\World\Pathfinding\PathElement.cs" />
     <Compile Include="Game\World\Pathfinding\Pathfinder.cs" />

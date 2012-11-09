@@ -59,10 +59,11 @@ namespace AvalonDock.Layout
                 ChildrenTreeChanged(this, new ChildrenTreeChangedEventArgs(change));
         }
 
-
+#if DEBUG
         public override void ConsoleDump(int tab)
         {
             base.ConsoleDump(tab);
         }
+#endif
     }
 }

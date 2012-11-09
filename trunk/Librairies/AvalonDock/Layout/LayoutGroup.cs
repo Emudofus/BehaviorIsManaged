@@ -133,12 +133,12 @@ namespace AvalonDock.Layout
 
             ComputeVisibility();
         }
-
+#if DEBUG
         public override void ConsoleDump(int tab)
         {
             base.ConsoleDump(tab);
         }
-
+#endif
         #endregion
 
 

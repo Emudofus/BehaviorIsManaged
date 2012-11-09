@@ -17,6 +17,7 @@
 using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 using BiM.Behaviors;
 using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Items;
@@ -128,6 +129,10 @@ namespace BasicPlugin.Inventory
                 Max = max,
                 Value = max,
             };
+
+            var mouse = View.PointToScreen(Mouse.GetPosition(View));
+            m_dialog.Left = mouse.X;
+            m_dialog.Top = mouse.Y;
 
             if (m_dialog.ShowDialog() == true)
                 return m_dialog.Value;

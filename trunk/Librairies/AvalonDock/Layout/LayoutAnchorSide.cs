@@ -50,12 +50,12 @@ namespace AvalonDock.Layout
 
             UpdateSide();
         }
-
+#if DEBUG
         public override void ConsoleDump(int tab)
         {
             base.ConsoleDump(tab);
         }
-
+#endif
         private void UpdateSide()
         {
             if (Root.LeftSide == this)

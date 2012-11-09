@@ -114,9 +114,11 @@ namespace AvalonDock.Layout
             base.ReadXml(reader);
         }
 
+#if DEBUG
         public override void ConsoleDump(int tab)
         {
             base.ConsoleDump(tab);
         }
+#endif
     }
 }
