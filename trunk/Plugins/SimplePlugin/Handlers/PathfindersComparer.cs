@@ -14,6 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BiM.Behaviors;
@@ -46,14 +47,14 @@ namespace SimplePlugin.Handlers
             var botPath = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
 
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client
-            //bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), botPath.Cells.Select(entry => entry.Id).ToArray()));
-            //bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
+            bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), botPath.Cells.Select(entry => entry.Id).ToArray()));
+            bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
         }
 
         [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
         public static void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
         {
-            bot.Character.StartMoving += OnStartMoving;
+            //bot.Character.StartMoving += OnStartMoving;
         }
 
         [MessageHandler(typeof (GameMapMovementCancelMessage))]
@@ -62,7 +63,7 @@ namespace SimplePlugin.Handlers
             if (!AllowComparer)
                 return;
 
-            bot.SendToClient(new DebugHighlightCellsMessage(Color.Violet.ToArgb(), new short[] { message.cellId }));
+            //bot.SendToClient(new DebugHighlightCellsMessage(Color.Violet.ToArgb(), new short[] { message.cellId }));
         }
 
         private static void OnStartMoving(ContextActor actor, MovementBehavior movement)
