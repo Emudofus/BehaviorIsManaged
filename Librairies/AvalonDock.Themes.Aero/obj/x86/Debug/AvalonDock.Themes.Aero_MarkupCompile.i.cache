@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\AvalonDock.Themes.Aero\obj\x86\Debug\
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Librairies\AvalonDock.Themes.Aero\obj\x86\Debug\
 AvalonDock.Themes.Aero
 none
 false
@@ -13,8 +13,8 @@ DEBUG;TRACE
 2-109355679
 
 61041830072
-131128560609
+13-1849541400
 Brushes.xaml;Theme.xaml;
 
-False
+True
 

@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\SnifferPlugin\obj\x86\Debug\
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Plugins\SnifferPlugin\obj\x86\Debug\
 SnifferPlugin
 none
 false
@@ -13,8 +13,8 @@ DEBUG;TRACE
 12091463948
 
 7-339243554
-19-856723895
+19899656374
 SnifferView.xaml;
 
-False
+True
 

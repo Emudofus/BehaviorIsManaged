@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\BasicPlugin\obj\x86\Debug\
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Plugins\BasicPlugin\obj\x86\Debug\
 BasicPlugin
 none
 false
@@ -13,8 +13,8 @@ DEBUG;TRACE
 7109070604
 
 24-1745014269
-21-1039412897
+21-319663232
 CharacterSelection\CharacterCreationDialog.xaml;CharacterSelection\CharacterSelectionView.xaml;CharacterSelection\DeletionDialog.xaml;Chat\ChatView.xaml;Inventory\InputNumberDialog.xaml;Inventory\InventoryView.xaml;ServerSelection\ServerSelectionView.xaml;
 
-False
+True
 

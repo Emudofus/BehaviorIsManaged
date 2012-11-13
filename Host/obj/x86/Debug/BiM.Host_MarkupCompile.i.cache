@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\obj\x86\Debug\
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Host\obj\x86\Debug\
 BiM.Host
 none
 false
 DEBUG;TRACE
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\UI\App.xaml
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Host\UI\App.xaml
 3-148261937
 1-2138471434
 34-1442182642
-21794242949
+21728211307
 UI\Views\BotControl.xaml;UI\Views\GeneralTab.xaml;UI\Views\MainWindow.xaml;
 
-False
+True
 

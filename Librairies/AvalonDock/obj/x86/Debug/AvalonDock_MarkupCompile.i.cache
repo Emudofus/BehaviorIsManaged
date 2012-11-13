@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\AvalonDock\obj\x86\Debug\
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Librairies\AvalonDock\obj\x86\Debug\
 AvalonDock
 none
 false
@@ -16,5 +16,5 @@ DEBUG;TRACE
 12-1381780322
 Themes\generic.xaml;
 
-False
+True
 

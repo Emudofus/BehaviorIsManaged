@@ -45,3 +45,6 @@ C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\WPF
 C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\System.Windows.Interactivity.dll
 C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\System.Windows.Interactivity.xml
 C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\fr\System.Windows.Interactivity.resources.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Host\bin\Debug\BiM.Host.exe.config
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Host\obj\x86\Debug\BiM.Host.exe
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\Host\obj\x86\Debug\BiM.Host.pdb
