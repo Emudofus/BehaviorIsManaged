@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ShortcutBarRemoveErrorMessage" Id="6222" Heritage="Message">
+	<Fields>
+		<XmlField Name="error" Type="sbyte" Condition="error &lt; 0" />
+	</Fields>
+</XmlMessage>

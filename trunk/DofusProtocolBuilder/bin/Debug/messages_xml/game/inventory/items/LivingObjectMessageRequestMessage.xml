@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LivingObjectMessageRequestMessage" Id="6066" Heritage="Message">
+	<Fields>
+		<XmlField Name="msgId" Type="short" Condition="msgId &lt; 0" />
+		<XmlField Name="parameters" Type="utf[]" />
+		<XmlField Name="livingObject" Type="uint" Condition="livingObject &lt; 0 || livingObject &gt; 4294967295" />
+	</Fields>
+</XmlMessage>

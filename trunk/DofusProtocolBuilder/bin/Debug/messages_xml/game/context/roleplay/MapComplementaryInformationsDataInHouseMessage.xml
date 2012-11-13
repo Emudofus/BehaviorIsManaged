@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="MapComplementaryInformationsDataInHouseMessage" Id="6130" Heritage="MapComplementaryInformationsDataMessage">
+	<Fields>
+		<XmlField Name="currentHouse" Type="Types.HouseInformationsInside" />
+	</Fields>
+</XmlMessage>

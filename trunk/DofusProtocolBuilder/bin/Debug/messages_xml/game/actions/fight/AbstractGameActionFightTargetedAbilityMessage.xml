@@ -1,0 +1,8 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AbstractGameActionFightTargetedAbilityMessage" Id="6118" Heritage="AbstractGameActionMessage">
+	<Fields>
+		<XmlField Name="targetId" Type="int" />
+		<XmlField Name="destinationCellId" Type="short" Condition="destinationCellId &lt; -1 || destinationCellId &gt; 559" />
+		<XmlField Name="critical" Type="sbyte" Condition="critical &lt; 0" />
+		<XmlField Name="silentCast" Type="boolean" />
+	</Fields>
+</XmlMessage>

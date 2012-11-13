@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterSpellModification" Id="215" Heritage="Object">
+	<Fields>
+		<XmlField Name="modificationType" Type="sbyte" Condition="modificationType &lt; 0" />
+		<XmlField Name="spellId" Type="short" Condition="spellId &lt; 0" />
+		<XmlField Name="value" Type="Types.CharacterBaseCharacteristic" />
+	</Fields>
+</XmlType>

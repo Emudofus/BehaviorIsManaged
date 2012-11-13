@@ -13,10 +13,32 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
+
+using System.ComponentModel;
+using System.Windows;
+using BiM.Protocol.Tools.Dlm;
+
 namespace BiM.Behaviors.Game.World.Pathfinding.Maps
 {
-    public class Region
+    public class Region : INotifyPropertyChanged
     {
-         
+        public Region(Point[] polygon)
+        {
+            Polygon = polygon;
+        }
+
+        public Point[] Polygon
+        {
+            get;
+            set;
+        }
+
+
+        public static Region CreateRegion(DlmCellData[] cells)
+        {
+
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

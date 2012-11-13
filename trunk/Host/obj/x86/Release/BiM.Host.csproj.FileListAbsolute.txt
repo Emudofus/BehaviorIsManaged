@@ -1,0 +1,1 @@
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Release\BiM.Host.exe.config

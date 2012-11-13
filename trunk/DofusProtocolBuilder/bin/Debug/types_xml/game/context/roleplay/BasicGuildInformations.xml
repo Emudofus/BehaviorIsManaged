@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="BasicGuildInformations" Id="365" Heritage="Object">
+	<Fields>
+		<XmlField Name="guildId" Type="int" Condition="guildId &lt; 0" />
+		<XmlField Name="guildName" Type="utf" />
+	</Fields>
+</XmlType>

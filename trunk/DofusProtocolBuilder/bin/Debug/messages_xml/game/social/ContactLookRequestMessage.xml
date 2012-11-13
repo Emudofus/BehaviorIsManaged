@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ContactLookRequestMessage" Id="5932" Heritage="Message">
+	<Fields>
+		<XmlField Name="requestId" Type="byte" Condition="requestId &lt; 0 || requestId &gt; 255" />
+		<XmlField Name="contactType" Type="sbyte" Condition="contactType &lt; 0" />
+	</Fields>
+</XmlMessage>

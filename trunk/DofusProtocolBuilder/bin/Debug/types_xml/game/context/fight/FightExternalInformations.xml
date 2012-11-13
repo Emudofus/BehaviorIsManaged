@@ -1,0 +1,9 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightExternalInformations" Id="117" Heritage="Object">
+	<Fields>
+		<XmlField Name="fightId" Type="int" />
+		<XmlField Name="fightStart" Type="int" Condition="fightStart &lt; 0" />
+		<XmlField Name="fightSpectatorLocked" Type="boolean" />
+		<XmlField Name="fightTeams" Type="Types.FightTeamLightInformations[]" Limit="2" />
+		<XmlField Name="fightTeamsOptions" Type="Types.FightOptionsInformations[]" Limit="2" />
+	</Fields>
+</XmlType>

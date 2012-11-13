@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ProtocolRequired" Id="1" Heritage="Message">
+	<Fields>
+		<XmlField Name="requiredVersion" Type="int" Condition="requiredVersion &lt; 0" />
+		<XmlField Name="currentVersion" Type="int" Condition="currentVersion &lt; 0" />
+	</Fields>
+</XmlMessage>

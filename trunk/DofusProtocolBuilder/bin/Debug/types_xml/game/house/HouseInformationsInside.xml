@@ -1,0 +1,12 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="HouseInformationsInside" Id="218" Heritage="Object">
+	<Fields>
+		<XmlField Name="houseId" Type="int" Condition="houseId &lt; 0" />
+		<XmlField Name="modelId" Type="short" Condition="modelId &lt; 0" />
+		<XmlField Name="ownerId" Type="int" />
+		<XmlField Name="ownerName" Type="utf" />
+		<XmlField Name="worldX" Type="short" Condition="worldX &lt; -255 || worldX &gt; 255" />
+		<XmlField Name="worldY" Type="short" Condition="worldY &lt; -255 || worldY &gt; 255" />
+		<XmlField Name="price" Type="uint" Condition="price &lt; 0 || price &gt; 4294967295" />
+		<XmlField Name="isLocked" Type="boolean" />
+	</Fields>
+</XmlType>

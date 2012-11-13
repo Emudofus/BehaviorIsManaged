@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PackRestrictedSubAreaMessage" Id="6186" Heritage="Message">
+	<Fields>
+		<XmlField Name="subAreaId" Type="int" Condition="subAreaId &lt; 0" />
+	</Fields>
+</XmlMessage>

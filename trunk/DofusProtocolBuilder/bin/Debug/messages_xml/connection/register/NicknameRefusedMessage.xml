@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="NicknameRefusedMessage" Id="5638" Heritage="Message">
+	<Fields>
+		<XmlField Name="reason" Type="sbyte" Condition="reason &lt; 0" />
+	</Fields>
+</XmlMessage>

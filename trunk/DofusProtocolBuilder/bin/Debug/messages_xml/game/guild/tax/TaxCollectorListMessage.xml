@@ -1,0 +1,8 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="TaxCollectorListMessage" Id="5930" Heritage="Message">
+	<Fields>
+		<XmlField Name="nbcollectorMax" Type="sbyte" Condition="nbcollectorMax &lt; 0" />
+		<XmlField Name="taxCollectorHireCost" Type="short" Condition="taxCollectorHireCost &lt; 0" />
+		<XmlField Name="informations" Type="instance of Types.TaxCollectorInformations[]" />
+		<XmlField Name="fightersInformations" Type="Types.TaxCollectorFightersInformation[]" />
+	</Fields>
+</XmlMessage>

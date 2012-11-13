@@ -1,0 +1,8 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightResumeSlaveInfo" Id="364" Heritage="Object">
+	<Fields>
+		<XmlField Name="slaveId" Type="int" />
+		<XmlField Name="spellCooldowns" Type="Types.GameFightSpellCooldown[]" />
+		<XmlField Name="summonCount" Type="sbyte" Condition="summonCount &lt; 0" />
+		<XmlField Name="bombCount" Type="sbyte" Condition="bombCount &lt; 0" />
+	</Fields>
+</XmlType>

@@ -1,0 +1,11 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectItem" Id="37" Heritage="Item">
+	<Fields>
+		<XmlField Name="position" Type="byte" Condition="position &lt; 0 || position &gt; 255" />
+		<XmlField Name="objectGID" Type="short" Condition="objectGID &lt; 0" />
+		<XmlField Name="powerRate" Type="short" />
+		<XmlField Name="overMax" Type="boolean" />
+		<XmlField Name="effects" Type="instance of Types.ObjectEffect[]" />
+		<XmlField Name="objectUID" Type="int" Condition="objectUID &lt; 0" />
+		<XmlField Name="quantity" Type="int" Condition="quantity &lt; 0" />
+	</Fields>
+</XmlType>

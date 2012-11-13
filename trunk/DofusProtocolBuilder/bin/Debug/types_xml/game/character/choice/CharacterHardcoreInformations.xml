@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterHardcoreInformations" Id="86" Heritage="CharacterBaseInformations">
+	<Fields>
+		<XmlField Name="deathState" Type="sbyte" Condition="deathState &lt; 0" />
+		<XmlField Name="deathCount" Type="short" Condition="deathCount &lt; 0" />
+		<XmlField Name="deathMaxLevel" Type="byte" Condition="deathMaxLevel &lt; 1 || deathMaxLevel &gt; 200" />
+	</Fields>
+</XmlType>

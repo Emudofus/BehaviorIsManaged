@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeBidHousePriceMessage" Id="5805" Heritage="Message">
+	<Fields>
+		<XmlField Name="genId" Type="int" Condition="genId &lt; 0" />
+	</Fields>
+</XmlMessage>

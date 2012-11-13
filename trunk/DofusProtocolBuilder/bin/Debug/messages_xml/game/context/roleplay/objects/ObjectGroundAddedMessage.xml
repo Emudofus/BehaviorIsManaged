@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectGroundAddedMessage" Id="3017" Heritage="Message">
+	<Fields>
+		<XmlField Name="cellId" Type="short" Condition="cellId &lt; 0 || cellId &gt; 559" />
+		<XmlField Name="objectGID" Type="short" Condition="objectGID &lt; 0" />
+	</Fields>
+</XmlMessage>

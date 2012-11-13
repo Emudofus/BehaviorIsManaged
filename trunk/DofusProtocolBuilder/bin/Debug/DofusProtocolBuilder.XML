@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DofusProtocolBuilder</name>
+    </assembly>
+    <members>
+        <member name="M:DofusProtocolBuilder.Profiles.ParsingProfile.GetRelativePath(System.String)">
+            <summary>
+            Get the path relative to the source directory
+            </summary>
+        </member>
+        <member name="T:DofusProtocolBuilder.Parsing.Elements.AssignationStatement">
+            <summary>
+            </summary>
+            <remarks>
+              Only work if the value is a variable or a hard coded value
+            </remarks>
+        </member>
+        <member name="T:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase">
+            <summary>
+            Base class for this transformation
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.Write(System.String)">
+            <summary>
+            Write text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.WriteLine(System.String)">
+            <summary>
+            Write text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.Write(System.String,System.Object[])">
+            <summary>
+            Write formatted text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.WriteLine(System.String,System.Object[])">
+            <summary>
+            Write formatted text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.Error(System.String)">
+            <summary>
+            Raise an error
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.Warning(System.String)">
+            <summary>
+            Raise a warning
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.PushIndent(System.String)">
+            <summary>
+            Increase the indent
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.PopIndent">
+            <summary>
+            Remove the last indent that was added with PushIndent
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.ClearIndent">
+            <summary>
+            Remove any indentation
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.GenerationEnvironment">
+            <summary>
+            The string builder that generation-time code is using to assemble generated output
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.Errors">
+            <summary>
+            The error collection for the generation process
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.indentLengths">
+            <summary>
+            A list of the lengths of each indent that was added with PushIndent
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.CurrentIndent">
+            <summary>
+            Gets the current indent we use when adding lines to the output
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformationBase.Session">
+            <summary>
+            Current transformation session
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformation.Message">
+            <summary>
+            Access the Message parameter of the template.
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformation.Profile">
+            <summary>
+            Access the Profile parameter of the template.
+            </summary>
+        </member>
+        <member name="T:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformation.ToStringInstanceHelper">
+            <summary>
+            Utility class to produce culture-oriented representation of an object as a string.
+            </summary>
+        </member>
+        <member name="M:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformation.ToStringInstanceHelper.ToStringWithCulture(System.Object)">
+            <summary>
+            This is called from the compile/run appdomain to convert objects within an expression block to a string
+            </summary>
+        </member>
+        <member name="P:A2a7c9802de1641b7a9f26cb89611b1a2.GeneratedTextTransformation.ToStringInstanceHelper.FormatProvider">
+            <summary>
+            Gets or sets format provider to be used by ToStringWithCulture method.
+            </summary>
+        </member>
+        <member name="T:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase">
+            <summary>
+            Base class for this transformation
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.Write(System.String)">
+            <summary>
+            Write text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.WriteLine(System.String)">
+            <summary>
+            Write text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.Write(System.String,System.Object[])">
+            <summary>
+            Write formatted text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.WriteLine(System.String,System.Object[])">
+            <summary>
+            Write formatted text directly into the generated output
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.Error(System.String)">
+            <summary>
+            Raise an error
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.Warning(System.String)">
+            <summary>
+            Raise a warning
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.PushIndent(System.String)">
+            <summary>
+            Increase the indent
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.PopIndent">
+            <summary>
+            Remove the last indent that was added with PushIndent
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.ClearIndent">
+            <summary>
+            Remove any indentation
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.GenerationEnvironment">
+            <summary>
+            The string builder that generation-time code is using to assemble generated output
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.Errors">
+            <summary>
+            The error collection for the generation process
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.indentLengths">
+            <summary>
+            A list of the lengths of each indent that was added with PushIndent
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.CurrentIndent">
+            <summary>
+            Gets the current indent we use when adding lines to the output
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformationBase.Session">
+            <summary>
+            Current transformation session
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformation.Type">
+            <summary>
+            Access the Type parameter of the template.
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformation.Profile">
+            <summary>
+            Access the Profile parameter of the template.
+            </summary>
+        </member>
+        <member name="T:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformation.ToStringInstanceHelper">
+            <summary>
+            Utility class to produce culture-oriented representation of an object as a string.
+            </summary>
+        </member>
+        <member name="M:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformation.ToStringInstanceHelper.ToStringWithCulture(System.Object)">
+            <summary>
+            This is called from the compile/run appdomain to convert objects within an expression block to a string
+            </summary>
+        </member>
+        <member name="P:A09b629db78e34d238de0989a8295b68f.GeneratedTextTransformation.ToStringInstanceHelper.FormatProvider">
+            <summary>
+            Gets or sets format provider to be used by ToStringWithCulture method.
+            </summary>
+        </member>
+    </members>
+</doc>

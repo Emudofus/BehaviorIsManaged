@@ -1,0 +1,32 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightMinimalStats" Id="31" Heritage="Object">
+	<Fields>
+		<XmlField Name="lifePoints" Type="int" Condition="lifePoints &lt; 0" />
+		<XmlField Name="maxLifePoints" Type="int" Condition="maxLifePoints &lt; 0" />
+		<XmlField Name="baseMaxLifePoints" Type="int" Condition="baseMaxLifePoints &lt; 0" />
+		<XmlField Name="permanentDamagePercent" Type="int" Condition="permanentDamagePercent &lt; 0" />
+		<XmlField Name="shieldPoints" Type="int" Condition="shieldPoints &lt; 0" />
+		<XmlField Name="actionPoints" Type="short" />
+		<XmlField Name="maxActionPoints" Type="short" />
+		<XmlField Name="movementPoints" Type="short" />
+		<XmlField Name="maxMovementPoints" Type="short" />
+		<XmlField Name="summoner" Type="int" />
+		<XmlField Name="summoned" Type="boolean" />
+		<XmlField Name="neutralElementResistPercent" Type="short" />
+		<XmlField Name="earthElementResistPercent" Type="short" />
+		<XmlField Name="waterElementResistPercent" Type="short" />
+		<XmlField Name="airElementResistPercent" Type="short" />
+		<XmlField Name="fireElementResistPercent" Type="short" />
+		<XmlField Name="neutralElementReduction" Type="short" />
+		<XmlField Name="earthElementReduction" Type="short" />
+		<XmlField Name="waterElementReduction" Type="short" />
+		<XmlField Name="airElementReduction" Type="short" />
+		<XmlField Name="fireElementReduction" Type="short" />
+		<XmlField Name="criticalDamageFixedResist" Type="short" />
+		<XmlField Name="pushDamageFixedResist" Type="short" />
+		<XmlField Name="dodgePALostProbability" Type="short" Condition="dodgePALostProbability &lt; 0" />
+		<XmlField Name="dodgePMLostProbability" Type="short" Condition="dodgePMLostProbability &lt; 0" />
+		<XmlField Name="tackleBlock" Type="short" />
+		<XmlField Name="tackleEvade" Type="short" />
+		<XmlField Name="invisibilityState" Type="sbyte" />
+	</Fields>
+</XmlType>

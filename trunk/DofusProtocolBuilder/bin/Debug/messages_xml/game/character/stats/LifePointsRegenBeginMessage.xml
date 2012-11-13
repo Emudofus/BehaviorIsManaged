@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LifePointsRegenBeginMessage" Id="5684" Heritage="Message">
+	<Fields>
+		<XmlField Name="regenRate" Type="byte" Condition="regenRate &lt; 0 || regenRate &gt; 255" />
+	</Fields>
+</XmlMessage>

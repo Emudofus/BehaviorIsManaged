@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="InteractiveMapUpdateMessage" Id="5002" Heritage="Message">
+	<Fields>
+		<XmlField Name="interactiveElements" Type="Types.InteractiveElement[]" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,10 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="StartupActionAddObject" Id="52" Heritage="Object">
+	<Fields>
+		<XmlField Name="uid" Type="int" Condition="uid &lt; 0" />
+		<XmlField Name="title" Type="utf" />
+		<XmlField Name="text" Type="utf" />
+		<XmlField Name="descUrl" Type="utf" />
+		<XmlField Name="pictureUrl" Type="utf" />
+		<XmlField Name="items" Type="Types.ObjectItemInformationWithQuantity[]" />
+	</Fields>
+</XmlType>

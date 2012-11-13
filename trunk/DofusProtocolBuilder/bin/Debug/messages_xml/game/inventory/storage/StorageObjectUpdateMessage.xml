@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="StorageObjectUpdateMessage" Id="5647" Heritage="Message">
+	<Fields>
+		<XmlField Name="@object" Type="Types.ObjectItem" />
+	</Fields>
+</XmlMessage>

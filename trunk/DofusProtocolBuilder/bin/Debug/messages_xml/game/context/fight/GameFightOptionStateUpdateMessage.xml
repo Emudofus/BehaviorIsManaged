@@ -1,0 +1,8 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightOptionStateUpdateMessage" Id="5927" Heritage="Message">
+	<Fields>
+		<XmlField Name="fightId" Type="short" Condition="fightId &lt; 0" />
+		<XmlField Name="teamId" Type="sbyte" Condition="teamId &lt; 0" />
+		<XmlField Name="option" Type="sbyte" Condition="option &lt; 0" />
+		<XmlField Name="state" Type="boolean" />
+	</Fields>
+</XmlMessage>

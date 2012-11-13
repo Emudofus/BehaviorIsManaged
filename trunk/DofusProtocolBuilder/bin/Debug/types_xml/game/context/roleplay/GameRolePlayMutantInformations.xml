@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlayMutantInformations" Id="3" Heritage="GameRolePlayHumanoidInformations">
+	<Fields>
+		<XmlField Name="monsterId" Type="int" />
+		<XmlField Name="powerLevel" Type="sbyte" />
+	</Fields>
+</XmlType>

@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeHandleMountStableMessage" Id="5965" Heritage="Message">
+	<Fields>
+		<XmlField Name="actionType" Type="sbyte" />
+		<XmlField Name="rideId" Type="int" Condition="rideId &lt; 0" />
+	</Fields>
+</XmlMessage>

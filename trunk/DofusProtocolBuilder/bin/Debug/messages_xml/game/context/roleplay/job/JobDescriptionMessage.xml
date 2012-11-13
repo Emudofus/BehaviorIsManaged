@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobDescriptionMessage" Id="5655" Heritage="Message">
+	<Fields>
+		<XmlField Name="jobsDescription" Type="Types.JobDescription[]" />
+	</Fields>
+</XmlMessage>

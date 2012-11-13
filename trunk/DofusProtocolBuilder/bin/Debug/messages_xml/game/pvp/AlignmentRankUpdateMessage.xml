@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AlignmentRankUpdateMessage" Id="6058" Heritage="Message">
+	<Fields>
+		<XmlField Name="alignmentRank" Type="sbyte" Condition="alignmentRank &lt; 0" />
+		<XmlField Name="verbose" Type="boolean" />
+	</Fields>
+</XmlMessage>

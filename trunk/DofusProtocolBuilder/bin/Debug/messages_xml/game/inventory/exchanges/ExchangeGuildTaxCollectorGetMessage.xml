@@ -1,0 +1,12 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeGuildTaxCollectorGetMessage" Id="5762" Heritage="Message">
+	<Fields>
+		<XmlField Name="collectorName" Type="utf" />
+		<XmlField Name="worldX" Type="short" Condition="worldX &lt; -255 || worldX &gt; 255" />
+		<XmlField Name="worldY" Type="short" Condition="worldY &lt; -255 || worldY &gt; 255" />
+		<XmlField Name="mapId" Type="int" />
+		<XmlField Name="subAreaId" Type="short" Condition="subAreaId &lt; 0" />
+		<XmlField Name="userName" Type="utf" />
+		<XmlField Name="experience" Type="double" />
+		<XmlField Name="objectsInfos" Type="Types.ObjectItemQuantity[]" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightMonsterInformations" Id="29" Heritage="GameFightAIInformations">
+	<Fields>
+		<XmlField Name="creatureGenericId" Type="short" Condition="creatureGenericId &lt; 0" />
+		<XmlField Name="creatureGrade" Type="sbyte" Condition="creatureGrade &lt; 0" />
+	</Fields>
+</XmlType>

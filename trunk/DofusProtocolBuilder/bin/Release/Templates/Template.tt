@@ -1,0 +1,8 @@
+﻿<#@ template language="C#" debug="true"  #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ parameter name="Dummy" type="System.Int32" #>
+
+Lol (<#= this.Dummy #>)

@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ServerSettingsMessage" Id="6340" Heritage="Message">
+	<Fields>
+		<XmlField Name="lang" Type="utf" />
+		<XmlField Name="community" Type="sbyte" Condition="community &lt; 0" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="StorageObjectsRemoveMessage" Id="6035" Heritage="Message">
+	<Fields>
+		<XmlField Name="objectUIDList" Type="int[]" />
+	</Fields>
+</XmlMessage>

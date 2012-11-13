@@ -1,0 +1,11 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PartyMemberInFightMessage" Id="6342" Heritage="AbstractPartyMessage">
+	<Fields>
+		<XmlField Name="reason" Type="sbyte" Condition="reason &lt; 0" />
+		<XmlField Name="memberId" Type="int" />
+		<XmlField Name="memberAccountId" Type="int" Condition="memberAccountId &lt; 0" />
+		<XmlField Name="memberName" Type="utf" />
+		<XmlField Name="fightId" Type="int" />
+		<XmlField Name="fightMap" Type="Types.MapCoordinatesExtended" />
+		<XmlField Name="secondsBeforeFightStart" Type="int" />
+	</Fields>
+</XmlMessage>

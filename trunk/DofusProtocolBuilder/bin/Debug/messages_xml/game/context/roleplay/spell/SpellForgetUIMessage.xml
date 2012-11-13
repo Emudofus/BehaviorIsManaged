@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SpellForgetUIMessage" Id="5565" Heritage="Message">
+	<Fields>
+		<XmlField Name="open" Type="boolean" />
+	</Fields>
+</XmlMessage>

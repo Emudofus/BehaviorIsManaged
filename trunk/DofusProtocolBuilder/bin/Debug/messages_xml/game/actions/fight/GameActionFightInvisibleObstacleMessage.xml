@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightInvisibleObstacleMessage" Id="5820" Heritage="AbstractGameActionMessage">
+	<Fields>
+		<XmlField Name="sourceSpellId" Type="int" Condition="sourceSpellId &lt; 0" />
+	</Fields>
+</XmlMessage>

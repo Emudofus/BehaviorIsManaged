@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectEffectInteger" Id="70" Heritage="ObjectEffect">
+	<Fields>
+		<XmlField Name="value" Type="short" Condition="value &lt; 0" />
+	</Fields>
+</XmlType>

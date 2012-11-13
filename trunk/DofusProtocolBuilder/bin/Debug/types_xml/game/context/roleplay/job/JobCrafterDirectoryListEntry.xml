@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobCrafterDirectoryListEntry" Id="196" Heritage="Object">
+	<Fields>
+		<XmlField Name="playerInfo" Type="Types.JobCrafterDirectoryEntryPlayerInfo" />
+		<XmlField Name="jobInfo" Type="Types.JobCrafterDirectoryEntryJobInfo" />
+	</Fields>
+</XmlType>

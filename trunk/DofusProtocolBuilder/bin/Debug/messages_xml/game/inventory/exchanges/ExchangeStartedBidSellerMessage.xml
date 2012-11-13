@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeStartedBidSellerMessage" Id="5905" Heritage="Message">
+	<Fields>
+		<XmlField Name="sellerDescriptor" Type="Types.SellerBuyerDescriptor" />
+		<XmlField Name="objectsInfos" Type="Types.ObjectItemToSellInBid[]" />
+	</Fields>
+</XmlMessage>

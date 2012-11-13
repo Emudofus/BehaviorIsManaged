@@ -1,0 +1,10 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Version" Id="11" Heritage="Object">
+	<Fields>
+		<XmlField Name="major" Type="sbyte" Condition="major &lt; 0" />
+		<XmlField Name="minor" Type="sbyte" Condition="minor &lt; 0" />
+		<XmlField Name="release" Type="sbyte" Condition="release &lt; 0" />
+		<XmlField Name="revision" Type="int" Condition="revision &lt; 0" />
+		<XmlField Name="patch" Type="sbyte" Condition="patch &lt; 0" />
+		<XmlField Name="buildType" Type="sbyte" Condition="buildType &lt; 0" />
+	</Fields>
+</XmlType>

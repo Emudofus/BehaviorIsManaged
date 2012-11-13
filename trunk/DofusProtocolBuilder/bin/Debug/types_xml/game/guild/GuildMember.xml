@@ -1,0 +1,15 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildMember" Id="88" Heritage="CharacterMinimalInformations">
+	<Fields>
+		<XmlField Name="breed" Type="sbyte" />
+		<XmlField Name="sex" Type="boolean" />
+		<XmlField Name="rank" Type="short" Condition="rank &lt; 0" />
+		<XmlField Name="givenExperience" Type="double" Condition="givenExperience &lt; 0" />
+		<XmlField Name="experienceGivenPercent" Type="sbyte" Condition="experienceGivenPercent &lt; 0 || experienceGivenPercent &gt; 100" />
+		<XmlField Name="rights" Type="uint" Condition="rights &lt; 0 || rights &gt; 4294967295" />
+		<XmlField Name="connected" Type="sbyte" Condition="connected &lt; 0" />
+		<XmlField Name="alignmentSide" Type="sbyte" />
+		<XmlField Name="hoursSinceLastConnection" Type="ushort" Condition="hoursSinceLastConnection &lt; 0 || hoursSinceLastConnection &gt; 65535" />
+		<XmlField Name="moodSmileyId" Type="sbyte" />
+		<XmlField Name="accountId" Type="int" Condition="accountId &lt; 0" />
+	</Fields>
+</XmlType>

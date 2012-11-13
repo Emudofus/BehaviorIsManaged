@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectEffectLadder" Id="81" Heritage="ObjectEffectCreature">
+	<Fields>
+		<XmlField Name="monsterCount" Type="int" Condition="monsterCount &lt; 0" />
+	</Fields>
+</XmlType>

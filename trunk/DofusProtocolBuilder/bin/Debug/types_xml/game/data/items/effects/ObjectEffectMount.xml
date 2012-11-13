@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectEffectMount" Id="179" Heritage="ObjectEffect">
+	<Fields>
+		<XmlField Name="mountId" Type="int" Condition="mountId &lt; 0" />
+		<XmlField Name="date" Type="double" />
+		<XmlField Name="modelId" Type="short" Condition="modelId &lt; 0" />
+	</Fields>
+</XmlType>

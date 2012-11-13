@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeStartedMessage" Id="5512" Heritage="Message">
+	<Fields>
+		<XmlField Name="exchangeType" Type="sbyte" />
+	</Fields>
+</XmlMessage>

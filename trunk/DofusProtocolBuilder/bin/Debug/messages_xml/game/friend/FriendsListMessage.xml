@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FriendsListMessage" Id="4002" Heritage="Message">
+	<Fields>
+		<XmlField Name="friendsList" Type="instance of Types.FriendInformations[]" />
+	</Fields>
+</XmlMessage>

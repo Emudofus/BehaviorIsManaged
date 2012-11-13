@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PaddockMoveItemRequestMessage" Id="6052" Heritage="Message">
+	<Fields>
+		<XmlField Name="oldCellId" Type="short" Condition="oldCellId &lt; 0 || oldCellId &gt; 559" />
+		<XmlField Name="newCellId" Type="short" Condition="newCellId &lt; 0 || newCellId &gt; 559" />
+	</Fields>
+</XmlMessage>

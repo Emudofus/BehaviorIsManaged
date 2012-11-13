@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ChallengeTargetUpdateMessage" Id="6123" Heritage="Message">
+	<Fields>
+		<XmlField Name="challengeId" Type="sbyte" Condition="challengeId &lt; 0" />
+		<XmlField Name="targetId" Type="int" />
+	</Fields>
+</XmlMessage>

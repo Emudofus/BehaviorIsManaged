@@ -1,0 +1,13 @@
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\BehaviorIsManaged.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\BehaviorIsManaged.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\BiM.Core.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\BiM.Protocol.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\zlib.net.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\BiM.Core.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\NLog.xml
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\bin\x86\Debug\BiM.Protocol.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\obj\x86\Debug\BehaviorIsManaged.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\BehaviorIsManaged\obj\x86\Debug\BehaviorIsManaged.pdb

@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SubEntity" Id="54" Heritage="Object">
+	<Fields>
+		<XmlField Name="bindingPointCategory" Type="sbyte" Condition="bindingPointCategory &lt; 0" />
+		<XmlField Name="bindingPointIndex" Type="sbyte" Condition="bindingPointIndex &lt; 0" />
+		<XmlField Name="subEntityLook" Type="Types.EntityLook" />
+	</Fields>
+</XmlType>

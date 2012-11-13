@@ -1,0 +1,13 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="TaxCollectorDialogQuestionExtendedMessage" Id="5615" Heritage="TaxCollectorDialogQuestionBasicMessage">
+	<Fields>
+		<XmlField Name="maxPods" Type="short" Condition="maxPods &lt; 0" />
+		<XmlField Name="prospecting" Type="short" Condition="prospecting &lt; 0" />
+		<XmlField Name="wisdom" Type="short" Condition="wisdom &lt; 0" />
+		<XmlField Name="taxCollectorsCount" Type="sbyte" Condition="taxCollectorsCount &lt; 0" />
+		<XmlField Name="taxCollectorAttack" Type="int" />
+		<XmlField Name="kamas" Type="int" Condition="kamas &lt; 0" />
+		<XmlField Name="experience" Type="double" Condition="experience &lt; 0" />
+		<XmlField Name="pods" Type="int" Condition="pods &lt; 0" />
+		<XmlField Name="itemsValue" Type="int" Condition="itemsValue &lt; 0" />
+	</Fields>
+</XmlMessage>

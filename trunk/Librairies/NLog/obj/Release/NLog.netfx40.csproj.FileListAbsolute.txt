@@ -1,0 +1,12 @@
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x86\Release\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x86\Release\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x86\Release\NLog.xml
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\obj\Release\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\obj\Release\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\Release\NLog.xml
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\Release\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\Release\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x64\Release\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x64\Release\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x64\Release\NLog.xml

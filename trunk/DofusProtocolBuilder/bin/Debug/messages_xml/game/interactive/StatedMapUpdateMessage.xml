@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="StatedMapUpdateMessage" Id="5716" Heritage="Message">
+	<Fields>
+		<XmlField Name="statedElements" Type="Types.StatedElement[]" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,10 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ChallengeInfoMessage" Id="6022" Heritage="Message">
+	<Fields>
+		<XmlField Name="challengeId" Type="sbyte" Condition="challengeId &lt; 0" />
+		<XmlField Name="targetId" Type="int" />
+		<XmlField Name="baseXpBonus" Type="int" Condition="baseXpBonus &lt; 0" />
+		<XmlField Name="extraXpBonus" Type="int" Condition="extraXpBonus &lt; 0" />
+		<XmlField Name="baseDropBonus" Type="int" Condition="baseDropBonus &lt; 0" />
+		<XmlField Name="extraDropBonus" Type="int" Condition="extraDropBonus &lt; 0" />
+	</Fields>
+</XmlMessage>

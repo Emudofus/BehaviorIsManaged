@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="InventoryPresetUseResultMessage" Id="6163" Heritage="Message">
+	<Fields>
+		<XmlField Name="presetId" Type="sbyte" Condition="presetId &lt; 0" />
+		<XmlField Name="code" Type="sbyte" Condition="code &lt; 0" />
+		<XmlField Name="unlinkedPosition" Type="byte[]" />
+	</Fields>
+</XmlMessage>

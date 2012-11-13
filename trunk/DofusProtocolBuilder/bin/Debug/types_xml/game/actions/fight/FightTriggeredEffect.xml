@@ -1,0 +1,8 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightTriggeredEffect" Id="210" Heritage="AbstractFightDispellableEffect">
+	<Fields>
+		<XmlField Name="arg1" Type="int" />
+		<XmlField Name="arg2" Type="int" />
+		<XmlField Name="arg3" Type="int" />
+		<XmlField Name="delay" Type="short" />
+	</Fields>
+</XmlType>

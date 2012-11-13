@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectFeedMessage" Id="6290" Heritage="Message">
+	<Fields>
+		<XmlField Name="objectUID" Type="int" Condition="objectUID &lt; 0" />
+		<XmlField Name="foodUID" Type="int" Condition="foodUID &lt; 0" />
+		<XmlField Name="foodQuantity" Type="short" Condition="foodQuantity &lt; 0" />
+	</Fields>
+</XmlMessage>

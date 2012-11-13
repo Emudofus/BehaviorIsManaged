@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="UpdateMountBoostMessage" Id="6179" Heritage="Message">
+	<Fields>
+		<XmlField Name="rideId" Type="double" />
+		<XmlField Name="boostToUpdateList" Type="instance of Types.UpdateMountBoost[]" />
+	</Fields>
+</XmlMessage>

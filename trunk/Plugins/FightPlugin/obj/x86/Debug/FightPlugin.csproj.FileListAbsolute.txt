@@ -1,0 +1,5 @@
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\plugins\FightPlugin.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\plugins\FightPlugin.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\FightPlugin\obj\x86\Debug\FightPlugin.csprojResolveAssemblyReference.cache
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\FightPlugin\obj\x86\Debug\FightPlugin.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\FightPlugin\obj\x86\Debug\FightPlugin.pdb

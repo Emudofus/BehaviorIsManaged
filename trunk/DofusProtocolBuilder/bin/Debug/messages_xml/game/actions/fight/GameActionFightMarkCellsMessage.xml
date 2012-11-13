@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightMarkCellsMessage" Id="5540" Heritage="AbstractGameActionMessage">
+	<Fields>
+		<XmlField Name="mark" Type="Types.GameActionMark" />
+	</Fields>
+</XmlMessage>

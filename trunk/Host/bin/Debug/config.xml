@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+ <Key name="DefaultBotTick" comment="The interval (ms) between two message dispatching">
+  <int>100</int>
+ </Key>
+ <Key name="EstimatedMovementLag" comment="Refer to the estimated time elapsed until the client start moving (in ms)">
+  <int>100</int>
+ </Key>
+ <Key name="MapDecryptionKey" comment="The decryption key used by default">
+  <string>649ae451ca33ec53bbcbcc33becf15f4</string>
+ </Key>
+ <Key name="ServerConnectionTimeout" comment="Timeout in seconds before closing the connection">
+  <int>20</int>
+ </Key>
+ <Key name="SettingsFile" comment="Path of settings files, ?account? is replaced by the account name and ?character? by the character name. You must use them !">
+  <string>./settings/?account?/?character?.xml</string>
+ </Key>
+ <Key name="PluginsFolder">
+  <string>./plugins</string>
+ </Key>
+ <Key name="FindDofusPathAuto" comment="When true the dofus path will be find automatically">
+  <boolean>true</boolean>
+ </Key>
+ <Key name="DofusBasePath">
+  <string>C:\Program Files (x86)\Dofus 2\</string>
+ </Key>
+ <Key name="DofusDataPath">
+  <string>C:\Program Files (x86)\Dofus 2\app\data\common</string>
+ </Key>
+ <Key name="DofusMapsD2P">
+  <string>C:\Program Files (x86)\Dofus 2\app\content\maps\maps0.d2p</string>
+ </Key>
+ <Key name="DofusI18NPath">
+  <string>C:\Program Files (x86)\Dofus 2\app\data\i18n</string>
+ </Key>
+ <Key name="DofusItemIconPath">
+  <string>app\content\gfx\items\bitmap0.d2p</string>
+ </Key>
+ <Key name="BotAuthHost">
+  <string>localhost</string>
+ </Key>
+ <Key name="BotAuthPort">
+  <int>5555</int>
+ </Key>
+ <Key name="BotWorldHost">
+  <string>localhost</string>
+ </Key>
+ <Key name="BotWorldPort">
+  <int>5556</int>
+ </Key>
+ <Key name="RealAuthHost">
+  <string>213.248.126.180</string>
+ </Key>
+ <Key name="RealAuthPort">
+  <int>5555</int>
+ </Key>
+</Configuration>

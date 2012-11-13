@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SkillActionDescriptionTimed" Id="103" Heritage="SkillActionDescription">
+	<Fields>
+		<XmlField Name="time" Type="byte" Condition="time &lt; 0 || time &gt; 255" />
+	</Fields>
+</XmlType>

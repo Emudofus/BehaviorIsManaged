@@ -1,0 +1,76 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterCharacteristicsInformations" Id="8" Heritage="Object">
+	<Fields>
+		<XmlField Name="experience" Type="double" Condition="experience &lt; 0" />
+		<XmlField Name="experienceLevelFloor" Type="double" Condition="experienceLevelFloor &lt; 0" />
+		<XmlField Name="experienceNextLevelFloor" Type="double" Condition="experienceNextLevelFloor &lt; 0" />
+		<XmlField Name="kamas" Type="int" Condition="kamas &lt; 0" />
+		<XmlField Name="statsPoints" Type="int" Condition="statsPoints &lt; 0" />
+		<XmlField Name="spellsPoints" Type="int" Condition="spellsPoints &lt; 0" />
+		<XmlField Name="alignmentInfos" Type="Types.ActorExtendedAlignmentInformations" />
+		<XmlField Name="lifePoints" Type="int" Condition="lifePoints &lt; 0" />
+		<XmlField Name="maxLifePoints" Type="int" Condition="maxLifePoints &lt; 0" />
+		<XmlField Name="energyPoints" Type="short" Condition="energyPoints &lt; 0" />
+		<XmlField Name="maxEnergyPoints" Type="short" Condition="maxEnergyPoints &lt; 0" />
+		<XmlField Name="actionPointsCurrent" Type="short" />
+		<XmlField Name="movementPointsCurrent" Type="short" />
+		<XmlField Name="initiative" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="prospecting" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="actionPoints" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="movementPoints" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="strength" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="vitality" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="wisdom" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="chance" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="agility" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="intelligence" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="range" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="summonableCreaturesBoost" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="reflect" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="criticalHit" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="criticalHitWeapon" Type="short" Condition="criticalHitWeapon &lt; 0" />
+		<XmlField Name="criticalMiss" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="healBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="allDamagesBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="weaponDamagesBonusPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="damagesBonusPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="trapBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="trapBonusPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="permanentDamagePercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="tackleBlock" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="tackleEvade" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="PAAttack" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="PMAttack" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pushDamageBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="criticalDamageBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="neutralDamageBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="earthDamageBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="waterDamageBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="airDamageBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="fireDamageBonus" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="dodgePALostProbability" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="dodgePMLostProbability" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="neutralElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="earthElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="waterElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="airElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="fireElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="neutralElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="earthElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="waterElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="airElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="fireElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pushDamageReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="criticalDamageReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpNeutralElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpEarthElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpWaterElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpAirElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpFireElementResistPercent" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpNeutralElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpEarthElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpWaterElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpAirElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="pvpFireElementReduction" Type="Types.CharacterBaseCharacteristic" />
+		<XmlField Name="spellModifications" Type="Types.CharacterSpellModification[]" />
+	</Fields>
+</XmlType>

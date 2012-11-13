@@ -1,0 +1,9 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightTeamMemberTaxCollectorInformations" Id="177" Heritage="FightTeamMemberInformations">
+	<Fields>
+		<XmlField Name="firstNameId" Type="short" Condition="firstNameId &lt; 0" />
+		<XmlField Name="lastNameId" Type="short" Condition="lastNameId &lt; 0" />
+		<XmlField Name="level" Type="byte" Condition="level &lt; 1 || level &gt; 200" />
+		<XmlField Name="guildId" Type="int" Condition="guildId &lt; 0" />
+		<XmlField Name="uid" Type="int" Condition="uid &lt; 0" />
+	</Fields>
+</XmlType>

@@ -1,0 +1,13 @@
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\Templates\MessageTemplate.tt
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\Templates\TypeTemplate.tt
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\Templates\EnumTemplate.tt
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\Templates\Helper.tt
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\Templates\DataCenterTemplate.tt
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\DofusProtocolBuilder.exe.config
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\DofusProtocolBuilder.XML
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\DofusProtocolBuilder.exe
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\DofusProtocolBuilder.pdb
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\Microsoft.VisualStudio.Settings.dll
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Debug\Microsoft.VisualStudio.Settings.xml
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\obj\Debug\DofusProtocolBuilder.exe
+C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\obj\Debug\DofusProtocolBuilder.pdb

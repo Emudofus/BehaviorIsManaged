@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="EmoteAddMessage" Id="5644" Heritage="Message">
+	<Fields>
+		<XmlField Name="emoteId" Type="sbyte" Condition="emoteId &lt; 0" />
+	</Fields>
+</XmlMessage>

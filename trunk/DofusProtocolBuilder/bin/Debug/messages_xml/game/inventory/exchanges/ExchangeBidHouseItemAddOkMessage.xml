@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeBidHouseItemAddOkMessage" Id="5945" Heritage="Message">
+	<Fields>
+		<XmlField Name="itemInfo" Type="Types.ObjectItemToSellInBid" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeBidHouseBuyResultMessage" Id="6272" Heritage="Message">
+	<Fields>
+		<XmlField Name="uid" Type="int" Condition="uid &lt; 0" />
+		<XmlField Name="bought" Type="boolean" />
+	</Fields>
+</XmlMessage>

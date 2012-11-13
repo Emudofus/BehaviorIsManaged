@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightSpectateMessage" Id="6069" Heritage="Message">
+	<Fields>
+		<XmlField Name="effects" Type="Types.FightDispellableEffectExtendedInformations[]" />
+		<XmlField Name="marks" Type="Types.GameActionMark[]" />
+		<XmlField Name="gameTurn" Type="short" Condition="gameTurn &lt; 0" />
+	</Fields>
+</XmlMessage>

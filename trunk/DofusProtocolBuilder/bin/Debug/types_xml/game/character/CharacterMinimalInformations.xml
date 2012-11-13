@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterMinimalInformations" Id="110" Heritage="Object">
+	<Fields>
+		<XmlField Name="id" Type="int" Condition="id &lt; 0" />
+		<XmlField Name="level" Type="byte" Condition="level &lt; 1 || level &gt; 200" />
+		<XmlField Name="name" Type="utf" />
+	</Fields>
+</XmlType>

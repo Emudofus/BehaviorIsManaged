@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="BasicSetAwayModeRequestMessage" Id="5665" Heritage="Message">
+	<Fields>
+		<XmlField Name="enable" Type="flag(0)" />
+		<XmlField Name="invisible" Type="flag(1)" />
+	</Fields>
+</XmlMessage>

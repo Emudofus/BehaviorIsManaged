@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="IgnoredOnlineInformations" Id="105" Heritage="IgnoredInformations">
+	<Fields>
+		<XmlField Name="playerName" Type="utf" />
+		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Steamer" />
+		<XmlField Name="sex" Type="boolean" />
+	</Fields>
+</XmlType>

@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeRequestedTradeMessage" Id="5523" Heritage="ExchangeRequestedMessage">
+	<Fields>
+		<XmlField Name="source" Type="int" Condition="source &lt; 0" />
+		<XmlField Name="target" Type="int" Condition="target &lt; 0" />
+	</Fields>
+</XmlMessage>

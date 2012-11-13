@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SpellUpgradeSuccessMessage" Id="1201" Heritage="Message">
+	<Fields>
+		<XmlField Name="spellId" Type="int" />
+		<XmlField Name="spellLevel" Type="sbyte" Condition="spellLevel &lt; 1 || spellLevel &gt; 6" />
+	</Fields>
+</XmlMessage>

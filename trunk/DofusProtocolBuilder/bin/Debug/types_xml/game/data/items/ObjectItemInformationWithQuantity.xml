@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectItemInformationWithQuantity" Id="387" Heritage="ObjectItemMinimalInformation">
+	<Fields>
+		<XmlField Name="quantity" Type="int" Condition="quantity &lt; 0" />
+	</Fields>
+</XmlType>

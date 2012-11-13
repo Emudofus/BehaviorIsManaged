@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobListedUpdateMessage" Id="6016" Heritage="Message">
+	<Fields>
+		<XmlField Name="addedOrDeleted" Type="boolean" />
+		<XmlField Name="jobId" Type="sbyte" Condition="jobId &lt; 0" />
+	</Fields>
+</XmlMessage>

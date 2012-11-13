@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildInformations" Id="127" Heritage="BasicGuildInformations">
+	<Fields>
+		<XmlField Name="guildEmblem" Type="Types.GuildEmblem" />
+	</Fields>
+</XmlType>

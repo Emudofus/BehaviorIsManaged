@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightPlacementPossiblePositionsMessage" Id="703" Heritage="Message">
+	<Fields>
+		<XmlField Name="positionsForChallengers" Type="short[]" />
+		<XmlField Name="positionsForDefenders" Type="short[]" />
+		<XmlField Name="teamNumber" Type="sbyte" Condition="teamNumber &lt; 0" />
+	</Fields>
+</XmlMessage>

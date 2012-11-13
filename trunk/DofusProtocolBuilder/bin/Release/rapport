@@ -1,0 +1,522 @@
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: .gitignore
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: CacheDataExploiter.cmd
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: DofusProtocolBuilder.exe
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: DofusProtocolBuilder.exe.config
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: DofusProtocolBuilder.pdb
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: DofusProtocolBuilder.vshost.exe
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: DofusProtocolBuilder.vshost.exe.config
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: DofusProtocolBuilder.vshost.exe.manifest
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: Previous
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: Stump.cmd
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/communication: Smiley.cs
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/d2oclasses/effects/Effect.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/effects/Effect.cs
+23a24
+> 		public uint effectPriority;
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/guild: EmblemBackground.cs
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/guild: EmblemSymbol.cs
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/guild: EmblemSymbolCategory.cs
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/d2oclasses/items/Item.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/items/Item.cs
+39a40
+> 		public ItemType type;
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/items/criterion: GuildItemCriterion.cs
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/items/criterion: GuildLevelItemCriterion.cs
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/items/criterion: GuildRightsItemCriterion.cs
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/items/criterion: SpellItemCriterion.cs
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/d2oclasses/misc/CensoredContent.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/misc/CensoredContent.cs
+9a10,13
+> 		public int type;
+> 		public int oldValue;
+> 		public int newValue;
+> 		public String lang;
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/d2oclasses/quest/QuestObjective.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/quest/QuestObjective.cs
+16a17
+> 		public QuestObjectiveType type;
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/d2oclasses/quest/objectives/QuestObjectiveBringItemToNpc.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/quest/objectives/QuestObjectiveBringItemToNpc.cs
+9a10,18
+> using System;
+> 
+> namespace Stump.DofusProtocol.D2oClasses
+> {
+> 	[Serializable]
+> 	public class QuestObjectiveBringItemToNpc : QuestObjective
+> 	{
+> 	}
+> }
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/d2oclasses/world/Hint.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/d2oclasses/world/Hint.cs
+15a16,19
+> 		public int x;
+> 		public int y;
+> 		public Boolean outdoor;
+> 		public int subareaId;
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/AlignmentSideEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/AlignmentSideEnum.cs
+2c2
+< // From 'AlignmentSideEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'AlignmentSideEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/BreedEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/BreedEnum.cs
+2c2
+< // From 'BreedEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'BreedEnum.as' the '26/06/2012 18:48:04'
+23c23
+< 		XV = 15,
+---
+> 		Steamer = 15,
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/BuildTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/BuildTypeEnum.cs
+2c2
+< // From 'BuildTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'BuildTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/CharacterCreationResultEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/CharacterCreationResultEnum.cs
+2c2
+< // From 'CharacterCreationResultEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'CharacterCreationResultEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/CharacterDeletionErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/CharacterDeletionErrorEnum.cs
+2c2
+< // From 'CharacterDeletionErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'CharacterDeletionErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/CharacterInventoryPositionEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/CharacterInventoryPositionEnum.cs
+2c2
+< // From 'CharacterInventoryPositionEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'CharacterInventoryPositionEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/CharacterSpellModificationTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/CharacterSpellModificationTypeEnum.cs
+2c2
+< // From 'CharacterSpellModificationTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'CharacterSpellModificationTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ChatActivableChannelsEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ChatActivableChannelsEnum.cs
+2c2
+< // From 'ChatActivableChannelsEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ChatActivableChannelsEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ChatChannelsMultiEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ChatChannelsMultiEnum.cs
+2c2
+< // From 'ChatChannelsMultiEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ChatChannelsMultiEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ChatErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ChatErrorEnum.cs
+2c2
+< // From 'ChatErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ChatErrorEnum.as' the '26/06/2012 18:48:04'
+15a16
+> 		CHAT_ERROR_NO_TEAM = 8,
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums: ClientInstallTypeEnum.cs
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums: ClientTechnologyEnum.cs
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/CompassTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/CompassTypeEnum.cs
+2c2
+< // From 'CompassTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'CompassTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ConsoleMessageTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ConsoleMessageTypeEnum.cs
+2c2
+< // From 'ConsoleMessageTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ConsoleMessageTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/CraftResultEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/CraftResultEnum.cs
+2c2
+< // From 'CraftResultEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'CraftResultEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/CrafterDirectoryParamBitEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/CrafterDirectoryParamBitEnum.cs
+2c2
+< // From 'CrafterDirectoryParamBitEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'CrafterDirectoryParamBitEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/DebugLevelEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/DebugLevelEnum.cs
+2c2
+< // From 'DebugLevelEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'DebugLevelEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/DirectionsEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/DirectionsEnum.cs
+2c2
+< // From 'DirectionsEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'DirectionsEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ExchangeErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ExchangeErrorEnum.cs
+2c2
+< // From 'ExchangeErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ExchangeErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ExchangeReplayStopReasonEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ExchangeReplayStopReasonEnum.cs
+2c2
+< // From 'ExchangeReplayStopReasonEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ExchangeReplayStopReasonEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ExchangeTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ExchangeTypeEnum.cs
+2c2
+< // From 'ExchangeTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ExchangeTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/FightDispellableEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/FightDispellableEnum.cs
+2c2
+< // From 'FightDispellableEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'FightDispellableEnum.as' the '26/06/2012 18:48:04'
+10c10,11
+< 		NOT_DISPELLABLE = 3,
+---
+> 		DISPELLABLE_BY_STRONG_DISPEL = 3,
+> 		REALLY_NOT_DISPELLABLE = 4,
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/FightOptionsEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/FightOptionsEnum.cs
+2c2
+< // From 'FightOptionsEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'FightOptionsEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/FightOutcomeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/FightOutcomeEnum.cs
+2c2
+< // From 'FightOutcomeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'FightOutcomeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/FightSpellCastCriticalEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/FightSpellCastCriticalEnum.cs
+2c2
+< // From 'FightSpellCastCriticalEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'FightSpellCastCriticalEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/FightTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/FightTypeEnum.cs
+2c2
+< // From 'FightTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'FightTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/FighterRefusedReasonEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/FighterRefusedReasonEnum.cs
+2c2
+< // From 'FighterRefusedReasonEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'FighterRefusedReasonEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GameActionFightInvisibilityStateEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GameActionFightInvisibilityStateEnum.cs
+2c2
+< // From 'GameActionFightInvisibilityStateEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GameActionFightInvisibilityStateEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GameActionMarkCellsTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GameActionMarkCellsTypeEnum.cs
+2c2
+< // From 'GameActionMarkCellsTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GameActionMarkCellsTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GameActionMarkTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GameActionMarkTypeEnum.cs
+2c2
+< // From 'GameActionMarkTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GameActionMarkTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GameContextEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GameContextEnum.cs
+2c2
+< // From 'GameContextEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GameContextEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GameHierarchyEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GameHierarchyEnum.cs
+2c2
+< // From 'GameHierarchyEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GameHierarchyEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GuildCreationResultEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GuildCreationResultEnum.cs
+2c2
+< // From 'GuildCreationResultEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GuildCreationResultEnum.as' the '26/06/2012 18:48:04'
+15a16
+> 		GUILD_CREATE_ERROR_EMBLEM_INVALID = 9,
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GuildInformationsTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GuildInformationsTypeEnum.cs
+2c2
+< // From 'GuildInformationsTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GuildInformationsTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/GuildInvitationStateEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/GuildInvitationStateEnum.cs
+2c2
+< // From 'GuildInvitationStateEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'GuildInvitationStateEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/HardcoreDeathStateEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/HardcoreDeathStateEnum.cs
+2c2
+< // From 'HardcoreDeathStateEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'HardcoreDeathStateEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/IdentificationFailureReasonEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/IdentificationFailureReasonEnum.cs
+2c2
+< // From 'IdentificationFailureReasonEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'IdentificationFailureReasonEnum.as' the '26/06/2012 18:48:04'
+17a18
+> 		SERVICE_UNAVAILABLE = 53,
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ListAddFailureEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ListAddFailureEnum.cs
+2c2
+< // From 'ListAddFailureEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ListAddFailureEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/MapObstacleStateEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/MapObstacleStateEnum.cs
+2c2
+< // From 'MapObstacleStateEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'MapObstacleStateEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/MountEquipedErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/MountEquipedErrorEnum.cs
+2c2
+< // From 'MountEquipedErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'MountEquipedErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/NicknameErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/NicknameErrorEnum.cs
+2c2
+< // From 'NicknameErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'NicknameErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/NicknameGeneratingFailureEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/NicknameGeneratingFailureEnum.cs
+2c2
+< // From 'NicknameGeneratingFailureEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'NicknameGeneratingFailureEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/NumericalValueTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/NumericalValueTypeEnum.cs
+2c2
+< // From 'NumericalValueTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'NumericalValueTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ObjectErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ObjectErrorEnum.cs
+2c2
+< // From 'ObjectErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ObjectErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PartStateEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PartStateEnum.cs
+2c2
+< // From 'PartStateEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PartStateEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PartyJoinErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PartyJoinErrorEnum.cs
+2c2
+< // From 'PartyJoinErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PartyJoinErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PartyTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PartyTypeEnum.cs
+2c2
+< // From 'PartyTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PartyTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PaymentTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PaymentTypeEnum.cs
+2c2
+< // From 'PaymentTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PaymentTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PlayableBreedEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PlayableBreedEnum.cs
+2c2
+< // From 'PlayableBreedEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PlayableBreedEnum.as' the '26/06/2012 18:48:04'
+23c23
+< 		XV = 15,
+---
+> 		Steamer = 15,
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PlayerLifeStatusEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PlayerLifeStatusEnum.cs
+2c2
+< // From 'PlayerLifeStatusEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PlayerLifeStatusEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PlayerStateEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PlayerStateEnum.cs
+2c2
+< // From 'PlayerStateEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PlayerStateEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PresetDeleteResultEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PresetDeleteResultEnum.cs
+2c2
+< // From 'PresetDeleteResultEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PresetDeleteResultEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PresetSaveResultEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PresetSaveResultEnum.cs
+2c2
+< // From 'PresetSaveResultEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PresetSaveResultEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PresetSaveUpdateErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PresetSaveUpdateErrorEnum.cs
+2c2
+< // From 'PresetSaveUpdateErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PresetSaveUpdateErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PresetUseResultEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PresetUseResultEnum.cs
+2c2
+< // From 'PresetUseResultEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PresetUseResultEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PvpArenaStepEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PvpArenaStepEnum.cs
+2c2
+< // From 'PvpArenaStepEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PvpArenaStepEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/PvpArenaTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/PvpArenaTypeEnum.cs
+2c2
+< // From 'PvpArenaTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'PvpArenaTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/SequenceTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/SequenceTypeEnum.cs
+2c2
+< // From 'SequenceTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'SequenceTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ServerConnectionErrorEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ServerConnectionErrorEnum.cs
+2c2
+< // From 'ServerConnectionErrorEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ServerConnectionErrorEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ServerStatusEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ServerStatusEnum.cs
+2c2
+< // From 'ServerStatusEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ServerStatusEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/ShortcutBarEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/ShortcutBarEnum.cs
+2c2
+< // From 'ShortcutBarEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'ShortcutBarEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/SocialContactCategoryEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/SocialContactCategoryEnum.cs
+2c2
+< // From 'SocialContactCategoryEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'SocialContactCategoryEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/SubEntityBindingPointCategoryEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/SubEntityBindingPointCategoryEnum.cs
+2c2
+< // From 'SubEntityBindingPointCategoryEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'SubEntityBindingPointCategoryEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/SubareaUpdateEventEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/SubareaUpdateEventEnum.cs
+2c2
+< // From 'SubareaUpdateEventEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'SubareaUpdateEventEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/SubscriptionRequiredEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/SubscriptionRequiredEnum.cs
+2c2
+< // From 'SubscriptionRequiredEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'SubscriptionRequiredEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/TaxCollectorErrorReasonEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/TaxCollectorErrorReasonEnum.cs
+2c2
+< // From 'TaxCollectorErrorReasonEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'TaxCollectorErrorReasonEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/TeamEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/TeamEnum.cs
+2c2
+< // From 'TeamEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'TeamEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/TeamTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/TeamTypeEnum.cs
+2c2
+< // From 'TeamTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'TeamTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/TeleporterTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/TeleporterTypeEnum.cs
+2c2
+< // From 'TeleporterTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'TeleporterTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/TextInformationTypeEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/TextInformationTypeEnum.cs
+2c2
+< // From 'TextInformationTypeEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'TextInformationTypeEnum.as' the '26/06/2012 18:48:04'
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/enums/UpdatableMountBoostEnum.cs C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/enums/UpdatableMountBoostEnum.cs
+2c2
+< // From 'UpdatableMountBoostEnum.as' the '14/04/2012 18:21:20'
+---
+> // From 'UpdatableMountBoostEnum.as' the '26/06/2012 18:48:04'
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: messages
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/messages_xml/connection/IdentificationMessage.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/connection/IdentificationMessage.xml
+6c6
+< 		<XmlField Name="version" Type="Types.Version" />
+---
+> 		<XmlField Name="version" Type="Types.VersionExtended" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/messages_xml/game/actions/fight/AbstractGameActionFightTargetedAbilityMessage.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/actions/fight/AbstractGameActionFightTargetedAbilityMessage.xml
+2a3
+> 		<XmlField Name="targetId" Type="int" />
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/actions/fight: GameActionFightCastOnTargetRequestMessage.xml
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/messages_xml/game/character/creation/CharacterCreationRequestMessage.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/character/creation/CharacterCreationRequestMessage.xml
+4c4
+< 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.BreedEnum.Feca || breed &gt; (byte)Enums.BreedEnum.Zobal" />
+---
+> 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Steamer" />
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/character/stats: FighterStatsListMessage.xml
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/messages_xml/game/context/fight/GameFightEndMessage.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/context/fight/GameFightEndMessage.xml
+4a5
+> 		<XmlField Name="lootShareLimitMalus" Type="short" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/messages_xml/game/context/roleplay/party/PartyInvitationDetailsMessage.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/context/roleplay/party/PartyInvitationDetailsMessage.xml
+7a8
+> 		<XmlField Name="guests" Type="Types.PartyGuestInformations[]" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/messages_xml/game/guild/GuildJoinedMessage.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/guild/GuildJoinedMessage.xml
+4a5
+> 		<XmlField Name="enabled" Type="boolean" />
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/guild: GuildModificationEmblemValidMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/guild: GuildModificationNameValidMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/guild: GuildModificationStartedMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/guild: GuildModificationValidMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/messages_xml/game/guild/tax: TaxCollectorFireRequestMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/inventory: ObjectAveragePricesErrorMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/inventory: ObjectAveragePricesMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/inventory/exchanges: ExchangeBidHouseInListUpdatedMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/inventory/exchanges: ExchangeObjectTransfertExistingFromInvMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/messages_xml/game/inventory/exchanges: ExchangeObjectTransfertExistingToInvMessage.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: rapport
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release: types
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/context/fight/GameFightMinimalStats.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/fight/GameFightMinimalStats.xml
+19,23c19,23
+< 		<XmlField Name="neutralElementFixedResist" Type="short" />
+< 		<XmlField Name="earthElementFixedResist" Type="short" />
+< 		<XmlField Name="waterElementFixedResist" Type="short" />
+< 		<XmlField Name="airElementFixedResist" Type="short" />
+< 		<XmlField Name="fireElementFixedResist" Type="short" />
+---
+> 		<XmlField Name="neutralElementReduction" Type="short" />
+> 		<XmlField Name="earthElementReduction" Type="short" />
+> 		<XmlField Name="waterElementReduction" Type="short" />
+> 		<XmlField Name="airElementReduction" Type="short" />
+> 		<XmlField Name="fireElementReduction" Type="short" />
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay: AlternativeMonstersInGroupLightInformations.xml
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/context/roleplay/GameRolePlayGroupMonsterInformations.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay/GameRolePlayGroupMonsterInformations.xml
+3,5c3
+< 		<XmlField Name="mainCreatureGenericId" Type="int" />
+< 		<XmlField Name="mainCreatureGrade" Type="sbyte" Condition="mainCreatureGrade &lt; 0" />
+< 		<XmlField Name="underlings" Type="Types.MonsterInGroupInformations[]" />
+---
+> 		<XmlField Name="staticInfos" Type="instance of Types.GroupMonsterStaticInformations" />
+6a5
+> 		<XmlField Name="lootShare" Type="sbyte" Condition="lootShare &lt; -1 || lootShare &gt; 8" />
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay: GroupMonsterStaticInformations.xml
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay: GroupMonsterStaticInformationsWithAlternatives.xml
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/context/roleplay/MonsterInGroupInformations.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay/MonsterInGroupInformations.xml
+1c1
+< ﻿<XmlType xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="MonsterInGroupInformations" Id="144" Heritage="Object">
+---
+> ﻿<XmlType xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="MonsterInGroupInformations" Id="144" Heritage="MonsterInGroupLightInformations">
+3,4d2
+< 		<XmlField Name="creatureGenericId" Type="int" />
+< 		<XmlField Name="grade" Type="sbyte" Condition="grade &lt; 0" />
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay: MonsterInGroupLightInformations.xml
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/context/roleplay/job/JobCrafterDirectoryEntryPlayerInfo.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay/job/JobCrafterDirectoryEntryPlayerInfo.xml
+6c6
+< 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Zobal" />
+---
+> 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Steamer" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/context/roleplay/party/DungeonPartyFinderPlayer.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay/party/DungeonPartyFinderPlayer.xml
+5c5
+< 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Zobal" />
+---
+> 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Steamer" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/context/roleplay/party/PartyGuestInformations.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay/party/PartyGuestInformations.xml
+6a7,8
+> 		<XmlField Name="breed" Type="sbyte" />
+> 		<XmlField Name="sex" Type="boolean" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/context/roleplay/party/PartyMemberInformations.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/context/roleplay/party/PartyMemberInformations.xml
+1c1
+< ﻿<XmlType xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="PartyMemberInformations" Id="90" Heritage="CharacterMinimalPlusLookInformations">
+---
+> ﻿<XmlType xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="PartyMemberInformations" Id="90" Heritage="CharacterBaseInformations">
+9a10,13
+> 		<XmlField Name="worldX" Type="short" Condition="worldX &lt; -255 || worldX &gt; 255" />
+> 		<XmlField Name="worldY" Type="short" Condition="worldY &lt; -255 || worldY &gt; 255" />
+> 		<XmlField Name="mapId" Type="int" />
+> 		<XmlField Name="subAreaId" Type="short" Condition="subAreaId &lt; 0" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/friend/FriendOnlineInformations.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/friend/FriendOnlineInformations.xml
+6c6
+< 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Zobal" />
+---
+> 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Steamer" />
+diff -r C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Previous/types_xml/game/friend/IgnoredOnlineInformations.xml C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/game/friend/IgnoredOnlineInformations.xml
+4c4
+< 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Zobal" />
+---
+> 		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Steamer" />
+Only in C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release/types_xml/version: VersionExtended.xml

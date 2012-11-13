@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeWeightMessage" Id="5793" Heritage="Message">
+	<Fields>
+		<XmlField Name="currentWeight" Type="int" Condition="currentWeight &lt; 0" />
+		<XmlField Name="maxWeight" Type="int" Condition="maxWeight &lt; 0" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PrismFightDefendersSwapMessage" Id="5902" Heritage="Message">
+	<Fields>
+		<XmlField Name="fightId" Type="double" />
+		<XmlField Name="fighterId1" Type="int" Condition="fighterId1 &lt; 0" />
+		<XmlField Name="fighterId2" Type="int" Condition="fighterId2 &lt; 0" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PaddockItem" Id="185" Heritage="ObjectItemInRolePlay">
+	<Fields>
+		<XmlField Name="durability" Type="Types.ItemDurability" />
+	</Fields>
+</XmlType>

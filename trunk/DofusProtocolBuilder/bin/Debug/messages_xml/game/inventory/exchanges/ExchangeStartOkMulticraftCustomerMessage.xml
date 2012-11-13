@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeStartOkMulticraftCustomerMessage" Id="5817" Heritage="Message">
+	<Fields>
+		<XmlField Name="maxCase" Type="sbyte" Condition="maxCase &lt; 0" />
+		<XmlField Name="skillId" Type="int" Condition="skillId &lt; 0" />
+		<XmlField Name="crafterJobLevel" Type="sbyte" Condition="crafterJobLevel &lt; 0" />
+	</Fields>
+</XmlMessage>

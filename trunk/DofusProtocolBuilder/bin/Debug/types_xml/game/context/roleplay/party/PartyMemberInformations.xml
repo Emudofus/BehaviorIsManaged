@@ -1,0 +1,15 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PartyMemberInformations" Id="90" Heritage="CharacterBaseInformations">
+	<Fields>
+		<XmlField Name="lifePoints" Type="int" Condition="lifePoints &lt; 0" />
+		<XmlField Name="maxLifePoints" Type="int" Condition="maxLifePoints &lt; 0" />
+		<XmlField Name="prospecting" Type="short" Condition="prospecting &lt; 0" />
+		<XmlField Name="regenRate" Type="byte" Condition="regenRate &lt; 0 || regenRate &gt; 255" />
+		<XmlField Name="initiative" Type="short" Condition="initiative &lt; 0" />
+		<XmlField Name="pvpEnabled" Type="boolean" />
+		<XmlField Name="alignmentSide" Type="sbyte" />
+		<XmlField Name="worldX" Type="short" Condition="worldX &lt; -255 || worldX &gt; 255" />
+		<XmlField Name="worldY" Type="short" Condition="worldY &lt; -255 || worldY &gt; 255" />
+		<XmlField Name="mapId" Type="int" />
+		<XmlField Name="subAreaId" Type="short" Condition="subAreaId &lt; 0" />
+	</Fields>
+</XmlType>

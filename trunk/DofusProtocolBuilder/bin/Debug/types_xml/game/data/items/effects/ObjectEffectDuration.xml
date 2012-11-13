@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectEffectDuration" Id="75" Heritage="ObjectEffect">
+	<Fields>
+		<XmlField Name="days" Type="short" Condition="days &lt; 0" />
+		<XmlField Name="hours" Type="short" Condition="hours &lt; 0" />
+		<XmlField Name="minutes" Type="short" Condition="minutes &lt; 0" />
+	</Fields>
+</XmlType>

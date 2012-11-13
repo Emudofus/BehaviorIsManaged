@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobExperienceMultiUpdateMessage" Id="5809" Heritage="Message">
+	<Fields>
+		<XmlField Name="experiencesUpdate" Type="Types.JobExperience[]" />
+	</Fields>
+</XmlMessage>

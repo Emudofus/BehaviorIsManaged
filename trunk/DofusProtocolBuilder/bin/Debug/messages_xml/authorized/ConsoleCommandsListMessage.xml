@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ConsoleCommandsListMessage" Id="6127" Heritage="Message">
+	<Fields>
+		<XmlField Name="aliases" Type="utf[]" />
+		<XmlField Name="arguments" Type="utf[]" />
+		<XmlField Name="descriptions" Type="utf[]" />
+	</Fields>
+</XmlMessage>

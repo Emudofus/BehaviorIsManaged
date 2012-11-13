@@ -1,0 +1,9 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightCommonInformations" Id="43" Heritage="Object">
+	<Fields>
+		<XmlField Name="fightId" Type="int" />
+		<XmlField Name="fightType" Type="sbyte" Condition="fightType &lt; 0" />
+		<XmlField Name="fightTeams" Type="Types.FightTeamInformations[]" />
+		<XmlField Name="fightTeamsPositions" Type="short[]" />
+		<XmlField Name="fightTeamsOptions" Type="Types.FightOptionsInformations[]" />
+	</Fields>
+</XmlType>

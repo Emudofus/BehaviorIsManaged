@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ShowCellSpectatorMessage" Id="6158" Heritage="ShowCellMessage">
+	<Fields>
+		<XmlField Name="playerName" Type="utf" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightReflectDamagesMessage" Id="5530" Heritage="AbstractGameActionMessage">
+	<Fields>
+		<XmlField Name="targetId" Type="int" />
+		<XmlField Name="amount" Type="int" Condition="amount &lt; 0" />
+	</Fields>
+</XmlMessage>

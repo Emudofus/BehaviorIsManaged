@@ -1,0 +1,3 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="RawDataMessage" Id="6253" Heritage="Message">
+	<Fields />
+</XmlMessage>

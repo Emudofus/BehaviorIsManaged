@@ -1,0 +1,7 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameContextActorInformations" Id="150" Heritage="Object">
+	<Fields>
+		<XmlField Name="contextualId" Type="int" />
+		<XmlField Name="look" Type="Types.EntityLook" />
+		<XmlField Name="disposition" Type="instance of Types.EntityDispositionInformations" />
+	</Fields>
+</XmlType>

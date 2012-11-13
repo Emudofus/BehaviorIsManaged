@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SpouseStatusMessage" Id="6265" Heritage="Message">
+	<Fields>
+		<XmlField Name="hasSpouse" Type="boolean" />
+	</Fields>
+</XmlMessage>

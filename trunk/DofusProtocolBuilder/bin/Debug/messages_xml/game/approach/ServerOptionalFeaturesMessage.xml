@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ServerOptionalFeaturesMessage" Id="6305" Heritage="Message">
+	<Fields>
+		<XmlField Name="features" Type="short[]" />
+	</Fields>
+</XmlMessage>

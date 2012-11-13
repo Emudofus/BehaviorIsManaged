@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="QuestStartedMessage" Id="6091" Heritage="Message">
+	<Fields>
+		<XmlField Name="questId" Type="ushort" Condition="questId &lt; 0 || questId &gt; 65535" />
+	</Fields>
+</XmlMessage>

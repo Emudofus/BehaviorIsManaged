@@ -1,0 +1,20 @@
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\Debug\NLog.xml
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\obj\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\obj\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x86\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x86\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\Project Stump (git)\trunk\Library\NLog\bin\x86\Debug\NLog.xml
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\x64\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\x64\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\x64\Debug\NLog.xml
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\x86\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\x86\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\bin\x86\Debug\NLog.xml
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\obj\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\obj\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Librairies\NLog\obj\Debug\NLog.netfx40.csprojResolveAssemblyReference.cache

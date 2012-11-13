@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="HelloConnectMessage" Id="3" Heritage="Message">
+	<Fields>
+		<XmlField Name="salt" Type="utf" />
+		<XmlField Name="key" Type="sbyte[]" />
+	</Fields>
+</XmlMessage>

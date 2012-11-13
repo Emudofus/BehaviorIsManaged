@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildInvitationAnswerMessage" Id="5556" Heritage="Message">
+	<Fields>
+		<XmlField Name="accept" Type="boolean" />
+	</Fields>
+</XmlMessage>

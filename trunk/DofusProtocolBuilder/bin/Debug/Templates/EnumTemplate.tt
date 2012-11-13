@@ -1,0 +1,33 @@
+﻿<#@ template language="C#" debug="true"  #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="DofusProtocolBuilder.Parsing" #>
+<#@ parameter name="Parser" type="DofusProtocolBuilder.Parsing.Parser" #>
+<#@ parameter name="Profile" type="DofusProtocolBuilder.Profiles.ParsingProfile" #>
+<#@ include file="./Helper.tt"#>
+// Generated on <#= DateTime.Now #>
+using System;
+using System.Collections.Generic;
+
+namespace <#= Profile.OutPutNamespace #>
+{
+<# PushIndent("    "); #>
+public enum <#= Parser.Class.Name #>
+{
+<# PushIndent("    "); #>
+<#
+foreach (var field in Parser.Fields)
+{
+    Write(field.Name);
+    Write(" = ");
+    Write(field.Value);
+    Write(",");
+    WriteLine("");
+} 
+#>
+<# PopIndent(); #>
+}
+<# PopIndent(); #>
+}

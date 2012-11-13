@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharactersListWithModificationsMessage" Id="6120" Heritage="CharactersListMessage">
+	<Fields>
+		<XmlField Name="charactersToRecolor" Type="Types.CharacterToRecolorInformation[]" />
+		<XmlField Name="charactersToRename" Type="int[]" />
+		<XmlField Name="unusableCharacters" Type="int[]" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,8 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeMountSterilizeFromPaddockMessage" Id="6056" Heritage="Message">
+	<Fields>
+		<XmlField Name="name" Type="utf" />
+		<XmlField Name="worldX" Type="short" Condition="worldX &lt; -255 || worldX &gt; 255" />
+		<XmlField Name="worldY" Type="short" Condition="worldY &lt; -255 || worldY &gt; 255" />
+		<XmlField Name="sterilizator" Type="utf" />
+	</Fields>
+</XmlMessage>

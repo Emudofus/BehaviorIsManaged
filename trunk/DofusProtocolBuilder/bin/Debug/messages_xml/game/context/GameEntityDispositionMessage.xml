@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameEntityDispositionMessage" Id="5693" Heritage="Message">
+	<Fields>
+		<XmlField Name="disposition" Type="Types.IdentifiedEntityDispositionInformations" />
+	</Fields>
+</XmlMessage>

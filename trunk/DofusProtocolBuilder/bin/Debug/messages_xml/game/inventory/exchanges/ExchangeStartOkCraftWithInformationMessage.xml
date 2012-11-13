@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeStartOkCraftWithInformationMessage" Id="5941" Heritage="ExchangeStartOkCraftMessage">
+	<Fields>
+		<XmlField Name="nbCase" Type="sbyte" Condition="nbCase &lt; 0" />
+		<XmlField Name="skillId" Type="int" Condition="skillId &lt; 0" />
+	</Fields>
+</XmlMessage>

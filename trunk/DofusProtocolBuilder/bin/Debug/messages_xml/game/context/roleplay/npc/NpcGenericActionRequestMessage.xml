@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="NpcGenericActionRequestMessage" Id="5898" Heritage="Message">
+	<Fields>
+		<XmlField Name="npcId" Type="int" />
+		<XmlField Name="npcActionId" Type="sbyte" Condition="npcActionId &lt; 0" />
+		<XmlField Name="npcMapId" Type="int" />
+	</Fields>
+</XmlMessage>

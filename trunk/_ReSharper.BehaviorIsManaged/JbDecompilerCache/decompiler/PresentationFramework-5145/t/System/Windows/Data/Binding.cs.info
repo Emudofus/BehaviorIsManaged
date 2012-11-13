@@ -1,0 +1,30 @@
+﻿Code version: 6.1.1000.82
+Assembly name PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 mvid {2dcbbfbb-c754-406a-a403-09da212ce106}
+* ref mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+  mvid {16b256ae-9be9-411c-9fbe-52c5b2882061}
+* ref System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+  mvid {0551a46a-2fcd-4208-b23c-61cfc27cffe8}
+* ref System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+  mvid {2d2a430f-1a48-415f-836e-753f8a2c50e1}
+* ref PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
+  mvid {2099b22f-1773-4c03-a8a5-71cb1c96761b}
+* ref System.Xaml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+  mvid {956310d3-bd24-4450-ba43-aa8ea399b92e}
+* ref WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
+  mvid {844ff672-e1ec-4fd5-ad21-56dd4aca042e}
+* ref UIAutomationProvider, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
+  mvid {512ffd8f-a3be-4b8e-baa0-69533c700363}
+* ref System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+  mvid {b6a92086-3c3f-4164-880a-7a125612c023}
+* ref System.Deployment, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+  mvid {779ed2d7-c0c3-4c53-a0ef-0fc22d3b550e}
+* ref PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
+  mvid {10df2bda-59c7-439a-a84e-c09cc4a9eb42}
+* ref System.Printing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
+  mvid {4aa1e3b0-23f3-459f-bc14-f7e2e76081dc}
+* ref ReachFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
+  mvid {ea076757-bd2b-4fab-abc2-e753522515fa}
+* ref UIAutomationTypes, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35
+  mvid {f0b747b2-ca63-4579-9755-316275e72bc3}
+* ref Accessibility, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+  mvid {babb4524-ef4c-4047-92e8-46bb26775358}

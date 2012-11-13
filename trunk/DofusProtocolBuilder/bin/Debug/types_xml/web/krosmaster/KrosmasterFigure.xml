@@ -1,0 +1,8 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="KrosmasterFigure" Id="397" Heritage="Object">
+	<Fields>
+		<XmlField Name="uid" Type="utf" />
+		<XmlField Name="figure" Type="short" Condition="figure &lt; 0" />
+		<XmlField Name="pedestal" Type="short" Condition="pedestal &lt; 0" />
+		<XmlField Name="bound" Type="boolean" />
+	</Fields>
+</XmlType>

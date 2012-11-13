@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ShortcutBarContentMessage" Id="6231" Heritage="Message">
+	<Fields>
+		<XmlField Name="barType" Type="sbyte" Condition="barType &lt; 0" />
+		<XmlField Name="shortcuts" Type="instance of Types.Shortcut[]" />
+	</Fields>
+</XmlMessage>

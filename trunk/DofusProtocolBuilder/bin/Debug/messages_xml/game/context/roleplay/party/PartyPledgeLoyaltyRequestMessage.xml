@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PartyPledgeLoyaltyRequestMessage" Id="6269" Heritage="AbstractPartyMessage">
+	<Fields>
+		<XmlField Name="loyal" Type="boolean" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightResultFighterListEntry" Id="189" Heritage="FightResultListEntry">
+	<Fields>
+		<XmlField Name="id" Type="int" />
+		<XmlField Name="alive" Type="boolean" />
+	</Fields>
+</XmlType>

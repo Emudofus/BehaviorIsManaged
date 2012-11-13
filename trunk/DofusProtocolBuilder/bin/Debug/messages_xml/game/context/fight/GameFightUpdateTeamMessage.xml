@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightUpdateTeamMessage" Id="5572" Heritage="Message">
+	<Fields>
+		<XmlField Name="fightId" Type="short" Condition="fightId &lt; 0" />
+		<XmlField Name="team" Type="Types.FightTeamInformations" />
+	</Fields>
+</XmlMessage>

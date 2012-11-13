@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ChatClientMultiWithObjectMessage" Id="862" Heritage="ChatClientMultiMessage">
+	<Fields>
+		<XmlField Name="objects" Type="Types.ObjectItem[]" />
+	</Fields>
+</XmlMessage>

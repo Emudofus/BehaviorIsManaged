@@ -1,0 +1,109 @@
+﻿<#@ template language="C#" debug="true"  #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="DofusProtocolBuilder.Parsing" #>
+<#@ parameter name="Message" type="DofusProtocolBuilder.XmlPatterns.XmlMessage" #>
+<#@ parameter name="Profile" type="DofusProtocolBuilder.Profiles.ParsingProfile" #>
+<#@ include file="./Helper.tt"#>
+// Generated on <#= DateTime.Now #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Stump.Core.IO;
+using <#=Program.Configuration.BaseNamespace + ".Types" #>;
+
+namespace <#= Profile.OutPutNamespace #>
+{
+<# PushIndent("    "); #>
+public class <#= Message.Name #><#= !string.IsNullOrEmpty(Message.Heritage) && Message.Heritage != "Message" ? " : " + Message.Heritage : " : Message" #>
+{
+<# PushIndent("    "); #>
+public const uint Id = <#= Message.Id #>;
+public override uint MessageId
+{
+    get { return Id; }
+}
+
+<#
+foreach (var field in Message.Fields)
+{
+    WriteField(field);
+} 
+#>
+
+public <#= Message.Name #>()
+{
+}
+
+<#
+    var baseFields = GetHierarchyFields(Message);
+
+    if (Message.Fields.Length + baseFields.Length > 0)
+    {
+        Write("public " + Message.Name + "(");
+
+        if (baseFields.Length > 0)
+        {
+            Write(string.Join(", ", baseFields.Select(field => GetRealType(field.Type) + " " + field.Name)));
+
+            if (Message.Fields.Length > 0)
+                Write(", ");
+        }
+        
+        if (Message.Fields.Length > 0)
+        {
+            Write(string.Join(", ", Message.Fields.Select(field => GetRealType(field.Type) + " " + field.Name)));
+        }
+
+        WriteLine(")");
+        if (baseFields.Length > 0)
+            WriteLine(" : base(" + string.Join(", ", baseFields.Select(field => field.Name)) + ")");
+        WriteLine("{");
+        PushIndent("    ");
+
+        foreach (var field in Message.Fields)
+        {
+            WriteLine("this." + field.Name + " = " + field.Name + ";");
+        }
+
+        PopIndent();
+        WriteLine("}");
+    }
+#>
+
+public override void Serialize(IDataWriter writer)
+{
+<# PushIndent("    "); #>
+<#
+    if (Message.Heritage != "Message")
+    {
+        WriteLine("base.Serialize(writer);");
+    }
+
+    WriteIOMethodStatements(Message.Fields, true);
+#>
+<# PopIndent(); #>
+}
+
+public override void Deserialize(IDataReader reader)
+{
+<# PushIndent("    "); #>
+<#
+    if (Message.Heritage != "Message")
+    {
+        WriteLine("base.Deserialize(reader);");
+    }
+
+    WriteIOMethodStatements(Message.Fields, false);
+#>
+<# PopIndent(); #>
+}
+
+<# PopIndent(); #>
+}
+
+<# PopIndent(); #>
+}

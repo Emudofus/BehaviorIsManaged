@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LoginQueueStatusMessage" Id="10" Heritage="Message">
+	<Fields>
+		<XmlField Name="position" Type="ushort" Condition="position &lt; 0 || position &gt; 65535" />
+		<XmlField Name="total" Type="ushort" Condition="total &lt; 0 || total &gt; 65535" />
+	</Fields>
+</XmlMessage>

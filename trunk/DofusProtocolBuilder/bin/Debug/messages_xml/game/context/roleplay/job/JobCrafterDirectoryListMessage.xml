@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobCrafterDirectoryListMessage" Id="6046" Heritage="Message">
+	<Fields>
+		<XmlField Name="listEntries" Type="Types.JobCrafterDirectoryListEntry[]" />
+	</Fields>
+</XmlMessage>

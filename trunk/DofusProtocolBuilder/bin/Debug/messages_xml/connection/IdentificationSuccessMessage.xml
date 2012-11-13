@@ -1,0 +1,13 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="IdentificationSuccessMessage" Id="22" Heritage="Message">
+	<Fields>
+		<XmlField Name="hasRights" Type="flag(0)" />
+		<XmlField Name="wasAlreadyConnected" Type="flag(1)" />
+		<XmlField Name="login" Type="utf" />
+		<XmlField Name="nickname" Type="utf" />
+		<XmlField Name="accountId" Type="int" Condition="accountId &lt; 0" />
+		<XmlField Name="communityId" Type="sbyte" Condition="communityId &lt; 0" />
+		<XmlField Name="secretQuestion" Type="utf" />
+		<XmlField Name="subscriptionEndDate" Type="double" Condition="subscriptionEndDate &lt; 0" />
+		<XmlField Name="accountCreation" Type="double" Condition="accountCreation &lt; 0" />
+	</Fields>
+</XmlMessage>

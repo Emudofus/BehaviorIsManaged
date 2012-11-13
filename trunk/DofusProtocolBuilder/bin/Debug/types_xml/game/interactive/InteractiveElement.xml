@@ -1,0 +1,8 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="InteractiveElement" Id="80" Heritage="Object">
+	<Fields>
+		<XmlField Name="elementId" Type="int" Condition="elementId &lt; 0" />
+		<XmlField Name="elementTypeId" Type="int" />
+		<XmlField Name="enabledSkills" Type="instance of Types.InteractiveElementSkill[]" />
+		<XmlField Name="disabledSkills" Type="instance of Types.InteractiveElementSkill[]" />
+	</Fields>
+</XmlType>

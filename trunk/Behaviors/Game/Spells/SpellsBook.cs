@@ -85,9 +85,9 @@ namespace BiM.Behaviors.Game.Spells
             if (msg == null) throw new ArgumentNullException("msg");
 
             m_spells.Clear();
-            foreach (var spell in msg.spells.Select(entry => new Spell(entry)))
+            foreach (var spell in msg.spells)
             {
-                m_spells.Add(spell);
+                m_spells.Add(new Spell(spell));
             }
 
             SpellPrevisualization = msg.spellPrevisualization;

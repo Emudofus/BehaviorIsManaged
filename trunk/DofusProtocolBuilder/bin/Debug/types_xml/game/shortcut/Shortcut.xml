@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Shortcut" Id="369" Heritage="Object">
+	<Fields>
+		<XmlField Name="slot" Type="int" Condition="slot &lt; 0 || slot &gt; 99" />
+	</Fields>
+</XmlType>

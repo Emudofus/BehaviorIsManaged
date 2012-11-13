@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Output>./</Output>
+  <SourcePath>./sources/</SourcePath>
+  <BaseNamespace>BiM.Protocol</BaseNamespace>
+  <UseIEnumerable>false</UseIEnumerable>
+  <XmlMessagesProfile>
+    <Name>Xml Messages classes</Name>
+    <SourcePath>com/ankamagames/dofus/network/messages/</SourcePath>
+    <OutPutPath>messages_xml/</OutPutPath>
+    <EnableParsing>true</EnableParsing>
+    <IgnoreMethods>false</IgnoreMethods>
+  </XmlMessagesProfile>
+  <XmlTypesProfile>
+    <Name>Xml Types classes</Name>
+    <SourcePath>com/ankamagames/dofus/network/types/</SourcePath>
+    <OutPutPath>types_xml/</OutPutPath>
+    <EnableParsing>true</EnableParsing>
+    <IgnoreMethods>false</IgnoreMethods>
+  </XmlTypesProfile>
+  <MessagesProfile>
+    <Name>Messages classes</Name>
+    <SourcePath>com/ankamagames/dofus/network/messages/</SourcePath>
+    <OutPutPath>messages/</OutPutPath>
+    <OutPutNamespace>.Messages</OutPutNamespace>
+    <EnableParsing>false</EnableParsing>
+    <IgnoreMethods>false</IgnoreMethods>
+    <TemplatePath>./Templates/MessageTemplate.tt</TemplatePath>
+  </MessagesProfile>
+  <TypesProfile>
+    <Name>Types classes</Name>
+    <SourcePath>com/ankamagames/dofus/network/types/</SourcePath>
+    <OutPutPath>types/</OutPutPath>
+    <OutPutNamespace>.Types</OutPutNamespace>
+    <EnableParsing>false</EnableParsing>
+    <IgnoreMethods>false</IgnoreMethods>
+    <TemplatePath>./Templates/TypeTemplate.tt</TemplatePath>
+  </TypesProfile>
+  <EnumsProfile>
+    <Name>Enums</Name>
+    <SourcePath>com/ankamagames/dofus/network/enums/</SourcePath>
+    <OutPutPath>enums/</OutPutPath>
+    <OutPutNamespace>.Enums</OutPutNamespace>
+    <EnableParsing>true</EnableParsing>
+    <IgnoreMethods>false</IgnoreMethods>
+    <TemplatePath>./Templates/EnumTemplate.tt</TemplatePath>
+  </EnumsProfile>
+  <DatacenterProfile>
+    <Name>D2O Data classes</Name>
+    <SourcePath>com/ankamagames/dofus/datacenter/</SourcePath>
+    <OutPutPath>d2oclasses/</OutPutPath>
+    <OutPutNamespace>.Data</OutPutNamespace>
+    <EnableParsing>true</EnableParsing>
+    <IgnoreMethods>true</IgnoreMethods>
+    <TemplatePath>./Templates/DataCenterTemplate.tt</TemplatePath>
+  </DatacenterProfile>
+</Configuration>

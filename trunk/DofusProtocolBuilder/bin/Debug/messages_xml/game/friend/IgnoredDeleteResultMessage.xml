@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="IgnoredDeleteResultMessage" Id="5677" Heritage="Message">
+	<Fields>
+		<XmlField Name="success" Type="flag(0)" />
+		<XmlField Name="session" Type="flag(1)" />
+		<XmlField Name="name" Type="utf" />
+	</Fields>
+</XmlMessage>

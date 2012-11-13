@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="URLOpenMessage" Id="6266" Heritage="Message">
+	<Fields>
+		<XmlField Name="urlId" Type="int" Condition="urlId &lt; 0" />
+	</Fields>
+</XmlMessage>

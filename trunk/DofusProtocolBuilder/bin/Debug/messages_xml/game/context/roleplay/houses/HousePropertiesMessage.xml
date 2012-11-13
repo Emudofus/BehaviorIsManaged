@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="HousePropertiesMessage" Id="5734" Heritage="Message">
+	<Fields>
+		<XmlField Name="properties" Type="instance of Types.HouseInformations" />
+	</Fields>
+</XmlMessage>

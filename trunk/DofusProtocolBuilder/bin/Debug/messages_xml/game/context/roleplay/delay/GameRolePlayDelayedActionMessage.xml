@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlayDelayedActionMessage" Id="6153" Heritage="Message">
+	<Fields>
+		<XmlField Name="delayedCharacterId" Type="int" />
+		<XmlField Name="delayTypeId" Type="sbyte" Condition="delayTypeId &lt; 0" />
+		<XmlField Name="delayDuration" Type="int" Condition="delayDuration &lt; 0" />
+	</Fields>
+</XmlMessage>

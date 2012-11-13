@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameContextRefreshEntityLookMessage" Id="5637" Heritage="Message">
+	<Fields>
+		<XmlField Name="id" Type="int" />
+		<XmlField Name="look" Type="Types.EntityLook" />
+	</Fields>
+</XmlMessage>

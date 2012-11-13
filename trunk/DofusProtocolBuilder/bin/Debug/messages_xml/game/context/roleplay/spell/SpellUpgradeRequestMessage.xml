@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SpellUpgradeRequestMessage" Id="5608" Heritage="Message">
+	<Fields>
+		<XmlField Name="spellId" Type="short" Condition="spellId &lt; 0" />
+	</Fields>
+</XmlMessage>

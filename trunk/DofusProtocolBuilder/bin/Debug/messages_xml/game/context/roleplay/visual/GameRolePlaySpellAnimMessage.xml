@@ -1,0 +1,8 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlaySpellAnimMessage" Id="6114" Heritage="Message">
+	<Fields>
+		<XmlField Name="casterId" Type="int" />
+		<XmlField Name="targetCellId" Type="short" Condition="targetCellId &lt; 0 || targetCellId &gt; 559" />
+		<XmlField Name="spellId" Type="short" Condition="spellId &lt; 0" />
+		<XmlField Name="spellLevel" Type="sbyte" Condition="spellLevel &lt; 1 || spellLevel &gt; 6" />
+	</Fields>
+</XmlMessage>

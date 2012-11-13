@@ -1,0 +1,9 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="EntityLook" Id="55" Heritage="Object">
+	<Fields>
+		<XmlField Name="bonesId" Type="short" Condition="bonesId &lt; 0" />
+		<XmlField Name="skins" Type="short[]" />
+		<XmlField Name="indexedColors" Type="int[]" />
+		<XmlField Name="scales" Type="short[]" />
+		<XmlField Name="subentities" Type="Types.SubEntity[]" />
+	</Fields>
+</XmlType>

@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectEffectMinMax" Id="82" Heritage="ObjectEffect">
+	<Fields>
+		<XmlField Name="min" Type="short" Condition="min &lt; 0" />
+		<XmlField Name="max" Type="short" Condition="max &lt; 0" />
+	</Fields>
+</XmlType>

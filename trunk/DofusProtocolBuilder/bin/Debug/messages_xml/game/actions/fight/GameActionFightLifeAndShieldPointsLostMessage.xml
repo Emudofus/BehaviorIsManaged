@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightLifeAndShieldPointsLostMessage" Id="6310" Heritage="GameActionFightLifePointsLostMessage">
+	<Fields>
+		<XmlField Name="shieldLoss" Type="short" Condition="shieldLoss &lt; 0" />
+	</Fields>
+</XmlMessage>

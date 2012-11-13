@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobCrafterDirectoryEntryMessage" Id="6044" Heritage="Message">
+	<Fields>
+		<XmlField Name="playerInfo" Type="Types.JobCrafterDirectoryEntryPlayerInfo" />
+		<XmlField Name="jobInfoList" Type="Types.JobCrafterDirectoryEntryJobInfo[]" />
+		<XmlField Name="playerLook" Type="Types.EntityLook" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="QuestStepInfoMessage" Id="5625" Heritage="Message">
+	<Fields>
+		<XmlField Name="infos" Type="instance of Types.QuestActiveInformations" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PartyUpdateMessage" Id="5575" Heritage="AbstractPartyEventMessage">
+	<Fields>
+		<XmlField Name="memberInformations" Type="instance of Types.PartyMemberInformations" />
+	</Fields>
+</XmlMessage>

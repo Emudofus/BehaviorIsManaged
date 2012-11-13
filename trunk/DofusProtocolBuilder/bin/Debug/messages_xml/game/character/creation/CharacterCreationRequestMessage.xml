@@ -1,0 +1,8 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterCreationRequestMessage" Id="160" Heritage="Message">
+	<Fields>
+		<XmlField Name="name" Type="utf" />
+		<XmlField Name="breed" Type="sbyte" Condition="breed &lt; (byte)Enums.PlayableBreedEnum.Feca || breed &gt; (byte)Enums.PlayableBreedEnum.Steamer" />
+		<XmlField Name="sex" Type="boolean" />
+		<XmlField Name="colors" Type="int[]" Limit="5" />
+	</Fields>
+</XmlMessage>

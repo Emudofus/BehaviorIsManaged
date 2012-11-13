@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterLevelUpInformationMessage" Id="6076" Heritage="CharacterLevelUpMessage">
+	<Fields>
+		<XmlField Name="name" Type="utf" />
+		<XmlField Name="id" Type="int" Condition="id &lt; 0" />
+		<XmlField Name="relationType" Type="sbyte" />
+	</Fields>
+</XmlMessage>

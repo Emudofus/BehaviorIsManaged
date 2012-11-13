@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GroupMonsterStaticInformations" Id="140" Heritage="Object">
+	<Fields>
+		<XmlField Name="mainCreatureLightInfos" Type="Types.MonsterInGroupLightInformations" />
+		<XmlField Name="underlings" Type="Types.MonsterInGroupInformations[]" />
+	</Fields>
+</XmlType>

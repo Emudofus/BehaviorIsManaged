@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeMultiCraftSetCrafterCanUseHisRessourcesMessage" Id="6021" Heritage="Message">
+	<Fields>
+		<XmlField Name="allow" Type="boolean" />
+	</Fields>
+</XmlMessage>

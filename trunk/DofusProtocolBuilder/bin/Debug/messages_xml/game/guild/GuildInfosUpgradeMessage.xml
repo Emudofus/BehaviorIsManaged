@@ -1,0 +1,14 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildInfosUpgradeMessage" Id="5636" Heritage="Message">
+	<Fields>
+		<XmlField Name="maxTaxCollectorsCount" Type="sbyte" Condition="maxTaxCollectorsCount &lt; 0" />
+		<XmlField Name="taxCollectorsCount" Type="sbyte" Condition="taxCollectorsCount &lt; 0" />
+		<XmlField Name="taxCollectorLifePoints" Type="short" Condition="taxCollectorLifePoints &lt; 0" />
+		<XmlField Name="taxCollectorDamagesBonuses" Type="short" Condition="taxCollectorDamagesBonuses &lt; 0" />
+		<XmlField Name="taxCollectorPods" Type="short" Condition="taxCollectorPods &lt; 0" />
+		<XmlField Name="taxCollectorProspecting" Type="short" Condition="taxCollectorProspecting &lt; 0" />
+		<XmlField Name="taxCollectorWisdom" Type="short" Condition="taxCollectorWisdom &lt; 0" />
+		<XmlField Name="boostPoints" Type="short" Condition="boostPoints &lt; 0" />
+		<XmlField Name="spellId" Type="short[]" />
+		<XmlField Name="spellLevel" Type="sbyte[]" />
+	</Fields>
+</XmlMessage>

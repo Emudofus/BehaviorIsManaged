@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LockableCodeResultMessage" Id="5672" Heritage="Message">
+	<Fields>
+		<XmlField Name="result" Type="sbyte" Condition="result &lt; 0" />
+	</Fields>
+</XmlMessage>

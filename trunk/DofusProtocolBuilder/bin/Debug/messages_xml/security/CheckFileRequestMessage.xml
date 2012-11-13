@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CheckFileRequestMessage" Id="6154" Heritage="Message">
+	<Fields>
+		<XmlField Name="filename" Type="utf" />
+		<XmlField Name="type" Type="sbyte" Condition="type &lt; 0" />
+	</Fields>
+</XmlMessage>

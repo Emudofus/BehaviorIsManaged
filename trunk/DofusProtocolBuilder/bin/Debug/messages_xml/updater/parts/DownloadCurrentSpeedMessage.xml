@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="DownloadCurrentSpeedMessage" Id="1511" Heritage="Message">
+	<Fields>
+		<XmlField Name="downloadSpeed" Type="sbyte" Condition="downloadSpeed &lt; 1 || downloadSpeed &gt; 10" />
+	</Fields>
+</XmlMessage>

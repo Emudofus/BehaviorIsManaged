@@ -1,0 +1,9 @@
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\Debug\BiM.Core.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\Debug\BiM.Core.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\obj\Debug\BiM.Core.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\obj\Debug\BiM.Core.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\Debug\zlib.net.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\Debug\NLog.dll
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\Debug\NLog.pdb
+C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\Debug\NLog.xml

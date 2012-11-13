@@ -1,0 +1,5 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightTemporaryBoostWeaponDamagesEffect" Id="211" Heritage="FightTemporaryBoostEffect">
+	<Fields>
+		<XmlField Name="weaponTypeId" Type="short" />
+	</Fields>
+</XmlType>

@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ActorOrientation" Id="353" Heritage="Object">
+	<Fields>
+		<XmlField Name="id" Type="int" />
+		<XmlField Name="direction" Type="sbyte" Condition="direction &lt; 0" />
+	</Fields>
+</XmlType>

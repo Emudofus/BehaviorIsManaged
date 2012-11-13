@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="DungeonPartyFinderRoomContentUpdateMessage" Id="6250" Heritage="Message">
+	<Fields>
+		<XmlField Name="dungeonId" Type="short" Condition="dungeonId &lt; 0" />
+		<XmlField Name="addedPlayers" Type="Types.DungeonPartyFinderPlayer[]" />
+		<XmlField Name="removedPlayersIds" Type="int[]" />
+	</Fields>
+</XmlMessage>

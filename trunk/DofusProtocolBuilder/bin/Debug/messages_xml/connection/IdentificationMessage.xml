@@ -1,0 +1,12 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="IdentificationMessage" Id="4" Heritage="Message">
+	<Fields>
+		<XmlField Name="autoconnect" Type="flag(0)" />
+		<XmlField Name="useCertificate" Type="flag(1)" />
+		<XmlField Name="useLoginToken" Type="flag(2)" />
+		<XmlField Name="version" Type="Types.VersionExtended" />
+		<XmlField Name="lang" Type="utf" />
+		<XmlField Name="login" Type="utf" />
+		<XmlField Name="credentials" Type="sbyte[]" />
+		<XmlField Name="serverId" Type="short" />
+	</Fields>
+</XmlMessage>

@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LivingObjectChangeSkinRequestMessage" Id="5725" Heritage="Message">
+	<Fields>
+		<XmlField Name="livingUID" Type="int" Condition="livingUID &lt; 0" />
+		<XmlField Name="livingPosition" Type="byte" Condition="livingPosition &lt; 0 || livingPosition &gt; 255" />
+		<XmlField Name="skinId" Type="int" Condition="skinId &lt; 0" />
+	</Fields>
+</XmlMessage>

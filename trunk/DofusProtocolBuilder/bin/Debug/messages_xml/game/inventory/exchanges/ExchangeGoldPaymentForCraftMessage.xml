@@ -1,0 +1,6 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeGoldPaymentForCraftMessage" Id="5833" Heritage="Message">
+	<Fields>
+		<XmlField Name="onlySuccess" Type="boolean" />
+		<XmlField Name="goldSum" Type="int" Condition="goldSum &lt; 0" />
+	</Fields>
+</XmlMessage>

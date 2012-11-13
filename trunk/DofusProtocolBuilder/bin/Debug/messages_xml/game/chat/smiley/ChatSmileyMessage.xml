@@ -1,0 +1,7 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ChatSmileyMessage" Id="801" Heritage="Message">
+	<Fields>
+		<XmlField Name="entityId" Type="int" />
+		<XmlField Name="smileyId" Type="sbyte" Condition="smileyId &lt; 0" />
+		<XmlField Name="accountId" Type="int" Condition="accountId &lt; 0" />
+	</Fields>
+</XmlMessage>

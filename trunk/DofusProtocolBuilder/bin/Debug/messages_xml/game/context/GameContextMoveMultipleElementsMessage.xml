@@ -1,0 +1,5 @@
+﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameContextMoveMultipleElementsMessage" Id="254" Heritage="Message">
+	<Fields>
+		<XmlField Name="movements" Type="Types.EntityMovementInformations[]" />
+	</Fields>
+</XmlMessage>

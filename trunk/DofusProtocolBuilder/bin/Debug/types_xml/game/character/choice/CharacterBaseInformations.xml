@@ -1,0 +1,6 @@
+﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterBaseInformations" Id="45" Heritage="CharacterMinimalPlusLookInformations">
+	<Fields>
+		<XmlField Name="breed" Type="sbyte" />
+		<XmlField Name="sex" Type="boolean" />
+	</Fields>
+</XmlType>
