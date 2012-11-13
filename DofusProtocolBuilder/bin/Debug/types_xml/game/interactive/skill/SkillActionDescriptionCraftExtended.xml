@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SkillActionDescriptionCraftExtended" Id="104" Heritage="SkillActionDescriptionCraft">
-	<Fields>
-		<XmlField Name="thresholdSlots" Type="sbyte" Condition="thresholdSlots &lt; 0" />
-		<XmlField Name="optimumProbability" Type="sbyte" Condition="optimumProbability &lt; 0" />
-	</Fields>
-</XmlType>

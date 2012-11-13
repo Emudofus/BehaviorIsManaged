@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightStateChangeMessage" Id="5569" Heritage="AbstractGameActionMessage">
-	<Fields>
-		<XmlField Name="targetId" Type="int" />
-		<XmlField Name="stateId" Type="short" />
-		<XmlField Name="active" Type="boolean" />
-	</Fields>
-</XmlMessage>

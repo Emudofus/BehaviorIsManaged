@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AdditionalTaxCollectorInformations" Id="165" Heritage="Object">
-	<Fields>
-		<XmlField Name="collectorCallerName" Type="utf" />
-		<XmlField Name="date" Type="int" Condition="date &lt; 0" />
-	</Fields>
-</XmlType>

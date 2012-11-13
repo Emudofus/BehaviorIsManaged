@@ -1,7 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightDispellableEffectExtendedInformations" Id="208" Heritage="Object">
-	<Fields>
-		<XmlField Name="actionId" Type="short" Condition="actionId &lt; 0" />
-		<XmlField Name="sourceId" Type="int" />
-		<XmlField Name="effect" Type="instance of Types.AbstractFightDispellableEffect" />
-	</Fields>
-</XmlType>

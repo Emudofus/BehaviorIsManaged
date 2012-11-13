@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CompassUpdatePvpSeekMessage" Id="6013" Heritage="CompassUpdateMessage">
-	<Fields>
-		<XmlField Name="memberId" Type="int" Condition="memberId &lt; 0" />
-		<XmlField Name="memberName" Type="utf" />
-	</Fields>
-</XmlMessage>

@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ShortcutBarRemovedMessage" Id="6224" Heritage="Message">
-	<Fields>
-		<XmlField Name="barType" Type="sbyte" Condition="barType &lt; 0" />
-		<XmlField Name="slot" Type="int" Condition="slot &lt; 0 || slot &gt; 99" />
-	</Fields>
-</XmlMessage>

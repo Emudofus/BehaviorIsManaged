@@ -1,8 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobCrafterDirectoryEntryJobInfo" Id="195" Heritage="Object">
-	<Fields>
-		<XmlField Name="jobId" Type="sbyte" Condition="jobId &lt; 0" />
-		<XmlField Name="jobLevel" Type="sbyte" Condition="jobLevel &lt; 1 || jobLevel &gt; 100" />
-		<XmlField Name="userDefinedParams" Type="sbyte" Condition="userDefinedParams &lt; 0" />
-		<XmlField Name="minSlots" Type="sbyte" Condition="minSlots &lt; 0 || minSlots &gt; 9" />
-	</Fields>
-</XmlType>

@@ -1,5 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectItemToSellInBid" Id="164" Heritage="ObjectItemToSell">
-	<Fields>
-		<XmlField Name="unsoldDelay" Type="short" Condition="unsoldDelay &lt; 0" />
-	</Fields>
-</XmlType>

@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="VersionExtended" Id="393" Heritage="Version">
-	<Fields>
-		<XmlField Name="install" Type="sbyte" Condition="install &lt; 0" />
-		<XmlField Name="technology" Type="sbyte" Condition="technology &lt; 0" />
-	</Fields>
-</XmlType>

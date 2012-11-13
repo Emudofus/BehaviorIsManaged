@@ -1,9 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="MapRunningFightDetailsMessage" Id="5751" Heritage="Message">
-	<Fields>
-		<XmlField Name="fightId" Type="int" Condition="fightId &lt; 0" />
-		<XmlField Name="names" Type="utf[]" />
-		<XmlField Name="levels" Type="short[]" />
-		<XmlField Name="teamSwap" Type="sbyte" Condition="teamSwap &lt; 0" />
-		<XmlField Name="alives" Type="boolean[]" />
-	</Fields>
-</XmlMessage>

@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="QuestObjectiveInformations" Id="385" Heritage="Object">
-	<Fields>
-		<XmlField Name="objectiveId" Type="short" Condition="objectiveId &lt; 0" />
-		<XmlField Name="objectiveStatus" Type="boolean" />
-	</Fields>
-</XmlType>

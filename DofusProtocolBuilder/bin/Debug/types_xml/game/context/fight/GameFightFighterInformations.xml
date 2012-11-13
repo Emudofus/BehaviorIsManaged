@@ -1,7 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightFighterInformations" Id="143" Heritage="GameContextActorInformations">
-	<Fields>
-		<XmlField Name="teamId" Type="sbyte" Condition="teamId &lt; 0" />
-		<XmlField Name="alive" Type="boolean" />
-		<XmlField Name="stats" Type="instance of Types.GameFightMinimalStats" />
-	</Fields>
-</XmlType>

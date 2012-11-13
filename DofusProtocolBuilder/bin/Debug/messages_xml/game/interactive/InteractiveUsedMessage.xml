@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="InteractiveUsedMessage" Id="5745" Heritage="Message">
-	<Fields>
-		<XmlField Name="entityId" Type="int" Condition="entityId &lt; 0" />
-		<XmlField Name="elemId" Type="int" Condition="elemId &lt; 0" />
-		<XmlField Name="skillId" Type="short" Condition="skillId &lt; 0" />
-		<XmlField Name="duration" Type="short" Condition="duration &lt; 0" />
-	</Fields>
-</XmlMessage>

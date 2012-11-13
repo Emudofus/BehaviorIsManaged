@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildJoinedMessage" Id="5564" Heritage="Message">
-	<Fields>
-		<XmlField Name="guildInfo" Type="Types.GuildInformations" />
-		<XmlField Name="memberRights" Type="uint" Condition="memberRights &lt; 0 || memberRights &gt; 4294967295" />
-		<XmlField Name="enabled" Type="boolean" />
-	</Fields>
-</XmlMessage>

@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameMapMovementRequestMessage" Id="950" Heritage="Message">
-	<Fields>
-		<XmlField Name="keyMovements" Type="short[]" />
-		<XmlField Name="mapId" Type="int" Condition="mapId &lt; 0" />
-	</Fields>
-</XmlMessage>

@@ -1,9 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ActorAlignmentInformations" Id="201" Heritage="Object">
-	<Fields>
-		<XmlField Name="alignmentSide" Type="sbyte" />
-		<XmlField Name="alignmentValue" Type="sbyte" Condition="alignmentValue &lt; 0" />
-		<XmlField Name="alignmentGrade" Type="sbyte" Condition="alignmentGrade &lt; 0" />
-		<XmlField Name="dishonor" Type="ushort" Condition="dishonor &lt; 0 || dishonor &gt; 500" />
-		<XmlField Name="characterPower" Type="int" Condition="characterPower &lt; 0" />
-	</Fields>
-</XmlType>

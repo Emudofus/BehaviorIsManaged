@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterLevelUpMessage" Id="5670" Heritage="Message">
-	<Fields>
-		<XmlField Name="newLevel" Type="byte" Condition="newLevel &lt; 2 || newLevel &gt; 200" />
-	</Fields>
-</XmlMessage>

@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameContextRemoveElementMessage" Id="251" Heritage="Message">
-	<Fields>
-		<XmlField Name="id" Type="int" />
-	</Fields>
-</XmlMessage>

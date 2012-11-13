@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildHouseTeleportRequestMessage" Id="5712" Heritage="Message">
-	<Fields>
-		<XmlField Name="houseId" Type="int" Condition="houseId &lt; 0" />
-	</Fields>
-</XmlMessage>

@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AchievementStartedValue" Id="361" Heritage="Achievement">
-	<Fields>
-		<XmlField Name="value" Type="short" Condition="value &lt; 0" />
-		<XmlField Name="maxValue" Type="short" Condition="maxValue &lt; 0" />
-	</Fields>
-</XmlType>

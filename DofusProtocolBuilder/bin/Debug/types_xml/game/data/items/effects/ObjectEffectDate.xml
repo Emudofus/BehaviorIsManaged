@@ -1,9 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectEffectDate" Id="72" Heritage="ObjectEffect">
-	<Fields>
-		<XmlField Name="year" Type="short" Condition="year &lt; 0" />
-		<XmlField Name="month" Type="short" Condition="month &lt; 0" />
-		<XmlField Name="day" Type="short" Condition="day &lt; 0" />
-		<XmlField Name="hour" Type="short" Condition="hour &lt; 0" />
-		<XmlField Name="minute" Type="short" Condition="minute &lt; 0" />
-	</Fields>
-</XmlType>

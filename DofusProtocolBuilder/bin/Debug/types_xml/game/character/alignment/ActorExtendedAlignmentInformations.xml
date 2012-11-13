@@ -1,8 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ActorExtendedAlignmentInformations" Id="202" Heritage="ActorAlignmentInformations">
-	<Fields>
-		<XmlField Name="honor" Type="ushort" Condition="honor &lt; 0 || honor &gt; 20000" />
-		<XmlField Name="honorGradeFloor" Type="ushort" Condition="honorGradeFloor &lt; 0 || honorGradeFloor &gt; 20000" />
-		<XmlField Name="honorNextGradeFloor" Type="ushort" Condition="honorNextGradeFloor &lt; 0 || honorNextGradeFloor &gt; 20000" />
-		<XmlField Name="pvpEnabled" Type="boolean" />
-	</Fields>
-</XmlType>

@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectItemToSellInNpcShop" Id="352" Heritage="ObjectItemMinimalInformation">
-	<Fields>
-		<XmlField Name="objectPrice" Type="int" Condition="objectPrice &lt; 0" />
-		<XmlField Name="buyCriterion" Type="utf" />
-	</Fields>
-</XmlType>

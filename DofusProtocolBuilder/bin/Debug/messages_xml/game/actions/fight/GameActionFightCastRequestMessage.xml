@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightCastRequestMessage" Id="1005" Heritage="Message">
-	<Fields>
-		<XmlField Name="spellId" Type="short" Condition="spellId &lt; 0" />
-		<XmlField Name="cellId" Type="short" Condition="cellId &lt; -1 || cellId &gt; 559" />
-	</Fields>
-</XmlMessage>

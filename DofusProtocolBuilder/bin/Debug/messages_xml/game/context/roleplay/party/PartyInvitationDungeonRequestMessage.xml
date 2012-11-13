@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PartyInvitationDungeonRequestMessage" Id="6245" Heritage="PartyInvitationRequestMessage">
-	<Fields>
-		<XmlField Name="dungeonId" Type="short" Condition="dungeonId &lt; 0" />
-	</Fields>
-</XmlMessage>

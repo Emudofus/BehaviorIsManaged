@@ -1,8 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="Preset" Id="355" Heritage="Object">
-	<Fields>
-		<XmlField Name="presetId" Type="sbyte" Condition="presetId &lt; 0" />
-		<XmlField Name="symbolId" Type="sbyte" Condition="symbolId &lt; 0" />
-		<XmlField Name="mount" Type="boolean" />
-		<XmlField Name="objects" Type="Types.PresetItem[]" />
-	</Fields>
-</XmlType>

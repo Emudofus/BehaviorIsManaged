@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PrismFightDefenderAddMessage" Id="5895" Heritage="Message">
-	<Fields>
-		<XmlField Name="fightId" Type="double" />
-		<XmlField Name="fighterMovementInformations" Type="Types.CharacterMinimalPlusLookAndGradeInformations" />
-		<XmlField Name="inMain" Type="boolean" />
-	</Fields>
-</XmlMessage>

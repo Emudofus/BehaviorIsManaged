@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LockableStateUpdateStorageMessage" Id="5669" Heritage="LockableStateUpdateAbstractMessage">
-	<Fields>
-		<XmlField Name="mapId" Type="int" />
-		<XmlField Name="elementId" Type="int" Condition="elementId &lt; 0" />
-	</Fields>
-</XmlMessage>

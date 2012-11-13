@@ -1,5 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PaddockAbandonnedInformations" Id="133" Heritage="PaddockBuyableInformations">
-	<Fields>
-		<XmlField Name="guildId" Type="int" />
-	</Fields>
-</XmlType>

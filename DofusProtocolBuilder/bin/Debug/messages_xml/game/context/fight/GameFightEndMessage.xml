@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightEndMessage" Id="720" Heritage="Message">
-	<Fields>
-		<XmlField Name="duration" Type="int" Condition="duration &lt; 0" />
-		<XmlField Name="ageBonus" Type="short" />
-		<XmlField Name="lootShareLimitMalus" Type="short" />
-		<XmlField Name="results" Type="instance of Types.FightResultListEntry[]" />
-	</Fields>
-</XmlMessage>

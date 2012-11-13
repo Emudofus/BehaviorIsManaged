@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="EntityTalkMessage" Id="6110" Heritage="Message">
-	<Fields>
-		<XmlField Name="entityId" Type="int" />
-		<XmlField Name="textId" Type="short" Condition="textId &lt; 0" />
-		<XmlField Name="parameters" Type="utf[]" />
-	</Fields>
-</XmlMessage>

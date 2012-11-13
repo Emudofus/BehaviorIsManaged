@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ShortcutBarSwapRequestMessage" Id="6230" Heritage="Message">
-	<Fields>
-		<XmlField Name="barType" Type="sbyte" Condition="barType &lt; 0" />
-		<XmlField Name="firstSlot" Type="int" Condition="firstSlot &lt; 0 || firstSlot &gt; 99" />
-		<XmlField Name="secondSlot" Type="int" Condition="secondSlot &lt; 0 || secondSlot &gt; 99" />
-	</Fields>
-</XmlMessage>

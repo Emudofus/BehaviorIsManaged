@@ -1,5 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="QuestActiveInformations" Id="381" Heritage="Object">
-	<Fields>
-		<XmlField Name="questId" Type="short" Condition="questId &lt; 0" />
-	</Fields>
-</XmlType>

@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectGroundRemovedMessage" Id="3014" Heritage="Message">
-	<Fields>
-		<XmlField Name="cell" Type="short" Condition="cell &lt; 0 || cell &gt; 559" />
-	</Fields>
-</XmlMessage>

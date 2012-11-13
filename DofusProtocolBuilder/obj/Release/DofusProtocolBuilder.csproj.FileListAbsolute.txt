@@ -1,9 +1,0 @@
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\DofusProtocolBuilder.exe.config
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\DofusProtocolBuilder.exe
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\DofusProtocolBuilder.pdb
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\obj\Release\DofusProtocolBuilder.exe
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\obj\Release\DofusProtocolBuilder.pdb
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Templates\Template.tt
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Microsoft.VisualStudio.Settings.dll
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\bin\Release\Microsoft.VisualStudio.Settings.xml
-C:\Users\Bouh2\Documents\Pimper Bag - Community Git\Games\Dofus 2.0\DofusProtocolBuilder\DofusProtocolBuilder\obj\Release\DofusProtocolBuilder.csprojResolveAssemblyReference.cache

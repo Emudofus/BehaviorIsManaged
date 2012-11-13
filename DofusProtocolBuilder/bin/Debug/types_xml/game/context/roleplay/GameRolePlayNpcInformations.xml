@@ -1,7 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlayNpcInformations" Id="156" Heritage="GameRolePlayActorInformations">
-	<Fields>
-		<XmlField Name="npcId" Type="short" Condition="npcId &lt; 0" />
-		<XmlField Name="sex" Type="boolean" />
-		<XmlField Name="specialArtworkId" Type="short" Condition="specialArtworkId &lt; 0" />
-	</Fields>
-</XmlType>

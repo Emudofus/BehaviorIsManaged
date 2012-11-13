@@ -1,8 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectItemMinimalInformation" Id="124" Heritage="Item">
-	<Fields>
-		<XmlField Name="objectGID" Type="short" Condition="objectGID &lt; 0" />
-		<XmlField Name="powerRate" Type="short" />
-		<XmlField Name="overMax" Type="boolean" />
-		<XmlField Name="effects" Type="instance of Types.ObjectEffect[]" />
-	</Fields>
-</XmlType>

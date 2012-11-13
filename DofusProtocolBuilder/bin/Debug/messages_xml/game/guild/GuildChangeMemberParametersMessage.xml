@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildChangeMemberParametersMessage" Id="5549" Heritage="Message">
-	<Fields>
-		<XmlField Name="memberId" Type="int" Condition="memberId &lt; 0" />
-		<XmlField Name="rank" Type="short" Condition="rank &lt; 0" />
-		<XmlField Name="experienceGivenPercent" Type="sbyte" Condition="experienceGivenPercent &lt; 0 || experienceGivenPercent &gt; 100" />
-		<XmlField Name="rights" Type="uint" Condition="rights &lt; 0 || rights &gt; 4294967295" />
-	</Fields>
-</XmlMessage>

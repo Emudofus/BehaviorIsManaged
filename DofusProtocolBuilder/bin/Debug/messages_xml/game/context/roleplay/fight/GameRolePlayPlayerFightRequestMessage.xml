@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlayPlayerFightRequestMessage" Id="5731" Heritage="Message">
-	<Fields>
-		<XmlField Name="targetId" Type="int" Condition="targetId &lt; 0" />
-		<XmlField Name="targetCellId" Type="short" Condition="targetCellId &lt; -1 || targetCellId &gt; 559" />
-		<XmlField Name="friendly" Type="boolean" />
-	</Fields>
-</XmlMessage>

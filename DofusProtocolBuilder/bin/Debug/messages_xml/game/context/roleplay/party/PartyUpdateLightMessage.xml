@@ -1,9 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PartyUpdateLightMessage" Id="6054" Heritage="AbstractPartyEventMessage">
-	<Fields>
-		<XmlField Name="id" Type="int" Condition="id &lt; 0" />
-		<XmlField Name="lifePoints" Type="int" Condition="lifePoints &lt; 0" />
-		<XmlField Name="maxLifePoints" Type="int" Condition="maxLifePoints &lt; 0" />
-		<XmlField Name="prospecting" Type="short" Condition="prospecting &lt; 0" />
-		<XmlField Name="regenRate" Type="byte" Condition="regenRate &lt; 0 || regenRate &gt; 255" />
-	</Fields>
-</XmlMessage>

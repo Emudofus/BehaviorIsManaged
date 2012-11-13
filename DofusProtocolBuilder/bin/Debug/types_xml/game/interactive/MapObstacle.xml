@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="MapObstacle" Id="200" Heritage="Object">
-	<Fields>
-		<XmlField Name="obstacleCellId" Type="short" Condition="obstacleCellId &lt; 0 || obstacleCellId &gt; 559" />
-		<XmlField Name="state" Type="sbyte" Condition="state &lt; 0" />
-	</Fields>
-</XmlType>

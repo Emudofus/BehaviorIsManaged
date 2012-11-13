@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightLoot" Id="41" Heritage="Object">
-	<Fields>
-		<XmlField Name="objects" Type="short[]" />
-		<XmlField Name="kamas" Type="int" Condition="kamas &lt; 0" />
-	</Fields>
-</XmlType>

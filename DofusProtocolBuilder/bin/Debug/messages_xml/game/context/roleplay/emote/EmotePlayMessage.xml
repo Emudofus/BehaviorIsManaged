@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="EmotePlayMessage" Id="5683" Heritage="EmotePlayAbstractMessage">
-	<Fields>
-		<XmlField Name="actorId" Type="int" />
-		<XmlField Name="accountId" Type="int" />
-	</Fields>
-</XmlMessage>

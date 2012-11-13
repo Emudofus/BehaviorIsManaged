@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PaddockInformations" Id="132" Heritage="Object">
-	<Fields>
-		<XmlField Name="maxOutdoorMount" Type="short" Condition="maxOutdoorMount &lt; 0" />
-		<XmlField Name="maxItems" Type="short" Condition="maxItems &lt; 0" />
-	</Fields>
-</XmlType>

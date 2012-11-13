@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeBidHouseSearchMessage" Id="5806" Heritage="Message">
-	<Fields>
-		<XmlField Name="type" Type="int" Condition="type &lt; 0" />
-		<XmlField Name="genId" Type="int" Condition="genId &lt; 0" />
-	</Fields>
-</XmlMessage>

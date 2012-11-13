@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterReportMessage" Id="6079" Heritage="Message">
-	<Fields>
-		<XmlField Name="reportedId" Type="uint" Condition="reportedId &lt; 0 || reportedId &gt; 4294967295" />
-		<XmlField Name="reason" Type="sbyte" Condition="reason &lt; 0" />
-	</Fields>
-</XmlMessage>

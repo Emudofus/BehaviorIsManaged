@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeStartOkTaxCollectorMessage" Id="5780" Heritage="Message">
-	<Fields>
-		<XmlField Name="collectorId" Type="int" />
-		<XmlField Name="objectsInfos" Type="Types.ObjectItem[]" />
-		<XmlField Name="goldInfo" Type="int" Condition="goldInfo &lt; 0" />
-	</Fields>
-</XmlMessage>

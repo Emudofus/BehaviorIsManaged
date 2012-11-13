@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GuildMemberOnlineStatusMessage" Id="6061" Heritage="Message">
-	<Fields>
-		<XmlField Name="memberId" Type="int" Condition="memberId &lt; 0" />
-		<XmlField Name="online" Type="boolean" />
-	</Fields>
-</XmlMessage>

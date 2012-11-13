@@ -1,9 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionMark" Id="351" Heritage="Object">
-	<Fields>
-		<XmlField Name="markAuthorId" Type="int" />
-		<XmlField Name="markSpellId" Type="int" Condition="markSpellId &lt; 0" />
-		<XmlField Name="markId" Type="short" />
-		<XmlField Name="markType" Type="sbyte" />
-		<XmlField Name="cells" Type="Types.GameActionMarkedCell[]" />
-	</Fields>
-</XmlType>

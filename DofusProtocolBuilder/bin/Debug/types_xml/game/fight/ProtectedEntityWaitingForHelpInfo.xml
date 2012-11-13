@@ -1,7 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ProtectedEntityWaitingForHelpInfo" Id="186" Heritage="Object">
-	<Fields>
-		<XmlField Name="timeLeftBeforeFight" Type="int" />
-		<XmlField Name="waitTimeForPlacement" Type="int" />
-		<XmlField Name="nbPositionForDefensors" Type="sbyte" Condition="nbPositionForDefensors &lt; 0" />
-	</Fields>
-</XmlType>

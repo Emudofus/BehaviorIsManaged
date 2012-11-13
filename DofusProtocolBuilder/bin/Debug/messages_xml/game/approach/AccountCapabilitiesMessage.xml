@@ -1,9 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AccountCapabilitiesMessage" Id="6216" Heritage="Message">
-	<Fields>
-		<XmlField Name="accountId" Type="int" />
-		<XmlField Name="tutorialAvailable" Type="boolean" />
-		<XmlField Name="breedsVisible" Type="short" Condition="breedsVisible &lt; 0" />
-		<XmlField Name="breedsAvailable" Type="short" Condition="breedsAvailable &lt; 0" />
-		<XmlField Name="status" Type="sbyte" />
-	</Fields>
-</XmlMessage>

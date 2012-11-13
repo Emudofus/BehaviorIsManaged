@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="QuestObjectiveInformationsWithCompletion" Id="386" Heritage="QuestObjectiveInformations">
-	<Fields>
-		<XmlField Name="curCompletion" Type="short" Condition="curCompletion &lt; 0" />
-		<XmlField Name="maxCompletion" Type="short" Condition="maxCompletion &lt; 0" />
-	</Fields>
-</XmlType>

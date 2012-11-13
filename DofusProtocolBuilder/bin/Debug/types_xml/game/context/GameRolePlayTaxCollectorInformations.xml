@@ -1,9 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlayTaxCollectorInformations" Id="148" Heritage="GameRolePlayActorInformations">
-	<Fields>
-		<XmlField Name="firstNameId" Type="short" Condition="firstNameId &lt; 0" />
-		<XmlField Name="lastNameId" Type="short" Condition="lastNameId &lt; 0" />
-		<XmlField Name="guildIdentity" Type="Types.GuildInformations" />
-		<XmlField Name="guildLevel" Type="byte" Condition="guildLevel &lt; 0 || guildLevel &gt; 255" />
-		<XmlField Name="taxCollectorAttack" Type="int" />
-	</Fields>
-</XmlType>

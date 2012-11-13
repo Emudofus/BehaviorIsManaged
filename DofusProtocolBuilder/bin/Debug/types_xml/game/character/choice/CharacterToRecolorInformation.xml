@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterToRecolorInformation" Id="212" Heritage="Object">
-	<Fields>
-		<XmlField Name="id" Type="int" Condition="id &lt; 0" />
-		<XmlField Name="colors" Type="int[]" />
-	</Fields>
-</XmlType>

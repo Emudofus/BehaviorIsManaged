@@ -1,5 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameFightMinimalStatsPreparation" Id="360" Heritage="GameFightMinimalStats">
-	<Fields>
-		<XmlField Name="initiative" Type="int" Condition="initiative &lt; 0" />
-	</Fields>
-</XmlType>

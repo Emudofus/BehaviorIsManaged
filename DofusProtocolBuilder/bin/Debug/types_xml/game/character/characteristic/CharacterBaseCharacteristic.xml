@@ -1,8 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterBaseCharacteristic" Id="4" Heritage="Object">
-	<Fields>
-		<XmlField Name="@base" Type="short" />
-		<XmlField Name="objectsAndMountBonus" Type="short" />
-		<XmlField Name="alignGiftBonus" Type="short" />
-		<XmlField Name="contextModif" Type="short" />
-	</Fields>
-</XmlType>

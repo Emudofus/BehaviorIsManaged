@@ -1,9 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlayGroupMonsterInformations" Id="160" Heritage="GameRolePlayActorInformations">
-	<Fields>
-		<XmlField Name="staticInfos" Type="instance of Types.GroupMonsterStaticInformations" />
-		<XmlField Name="ageBonus" Type="short" Condition="ageBonus &lt; -1 || ageBonus &gt; 1000" />
-		<XmlField Name="lootShare" Type="sbyte" Condition="lootShare &lt; -1 || lootShare &gt; 8" />
-		<XmlField Name="alignmentSide" Type="sbyte" />
-		<XmlField Name="keyRingBonus" Type="boolean" />
-	</Fields>
-</XmlType>

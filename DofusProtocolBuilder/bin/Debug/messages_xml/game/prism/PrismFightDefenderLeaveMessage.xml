@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PrismFightDefenderLeaveMessage" Id="5892" Heritage="Message">
-	<Fields>
-		<XmlField Name="fightId" Type="double" />
-		<XmlField Name="fighterToRemoveId" Type="int" Condition="fighterToRemoveId &lt; 0" />
-		<XmlField Name="successor" Type="int" Condition="successor &lt; 0" />
-	</Fields>
-</XmlMessage>

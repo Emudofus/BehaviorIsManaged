@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeItemObjectAddAsPaymentMessage" Id="5766" Heritage="Message">
-	<Fields>
-		<XmlField Name="paymentType" Type="sbyte" />
-		<XmlField Name="bAdd" Type="boolean" />
-		<XmlField Name="objectToMoveId" Type="int" Condition="objectToMoveId &lt; 0" />
-		<XmlField Name="quantity" Type="int" Condition="quantity &lt; 0" />
-	</Fields>
-</XmlMessage>

@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LivingObjectMessageMessage" Id="6065" Heritage="Message">
-	<Fields>
-		<XmlField Name="msgId" Type="short" Condition="msgId &lt; 0" />
-		<XmlField Name="timeStamp" Type="uint" Condition="timeStamp &lt; 0 || timeStamp &gt; 4294967295" />
-		<XmlField Name="owner" Type="utf" />
-		<XmlField Name="objectGenericId" Type="uint" Condition="objectGenericId &lt; 0 || objectGenericId &gt; 4294967295" />
-	</Fields>
-</XmlMessage>

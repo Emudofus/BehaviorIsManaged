@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LockableStateUpdateHouseDoorMessage" Id="5668" Heritage="LockableStateUpdateAbstractMessage">
-	<Fields>
-		<XmlField Name="houseId" Type="int" />
-	</Fields>
-</XmlMessage>

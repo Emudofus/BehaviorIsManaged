@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AlignmentSubAreaUpdateExtendedMessage" Id="6319" Heritage="AlignmentSubAreaUpdateMessage">
-	<Fields>
-		<XmlField Name="worldX" Type="short" Condition="worldX &lt; -255 || worldX &gt; 255" />
-		<XmlField Name="worldY" Type="short" Condition="worldY &lt; -255 || worldY &gt; 255" />
-		<XmlField Name="mapId" Type="int" />
-		<XmlField Name="eventType" Type="sbyte" />
-	</Fields>
-</XmlMessage>

@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectFoundWhileRecoltingMessage" Id="6017" Heritage="Message">
-	<Fields>
-		<XmlField Name="genericId" Type="int" Condition="genericId &lt; 0" />
-		<XmlField Name="quantity" Type="int" Condition="quantity &lt; 0" />
-		<XmlField Name="ressourceGenericId" Type="int" Condition="ressourceGenericId &lt; 0" />
-	</Fields>
-</XmlMessage>

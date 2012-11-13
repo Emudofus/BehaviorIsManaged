@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PrismBalanceResultMessage" Id="5841" Heritage="Message">
-	<Fields>
-		<XmlField Name="totalBalanceValue" Type="sbyte" Condition="totalBalanceValue &lt; 0" />
-		<XmlField Name="subAreaBalanceValue" Type="sbyte" Condition="subAreaBalanceValue &lt; 0" />
-	</Fields>
-</XmlMessage>

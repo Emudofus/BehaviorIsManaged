@@ -1,7 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ObjectEffectDice" Id="73" Heritage="ObjectEffect">
-	<Fields>
-		<XmlField Name="diceNum" Type="short" Condition="diceNum &lt; 0" />
-		<XmlField Name="diceSide" Type="short" Condition="diceSide &lt; 0" />
-		<XmlField Name="diceConst" Type="short" Condition="diceConst &lt; 0" />
-	</Fields>
-</XmlType>

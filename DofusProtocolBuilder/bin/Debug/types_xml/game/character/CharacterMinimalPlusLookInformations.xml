@@ -1,5 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="CharacterMinimalPlusLookInformations" Id="163" Heritage="CharacterMinimalInformations">
-	<Fields>
-		<XmlField Name="entityLook" Type="Types.EntityLook" />
-	</Fields>
-</XmlType>

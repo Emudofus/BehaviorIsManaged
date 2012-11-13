@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AchievementFinishedMessage" Id="6208" Heritage="Message">
-	<Fields>
-		<XmlField Name="achievementId" Type="short" Condition="achievementId &lt; 0" />
-	</Fields>
-</XmlMessage>

@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="InventoryPresetSaveMessage" Id="6165" Heritage="Message">
-	<Fields>
-		<XmlField Name="presetId" Type="sbyte" Condition="presetId &lt; 0" />
-		<XmlField Name="symbolId" Type="sbyte" Condition="symbolId &lt; 0" />
-		<XmlField Name="saveEquipment" Type="boolean" />
-	</Fields>
-</XmlMessage>

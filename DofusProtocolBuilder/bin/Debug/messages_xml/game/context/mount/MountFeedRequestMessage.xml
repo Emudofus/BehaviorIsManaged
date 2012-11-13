@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="MountFeedRequestMessage" Id="6189" Heritage="Message">
-	<Fields>
-		<XmlField Name="mountUid" Type="double" Condition="mountUid &lt; 0" />
-		<XmlField Name="mountLocation" Type="sbyte" />
-		<XmlField Name="mountFoodUid" Type="int" Condition="mountFoodUid &lt; 0" />
-		<XmlField Name="quantity" Type="int" Condition="quantity &lt; 0" />
-	</Fields>
-</XmlMessage>

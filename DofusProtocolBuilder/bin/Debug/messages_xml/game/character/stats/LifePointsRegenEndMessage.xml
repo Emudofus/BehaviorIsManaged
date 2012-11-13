@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="LifePointsRegenEndMessage" Id="5686" Heritage="UpdateLifePointsMessage">
-	<Fields>
-		<XmlField Name="lifePointsGained" Type="int" Condition="lifePointsGained &lt; 0" />
-	</Fields>
-</XmlMessage>

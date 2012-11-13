@@ -1,7 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PresetItem" Id="354" Heritage="Object">
-	<Fields>
-		<XmlField Name="position" Type="byte" Condition="position &lt; 0 || position &gt; 255" />
-		<XmlField Name="objGid" Type="int" Condition="objGid &lt; 0" />
-		<XmlField Name="objUid" Type="int" Condition="objUid &lt; 0" />
-	</Fields>
-</XmlType>

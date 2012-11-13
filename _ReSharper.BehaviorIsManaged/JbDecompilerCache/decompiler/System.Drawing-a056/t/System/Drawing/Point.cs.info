@@ -1,6 +1,0 @@
-﻿Code version: 6.1.1000.82
-Assembly name System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a mvid {bba027d9-1878-44df-8650-8b5a7342162e}
-* ref mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-  mvid {9bfef7a4-3230-4675-88f1-e410b14d5490}
-* ref System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-  mvid {82529812-4452-45e6-9628-5063cb30b722}

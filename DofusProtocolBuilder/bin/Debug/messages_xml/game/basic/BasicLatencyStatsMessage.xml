@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="BasicLatencyStatsMessage" Id="5663" Heritage="Message">
-	<Fields>
-		<XmlField Name="latency" Type="ushort" Condition="latency &lt; 0 || latency &gt; 65535" />
-		<XmlField Name="sampleCount" Type="short" Condition="sampleCount &lt; 0" />
-		<XmlField Name="max" Type="short" Condition="max &lt; 0" />
-	</Fields>
-</XmlMessage>

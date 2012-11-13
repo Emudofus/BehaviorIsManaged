@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="KrosmasterInventoryMessage" Id="6350" Heritage="Message">
-	<Fields>
-		<XmlField Name="figures" Type="Types.KrosmasterFigure[]" />
-	</Fields>
-</XmlMessage>

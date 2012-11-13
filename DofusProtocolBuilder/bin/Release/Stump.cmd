@@ -1,1 +1,0 @@
-.\DofusProtocolBuilder.exe -d2oattribute D2OClass -namespace Stump.DofusProtocol -ionamespace Stump.Core.IO -useienumerable

@@ -1,9 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="JobExperience" Id="98" Heritage="Object">
-	<Fields>
-		<XmlField Name="jobId" Type="sbyte" Condition="jobId &lt; 0" />
-		<XmlField Name="jobLevel" Type="sbyte" Condition="jobLevel &lt; 0" />
-		<XmlField Name="jobXP" Type="double" Condition="jobXP &lt; 0" />
-		<XmlField Name="jobXpLevelFloor" Type="double" Condition="jobXpLevelFloor &lt; 0" />
-		<XmlField Name="jobXpNextLevelFloor" Type="double" Condition="jobXpNextLevelFloor &lt; 0" />
-	</Fields>
-</XmlType>

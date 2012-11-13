@@ -1,9 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SelectedServerDataMessage" Id="42" Heritage="Message">
-	<Fields>
-		<XmlField Name="serverId" Type="short" />
-		<XmlField Name="address" Type="utf" />
-		<XmlField Name="port" Type="ushort" Condition="port &lt; 0 || port &gt; 65535" />
-		<XmlField Name="canCreateNewCharacter" Type="boolean" />
-		<XmlField Name="ticket" Type="utf" />
-	</Fields>
-</XmlMessage>

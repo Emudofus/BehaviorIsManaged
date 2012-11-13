@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="HouseGuildShareRequestMessage" Id="5704" Heritage="Message">
-	<Fields>
-		<XmlField Name="enable" Type="boolean" />
-		<XmlField Name="rights" Type="uint" Condition="rights &lt; 0 || rights &gt; 4294967295" />
-	</Fields>
-</XmlMessage>

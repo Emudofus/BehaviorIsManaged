@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightSlideMessage" Id="5525" Heritage="AbstractGameActionMessage">
-	<Fields>
-		<XmlField Name="targetId" Type="int" />
-		<XmlField Name="startCellId" Type="short" Condition="startCellId &lt; -1 || startCellId &gt; 559" />
-		<XmlField Name="endCellId" Type="short" Condition="endCellId &lt; -1 || endCellId &gt; 559" />
-	</Fields>
-</XmlMessage>

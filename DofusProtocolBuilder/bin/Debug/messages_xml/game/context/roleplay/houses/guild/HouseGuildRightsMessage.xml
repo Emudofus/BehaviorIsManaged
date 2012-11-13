@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="HouseGuildRightsMessage" Id="5703" Heritage="Message">
-	<Fields>
-		<XmlField Name="houseId" Type="short" Condition="houseId &lt; 0" />
-		<XmlField Name="guildInfo" Type="Types.GuildInformations" />
-		<XmlField Name="rights" Type="uint" Condition="rights &lt; 0 || rights &gt; 4294967295" />
-	</Fields>
-</XmlMessage>

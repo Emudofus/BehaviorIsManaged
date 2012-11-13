@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeStartOkMulticraftCrafterMessage" Id="5818" Heritage="Message">
-	<Fields>
-		<XmlField Name="maxCase" Type="sbyte" Condition="maxCase &lt; 0" />
-		<XmlField Name="skillId" Type="int" Condition="skillId &lt; 0" />
-	</Fields>
-</XmlMessage>

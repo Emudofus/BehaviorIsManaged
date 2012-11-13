@@ -1,5 +1,0 @@
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\plugins\WindowManager.dll
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Host\bin\Debug\plugins\WindowManager.pdb
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\WindowManager\obj\x86\Debug\WindowManager.csprojResolveAssemblyReference.cache
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\WindowManager\obj\x86\Debug\WindowManager.dll
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Plugins\WindowManager\obj\x86\Debug\WindowManager.pdb

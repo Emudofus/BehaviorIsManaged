@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeCraftSlotCountIncreasedMessage" Id="6125" Heritage="Message">
-	<Fields>
-		<XmlField Name="newMaxSlot" Type="sbyte" Condition="newMaxSlot &lt; 0" />
-	</Fields>
-</XmlMessage>

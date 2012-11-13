@@ -1,9 +1,0 @@
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\x86\Debug\BiM.Core.dll
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\x86\Debug\BiM.Core.pdb
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\x86\Debug\NLog.dll
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\x86\Debug\zlib.net.dll
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\x86\Debug\NLog.pdb
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\bin\x86\Debug\NLog.xml
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\obj\x86\Debug\BiM.Core.csprojResolveAssemblyReference.cache
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\obj\x86\Debug\BiM.Core.dll
-C:\Users\Bouh2\Desktop\Programming\C#\BehaviorIsManaged\trunk\Core\obj\x86\Debug\BiM.Core.pdb

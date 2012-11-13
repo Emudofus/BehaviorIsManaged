@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameRolePlayArenaFighterStatusMessage" Id="6281" Heritage="Message">
-	<Fields>
-		<XmlField Name="fightId" Type="int" />
-		<XmlField Name="playerId" Type="int" Condition="playerId &lt; 0" />
-		<XmlField Name="accepted" Type="boolean" />
-	</Fields>
-</XmlMessage>

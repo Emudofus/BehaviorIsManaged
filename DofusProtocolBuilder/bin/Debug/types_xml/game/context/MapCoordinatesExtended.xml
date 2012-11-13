@@ -1,5 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="MapCoordinatesExtended" Id="176" Heritage="MapCoordinatesAndId">
-	<Fields>
-		<XmlField Name="subAreaId" Type="short" Condition="subAreaId &lt; 0" />
-	</Fields>
-</XmlType>

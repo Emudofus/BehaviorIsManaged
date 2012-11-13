@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="TaxCollectorMovementMessage" Id="5633" Heritage="Message">
-	<Fields>
-		<XmlField Name="hireOrFire" Type="boolean" />
-		<XmlField Name="basicInfos" Type="Types.TaxCollectorBasicInformations" />
-		<XmlField Name="playerName" Type="utf" />
-	</Fields>
-</XmlMessage>

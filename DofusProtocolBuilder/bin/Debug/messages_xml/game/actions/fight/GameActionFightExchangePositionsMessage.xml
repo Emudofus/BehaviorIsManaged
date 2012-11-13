@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightExchangePositionsMessage" Id="5527" Heritage="AbstractGameActionMessage">
-	<Fields>
-		<XmlField Name="targetId" Type="int" />
-		<XmlField Name="casterCellId" Type="short" Condition="casterCellId &lt; -1 || casterCellId &gt; 559" />
-		<XmlField Name="targetCellId" Type="short" Condition="targetCellId &lt; -1 || targetCellId &gt; 559" />
-	</Fields>
-</XmlMessage>

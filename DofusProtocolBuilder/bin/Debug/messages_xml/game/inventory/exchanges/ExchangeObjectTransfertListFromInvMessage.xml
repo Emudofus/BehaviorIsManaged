@@ -1,5 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeObjectTransfertListFromInvMessage" Id="6183" Heritage="Message">
-	<Fields>
-		<XmlField Name="ids" Type="int[]" />
-	</Fields>
-</XmlMessage>

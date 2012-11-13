@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PaddockToSellListMessage" Id="6138" Heritage="Message">
-	<Fields>
-		<XmlField Name="pageIndex" Type="short" Condition="pageIndex &lt; 0" />
-		<XmlField Name="totalPage" Type="short" Condition="totalPage &lt; 0" />
-		<XmlField Name="paddockList" Type="Types.PaddockInformationsForSell[]" />
-	</Fields>
-</XmlMessage>

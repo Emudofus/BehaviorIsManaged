@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="HouseSoldMessage" Id="5737" Heritage="Message">
-	<Fields>
-		<XmlField Name="houseId" Type="int" Condition="houseId &lt; 0" />
-		<XmlField Name="realPrice" Type="int" Condition="realPrice &lt; 0" />
-		<XmlField Name="buyerName" Type="utf" />
-	</Fields>
-</XmlMessage>

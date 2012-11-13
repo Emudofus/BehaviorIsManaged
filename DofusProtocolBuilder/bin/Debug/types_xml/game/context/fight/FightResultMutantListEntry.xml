@@ -1,5 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="FightResultMutantListEntry" Id="216" Heritage="FightResultFighterListEntry">
-	<Fields>
-		<XmlField Name="level" Type="ushort" Condition="level &lt; 0 || level &gt; 65535" />
-	</Fields>
-</XmlType>

@@ -1,6 +1,0 @@
-﻿<XmlType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="PaddockBuyableInformations" Id="130" Heritage="PaddockInformations">
-	<Fields>
-		<XmlField Name="price" Type="int" Condition="price &lt; 0" />
-		<XmlField Name="locked" Type="boolean" />
-	</Fields>
-</XmlType>

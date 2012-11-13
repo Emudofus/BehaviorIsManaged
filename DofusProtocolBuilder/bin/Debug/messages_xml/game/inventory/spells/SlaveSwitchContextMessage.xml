@@ -1,8 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="SlaveSwitchContextMessage" Id="6214" Heritage="Message">
-	<Fields>
-		<XmlField Name="summonerId" Type="int" />
-		<XmlField Name="slaveId" Type="int" />
-		<XmlField Name="slaveSpells" Type="Types.SpellItem[]" />
-		<XmlField Name="slaveStats" Type="Types.CharacterCharacteristicsInformations" />
-	</Fields>
-</XmlMessage>

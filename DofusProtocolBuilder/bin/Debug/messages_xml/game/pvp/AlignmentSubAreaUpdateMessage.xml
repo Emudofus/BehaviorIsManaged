@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="AlignmentSubAreaUpdateMessage" Id="6057" Heritage="Message">
-	<Fields>
-		<XmlField Name="subAreaId" Type="short" Condition="subAreaId &lt; 0" />
-		<XmlField Name="side" Type="sbyte" />
-		<XmlField Name="quiet" Type="boolean" />
-	</Fields>
-</XmlMessage>

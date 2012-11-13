@@ -1,7 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="GameActionFightSpellCooldownVariationMessage" Id="6219" Heritage="AbstractGameActionMessage">
-	<Fields>
-		<XmlField Name="targetId" Type="int" />
-		<XmlField Name="spellId" Type="int" Condition="spellId &lt; 0" />
-		<XmlField Name="value" Type="short" />
-	</Fields>
-</XmlMessage>

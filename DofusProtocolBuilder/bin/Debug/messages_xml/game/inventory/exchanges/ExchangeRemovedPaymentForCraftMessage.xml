@@ -1,6 +1,0 @@
-﻿<XmlMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="ExchangeRemovedPaymentForCraftMessage" Id="6031" Heritage="Message">
-	<Fields>
-		<XmlField Name="onlySuccess" Type="boolean" />
-		<XmlField Name="objectUID" Type="int" Condition="objectUID &lt; 0" />
-	</Fields>
-</XmlMessage>
