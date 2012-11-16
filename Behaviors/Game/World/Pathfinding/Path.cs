@@ -15,10 +15,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using BiM.Behaviors.Game.Actors;
-using BiM.Behaviors.Game.Movements;
 using BiM.Protocol.Enums;
 
 namespace BiM.Behaviors.Game.World.Pathfinding
@@ -122,7 +119,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         {
             var compressedPath = GetCompressedPath();
 
-            return compressedPath.Select(entry => (short)(entry.Cell.Id | ((short)entry.Direction << 12))).ToArray();
+            return compressedPath.Select(entry => (short)((ushort)entry.Cell.Id | ((ushort)entry.Direction << 12))).ToArray();
         }
 
         public void CutPath(int index)
