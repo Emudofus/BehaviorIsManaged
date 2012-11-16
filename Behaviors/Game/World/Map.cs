@@ -32,7 +32,7 @@ using NLog;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class Map : IContext, IMapDataProvider
+    public partial class Map : IContext, IMapDataProvider
     {
         public const int ElevationTolerance = 11;
         public const uint Width = 14;

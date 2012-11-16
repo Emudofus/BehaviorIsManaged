@@ -25,7 +25,7 @@ namespace BiM.Host.UI.Views
     /// </summary>
     public partial class GeneralTab : UserControl, IView<GeneralTabViewModel>
     {
-        private int m_lineCount;
+        //private int m_lineCount;
 
         public GeneralTab()
         {

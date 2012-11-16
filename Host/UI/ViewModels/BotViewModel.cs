@@ -36,7 +36,7 @@ namespace BiM.Host.UI.ViewModels
     {
         private readonly ObservableCollectionMT<object> m_documents = new ObservableCollectionMT<object>();
         private readonly Dictionary<object, Assembly> m_documentsAssembly = new Dictionary<object, Assembly>();
-        private readonly ReadOnlyObservableCollectionMT<object> m_readOnlyDocuments;
+        //private readonly ReadOnlyObservableCollectionMT<object> m_readOnlyDocuments;
 
         public BotViewModel(Bot bot)
         {

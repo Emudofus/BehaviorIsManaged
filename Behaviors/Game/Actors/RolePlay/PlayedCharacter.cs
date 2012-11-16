@@ -577,7 +577,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (msg == null) throw new ArgumentNullException("msg");
             SpellsBook.Update(msg);
         }
-
+        public void Update(GameFightStartMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            SpellsBook.FightStart(msg);
+        }
+        
         public void Update(GameRolePlayCharacterInformations msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");

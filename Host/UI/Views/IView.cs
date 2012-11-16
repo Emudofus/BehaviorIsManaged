@@ -21,7 +21,7 @@ namespace BiM.Host.UI.Views
     public interface IView<T> : IView
         where T : IViewModel
     {
-        T ViewModel
+        new T ViewModel
         {
             get;
             set;

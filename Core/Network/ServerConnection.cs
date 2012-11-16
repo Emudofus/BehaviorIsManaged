@@ -33,13 +33,18 @@ namespace BiM.Core.Network
         private MessagePart m_currentMessage;
         private readonly object m_recvLocker = new object();
 
-        private IPEndPoint m_endPoint;
+        //private IPEndPoint m_endPoint;
         public event Action<ServerConnection, NetworkMessage> MessageReceived;
         public event Action<ServerConnection, NetworkMessage> MessageSent;
         public event Action<ServerConnection> Connected;
         public event Action<ServerConnection> Disconnected;
 
         public event Action<ServerConnection, LogEventInfo> LogMessage;
+        protected void FireLogMessage(LogEventInfo logEventInfo)
+        {
+          if (LogMessage != null)
+            LogMessage(this, logEventInfo);
+        }
 
         private void OnMessageReceived(NetworkMessage message)
         {
@@ -306,5 +311,11 @@ namespace BiM.Core.Network
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        protected void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }

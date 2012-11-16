@@ -44,6 +44,12 @@ namespace BasicPlugin.ServerSelection
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        private void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
 
         object IViewModel.View
         {

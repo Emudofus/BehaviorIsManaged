@@ -93,6 +93,12 @@ namespace BasicPlugin.Chat
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
+        protected void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        
     }
 
     [Serializable]
@@ -112,5 +118,10 @@ namespace BasicPlugin.Chat
 
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
+        protected void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

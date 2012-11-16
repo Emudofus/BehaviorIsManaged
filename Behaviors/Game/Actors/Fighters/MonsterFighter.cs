@@ -41,6 +41,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             MonsterTemplate = DataProvider.Instance.Get<Monster>(msg.creatureGenericId);
             MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
             Stats = new MinimalStats(msg.stats);
+            Level = (int) MonsterGrade.level;
         }
 
         public override int Id

@@ -53,7 +53,7 @@ namespace BiM.Behaviors.Game.Actors
 
             if (Movement.StartCell != Cell)
             {
-                logger.Warn("Actor start cell incorrect for this moving path Position={0}, StartPath={1}", Cell, Movement.StartCell);
+                logger.Warn("Actor start cell incorrect for this moving path Position={0}, StartPath={1}, Path={2}", Cell, Movement.StartCell, String.Join<World.Cell>(",", Movement.MovementPath.Cells));
                 Cell = Movement.StartCell;
             }
 

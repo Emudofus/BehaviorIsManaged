@@ -23,7 +23,7 @@ namespace BiM.Host.UI.ViewModels
     public interface IViewModel<T> : INotifyPropertyChanged, IViewModel
         where T : IView
     {
-        T View
+        new T View
         {
             get;
             set;

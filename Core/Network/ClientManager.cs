@@ -202,7 +202,7 @@ namespace BiM.Core.Network
                         break;
                 }
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 // theoretically it shouldn't go up to there.
                 //logger.Error("Last chance exception on receiving ! : " + exception);

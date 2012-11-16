@@ -287,6 +287,13 @@ namespace BasicPlugin.Chat
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
         #endregion
 
         private void StartFlood()
