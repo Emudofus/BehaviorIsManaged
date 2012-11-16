@@ -362,14 +362,16 @@ namespace BiM.Protocol.Tools
             if (!IsTypeDefined(typeof (T)))
                 throw new Exception("The file doesn't contain this class");
 
-            int offset = m_indextable[index];
+            int offset = 0;
+            if (!m_indextable.TryGetValue(index, out offset)) throw new Exception(string.Format("Can't find Index {0} in {1}", index, this.FileName));
+
             reader.Seek(offset, SeekOrigin.Begin);
 
             int classid = reader.ReadInt();
 
-            if (m_classes[classid].ClassType != typeof (T) && !m_classes[classid].ClassType.IsSubclassOf(typeof (T)))
+            if (m_classes[classid].ClassType != typeof(T) && !m_classes[classid].ClassType.IsSubclassOf(typeof(T)))
                 throw new Exception(string.Format("Wrong type, try to read object with {1} instead of {0}",
-                                                  typeof (T).Name, m_classes[classid].ClassType.Name));
+                                                    typeof(T).Name, m_classes[classid].ClassType.Name));
 
             return BuildObject(m_classes[classid], reader) as T;
         }

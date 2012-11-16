@@ -15,15 +15,35 @@
 #endregion
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
+using NLog;
 
 namespace BiM.Behaviors.Handlers.Spells
 {
     public class SpellHandler
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         [MessageHandler(typeof(SpellListMessage))]
         public static void HandleSpellListMessage(Bot bot, SpellListMessage message)
         {
             bot.Character.Update(message);
-        } 
+        }
+        [MessageHandler(typeof(GameFightStartMessage))]
+        public static void HandleGameFightStartMessage(Bot bot, GameFightStartMessage message)
+        {
+            bot.Character.SpellsBook.FightStart(message);
+        }
+        [MessageHandler(typeof(GameFightTurnEndMessage))]
+        public void HandleGameFightTurnEndMessage(Bot bot, GameFightTurnEndMessage message)
+        {
+            bot.Character.SpellsBook.EndTurn();
+
+        }
+        [MessageHandler(typeof(GameActionFightSpellCastMessage))]
+        public void HandleGameActionFightSpellCastMessage(Bot bot, GameActionFightSpellCastMessage message)
+        {
+            if (bot.Character.Id == message.sourceId)
+                bot.Character.SpellsBook.CastAt(message);                
+        }
     }
 }

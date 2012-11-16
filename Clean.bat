@@ -1,0 +1,1 @@
+rd trunk /S /Q

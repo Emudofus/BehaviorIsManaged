@@ -189,6 +189,8 @@
     <Compile Include="Game\Spells\Shapes\SpellShapeEnum.cs" />
     <Compile Include="Game\Spells\Shapes\Square.cs" />
     <Compile Include="Game\Spells\Shapes\Zone.cs" />
+    <Compile Include="Game\Spells\Spell.AI.cs" />
+    <Compile Include="Game\Spells\Spell.Availability.cs" />
     <Compile Include="Game\Spells\Spell.cs" />
     <Compile Include="Game\Spells\SpellsBook.cs" />
     <Compile Include="Game\Stats\IMinimalStats.cs" />
@@ -204,6 +206,7 @@
     <Compile Include="Game\Actors\RolePlay\GroupMonster.cs" />
     <Compile Include="Game\World\IContext.cs" />
     <Compile Include="Game\World\Map.cs" />
+    <Compile Include="Game\World\Map.Targeting.cs" />
     <Compile Include="Game\World\MapNeighbour.cs" />
     <Compile Include="Game\World\Pathfinding\CellInformation.cs" />
     <Compile Include="Game\World\Pathfinding\CellInformationProvider.cs" />

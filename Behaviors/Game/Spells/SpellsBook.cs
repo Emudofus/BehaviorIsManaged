@@ -20,6 +20,10 @@ using System.Linq;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Core.Collections;
 using BiM.Protocol.Messages;
+using System.Collections.Generic;
+using BiM.Protocol.Types;
+using NLog;
+using BiM.Core.Reflection;
 
 namespace BiM.Behaviors.Game.Spells
 {
@@ -62,7 +66,7 @@ namespace BiM.Behaviors.Game.Spells
 
         public bool HasSpell(int id)
         {
-            return false;
+            return GetSpell(id) != null;
         }
 
         public Spell GetSpell(int id)
@@ -85,14 +89,78 @@ namespace BiM.Behaviors.Game.Spells
             if (msg == null) throw new ArgumentNullException("msg");
 
             m_spells.Clear();
-            foreach (var spell in msg.spells)
-            {
+            foreach (SpellItem spell in msg.spells)
                 m_spells.Add(new Spell(spell));
-            }
 
             SpellPrevisualization = msg.spellPrevisualization;
+
+            //FullDump();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #region Availability management
+        /// <summary>
+        /// Notifies the start of a new fight turn to each spell 
+        /// </summary>
+        public void FightStart(GameFightStartMessage msg)
+        {
+            foreach (Spell spell in m_spells)
+                spell.StartFight();
+        }
+
+        /// <summary>
+        /// Notifies the end of the fighting turn to each spell 
+        /// </summary>
+        public void EndTurn()
+        {
+            foreach (Spell spell in m_spells)
+                spell.EndTurn();
+        }
+
+        /// <summary>
+        /// Notifies the spell that it has been cast on a given target
+        /// </summary>        
+        public void CastAt(GameActionFightSpellCastMessage msg)
+        {
+            if (msg == null) throw new ArgumentNullException("msg");
+            Spell spell = GetSpell(msg.spellId);
+            if (spell == null)
+                throw new ArgumentException(String.Format("Spell Id {0} do not exists in the SpellsBook of {1}, with {2} entries", msg.spellId, Character.Name, m_spells.Count));
+            spell.CastAt(msg.targetId);
+        }
+
+        public IEnumerable<Spell> GetAvailableSpells(int? TargetId = null)
+        {
+            foreach (Spell spell in m_spells)
+                if (spell.IsAvailable(TargetId))
+                    yield return spell; 
+        }
+
+        #endregion Availability management
+
+        #region debug tool
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        public void FullDump()
+        {
+            ObjectDumper dumper = new ObjectDumper(4, true, true, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.FlattenHierarchy);
+            logger.Error("Dump of the spellbook of {0} : ", Character.Name);
+            foreach (var spell in m_spells)
+            {
+                logger.Error("   Spell {0}", spell.ToString(true));
+                foreach (var effect in spell.LevelTemplate.effects)
+                    logger.Error("       Effect {0}", dumper.Dump(effect));
+                
+            }
+        }
+        #endregion debug tool
+
     }
 }

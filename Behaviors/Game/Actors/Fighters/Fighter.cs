@@ -171,9 +171,17 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             var range = GetRealSpellRange(spell);
             var dist = Cell.ManhattanDistanceTo(cell);
 
-            return dist >= spell.minRange && dist <= range;
+            if (!(dist >= spell.minRange && dist <= range)) return false;
+            return IsInLineIfNeeded(cell, spell);
         }
 
+        private bool IsInLineIfNeeded(Cell cell, SpellLevel spell)
+        {
+            if (!spell.castInLine) return true;
+            return Cell.X == cell.X || Cell.Y == cell.Y;
+        }
+
+        
         public FightTeam GetOpposedTeam()
         {
             return Fight.GetTeam(Team.Id == FightTeamColor.Blue ? FightTeamColor.Red : FightTeamColor.Blue);
@@ -188,6 +196,11 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Stats.Update(informations.stats);
 
             Update(informations.disposition);
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} (lv {1} {2})", Name, Level, Team.TeamType == TeamTypeEnum.TEAM_TYPE_PLAYER ? "friend" : "foe");
         }
     }
 }

@@ -18,11 +18,16 @@ using System.ComponentModel;
 using BiM.Behaviors.Data;
 using BiM.Protocol.Data;
 using BiM.Protocol.Types;
+using System.Collections.Generic;
+using System.Diagnostics;
+using BiM.Behaviors.Game.Effects;
 
 namespace BiM.Behaviors.Game.Spells
 {
-    public class Spell : INotifyPropertyChanged
+    public partial class Spell : INotifyPropertyChanged
     {
+
+        public const string UNKNOWN = "<Unknown>";
         private int m_level;
 
         public Spell(SpellItem spell)
@@ -71,5 +76,51 @@ namespace BiM.Behaviors.Game.Spells
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        protected void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        public string Name 
+        { 
+            get 
+            { 
+                if (Template != null) return DataProvider.Instance.Get<string>(Template.nameId);
+                return UNKNOWN; 
+            } 
+        }
+
+        public string Description
+        {
+            get
+            {
+                if (Template != null) return DataProvider.Instance.Get<string>(Template.descriptionId);
+                return UNKNOWN;
+            }
+        }
+
+        public string ToString(bool detailed)
+        {
+            if (Template != null)
+            {
+                if (detailed)
+                    return String.Format("{0} {1} : {2}", Name, Level, Description);
+                else
+                    return ToString();
+            }
+            return UNKNOWN;
+        }
+
+        public override string ToString()
+        {
+            if (Template != null)
+            {
+                return String.Format("{0} {1}", Name, Level);
+            }
+            return UNKNOWN;
+        }
+
     }
 }

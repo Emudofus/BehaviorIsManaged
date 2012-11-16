@@ -33,6 +33,8 @@ using System;
 using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.Actors;
 using NLog;
+using BiM.Behaviors.Game.Shortcuts;
+using System.Diagnostics;
 
 namespace FightPlugin
 {
@@ -107,7 +109,7 @@ namespace FightPlugin
 
         private void CheckMonsters()
         {
-            if ((Bot.Character.Stats.Health * 3) < Bot.Character.Stats.MaxHealth)
+            if ((Bot.Character.Stats.Health * 2) < Bot.Character.Stats.MaxHealth)
             {
                 if (!m_sit)
                 {
@@ -125,6 +127,7 @@ namespace FightPlugin
 
             if (monster != null)
             {
+                Debug.WriteLine(String.Format("Trying to start a fight with group lv {0}, cell {1}, leader {2} lv {3}", monster.Level,  monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
                 Bot.Character.TryStartFightWith(monster);
             }
         }
@@ -166,42 +169,60 @@ namespace FightPlugin
         private void StartAI()
         {
             var nearestMonster = GetNearestEnemy();
-            var shortcut = m_character.Character.SpellShortcuts.Get(1);
-
-            if (shortcut == null)
+            int MaxDistanceWished = 1;
+            bool InLine = false;
+            int NoSlot = 0;
+            foreach (var shortcutgen in m_character.Character.SpellShortcuts.Shortcuts)
             {
-                m_character.Character.SendMessage("No spell on slot 1");
-                return;
-            }
-
-            var spell = shortcut.GetSpell();
-            if (spell == null)
-            {
-                m_character.Character.SendMessage("No spell on slot 1");
-                return;
-            }
-
-            if (m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate))
-            {
-                m_character.CastSpell(spell, nearestMonster.Cell);
-                MoveFar();
-
-                m_character.PassTurn();
-            }
-            else
-            {
-                MoveNear(nearestMonster, (int)( m_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - m_character.GetRealSpellRange(spell.LevelTemplate) ));
-
-                // wait until the movement ends
-                if (m_stopMovingDelegate != null)
+                SpellShortcut shortcut = shortcutgen as SpellShortcut;
+                if (shortcut == null)
                 {
-                    Bot.Character.Fighter.StopMoving -= m_stopMovingDelegate;
-                    m_stopMovingDelegate = null;
+                    logger.Debug("[ShortCut {0}] No SpellShortcut at this slot.", NoSlot);
+                    m_character.Character.SendMessage("No spell on slot 1");
+                    continue;
                 }
 
-                m_stopMovingDelegate = (sender, behavior, canceled) => OnStopMoving(spell, nearestMonster);
-                Bot.Character.Fighter.StopMoving += m_stopMovingDelegate;
+                var spell = shortcut.GetSpell();
+                if (spell == null)
+                {
+                    logger.Debug("[ShortCut {0}] Spell Id {1} can't be found in SpellsBook with {2} entries : {3}.", NoSlot, shortcut.SpellId, m_character.Character.SpellsBook.Spells.Count, String.Join(",",m_character.Character.SpellsBook.Spells));
+                    continue;
+                }
+                NoSlot++;
+                bool Available = spell.IsAvailable(nearestMonster.Id);
+                bool InRange = m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
+                logger.Debug("[ShortCut {7}] Spell {0} to be cast by {1} ({2}) on {3} ({4}) : available {5}, InRange {6}", spell, m_character.Name, m_character.Cell, nearestMonster, nearestMonster.Cell, Available, InRange, NoSlot);
+                if (Available)
+                {
+                    if (InRange)
+                    {
+                        m_character.CastSpell(spell, nearestMonster.Cell);
+                        MoveFar();
+                        m_character.PassTurn();
+                        return;
+                    }
+
+                    // Available but not in range
+                    if (m_character.GetRealSpellRange(spell.LevelTemplate) > MaxDistanceWished)
+                    {
+                        MaxDistanceWished = m_character.GetRealSpellRange(spell.LevelTemplate);
+                        InLine = spell.LevelTemplate.castInLine;
+                    }
+                }
             }
+
+            // If no spell is at range, then try to come closer and try again
+            MoveNear(nearestMonster, (int)(m_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - MaxDistanceWished), InLine);
+
+            // wait until the movement ends
+            if (m_stopMovingDelegate != null)
+            {
+                Bot.Character.Fighter.StopMoving -= m_stopMovingDelegate;
+                m_stopMovingDelegate = null;
+            }
+
+            m_stopMovingDelegate = (sender, behavior, canceled) => StartAI();
+            Bot.Character.Fighter.StopMoving += m_stopMovingDelegate;            
 
         }
 
@@ -229,14 +250,22 @@ namespace FightPlugin
             Bot.Character.Fighter.ChangePrePlacement(cell);
         }
 
-        private void MoveNear(Fighter fighter, int mp)
+        private void MoveNear(Fighter fighter, int mp, bool InLine = false)
         {
-            var dest = fighter.Cell.GetAdjacentCells().OrderBy(cell => cell.ManhattanDistanceTo(m_character.Cell)).FirstOrDefault();
+            Cell dest = null;
+            if (InLine)
+                if (Math.Abs(fighter.Cell.X - m_character.Cell.X) > Math.Abs(fighter.Cell.Y - m_character.Cell.Y))
+                    m_character.Move(m_character.Map.Cells[m_character.Cell.X, fighter.Cell.Y], mp);
+                else
+                    m_character.Move(m_character.Map.Cells[fighter.Cell.X, m_character.Cell.Y], mp);                    
+            else
+                // Try to go as close as possible to a cell adjacent with the target
+                dest = fighter.Cell.GetAdjacentCells().OrderBy(cell => cell.ManhattanDistanceTo(m_character.Cell)).FirstOrDefault();
 
             if (dest == null)
                 return;
 
-            m_character.Move(dest);
+            m_character.Move(dest, mp);
         }
 
         private void MoveFar()
