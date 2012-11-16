@@ -298,9 +298,9 @@ namespace BiM.Behaviors.Game.Items
             if (msg == null) throw new ArgumentNullException("msg");
             m_items.Clear();
 
-            foreach (var item in msg.objects.Select(entry => new Item(entry)))
+            foreach (var item in msg.objects)
             {
-                m_items.Add(item);
+                m_items.Add(new Item(item));
             }
         }
 
@@ -414,5 +414,11 @@ namespace BiM.Behaviors.Game.Items
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        protected void FirePropertyChanged(string propertyName)
+        {
+          if (PropertyChanged != null)
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }

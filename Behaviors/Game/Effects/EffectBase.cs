@@ -95,7 +95,15 @@ namespace BiM.Behaviors.Game.Effects
         public EffectBase(ObjectEffect effect)
         {
             Id = effect.actionId;
-            m_template = DataProvider.Instance.Get<Effect>(Id);
+            try
+            {
+                m_template = DataProvider.Instance.Get<Effect>(Id);
+            }
+            catch (Exception ex)
+            {
+                logger.Debug("Can't find effect Id {0} : {1}", Id, ex.Message);
+                m_template = new Effect();
+            }
         }
 
         public EffectBase(EffectInstance effect)
