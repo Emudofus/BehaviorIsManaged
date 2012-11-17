@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="BasicPlugin.CharacterInfo.CharacterInfoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="355" d:DesignWidth="638" xmlns:avalondock="http://avalondock.codeplex.com">
+    <UserControl.Resources>
+        <System:SByte x:Key="Vitality">11</System:SByte>
+        <System:SByte x:Key="Strength">10</System:SByte>
+        <System:SByte x:Key="Wisdom">12</System:SByte>
+        <System:SByte x:Key="Chance">13</System:SByte>
+        <System:SByte x:Key="Agility">14</System:SByte>
+        <System:SByte x:Key="Intelligence">15</System:SByte>
+    </UserControl.Resources>
+    <Grid Height="288" Width="636">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="298*" />
+            <RowDefinition Height="14*" />
+        </Grid.RowDefinitions>
+        <TabControl Height="256" HorizontalAlignment="Left" Margin="12,12,0,0" Name="tabCharacterInfo" VerticalAlignment="Top" Width="618">
+            <TabItem Header="Stats" Name="tabCIStats">
+                <Grid Height="222">
+                    <Label Content="Vitality" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" Foreground="#FFEB5B5B" />
+                    <Label Content="Wisdom" Height="28" HorizontalAlignment="Left" Margin="6,40,0,0" Name="label2" VerticalAlignment="Top" Foreground="#FF560879" />
+                    <Label Content="Strenght" Height="31" HorizontalAlignment="Left" Margin="6,74,0,0" Name="label3" VerticalAlignment="Top" Foreground="#FF9A4C0A" />
+                    <Label Content="Intelligence" Height="28" HorizontalAlignment="Left" Margin="6,110,0,0" Name="label4" VerticalAlignment="Top" Foreground="Red" />
+                    <Label Content="Chance" Height="28" HorizontalAlignment="Left" Margin="6,144,0,0" Name="label5" VerticalAlignment="Top" Foreground="#FF48BBFF" />
+                    <Label Content="Agility" Height="28" HorizontalAlignment="Left" Margin="6,178,0,0" Name="label6" VerticalAlignment="Top" Foreground="#FF109D10" />
+
+                    <Label Content="{Binding Bot.Character.Stats.Vitality.Total}" Height="28" HorizontalAlignment="Left" Margin="88,6,0,0" Name="lblVitality" VerticalAlignment="Top" />
+                    <Label Content="{Binding Bot.Character.Stats.Wisdom.Total}" Height="28" HorizontalAlignment="Left" Margin="88,40,0,0" Name="lblWisdom" VerticalAlignment="Top" />
+                    <Label Content="{Binding Bot.Character.Stats.Strength.Total}" Height="28" HorizontalAlignment="Left" Margin="88,74,0,0" Name="lblStrenght" VerticalAlignment="Top" />
+                    <Label Content="{Binding Bot.Character.Stats.Intelligence.Total}" Height="28" HorizontalAlignment="Left" Margin="88,110,0,0" Name="lblInteligence" VerticalAlignment="Top" />
+                    <Label Content="{Binding Bot.Character.Stats.Chance.Total}" Height="28" HorizontalAlignment="Left" Margin="88,144,0,0" Name="lblChance" VerticalAlignment="Top" />
+                    <Label Content="{Binding Bot.Character.Stats.Agility.Total}" Height="28" HorizontalAlignment="Left" Margin="88,178,0,0" Name="lblAgility" VerticalAlignment="Top" />
+                    <Label Content="Available Points :" Height="28" HorizontalAlignment="Left" Margin="409,48,0,0" Name="label13" VerticalAlignment="Top" FontWeight="Bold" />
+                    <Label Content="{Binding Bot.Character.Stats.StatsPoints}" Height="28" HorizontalAlignment="Left" Margin="531,48,0,0" Name="lblAvailablePoints" VerticalAlignment="Top" Width="35" />
+                    <Button Content="Configure" Height="30" HorizontalAlignment="Left" Margin="409,0,0,13" Name="btnConfigure" VerticalAlignment="Bottom" Width="148" />
+                    <Button Content="+" Height="27" HorizontalAlignment="Left" Margin="135,5,0,0" Name="btnAddVitality" VerticalAlignment="Top" Width="27" Command="{Binding UpgradeStatCommand}" CommandParameter="{StaticResource Vitality}"/>
+                    <Button Content="+" Height="27" HorizontalAlignment="Left" Margin="135,39,0,0" Name="btnAddWisdom" VerticalAlignment="Top" Width="27" Command="{Binding UpgradeStatCommand}" CommandParameter="{StaticResource Wisdom}"/>
+                    <Button Content="+" Height="27" HorizontalAlignment="Left" Margin="135,75,0,0" Name="btnAddStrenght" VerticalAlignment="Top" Width="27" Command="{Binding UpgradeStatCommand}" CommandParameter="{StaticResource Strength}"/>
+                    <Button Content="+" Height="27" HorizontalAlignment="Left" Margin="135,110,0,0" Name="btnAddIntelligence" VerticalAlignment="Top" Width="27" Command="{Binding UpgradeStatCommand}" CommandParameter="{StaticResource Intelligence}"/>
+                    <Button Content="+" Height="27" HorizontalAlignment="Left" Margin="135,143,0,0" Name="btnAddChance" VerticalAlignment="Top" Width="27" Command="{Binding UpgradeStatCommand}" CommandParameter="{StaticResource Chance}"/>
+                    <Button Content="+" Height="27" HorizontalAlignment="Left" Margin="135,177,0,0" Name="btnAddAgility" VerticalAlignment="Top" Width="27" Command="{Binding UpgradeStatCommand}" CommandParameter="{StaticResource Agility}"/>
+                 </Grid>
+            </TabItem>
+            <TabItem Header="Sorts" Name="tabCISorts">
+                <Grid Height="222">
+                    <ListView Height="210" HorizontalAlignment="Left" Margin="6,6,0,0" x:Name="listBox1" VerticalAlignment="Top" Width="347" BorderThickness="2">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="700">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding SpellName, Mode=OneWay}" Grid.Column="0"/>
+                                    <TextBox Text="{Binding SpellLevel, Mode=OneWay}" Grid.Column="1" Margin="5,0,0,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        
+    </Grid>
+</UserControl>
