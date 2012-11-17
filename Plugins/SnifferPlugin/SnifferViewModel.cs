@@ -206,6 +206,28 @@ namespace SnifferPlugin
         }
 
         #endregion
+		
+		#region ClearCommand
+
+        private DelegateCommand m_clearCommand;
+
+        public DelegateCommand ClearCommand
+        {
+            get { return m_clearCommand ?? (m_clearCommand = new DelegateCommand(OnClear, CanClear)); }
+        }
+
+        private bool CanClear(object parameter)
+        {
+            return true;
+        }
+
+        private void OnClear(object parameter)
+        {
+            m_messages.Clear();
+            this.RefreshVisibility();
+        }
+
+        #endregion
 
         public override void OnAttached()
         {
