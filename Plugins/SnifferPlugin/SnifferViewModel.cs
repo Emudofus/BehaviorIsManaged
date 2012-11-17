@@ -184,7 +184,7 @@ namespace SnifferPlugin
 
         private void OnExport(object parameter)
         {
-            var dialog = new SaveFileDialog()
+            var dialog = new SaveFileDialog
             {
                 FileName = string.Format("logs {0}", DateTime.Now.ToString("dd-MM-yy")),
                 DefaultExt = ".log",
@@ -224,7 +224,7 @@ namespace SnifferPlugin
         private void OnClear(object parameter)
         {
             m_messages.Clear();
-            this.RefreshVisibility();
+            RefreshVisibility();
         }
 
         #endregion
