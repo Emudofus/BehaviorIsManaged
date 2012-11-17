@@ -207,7 +207,7 @@ namespace SnifferPlugin
 
         #endregion
 		
-		#region ClearCommand
+        #region ClearCommand
 
         private DelegateCommand m_clearCommand;
 
