@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // Spell.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -14,22 +15,22 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 // Author : FastFrench - antispam@laposte.net
+
 #endregion
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 
 namespace BiM.Behaviors.Game.Spells
 {
     public partial class Spell
     {
-
         #region Stuff to control availability of the spell
-        uint m_nbCastAllowed;
-        uint m_nbTurnToWait;
-        Dictionary<int, int> m_targeted;
+
+        private uint m_nbCastAllowed;
+        private uint m_nbTurnToWait;
+        private Dictionary<int, int> m_targeted;
+
         public void StartFight()
         {
             m_nbTurnToWait = LevelTemplate.initialCooldown;
@@ -50,7 +51,7 @@ namespace BiM.Behaviors.Game.Spells
             if (m_nbTurnToWait == 0)
                 m_nbCastAllowed = LevelTemplate.maxCastPerTurn;
 
-            m_targeted = new Dictionary<int, int>();  // Reset targeted counts
+            m_targeted = new Dictionary<int, int>(); // Reset targeted counts
         }
 
         public void CastAt(int idTarget)
@@ -67,7 +68,7 @@ namespace BiM.Behaviors.Game.Spells
                 Debug.Assert(targetCount <= LevelTemplate.maxCastPerTarget);
             }
             Debug.Assert(m_nbCastAllowed > 0 || LevelTemplate.maxCastPerTarget <= 0);
-            m_nbTurnToWait = (uint)LevelTemplate.globalCooldown;
+            m_nbTurnToWait = (uint) LevelTemplate.globalCooldown;
 
             if (m_nbCastAllowed > 0)
                 m_nbCastAllowed--;
@@ -93,6 +94,7 @@ namespace BiM.Behaviors.Game.Spells
 
             return true;
         }
+
         #endregion Stuff to control availability of the spell
     }
 }
