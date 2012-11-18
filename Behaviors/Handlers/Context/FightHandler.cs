@@ -183,5 +183,43 @@ namespace BiM.Behaviors.Handlers.Context
         {
 
         }
+        #region stats update
+        [MessageHandler(typeof(GameActionFightLifePointsLostMessage))]
+        public static void HandleGameActionFightLifePointsLostMessage(Bot bot, GameActionFightLifePointsLostMessage message)
+        {
+            
+        }
+
+        [MessageHandler(typeof(GameActionFightLifeAndShieldPointsLostMessage))]
+        public static void HandleGameActionFightLifeAndShieldPointsLostMessage(Bot bot, GameActionFightLifeAndShieldPointsLostMessage message)
+        {
+            
+        }
+
+        [MessageHandler(typeof(GameActionFightLifePointsGainMessage))]
+        public static void HandleGameActionFightLifePointsGainMessage(Bot bot, GameActionFightLifePointsGainMessage message)
+        {
+            
+        }
+
+        [MessageHandler(typeof(GameActionFightPointsVariationMessage))]
+        public static void HandleGameActionFightPointsVariationMessage(Bot bot, GameActionFightPointsVariationMessage message)
+        {
+
+        }
+        
+        [MessageHandler(typeof(GameActionFightSpellCooldownVariationMessage))]
+        public static void HandleGameActionFightSpellCooldownVariationMessage(Bot bot, GameActionFightSpellCooldownVariationMessage message)
+        {
+
+        }
+
+        [MessageHandler(typeof(GameActionFightTackledMessage))]
+        public static void HandleGameActionFightTackledMessage(Bot bot, GameActionFightTackledMessage message)
+        {            
+        }
+        
+        #endregion stats update
+
     }
 }
