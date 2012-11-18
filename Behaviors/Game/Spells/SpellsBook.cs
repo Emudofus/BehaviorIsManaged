@@ -97,7 +97,7 @@ namespace BiM.Behaviors.Game.Spells
 
             SpellPrevisualization = msg.spellPrevisualization;
 
-            FullDump();
+            //FullDump();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
