@@ -488,12 +488,15 @@ namespace BiM.Protocol.Tools.D2p
             if (entry.Container != this)
                 return entry.Container.ReadFile(entry);
 
-            if (entry.Index >= 0 && IndexTable.OffsetBase + entry.Index >= 0)
-                m_reader.Seek(IndexTable.OffsetBase + entry.Index, SeekOrigin.Begin);
+            lock (m_reader)
+            {
+                if (entry.Index >= 0 && IndexTable.OffsetBase + entry.Index >= 0)
+                    m_reader.Seek(IndexTable.OffsetBase + entry.Index, SeekOrigin.Begin);
 
-            byte[] data = entry.ReadEntry(m_reader);
+                byte[] data = entry.ReadEntry(m_reader);
 
-            return data;
+                return data;
+            }
         }
 
         public byte[] ReadFile(string fileName)
@@ -636,10 +639,13 @@ namespace BiM.Protocol.Tools.D2p
 
             entry.ModifyEntry(data);
 
-            if (entry.Container != this &&
-                !m_linksToSave.Contains(entry.Container))
+            lock (m_linksToSave)
             {
-                m_linksToSave.Enqueue(entry.Container);
+                if (entry.Container != this &&
+                    !m_linksToSave.Contains(entry.Container))
+                {
+                    m_linksToSave.Enqueue(entry.Container);
+                }
             }
 
             return true;
@@ -665,13 +671,16 @@ namespace BiM.Protocol.Tools.D2p
 
         public void SaveAs(string destination, bool overwrite = true)
         {
-            // save the links before
-            while (m_linksToSave.Count > 0)
+            lock (m_linksToSave)
             {
-                D2pFile link = m_linksToSave.Dequeue();
+                // save the links before
+                while (m_linksToSave.Count > 0)
+                {
+                    D2pFile link = m_linksToSave.Dequeue();
 
-                // theorically the path is defined
-                link.Save();
+                    // theorically the path is defined
+                    link.Save();
+                }
             }
 
             Stream stream;

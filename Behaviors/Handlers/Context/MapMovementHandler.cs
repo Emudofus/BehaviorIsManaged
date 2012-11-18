@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // MapMovementHandler.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,10 +13,12 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
+
 using System;
-using System.Drawing;
 using System.Linq;
+using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Config;
@@ -29,7 +32,7 @@ namespace BiM.Behaviors.Handlers.Context
     {
         [Configurable("EstimatedMovementLag", "Refer to the estimated time elapsed until the client start moving (in ms)")]
         public static int EstimatedMovementLag = 160;
-        
+
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -47,21 +50,21 @@ namespace BiM.Behaviors.Handlers.Context
             if (!bot.Character.IsMoving())
                 return;
 
-            var attemptElement = bot.Character.Movement.TimedPath.GetCurrentElement();
+            TimedPathElement attemptElement = bot.Character.Movement.TimedPath.GetCurrentElement();
 
             if (attemptElement.CurrentCell.Id != message.cellId)
             {
-                var clientCell = bot.Character.Movement.TimedPath.Elements.First(entry => entry.CurrentCell.Id == message.cellId);
+                TimedPathElement clientCell = bot.Character.Movement.TimedPath.Elements.First(entry => entry.CurrentCell.Id == message.cellId);
 
                 // the difference is the time elapsed until the client analyse the path and start moving (~160ms) it depends also on computer hardware
                 logger.Warn("Warning the client has canceled the movement but the given cell ({0}) is not the attempted one ({1})." +
-                    "Estimated difference : {2}ms", message.cellId, attemptElement.CurrentCell.Id, (attemptElement.EndTime - clientCell.EndTime).TotalMilliseconds);
+                            "Estimated difference : {2}ms", message.cellId, attemptElement.CurrentCell.Id, (attemptElement.EndTime - clientCell.EndTime).TotalMilliseconds);
             }
 
             bot.Character.NotifyStopMoving(true);
         }
 
-        [MessageHandler(typeof(GameMapMovementMessage))]
+        [MessageHandler(typeof (GameMapMovementMessage))]
         public static void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
         {
             if (bot.Character.Context == null)
@@ -70,13 +73,22 @@ namespace BiM.Behaviors.Handlers.Context
                 return;
             }
 
-            var actor = bot.Character.Context.GetContextActor(message.actorId);
+            ContextActor actor = bot.Character.Context.GetContextActor(message.actorId);
 
             if (actor == null)
+            {
                 logger.Error("Actor {0} not found", message.actorId); // only a log for the moment until context are fully handled
+                return;
+            }
+
+            // just to update the position
+            if (message.keyMovements.Length == 1)
+            {
+                actor.UpdatePosition(message.keyMovements[0]);
+            }
             else
             {
-                var path = Path.BuildFromServerCompressedPath(bot.Character.Map, message.keyMovements);
+                Path path = Path.BuildFromServerCompressedPath(bot.Character.Map, message.keyMovements);
 
                 if (path.IsEmpty())
                 {

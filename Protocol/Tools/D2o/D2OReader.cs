@@ -111,15 +111,18 @@ namespace BiM.Protocol.Tools
         {
             m_reader = new BigEndianReader(stream);
 
-            string header = m_reader.ReadUTFBytes(3);
-
-            if (header != "D2O")
+            lock (m_reader)
             {
-                throw new Exception("Header doesn't equal the string \'D2O\' : Corrupted file");
-            }
+                string header = m_reader.ReadUTFBytes(3);
 
-            ReadIndexTable();
-            ReadClassesTable();
+                if (header != "D2O")
+                {
+                    throw new Exception("Header doesn't equal the string \'D2O\' : Corrupted file");
+                }
+
+                ReadIndexTable();
+                ReadClassesTable();
+            }
         }
 
         private void ReadIndexTable()
@@ -288,7 +291,10 @@ namespace BiM.Protocol.Tools
                 }
             }
 
-            return ReadObject(index, m_reader);
+            lock (m_reader)
+            {
+                return ReadObject(index, m_reader);
+            }
         }
 
         private object ReadObject(int index, BigEndianReader reader)
@@ -387,12 +393,15 @@ namespace BiM.Protocol.Tools
         /// </summary>
         public D2OClassDefinition GetObjectClass(int index)
         {
-            int offset = m_indextable[index];
-            m_reader.Seek(offset, SeekOrigin.Begin);
+            lock (m_reader)
+            {
+                int offset = m_indextable[index];
+                m_reader.Seek(offset, SeekOrigin.Begin);
 
-            int classid = m_reader.ReadInt();
+                int classid = m_reader.ReadInt();
 
-            return m_classes[classid];
+                return m_classes[classid];
+            }
         }
 
         private object ReadField(BigEndianReader reader, D2OFieldDefinition field, D2OFieldType typeId,
@@ -495,18 +504,24 @@ namespace BiM.Protocol.Tools
 
         internal BigEndianReader CloneReader()
         {
-            if (m_reader.BaseStream.Position > 0)
-                m_reader.Seek(0, SeekOrigin.Begin);
+            lock (m_reader)
+            {
+                if (m_reader.BaseStream.Position > 0)
+                    m_reader.Seek(0, SeekOrigin.Begin);
 
-            Stream streamClone = new MemoryStream();
-            m_reader.BaseStream.CopyTo(streamClone);
+                Stream streamClone = new MemoryStream();
+                m_reader.BaseStream.CopyTo(streamClone);
 
-            return new BigEndianReader(streamClone);
+                return new BigEndianReader(streamClone);
+            }
         }
 
         public void Close()
         {
-            m_reader.Dispose();
+            lock (m_reader)
+            {
+                m_reader.Dispose();
+            }
         }
 
         private static Func<object[], object> CreateObjectBuilder(Type classType, params FieldInfo[] fields)

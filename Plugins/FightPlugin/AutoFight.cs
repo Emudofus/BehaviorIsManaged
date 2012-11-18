@@ -214,7 +214,7 @@ namespace FightPlugin
             // If no spell is at range, then try to come closer and try again
             MoveNear(nearestMonster, (int)(m_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - maxDistanceWished), inLine);
 
-            // wait until the movement ends
+            // wait until the movement endsmdr 
             if (m_stopMovingDelegate != null)
             {
                 Bot.Character.Fighter.StopMoving -= m_stopMovingDelegate;
@@ -250,14 +250,14 @@ namespace FightPlugin
             Bot.Character.Fighter.ChangePrePlacement(cell);
         }
 
-        private void MoveNear(Fighter fighter, int mp, bool InLine = false)
+        private void MoveNear(Fighter fighter, int mp, bool inLine = false)
         {
             Cell dest = null;
-            if (InLine)
-                if (Math.Abs(fighter.Cell.X - m_character.Cell.X) > Math.Abs(fighter.Cell.Y - m_character.Cell.Y))
-                    m_character.Move(m_character.Map.Cells[m_character.Cell.X, fighter.Cell.Y], mp);
-                else
-                    m_character.Move(m_character.Map.Cells[fighter.Cell.X, m_character.Cell.Y], mp);                    
+            if (inLine)
+                m_character.Move(
+                    Math.Abs(fighter.Cell.X - m_character.Cell.X) > Math.Abs(fighter.Cell.Y - m_character.Cell.Y)
+                        ? m_character.Map.Cells[m_character.Cell.X, fighter.Cell.Y]
+                        : m_character.Map.Cells[fighter.Cell.X, m_character.Cell.Y], mp);
             else
                 // Try to go as close as possible to a cell adjacent with the target
                 dest = fighter.Cell.GetAdjacentCells().OrderBy(cell => cell.ManhattanDistanceTo(m_character.Cell)).FirstOrDefault();
@@ -292,14 +292,18 @@ namespace FightPlugin
             var ennemyTeam = m_character.GetOpposedTeam();
 
             Fighter nearestFighter = null;
-            foreach (var ennemy in ennemyTeam.Fighters)
+            foreach (var enemy in ennemyTeam.Fighters)
             {
-                if (nearestFighter == null)
-                    nearestFighter = ennemy;
+                if (!enemy.IsAlive)
+                    continue;
 
-                else if (m_character.Cell.ManhattanDistanceTo(ennemy.Cell) < nearestFighter.Cell.ManhattanDistanceTo(m_character.Cell))
+                if (nearestFighter == null)
+                    nearestFighter = enemy;
+
+                else if (m_character.Cell.ManhattanDistanceTo(enemy.Cell) < 
+                    nearestFighter.Cell.ManhattanDistanceTo(m_character.Cell))
                 {
-                    nearestFighter = ennemy;
+                    nearestFighter = enemy;
                 }
             }
 

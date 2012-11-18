@@ -70,7 +70,10 @@ namespace BiM.Behaviors.Game.Actors
         public virtual void NotifyStopMoving(bool canceled)
         {
             if (Movement == null)
-                throw new InvalidOperationException("Entity was not moving");
+            {
+                logger.Warn("Try to stop moving while the entity is not actually moving");
+                return;
+            }
 
             if (canceled)
             {
@@ -97,6 +100,16 @@ namespace BiM.Behaviors.Game.Actors
         public virtual VelocityConfiguration GetAdaptedVelocity(Path path)
         {
             return MovementBehavior.WalkingMovementBehavior;
+        }
+
+        public void UpdatePosition(int cell)
+        {
+            UpdatePosition(Map.Cells[cell]);
+        }
+
+        public virtual void UpdatePosition(Cell cell)
+        {
+            Cell = cell;
         }
 
         public delegate void SpeakHandler(ContextActor actor, ChatMessage message);
@@ -150,9 +163,8 @@ namespace BiM.Behaviors.Game.Actors
         {
             base.Tick(dt);
 
-            /* client do it itself
             if (Movement != null && Movement.IsEnded())
-                NotifyStopMoving(false);*/
+                NotifyStopMoving(false);
         }
 
         public bool IsMoving()

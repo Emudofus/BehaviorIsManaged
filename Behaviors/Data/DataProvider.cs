@@ -60,9 +60,14 @@ namespace BiM.Behaviors.Data
             {
                 try
                 {
-                    var data = source.ReadObject<T>(keys);
+                    // lock the source to ensure thread safe context
+                    // sacrify some performances
+                    lock (source)
+                    {
+                        var data = source.ReadObject<T>(keys);
 
-                    return data;
+                        return data;
+                    }
                 }
                 catch (Exception ex)
                 {
