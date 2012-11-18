@@ -102,24 +102,30 @@ namespace SnifferPlugin
 
         private void ExportToString(int level, StringBuilder builder)
         {
-            builder.Append(new string(' ', level * 2));
+            builder.Append(new string(' ', level * 4));
             builder.AppendLine(level == 0 ? string.Format("{{{0}}}", Text) : Text);
             level++;
-            foreach (var child in Childrens)
-            {
-                if (!child.IsVisible)
-                    continue;
 
-                // simple value
-                if (child.Childrens.Count == 1 && child.Childrens[0].Childrens.Count == 0)
+            if (Childrens.Count > 0)
+            {
+                builder.AppendLine((new string(' ', (level - 1) * 4)) + "{");
+                foreach (var child in Childrens)
                 {
-                    builder.Append(new string(' ', level * 2));
-                    builder.AppendLine(string.Format("{0}:{1}", child.Text, child.Childrens[0].Text));
+                    if (!child.IsVisible)
+                        continue;
+
+                    // simple value
+                    if (child.Childrens.Count == 1 && child.Childrens[0].Childrens.Count == 0)
+                    {
+                        builder.Append(new string(' ', level * 4));
+                        builder.AppendLine(string.Format("{0}:{1}", child.Text, child.Childrens[0].Text));
+                    }
+                    else
+                    {
+                        child.ExportToString(level, builder);
+                    }
                 }
-                else
-                {
-                    child.ExportToString(level, builder);
-                }
+                builder.AppendLine((new string(' ', (level - 1) * 4)) + "}");
             }
         }
     }
