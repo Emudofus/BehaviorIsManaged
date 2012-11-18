@@ -77,7 +77,7 @@ namespace BiM.Behaviors.Game.Items
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void FirePropertyChanged(string propertyName)
+        protected void OnPropertyChanged(string propertyName)
         {
           if (PropertyChanged != null)
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));

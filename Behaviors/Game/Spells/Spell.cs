@@ -35,7 +35,7 @@ namespace BiM.Behaviors.Game.Spells
             if (spell == null) throw new ArgumentNullException("spell");
             Template = DataProvider.Instance.Get<Protocol.Data.Spell>(spell.spellId);
             Level = spell.spellLevel;
-            Position = spell.position;
+            Position = spell.position;            
         }
 
         public Protocol.Data.Spell Template
@@ -51,6 +51,7 @@ namespace BiM.Behaviors.Game.Spells
             {
                 m_level = value;
                 LevelTemplate = GetLevelTemplate(m_level);
+                InitAI();
             }
         }
 
@@ -76,7 +77,7 @@ namespace BiM.Behaviors.Game.Spells
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void FirePropertyChanged(string propertyName)
+        protected void OnPropertyChanged(string propertyName)
         {
           if (PropertyChanged != null)
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
@@ -121,6 +122,7 @@ namespace BiM.Behaviors.Game.Spells
             }
             return UNKNOWN;
         }
+
 
     }
 }

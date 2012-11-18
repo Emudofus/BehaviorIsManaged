@@ -287,7 +287,7 @@ namespace BasicPlugin.Chat
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void FirePropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
           if (PropertyChanged != null)
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));

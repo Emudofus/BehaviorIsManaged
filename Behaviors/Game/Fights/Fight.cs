@@ -251,7 +251,7 @@ namespace BiM.Behaviors.Game.Fights
         public void StartTurn(int playerId)
         {
             var fighter = GetFighter(playerId);
-
+            
             if (fighter == null)
                 throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot start turn", playerId));
 
