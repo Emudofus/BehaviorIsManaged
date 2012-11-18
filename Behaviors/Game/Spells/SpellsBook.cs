@@ -24,6 +24,9 @@ using System.Collections.Generic;
 using BiM.Protocol.Types;
 using NLog;
 using BiM.Core.Reflection;
+using BiM.Protocol.Data;
+using BiM.Behaviors.Data;
+using BiM.Behaviors.Game.Effects;
 
 namespace BiM.Behaviors.Game.Spells
 {
@@ -94,7 +97,7 @@ namespace BiM.Behaviors.Game.Spells
 
             SpellPrevisualization = msg.spellPrevisualization;
 
-            //FullDump();
+            FullDump();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -136,10 +139,10 @@ namespace BiM.Behaviors.Game.Spells
             spell.CastAt(msg.targetId);
         }
 
-        public IEnumerable<Spell> GetAvailableSpells(int? targetId = null)
+        public IEnumerable<Spell> GetAvailableSpells(int? TargetId = null, Spells.Spell.SpellCategory? category = null)
         {
             foreach (Spell spell in m_spells)
-                if (spell.IsAvailable(targetId))
+                if (spell.IsAvailable(TargetId, category))
                     yield return spell; 
         }
 
@@ -150,14 +153,16 @@ namespace BiM.Behaviors.Game.Spells
 
         public void FullDump()
         {
-            ObjectDumper dumper = new ObjectDumper(4, true, true, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Default | System.Reflection.BindingFlags.FlattenHierarchy);
+            ObjectDumper dumper = new ObjectDumper(4, true, true, (System.Reflection.BindingFlags.FlattenHierarchy));
             logger.Error("Dump of the spellbook of {0} : ", Character.Name);
             foreach (var spell in m_spells)
             {
                 logger.Error("   Spell {0}", spell.ToString(true));
-                foreach (var effect in spell.LevelTemplate.effects)
-                    logger.Error("       Effect {0}", dumper.Dump(effect));
-                
+                foreach (var effectdice in spell.LevelTemplate.effects)
+                {
+                    EffectBase effect = new EffectBase(effectdice);
+                    logger.Error("       Effect {0} : {1} - {2} {3:P}", effect.Description, effectdice.diceNum <= effectdice.diceSide ? effectdice.diceNum : effectdice.diceSide, effectdice.diceNum > effectdice.diceSide ? effectdice.diceNum : effectdice.diceSide, effectdice.random == 0 ? 1.0 : effectdice.random/100.0);
+                }                                
             }
         }
         #endregion debug tool
