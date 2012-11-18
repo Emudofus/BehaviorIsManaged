@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // Cell.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,7 +13,9 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -21,9 +24,9 @@ using BiM.Protocol.Tools.Dlm;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class Cell
+    public class Cell : ICell
     {
-        public const int StructSize = 2 + 2 + 1 + 1 + 1 + 4;
+        public const int StructSize = 2 + 2 + 1 + 1 + 1 + 1;
 
         private static readonly Point[] s_orthogonalGridReference = new Point[Map.MapSize];
         private static bool m_initialized;
@@ -36,13 +39,6 @@ namespace BiM.Behaviors.Game.World
         private static readonly Point s_vectorUpLeft = new Point(-1, 0);
         private static readonly Point s_vectorUp = new Point(-1, 1);
         private static readonly Point s_vectorUpRight = new Point(0, 1);
-
-        public short Floor;
-        public short Id;
-        public byte LosMov;
-        public byte MapChangeData;
-        public uint MoveZone;
-        public byte Speed;
 
         private Point? m_point;
 
@@ -136,7 +132,7 @@ namespace BiM.Behaviors.Game.World
             if (id < 0 || id > Map.MapSize)
                 throw new IndexOutOfRangeException("Cell identifier out of bounds (" + id + ").");
 
-            var point = s_orthogonalGridReference[id];
+            Point point = s_orthogonalGridReference[id];
 
             return point;
         }
@@ -184,10 +180,7 @@ namespace BiM.Behaviors.Game.World
             bytes[5] = MapChangeData;
             bytes[6] = Speed;
 
-            bytes[7] = (byte) (MoveZone >> 24);
-            bytes[8] = (byte) (MoveZone >> 16);
-            bytes[9] = (byte) (MoveZone >> 8);
-            bytes[10] = (byte) (MoveZone & 0xFF);
+            bytes[7] = MoveZone;
 
             return bytes;
         }
@@ -202,7 +195,7 @@ namespace BiM.Behaviors.Game.World
             MapChangeData = data[index + 5];
             Speed = data[index + 6];
 
-            MoveZone = (uint) ((data[index + 7] << 24) | (data[index + 8] << 16) | (data[index + 9] << 8) | (data[index + 10]));
+            MoveZone = data[index + 7];
         }
 
         #endregion
@@ -211,12 +204,12 @@ namespace BiM.Behaviors.Game.World
 
         public uint DistanceTo(Cell cell)
         {
-            return (uint)Math.Sqrt(( cell.X - Point.X ) * ( cell.X - Point.X ) + ( cell.Y - Point.Y ) * ( cell.Y - Point.Y ));
+            return (uint) Math.Sqrt((cell.X - Point.X)*(cell.X - Point.X) + (cell.Y - Point.Y)*(cell.Y - Point.Y));
         }
 
         public uint ManhattanDistanceTo(Cell cell)
         {
-            return (uint)( Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y) );
+            return (uint) (Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y));
         }
 
         public bool IsInRadius(Cell cell, int radius)
@@ -226,13 +219,13 @@ namespace BiM.Behaviors.Game.World
 
         public bool IsInRadius(Cell cell, int minRadius, int radius)
         {
-            var dist = ManhattanDistanceTo(cell);
+            uint dist = ManhattanDistanceTo(cell);
             return dist >= minRadius && dist <= radius;
         }
 
         public bool IsAdjacentTo(Cell cell, bool diagonal = true)
         {
-            var dist = diagonal ? DistanceTo(cell) : ManhattanDistanceTo(cell);
+            uint dist = diagonal ? DistanceTo(cell) : ManhattanDistanceTo(cell);
 
             return dist == 1;
         }
@@ -252,28 +245,28 @@ namespace BiM.Behaviors.Game.World
             int dx = cell.X - X;
             int dy = Y - cell.Y;
 
-            double distance = Math.Sqrt(dx * dx + dy * dy);
-            double angleInRadians = Math.Acos(dx / distance);
+            double distance = Math.Sqrt(dx*dx + dy*dy);
+            double angleInRadians = Math.Acos(dx/distance);
 
-            double angleInDegrees = angleInRadians * 180 / Math.PI;
-            double transformedAngle = angleInDegrees * ( cell.Y > Y ? ( -1 ) : ( 1 ) );
+            double angleInDegrees = angleInRadians*180/Math.PI;
+            double transformedAngle = angleInDegrees*(cell.Y > Y ? (-1) : (1));
 
-            double orientation = !diagonal ? Math.Round(transformedAngle / 90) * 2 + 1 : Math.Round(transformedAngle / 45) + 1;
+            double orientation = !diagonal ? Math.Round(transformedAngle/90)*2 + 1 : Math.Round(transformedAngle/45) + 1;
 
             if (orientation < 0)
             {
                 orientation = orientation + 8;
             }
 
-            return (DirectionsEnum)(uint)orientation;
+            return (DirectionsEnum) (uint) orientation;
         }
 
         public DirectionsEnum OrientationToAdjacent(Cell cell)
         {
             var vector = new Point
                              {
-                                 X = cell.X > Point.X ? ( 1 ) : ( cell.X < Point.X ? ( -1 ) : ( 0 ) ),
-                                 Y = cell.Y > Point.Y ? ( 1 ) : ( cell.Y < Point.Y ? ( -1 ) : ( 0 ) )
+                                 X = cell.X > Point.X ? (1) : (cell.X < Point.X ? (-1) : (0)),
+                                 Y = cell.Y > Point.Y ? (1) : (cell.Y < Point.Y ? (-1) : (0))
                              };
 
             if (vector == s_vectorRight)
@@ -384,19 +377,19 @@ namespace BiM.Behaviors.Game.World
 
         public IEnumerable<Cell> GetAdjacentCells(Func<Cell, bool> predicate)
         {
-            var southEast = Map.Cells[Point.X + 1, Point.Y];
+            Cell southEast = Map.Cells[Point.X + 1, Point.Y];
             if (southEast != null && predicate(southEast))
                 yield return southEast;
 
-            var southWest =  Map.Cells[Point.X, Point.Y - 1];
+            Cell southWest = Map.Cells[Point.X, Point.Y - 1];
             if (southWest != null && predicate(southWest))
                 yield return southWest;
 
-            var northEast =  Map.Cells[Point.X, Point.Y + 1];
+            Cell northEast = Map.Cells[Point.X, Point.Y + 1];
             if (IsInMap(northEast.X, northEast.Y) && predicate(northEast))
                 yield return northEast;
 
-            var northWest =  Map.Cells[Point.X - 1, Point.Y];
+            Cell northWest = Map.Cells[Point.X - 1, Point.Y];
             if (IsInMap(northWest.X, northWest.Y) && predicate(northWest))
                 yield return northWest;
         }
@@ -404,6 +397,46 @@ namespace BiM.Behaviors.Game.World
         public bool IsChangeZone(Cell cell)
         {
             return MoveZone != cell.MoveZone && Math.Abs(Floor) == Math.Abs(cell.Floor);
+        }
+
+        #endregion
+
+        #region ICell Members
+
+        public short Floor
+        {
+            get;
+            private set;
+        }
+
+        public short Id
+        {
+            get;
+            private set;
+        }
+
+        public byte LosMov
+        {
+            get;
+            private set;
+        }
+
+        public byte MapChangeData
+        {
+            get;
+            private set;
+        }
+
+        public byte MoveZone
+        {
+            get;
+            private set;
+        }
+
+        public byte Speed
+        {
+            get;
+            private set;
         }
 
         #endregion

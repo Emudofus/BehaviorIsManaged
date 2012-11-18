@@ -32,7 +32,7 @@ using NLog;
 
 namespace BiM.Behaviors.Game.World
 {
-    public partial class Map : IContext, IMapDataProvider
+    public partial class Map : IContext, IMapDataProvider, IMap
     {
         public const int ElevationTolerance = 11;
         public const uint Width = 14;
@@ -133,6 +133,11 @@ namespace BiM.Behaviors.Game.World
         {
             get;
             private set;
+        }
+
+        IEnumerable<ICell> IMap.Cells
+        {
+            get { return Cells.AsEnumerable<ICell>(); }
         }
 
         public CellList Cells
