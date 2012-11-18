@@ -74,7 +74,7 @@ namespace BiM.Behaviors.Game.Spells
                 m_nbCastAllowed--;
         }
 
-        public bool IsAvailable(int? idTarget)
+        public bool IsAvailable(int? idTarget, Spells.Spell.SpellCategory? category=null)
         {
             if (m_nbTurnToWait > 0) return false;
 
@@ -83,6 +83,8 @@ namespace BiM.Behaviors.Game.Spells
 
             // No restriction per target => available
             if (LevelTemplate.maxCastPerTarget <= 0 || m_nbCastAllowed > 0) return true;
+
+            if (!HasCategory(category)) return false;
 
             // No target identified
             if (idTarget == null) return true;

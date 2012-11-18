@@ -39,10 +39,57 @@ namespace BiM.Behaviors.Game.Spells
             DamagesAir = 0x0040,
             DamagesFire = 0x0080,
             DamagesNeutral = 0x0100,
+            Damages = DamagesNeutral | DamagesFire | DamagesAir | DamagesEarth | DamagesWater,
+            None = 0,
+            All = 0x01FF,
         }
 
 
-        private SpellCategory GetEffectCategories(EffectInstanceDice effect)
+        private void InitAI()
+        {
+            Categories = 0;
+            foreach (var eff in LevelTemplate.effects)
+                Categories |= GetEffectCategories(eff);                
+        }
+
+        public SpellCategory Categories
+        {
+            get; private set;          
+        }
+
+        public bool HasCategory(SpellCategory? category)
+        {
+            if (category == null) return true;
+            return (category & Categories) > 0;
+        }
+
+        public bool IsAttack
+        {
+            get
+            {
+                return (Categories & (SpellCategory.DamagesWater | SpellCategory.DamagesEarth | SpellCategory.DamagesFire | SpellCategory.DamagesAir | SpellCategory.DamagesNeutral)) > 0;
+            }
+        }
+
+        public bool IsSelfHealing
+        {
+            get
+            {
+                return (Categories & (SpellCategory.Healing)) > 0 && LevelTemplate.range == 0;
+            }
+        }
+
+        public bool IsFriendHealing
+        {
+            get
+            {
+                return (Categories & (SpellCategory.Healing)) > 0 && LevelTemplate.range > 0;
+            }
+        }
+        #endregion Categories
+
+        #region Effects
+        private static SpellCategory GetEffectCategories(EffectInstanceDice effect)
         {
             SpellCategory categories = 0;
             switch ((EffectsEnum)effect.effectId)
@@ -136,41 +183,95 @@ namespace BiM.Behaviors.Game.Spells
 
         }
 
-        public SpellCategory Categories
+        public IEnumerable<EffectBase> GetEffects(SpellCategory? category = null)
         {
-            get
-            {
-                SpellCategory categories = 0;
-                foreach (var eff in LevelTemplate.effects)
-                    categories |= GetEffectCategories(eff);
-                return categories;
-            }
+            foreach (EffectInstanceDice effect in LevelTemplate.effects)
+                if (category == null || (GetEffectCategories(effect) & category) > 0)
+                    yield return new EffectBase(effect);
         }
 
-        public bool IsAttack
+        public class Damages
         {
-            get
+            public uint MinFire, MaxFire,
+                 MinWater, MaxWater,
+                 MinEarth, MaxEarth,
+                 MinAir, MaxAir,
+                 MinNeutral, MaxNeutral;
+
+            public uint Fire { get { return (MinFire + MaxFire) / 2; } }
+            public uint Air { get { return (MinAir + MaxAir) / 2; } }
+            public uint Earth { get { return (MinEarth + MaxEarth) / 2; } }
+            public uint Water { get { return (MinWater + MaxWater) / 2; } }
+            public uint Neutral { get { return (MinEarth + MaxEarth) / 2; } }
+            
+            // Min total damage            
+            public uint MinDamage { get { return MinFire + MinAir + MinEarth + MinWater + MinNeutral; } }
+
+            // Max total damage            
+            public uint MaxDamage { get { return MaxFire + MaxAir + MaxEarth + MaxWater + MaxNeutral; } }
+            
+            // Average total damage
+            public uint Damage { get { return (MinDamage + MaxDamage) / 2; } }
+
+            public void Add(Damages dmg)
             {
-                return (Categories & (SpellCategory.DamagesWater | SpellCategory.DamagesEarth | SpellCategory.DamagesFire | SpellCategory.DamagesAir | SpellCategory.DamagesNeutral)) > 0;
-            }
+                MinFire += dmg.MinFire;
+                MaxFire += dmg.MaxFire;
+                MinWater += dmg.MinWater;
+                MaxWater += dmg.MaxWater;
+                MinEarth += dmg.MinEarth;
+                MaxEarth += dmg.MaxEarth;
+                MinAir += dmg.MinAir;
+                MaxAir += dmg.MaxAir;
+                MinNeutral += dmg.MinNeutral;
+                MaxNeutral += dmg.MaxNeutral;
+            }            
         }
 
-        public bool IsSelfHealing
+        public static Damages CumulDamages(EffectInstanceDice effect, Damages damages)
         {
-            get
+            Damages result = damages;
+            if (damages==null) result = new Damages();
+            SpellCategory category = GetEffectCategories(effect);
+            if ((category & SpellCategory.DamagesNeutral) > 0)
             {
-                return (Categories & (SpellCategory.Healing)) > 0 && LevelTemplate.range == 0;
+                result.MinNeutral += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
+                result.MaxNeutral += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
             }
+            if ((category & SpellCategory.DamagesFire) > 0)
+            {
+                result.MinFire += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
+                result.MaxFire += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
+            }
+            if ((category & SpellCategory.DamagesAir) > 0)
+            {
+                result.MinAir += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
+                result.MaxAir += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
+            }
+            if ((category & SpellCategory.DamagesWater) > 0)
+            {
+                result.MinWater += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
+                result.MaxWater += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
+            }
+            if ((category & SpellCategory.DamagesEarth) > 0)
+            {
+                result.MinEarth += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
+                result.MaxEarth += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
+            }
+            return result;
         }
 
-        public bool IsFriendHealing
+        #endregion Effects
+
+        public static Damages GetSpellDamages(Spell spell)
         {
-            get
+            Damages damages = new Damages();
+            foreach (var effect in spell.LevelTemplate.effects)
             {
-                return (Categories & (SpellCategory.Healing)) > 0 && LevelTemplate.range > 0;
+                CumulDamages(effect, damages);
             }
+            return damages;
         }
-        #endregion Categories
 
     }
 }
