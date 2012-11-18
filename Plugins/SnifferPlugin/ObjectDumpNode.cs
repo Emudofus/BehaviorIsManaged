@@ -15,6 +15,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 
@@ -22,7 +23,7 @@ namespace SnifferPlugin
 {
     public class ObjectDumpNode : INotifyPropertyChanged
     {
-        private List<ObjectDumpNode> m_childrens = new List<ObjectDumpNode>();
+        private ObservableCollection<ObjectDumpNode> m_childrens = new ObservableCollection<ObjectDumpNode>();
 
 
         public ObjectDumpNode(string text)
@@ -46,7 +47,7 @@ namespace SnifferPlugin
             IsVisible = true;
         }
 
-        public List<ObjectDumpNode> Childrens
+        public ObservableCollection<ObjectDumpNode> Childrens
         {
             get
             {

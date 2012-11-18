@@ -14,17 +14,26 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Linq;
 using BiM.Core.IO;
 using BiM.Protocol.Data;
+using Point = System.Drawing.Point;
 
 namespace BiM.Protocol.Tools.Dlm
 {
     public class DlmMap : INotifyPropertyChanged, IDataObject
     {
+        private static readonly Point[] s_orthogonalGridReference = new Point[DlmMap.CellCount];
+        private static bool m_initialized;
+
+        public const uint Width = 14;
+        public const uint Height = 20;
+
         public event PropertyChangedEventHandler PropertyChanged;
         public const int CellCount = 560;
 

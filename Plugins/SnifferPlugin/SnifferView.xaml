@@ -12,6 +12,21 @@
     <DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
       <CheckBox Margin="3" VerticalAlignment="Center" Content="See properties" IsChecked="{Binding SeeProperties, Mode=TwoWay}" />
       <Button Margin="3" VerticalAlignment="Center" Content="Export" DockPanel.Dock="Right" Command="{Binding ExportCommand}"/>
+      <Button Margin="3" VerticalAlignment="Center" Content="Clear" DockPanel.Dock="Right" Command="{Binding ClearCommand}"/>
+      <Button Margin="3" VerticalAlignment="Center" DockPanel.Dock="Right" Command="{Binding PauseResumeCommand}">
+        <Button.Style>
+          <Style TargetType="Button">
+            <Setter Property="Content" Value="Pause"/>
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                <DataTrigger.Setters>
+                  <Setter Property="Content" Value="Resume"/>
+                </DataTrigger.Setters>
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
       <xctk:WatermarkTextBox VerticalAlignment="Center" Watermark="Search ..."  Margin="3"
                              Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=Explicit}" LostFocus="OnSearchTextBoxLostFocus" KeyUp="OnSearchTextBoxKeyUp"/>
     </DockPanel>

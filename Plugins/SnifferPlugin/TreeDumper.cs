@@ -41,7 +41,10 @@ namespace SnifferPlugin
             Type type = Target.GetType();
             var tree = new ObjectDumpNode(type.Name, Target);
 
-            tree.Childrens.AddRange(InternalDump(Target, tree));
+            foreach (var node in InternalDump(Target, tree))
+            {
+                tree.Childrens.Add(node);
+            }
 
             return tree;
         }
@@ -68,7 +71,10 @@ namespace SnifferPlugin
                     else
                     {
                         var node = new ObjectDumpNode(item.GetType().Name, item, parent);
-                        node.Childrens.AddRange(InternalDump(item, node));
+                        foreach (var child in InternalDump(item, node))
+                        {
+                            node.Childrens.Add(child);
+                        }
                         yield return node;
                     }
                 }
@@ -95,7 +101,10 @@ namespace SnifferPlugin
                         continue;
 
                     var node = new ObjectDumpNode(property.Name, value, parent);
-                    node.Childrens.AddRange(InternalDump(value, node));
+                    foreach (var child in InternalDump(value, node))
+                    {
+                        node.Childrens.Add(child);
+                    } 
                     node.IsProperty = true;
                     yield return node;
                 }
@@ -110,7 +119,10 @@ namespace SnifferPlugin
                         continue;
 
                     var node = new ObjectDumpNode(field.Name, value, parent);
-                    node.Childrens.AddRange(InternalDump(value, node));
+                    foreach (var child in InternalDump(value, node))
+                    {
+                        node.Childrens.Add(child);
+                    } 
                     yield return node;
                 }
             }

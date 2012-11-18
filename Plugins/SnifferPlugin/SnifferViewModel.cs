@@ -65,6 +65,12 @@ namespace SnifferPlugin
             get { return m_readOnlyMessages; }
         }
 
+        public bool IsPaused
+        {
+            get;
+            set;
+        }
+
         public bool SeeProperties
         {
             get { return m_seeProperties; }
@@ -111,6 +117,9 @@ namespace SnifferPlugin
 
         private void OnMesssageDispatched(MessageDispatcher dispatcher, Message message)
         {
+            if (IsPaused)
+                return;
+
             var dumper = new TreeDumper(message);
             ObjectDumpNode tree = dumper.GetDumpTree();
 
@@ -203,6 +212,50 @@ namespace SnifferPlugin
 
                 File.WriteAllText(dialog.FileName, builder.ToString());
             }
+        }
+
+        #endregion
+
+
+        #region ClearCommand
+
+        private DelegateCommand m_clearCommand;
+
+        public DelegateCommand ClearCommand
+        {
+            get { return m_clearCommand ?? (m_clearCommand = new DelegateCommand(OnClear, CanClear)); }
+        }
+
+        private bool CanClear(object parameter)
+        {
+            return true;
+        }
+
+        private void OnClear(object parameter)
+        {
+            m_messages.Clear();
+        }
+
+        #endregion
+
+
+        #region PauseResumeCommand
+
+        private DelegateCommand m_pauseResumeCommand;
+
+        public DelegateCommand PauseResumeCommand
+        {
+            get { return m_pauseResumeCommand ?? (m_pauseResumeCommand = new DelegateCommand(OnPauseResume, CanPauseResume)); }
+        }
+
+        private bool CanPauseResume(object parameter)
+        {
+            return true;
+        }
+
+        private void OnPauseResume(object parameter)
+        {
+            IsPaused = !IsPaused;
         }
 
         #endregion

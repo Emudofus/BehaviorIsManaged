@@ -169,15 +169,15 @@ namespace FightPlugin
         private void StartAI()
         {
             var nearestMonster = GetNearestEnemy();
-            int MaxDistanceWished = 1;
-            bool InLine = false;
-            int NoSlot = 0;
+            int maxDistanceWished = 1;
+            bool inLine = false;
+            int noSlot = 0;
             foreach (var shortcutgen in m_character.Character.SpellShortcuts.Shortcuts)
             {
-                SpellShortcut shortcut = shortcutgen as SpellShortcut;
+                var shortcut = shortcutgen;
                 if (shortcut == null)
                 {
-                    logger.Debug("[ShortCut {0}] No SpellShortcut at this slot.", NoSlot);
+                    logger.Debug("[ShortCut {0}] No SpellShortcut at this slot.", noSlot);
                     m_character.Character.SendMessage("No spell on slot 1");
                     continue;
                 }
@@ -185,16 +185,16 @@ namespace FightPlugin
                 var spell = shortcut.GetSpell();
                 if (spell == null)
                 {
-                    logger.Debug("[ShortCut {0}] Spell Id {1} can't be found in SpellsBook with {2} entries : {3}.", NoSlot, shortcut.SpellId, m_character.Character.SpellsBook.Spells.Count, String.Join(",",m_character.Character.SpellsBook.Spells));
+                    logger.Debug("[ShortCut {0}] Spell Id {1} can't be found in SpellsBook with {2} entries : {3}.", noSlot, shortcut.SpellId, m_character.Character.SpellsBook.Spells.Count, String.Join(",",m_character.Character.SpellsBook.Spells));
                     continue;
                 }
-                NoSlot++;
-                bool Available = spell.IsAvailable(nearestMonster.Id);
-                bool InRange = m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
-                logger.Debug("[ShortCut {7}] Spell {0} to be cast by {1} ({2}) on {3} ({4}) : available {5}, InRange {6}", spell, m_character.Name, m_character.Cell, nearestMonster, nearestMonster.Cell, Available, InRange, NoSlot);
-                if (Available)
+                noSlot++;
+                bool available = spell.IsAvailable(nearestMonster.Id);
+                bool inRange = m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
+                logger.Debug("[ShortCut {7}] Spell {0} to be cast by {1} ({2}) on {3} ({4}) : available {5}, InRange {6}", spell, m_character.Name, m_character.Cell, nearestMonster, nearestMonster.Cell, available, inRange, noSlot);
+                if (available)
                 {
-                    if (InRange)
+                    if (inRange)
                     {
                         m_character.CastSpell(spell, nearestMonster.Cell);
                         MoveFar();
@@ -203,16 +203,16 @@ namespace FightPlugin
                     }
 
                     // Available but not in range
-                    if (m_character.GetRealSpellRange(spell.LevelTemplate) > MaxDistanceWished)
+                    if (m_character.GetRealSpellRange(spell.LevelTemplate) > maxDistanceWished)
                     {
-                        MaxDistanceWished = m_character.GetRealSpellRange(spell.LevelTemplate);
-                        InLine = spell.LevelTemplate.castInLine;
+                        maxDistanceWished = m_character.GetRealSpellRange(spell.LevelTemplate);
+                        inLine = spell.LevelTemplate.castInLine;
                     }
                 }
             }
 
             // If no spell is at range, then try to come closer and try again
-            MoveNear(nearestMonster, (int)(m_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - MaxDistanceWished), InLine);
+            MoveNear(nearestMonster, (int)(m_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - maxDistanceWished), inLine);
 
             // wait until the movement ends
             if (m_stopMovingDelegate != null)
@@ -307,20 +307,20 @@ namespace FightPlugin
         }
 
 
-        public void Attached(MessageDispatcher dispatcher)
+        public override void OnAttached()
         {
-            
+            base.OnAttached();
         }
 
-        public void Dettached(MessageDispatcher dispatcher)
+        public override void OnDetached()
         {
             if (Bot.Character != null)
             {
                 Bot.Character.FightJoined -= OnFightJoined;
                 Bot.Character.FightLeft -= OnFightLeft;
                 Bot.Character.MapJoined -= OnMapJoined;
-            } 
-            
+            }
+
             if (m_character != null)
             {
                 m_character.TurnStarted -= OnTurnStarted;

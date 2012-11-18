@@ -99,7 +99,7 @@ namespace BiM.Behaviors.Game.Spells
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void FirePropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
           if (PropertyChanged != null)
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
@@ -136,10 +136,10 @@ namespace BiM.Behaviors.Game.Spells
             spell.CastAt(msg.targetId);
         }
 
-        public IEnumerable<Spell> GetAvailableSpells(int? TargetId = null)
+        public IEnumerable<Spell> GetAvailableSpells(int? targetId = null)
         {
             foreach (Spell spell in m_spells)
-                if (spell.IsAvailable(TargetId))
+                if (spell.IsAvailable(targetId))
                     yield return spell; 
         }
 

@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // PlayerStats.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,10 +13,11 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
+
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
@@ -31,77 +33,76 @@ namespace BiM.Behaviors.Game.Stats
         public PlayerStats()
         {
             Fields = new Dictionary<PlayerField, StatsRow>
-                         {
-                             {PlayerField.Initiative, new StatsRow(PlayerField.Initiative, x => OnPropertyChanged("Initiative"))},
-                             {PlayerField.Prospecting, new StatsRow(PlayerField.Prospecting)},
-                             {
-                                 PlayerField.AP, new StatsRow(PlayerField.AP, x =>
-                                                                                  {
-                                                                                      OnPropertyChanged("MaxAP");
-                                                                                      OnPropertyChanged("AP");
-                                                                                  })
-                                 },
-                             {
-                                 PlayerField.MP, new StatsRow(PlayerField.MP, x =>
-                                                                                  {
-                                                                                      OnPropertyChanged("MaxMP");
-                                                                                      OnPropertyChanged("MP");
-                                                                                  })
-                                 },
-                             {PlayerField.Strength, new StatsRow(PlayerField.Strength, x => OnPropertyChanged("Strength"))},
-                             {PlayerField.Vitality, new StatsRow(PlayerField.Vitality, x => OnPropertyChanged("Vitality"))},
-                             {PlayerField.Wisdom, new StatsRow(PlayerField.Wisdom, x => OnPropertyChanged("Wisdom"))},
-                             {PlayerField.Chance, new StatsRow(PlayerField.Chance, x => OnPropertyChanged("Chance"))},
-                             {PlayerField.Agility, new StatsRow(PlayerField.Agility, x => OnPropertyChanged("Agility"))},
-                             {PlayerField.Intelligence, new StatsRow(PlayerField.Intelligence, x => OnPropertyChanged("Intelligence"))},
-                             {PlayerField.Range, new StatsRow(PlayerField.Range, x => OnPropertyChanged("Range"))},
-                             {PlayerField.SummonLimit, new StatsRow(PlayerField.SummonLimit)},
-                             {PlayerField.DamageReflection, new StatsRow(PlayerField.DamageReflection)},
-                             {PlayerField.CriticalHit, new StatsRow(PlayerField.CriticalHit)},
-                             {PlayerField.CriticalMiss, new StatsRow(PlayerField.CriticalMiss)},
-                             {PlayerField.HealBonus, new StatsRow(PlayerField.HealBonus)},
-                             {PlayerField.DamageBonus, new StatsRow(PlayerField.DamageBonus)},
-                             {PlayerField.WeaponDamageBonusPercent, new StatsRow(PlayerField.WeaponDamageBonusPercent)},
-                             {PlayerField.DamageBonusPercent, new StatsRow(PlayerField.DamageBonusPercent)},
-                             {PlayerField.TrapBonus, new StatsRow(PlayerField.TrapBonus)},
-                             {PlayerField.TrapBonusPercent, new StatsRow(PlayerField.TrapBonusPercent)},
-                             {PlayerField.PermanentDamagePercent, new StatsRow(PlayerField.PermanentDamagePercent, x => OnPropertyChanged("PermanentDamagePercent"))},
-                             {PlayerField.TackleBlock, new StatsRow(PlayerField.TackleBlock, x => OnPropertyChanged("TackleBlock"))},
-                             {PlayerField.TackleEvade, new StatsRow(PlayerField.TackleEvade, x => OnPropertyChanged("TackleEvade"))},
-                             {PlayerField.APAttack, new StatsRow(PlayerField.APAttack)},
-                             {PlayerField.MPAttack, new StatsRow(PlayerField.MPAttack)},
-                             {PlayerField.PushDamageBonus, new StatsRow(PlayerField.PushDamageBonus)},
-                             {PlayerField.CriticalDamageBonus, new StatsRow(PlayerField.CriticalDamageBonus)},
-                             {PlayerField.NeutralDamageBonus, new StatsRow(PlayerField.NeutralDamageBonus)},
-                             {PlayerField.EarthDamageBonus, new StatsRow(PlayerField.EarthDamageBonus)},
-                             {PlayerField.WaterDamageBonus, new StatsRow(PlayerField.WaterDamageBonus)},
-                             {PlayerField.AirDamageBonus, new StatsRow(PlayerField.AirDamageBonus)},
-                             {PlayerField.FireDamageBonus, new StatsRow(PlayerField.FireDamageBonus)},
-                             {PlayerField.DodgeAPProbability, new StatsRow(PlayerField.DodgeAPProbability, x => OnPropertyChanged("DodgeAPProbability"))},
-                             {PlayerField.DodgeMPProbability, new StatsRow(PlayerField.DodgeMPProbability, x => OnPropertyChanged("DodgeMPProbability"))},
-                             {PlayerField.NeutralResistPercent, new StatsRow(PlayerField.NeutralResistPercent, x => OnPropertyChanged("NeutralResistPercent"))},
-                             {PlayerField.EarthResistPercent, new StatsRow(PlayerField.EarthResistPercent, x => OnPropertyChanged("EarthResistPercent"))},
-                             {PlayerField.WaterResistPercent, new StatsRow(PlayerField.WaterResistPercent, x => OnPropertyChanged("WaterResistPercent"))},
-                             {PlayerField.AirResistPercent, new StatsRow(PlayerField.AirResistPercent, x => OnPropertyChanged("AirResistPercent"))},
-                             {PlayerField.FireResistPercent, new StatsRow(PlayerField.FireResistPercent, x => OnPropertyChanged("FireResistPercent"))},
-                             {PlayerField.NeutralElementReduction, new StatsRow(PlayerField.NeutralElementReduction, x => OnPropertyChanged("NeutralElementReduction"))},
-                             {PlayerField.EarthElementReduction, new StatsRow(PlayerField.EarthElementReduction, x => OnPropertyChanged("EarthElementReduction"))},
-                             {PlayerField.WaterElementReduction, new StatsRow(PlayerField.WaterElementReduction, x => OnPropertyChanged("WaterElementReduction"))},
-                             {PlayerField.AirElementReduction, new StatsRow(PlayerField.AirElementReduction, x => OnPropertyChanged("AirElementReduction"))},
-                             {PlayerField.FireElementReduction, new StatsRow(PlayerField.FireElementReduction, x => OnPropertyChanged("FireElementReduction"))},
-                             {PlayerField.PushDamageReduction, new StatsRow(PlayerField.PushDamageReduction)},
-                             {PlayerField.CriticalDamageReduction, new StatsRow(PlayerField.CriticalDamageReduction)},
-                             {PlayerField.PvpNeutralResistPercent, new StatsRow(PlayerField.PvpNeutralResistPercent, x => OnPropertyChanged("NeutralResistPercent"))},
-                             {PlayerField.PvpEarthResistPercent, new StatsRow(PlayerField.PvpEarthResistPercent, x => OnPropertyChanged("EarthResistPercent"))},
-                             {PlayerField.PvpWaterResistPercent, new StatsRow(PlayerField.PvpWaterResistPercent, x => OnPropertyChanged("WaterResistPercent"))},
-                             {PlayerField.PvpAirResistPercent, new StatsRow(PlayerField.PvpAirResistPercent, x => OnPropertyChanged("AirResistPercent"))},
-                             {PlayerField.PvpFireResistPercent, new StatsRow(PlayerField.PvpFireResistPercent, x => OnPropertyChanged("FireResistPercent"))},
-                             {PlayerField.PvpNeutralElementReduction, new StatsRow(PlayerField.PvpNeutralElementReduction, x => OnPropertyChanged("NeutralElementReduction"))},
-                             {PlayerField.PvpEarthElementReduction, new StatsRow(PlayerField.PvpEarthElementReduction, x => OnPropertyChanged("EarthElementReduction"))},
-                             {PlayerField.PvpWaterElementReduction, new StatsRow(PlayerField.PvpWaterElementReduction, x => OnPropertyChanged("WaterElementReduction"))},
-                             {PlayerField.PvpAirElementReduction, new StatsRow(PlayerField.PvpAirElementReduction, x => OnPropertyChanged("AirElementReduction"))},
-                             {PlayerField.PvpFireElementReduction, new StatsRow(PlayerField.PvpFireElementReduction, x => OnPropertyChanged("FireElementReduction"))},
-                         };
+                {
+                    {PlayerField.Initiative, new StatsRow(PlayerField.Initiative, x => OnPropertyChanged("Initiative"))},
+                    {PlayerField.Prospecting, new StatsRow(PlayerField.Prospecting)},
+                    {PlayerField.AP, new StatsRow(PlayerField.AP, x =>
+                        {
+                            OnPropertyChanged("MaxAP");
+                            OnPropertyChanged("AP");
+                        })
+                        },
+                    {
+                        PlayerField.MP, new StatsRow(PlayerField.MP, x =>
+                            {
+                                OnPropertyChanged("MaxMP");
+                                OnPropertyChanged("MP");
+                            })
+                        },
+                    {PlayerField.Strength, new StatsRow(PlayerField.Strength, x => OnPropertyChanged("Strength"))},
+                    {PlayerField.Vitality, new StatsRow(PlayerField.Vitality, x => OnPropertyChanged("Vitality"))},
+                    {PlayerField.Wisdom, new StatsRow(PlayerField.Wisdom, x => OnPropertyChanged("Wisdom"))},
+                    {PlayerField.Chance, new StatsRow(PlayerField.Chance, x => OnPropertyChanged("Chance"))},
+                    {PlayerField.Agility, new StatsRow(PlayerField.Agility, x => OnPropertyChanged("Agility"))},
+                    {PlayerField.Intelligence, new StatsRow(PlayerField.Intelligence, x => OnPropertyChanged("Intelligence"))},
+                    {PlayerField.Range, new StatsRow(PlayerField.Range, x => OnPropertyChanged("Range"))},
+                    {PlayerField.SummonLimit, new StatsRow(PlayerField.SummonLimit)},
+                    {PlayerField.DamageReflection, new StatsRow(PlayerField.DamageReflection)},
+                    {PlayerField.CriticalHit, new StatsRow(PlayerField.CriticalHit)},
+                    {PlayerField.CriticalMiss, new StatsRow(PlayerField.CriticalMiss)},
+                    {PlayerField.HealBonus, new StatsRow(PlayerField.HealBonus)},
+                    {PlayerField.DamageBonus, new StatsRow(PlayerField.DamageBonus)},
+                    {PlayerField.WeaponDamageBonusPercent, new StatsRow(PlayerField.WeaponDamageBonusPercent)},
+                    {PlayerField.DamageBonusPercent, new StatsRow(PlayerField.DamageBonusPercent)},
+                    {PlayerField.TrapBonus, new StatsRow(PlayerField.TrapBonus)},
+                    {PlayerField.TrapBonusPercent, new StatsRow(PlayerField.TrapBonusPercent)},
+                    {PlayerField.PermanentDamagePercent, new StatsRow(PlayerField.PermanentDamagePercent, x => OnPropertyChanged("PermanentDamagePercent"))},
+                    {PlayerField.TackleBlock, new StatsRow(PlayerField.TackleBlock, x => OnPropertyChanged("TackleBlock"))},
+                    {PlayerField.TackleEvade, new StatsRow(PlayerField.TackleEvade, x => OnPropertyChanged("TackleEvade"))},
+                    {PlayerField.APAttack, new StatsRow(PlayerField.APAttack)},
+                    {PlayerField.MPAttack, new StatsRow(PlayerField.MPAttack)},
+                    {PlayerField.PushDamageBonus, new StatsRow(PlayerField.PushDamageBonus)},
+                    {PlayerField.CriticalDamageBonus, new StatsRow(PlayerField.CriticalDamageBonus)},
+                    {PlayerField.NeutralDamageBonus, new StatsRow(PlayerField.NeutralDamageBonus)},
+                    {PlayerField.EarthDamageBonus, new StatsRow(PlayerField.EarthDamageBonus)},
+                    {PlayerField.WaterDamageBonus, new StatsRow(PlayerField.WaterDamageBonus)},
+                    {PlayerField.AirDamageBonus, new StatsRow(PlayerField.AirDamageBonus)},
+                    {PlayerField.FireDamageBonus, new StatsRow(PlayerField.FireDamageBonus)},
+                    {PlayerField.DodgeAPProbability, new StatsRow(PlayerField.DodgeAPProbability, x => OnPropertyChanged("DodgeAPProbability"))},
+                    {PlayerField.DodgeMPProbability, new StatsRow(PlayerField.DodgeMPProbability, x => OnPropertyChanged("DodgeMPProbability"))},
+                    {PlayerField.NeutralResistPercent, new StatsRow(PlayerField.NeutralResistPercent, x => OnPropertyChanged("NeutralResistPercent"))},
+                    {PlayerField.EarthResistPercent, new StatsRow(PlayerField.EarthResistPercent, x => OnPropertyChanged("EarthResistPercent"))},
+                    {PlayerField.WaterResistPercent, new StatsRow(PlayerField.WaterResistPercent, x => OnPropertyChanged("WaterResistPercent"))},
+                    {PlayerField.AirResistPercent, new StatsRow(PlayerField.AirResistPercent, x => OnPropertyChanged("AirResistPercent"))},
+                    {PlayerField.FireResistPercent, new StatsRow(PlayerField.FireResistPercent, x => OnPropertyChanged("FireResistPercent"))},
+                    {PlayerField.NeutralElementReduction, new StatsRow(PlayerField.NeutralElementReduction, x => OnPropertyChanged("NeutralElementReduction"))},
+                    {PlayerField.EarthElementReduction, new StatsRow(PlayerField.EarthElementReduction, x => OnPropertyChanged("EarthElementReduction"))},
+                    {PlayerField.WaterElementReduction, new StatsRow(PlayerField.WaterElementReduction, x => OnPropertyChanged("WaterElementReduction"))},
+                    {PlayerField.AirElementReduction, new StatsRow(PlayerField.AirElementReduction, x => OnPropertyChanged("AirElementReduction"))},
+                    {PlayerField.FireElementReduction, new StatsRow(PlayerField.FireElementReduction, x => OnPropertyChanged("FireElementReduction"))},
+                    {PlayerField.PushDamageReduction, new StatsRow(PlayerField.PushDamageReduction)},
+                    {PlayerField.CriticalDamageReduction, new StatsRow(PlayerField.CriticalDamageReduction)},
+                    {PlayerField.PvpNeutralResistPercent, new StatsRow(PlayerField.PvpNeutralResistPercent, x => OnPropertyChanged("NeutralResistPercent"))},
+                    {PlayerField.PvpEarthResistPercent, new StatsRow(PlayerField.PvpEarthResistPercent, x => OnPropertyChanged("EarthResistPercent"))},
+                    {PlayerField.PvpWaterResistPercent, new StatsRow(PlayerField.PvpWaterResistPercent, x => OnPropertyChanged("WaterResistPercent"))},
+                    {PlayerField.PvpAirResistPercent, new StatsRow(PlayerField.PvpAirResistPercent, x => OnPropertyChanged("AirResistPercent"))},
+                    {PlayerField.PvpFireResistPercent, new StatsRow(PlayerField.PvpFireResistPercent, x => OnPropertyChanged("FireResistPercent"))},
+                    {PlayerField.PvpNeutralElementReduction, new StatsRow(PlayerField.PvpNeutralElementReduction, x => OnPropertyChanged("NeutralElementReduction"))},
+                    {PlayerField.PvpEarthElementReduction, new StatsRow(PlayerField.PvpEarthElementReduction, x => OnPropertyChanged("EarthElementReduction"))},
+                    {PlayerField.PvpWaterElementReduction, new StatsRow(PlayerField.PvpWaterElementReduction, x => OnPropertyChanged("WaterElementReduction"))},
+                    {PlayerField.PvpAirElementReduction, new StatsRow(PlayerField.PvpAirElementReduction, x => OnPropertyChanged("AirElementReduction"))},
+                    {PlayerField.PvpFireElementReduction, new StatsRow(PlayerField.PvpFireElementReduction, x => OnPropertyChanged("FireElementReduction"))},
+                };
             SpellsModifications = new ObservableCollectionMT<SpellModification>();
             InvisibilityState = GameActionFightInvisibilityStateEnum.VISIBLE;
         }

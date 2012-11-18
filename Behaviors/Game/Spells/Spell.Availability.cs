@@ -27,30 +27,30 @@ namespace BiM.Behaviors.Game.Spells
     {
 
         #region Stuff to control availability of the spell
-        uint NbCastAllowed;
-        uint NbTurnToWait;
-        Dictionary<int, int> Targeted;
+        uint m_nbCastAllowed;
+        uint m_nbTurnToWait;
+        Dictionary<int, int> m_targeted;
         public void StartFight()
         {
-            NbTurnToWait = LevelTemplate.initialCooldown;
-            if (NbTurnToWait == 0)
-                NbCastAllowed = LevelTemplate.maxCastPerTurn;
+            m_nbTurnToWait = LevelTemplate.initialCooldown;
+            if (m_nbTurnToWait == 0)
+                m_nbCastAllowed = LevelTemplate.maxCastPerTurn;
             else
-                NbCastAllowed = 0;
+                m_nbCastAllowed = 0;
             if (LevelTemplate.maxCastPerTarget > 0)
-                Targeted = new Dictionary<int, int>();
+                m_targeted = new Dictionary<int, int>();
             else
-                Targeted = null;
+                m_targeted = null;
         }
 
         public void EndTurn()
         {
-            if (NbTurnToWait > 0)
-                NbTurnToWait--;
-            if (NbTurnToWait == 0)
-                NbCastAllowed = LevelTemplate.maxCastPerTurn;
+            if (m_nbTurnToWait > 0)
+                m_nbTurnToWait--;
+            if (m_nbTurnToWait == 0)
+                m_nbCastAllowed = LevelTemplate.maxCastPerTurn;
 
-            Targeted = new Dictionary<int, int>();  // Reset targeted counts
+            m_targeted = new Dictionary<int, int>();  // Reset targeted counts
         }
 
         public void CastAt(int idTarget)
@@ -58,38 +58,38 @@ namespace BiM.Behaviors.Game.Spells
             // Count for limited usage per target
             if (LevelTemplate.maxCastPerTarget > 0)
             {
-                int TargetCount = 1;
-                if (!Targeted.TryGetValue(idTarget, out TargetCount))
-                    TargetCount = 1;
+                int targetCount = 1;
+                if (!m_targeted.TryGetValue(idTarget, out targetCount))
+                    targetCount = 1;
                 else
-                    TargetCount++;
-                Targeted[idTarget] = TargetCount;
-                Debug.Assert(TargetCount <= LevelTemplate.maxCastPerTarget);
+                    targetCount++;
+                m_targeted[idTarget] = targetCount;
+                Debug.Assert(targetCount <= LevelTemplate.maxCastPerTarget);
             }
-            Debug.Assert(NbCastAllowed > 0 || LevelTemplate.maxCastPerTarget <= 0);
-            NbTurnToWait = (uint)LevelTemplate.globalCooldown;
+            Debug.Assert(m_nbCastAllowed > 0 || LevelTemplate.maxCastPerTarget <= 0);
+            m_nbTurnToWait = (uint)LevelTemplate.globalCooldown;
 
-            if (NbCastAllowed > 0)
-                NbCastAllowed--;
+            if (m_nbCastAllowed > 0)
+                m_nbCastAllowed--;
         }
 
         public bool IsAvailable(int? idTarget)
         {
-            if (NbTurnToWait > 0) return false;
+            if (m_nbTurnToWait > 0) return false;
 
             // Limit on usage per turn not reached
-            if (LevelTemplate.maxCastPerTurn > 0 && NbCastAllowed == 0) return false;
+            if (LevelTemplate.maxCastPerTurn > 0 && m_nbCastAllowed == 0) return false;
 
             // No restriction per target => available
-            if (LevelTemplate.maxCastPerTarget <= 0 || NbCastAllowed > 0) return true;
+            if (LevelTemplate.maxCastPerTarget <= 0 || m_nbCastAllowed > 0) return true;
 
             // No target identified
             if (idTarget == null) return true;
 
-            int TargetCount = 0;
-            if (!Targeted.TryGetValue(idTarget.Value, out TargetCount))
-                TargetCount = 0;
-            if (TargetCount >= LevelTemplate.maxCastPerTarget) return false;
+            int targetCount = 0;
+            if (!m_targeted.TryGetValue(idTarget.Value, out targetCount))
+                targetCount = 0;
+            if (targetCount >= LevelTemplate.maxCastPerTarget) return false;
 
             return true;
         }

@@ -133,5 +133,4 @@
     <NotifyPropertyWeaverMsBuildTask.WeavingTask />
   </Target>
   <UsingTask TaskName="NotifyPropertyWeaverMsBuildTask.WeavingTask" AssemblyFile="$([MSBuild]::Unescape($(SolutionDir)))Librairies\NotifyPropertyWeaverMsBuildTask.dll" />
-
 </Project>

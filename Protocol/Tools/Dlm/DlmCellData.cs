@@ -105,6 +105,8 @@ namespace BiM.Protocol.Tools.Dlm
             get { return (LosMov & 64) >> 6 == 1; }
         }
 
+
+
         public static DlmCellData ReadFromStream(DlmMap map, short id, BigEndianReader reader)
         {
             var cell = new DlmCellData(map, id);
