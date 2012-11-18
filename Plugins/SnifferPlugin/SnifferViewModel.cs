@@ -193,7 +193,7 @@ namespace SnifferPlugin
 
         private void OnExport(object parameter)
         {
-            var dialog = new SaveFileDialog()
+            var dialog = new SaveFileDialog
             {
                 FileName = string.Format("logs {0}", DateTime.Now.ToString("dd-MM-yy")),
                 DefaultExt = ".log",
@@ -212,6 +212,28 @@ namespace SnifferPlugin
 
                 File.WriteAllText(dialog.FileName, builder.ToString());
             }
+        }
+
+        #endregion
+		
+        #region ClearCommand
+
+        private DelegateCommand m_clearCommand;
+
+        public DelegateCommand ClearCommand
+        {
+            get { return m_clearCommand ?? (m_clearCommand = new DelegateCommand(OnClear, CanClear)); }
+        }
+
+        private bool CanClear(object parameter)
+        {
+            return true;
+        }
+
+        private void OnClear(object parameter)
+        {
+            m_messages.Clear();
+            RefreshVisibility();
         }
 
         #endregion

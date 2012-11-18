@@ -11,6 +11,7 @@
   <DockPanel>
     <DockPanel DockPanel.Dock="Bottom" LastChildFill="True">
       <CheckBox Margin="3" VerticalAlignment="Center" Content="See properties" IsChecked="{Binding SeeProperties, Mode=TwoWay}" />
+      <Button Margin="3" VerticalAlignment="Center" Content="Clear" DockPanel.Dock="Right" Command="{Binding ClearCommand}" />
       <Button Margin="3" VerticalAlignment="Center" Content="Export" DockPanel.Dock="Right" Command="{Binding ExportCommand}"/>
       <Button Margin="3" VerticalAlignment="Center" Content="Clear" DockPanel.Dock="Right" Command="{Binding ClearCommand}"/>
       <Button Margin="3" VerticalAlignment="Center" DockPanel.Dock="Right" Command="{Binding PauseResumeCommand}">
