@@ -111,6 +111,7 @@
     <Compile Include="Game\Actors\RolePlay\RolePlayActor.cs" />
     <Compile Include="Game\Actors\RolePlay\TaxCollector.cs" />
     <Compile Include="Game\Alignement\AlignmentInformations.cs" />
+    <Compile Include="Game\Breeds\Breed.cs" />
     <Compile Include="Game\Chat\ChatMessage.cs" />
     <Compile Include="Game\Chat\ChatMessageClient.cs" />
     <Compile Include="Game\Chat\ChatMessageServer.cs" />
@@ -192,6 +193,8 @@
     <Compile Include="Game\Spells\Spell.Availability.cs" />
     <Compile Include="Game\Spells\Spell.cs" />
     <Compile Include="Game\Spells\SpellsBook.cs" />
+    <Compile Include="Game\Stats\BoostableStat.cs" />
+    <Compile Include="Game\Stats\BoostThreshold.cs" />
     <Compile Include="Game\Stats\IMinimalStats.cs" />
     <Compile Include="Game\Stats\MinimalStats.cs" />
     <Compile Include="Game\Stats\PlayerField.cs" />

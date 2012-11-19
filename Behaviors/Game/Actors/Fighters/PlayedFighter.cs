@@ -25,6 +25,7 @@ using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Protocol.Data;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
+using Breed = BiM.Behaviors.Game.Breeds.Breed;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {

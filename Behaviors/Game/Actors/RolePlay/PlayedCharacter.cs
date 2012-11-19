@@ -26,6 +26,7 @@ using BiM.Behaviors.Game.Interactives;
 using BiM.Behaviors.Game.Items;
 using BiM.Behaviors.Game.Shortcuts;
 using BiM.Behaviors.Game.Spells;
+using BiM.Behaviors.Game.Stats;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Behaviors.Handlers.Context;
@@ -91,7 +92,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Id = informations.id;
             Level = informations.level;
             Name = informations.name;
-            Breed = DataProvider.Instance.Get<Breed>(informations.breed);
+            Breed = new Breeds.Breed(DataProvider.Instance.Get<Breed>(informations.breed));
             Look = informations.entityLook;
             Sex = informations.sex;
 
@@ -113,7 +114,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             private set;
         }
 
-        public Breed Breed
+        public Breeds.Breed Breed
         {
             get;
             private set;
@@ -375,6 +376,128 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public void OpenPopup(string message, string sender, byte lockDuration)
         {
             Bot.SendToClient(new PopupWarningMessage(lockDuration, sender, message));
+        }
+
+        #endregion
+
+        #region Stats
+
+        public void SpendStatsPoints(BoostableStat stat, short amount)
+        {
+            if (amount > Stats.SpellsPoints)
+                amount = (short) Stats.SpellsPoints;
+
+            Bot.SendToServer(new StatsUpgradeRequestMessage((sbyte)stat, amount));
+        }
+
+        public short GetPointsForBoostAmount(BoostableStat stat, short amount)
+        {
+            var currentPoints = GetBoostableStatPoints(stat);
+            var threshold = Breed.GetThreshold(currentPoints, stat);
+            var nextThreshold = Breed.GetNextThreshold(currentPoints, stat);
+            short pointsToSpend = 0;
+            int totalBoost = 0;
+
+            while (totalBoost < amount)
+            {
+                short boost = 0;
+                if (nextThreshold != null && currentPoints >= nextThreshold.PointsThreshold)
+                {
+                    threshold = Breed.GetThreshold(currentPoints, stat);
+                    nextThreshold = Breed.GetNextThreshold(currentPoints, stat);
+                }
+
+                // must fill the current threshold first
+                if (nextThreshold != null && amount > ( nextThreshold.PointsThreshold - currentPoints ))
+                {
+                    boost = (short)( threshold.PointsThreshold - pointsToSpend );
+                    pointsToSpend += (short)( boost * threshold.PointsPerBoost );
+
+                    boost = (short)( boost * threshold.BoostPerPoints );
+                }
+                else
+                {
+                    pointsToSpend += (short)( amount * threshold.PointsPerBoost );
+
+                    boost = (short)( boost * threshold.BoostPerPoints );
+                }
+
+                amount -= boost;
+                currentPoints += boost;
+            }
+
+            return pointsToSpend;
+        }
+
+        /// <summary>
+        /// Gives the amount of boost of a given stat with the given points
+        /// </summary>
+        /// <param name="stat"></param>
+        /// <param name="pointsToSpend"></param>
+        /// <returns></returns>
+        public int GetBoostAmountWithPoints(BoostableStat stat, int pointsToSpend)
+        {
+            var currentPoints = GetBoostableStatPoints(stat);
+            var threshold = Breed.GetThreshold(currentPoints, stat);
+            var nextThreshold = Breed.GetNextThreshold(currentPoints, stat);
+
+            if (pointsToSpend < threshold.PointsPerBoost)
+                return 0;
+
+            int totalBoost = 0;
+            while (pointsToSpend >= threshold.PointsPerBoost)
+            {
+                int boost = 0;
+                if (nextThreshold != null && currentPoints >= nextThreshold.PointsThreshold)
+                {
+                    threshold = Breed.GetThreshold(currentPoints, stat);
+                    nextThreshold = Breed.GetNextThreshold(currentPoints, stat);
+                }
+
+                if (pointsToSpend - threshold.PointsPerBoost < 0)
+                    break;
+
+                if (nextThreshold != null && ( pointsToSpend / (double)threshold.PointsPerBoost ) > ( nextThreshold.PointsThreshold - currentPoints ))
+                {
+                    boost = (short)( threshold.PointsThreshold - pointsToSpend );
+                    pointsToSpend -= (short)( boost * threshold.PointsPerBoost );
+
+                    boost = (short)( boost * threshold.BoostPerPoints );
+                }
+                else
+                {
+                    boost = (short)Math.Floor(pointsToSpend / (double)threshold.PointsPerBoost);
+                    pointsToSpend -= (short)( boost * threshold.PointsPerBoost );
+
+                    boost = (short)( boost * threshold.BoostPerPoints );
+                }
+
+                currentPoints += boost;
+                totalBoost += boost;
+            }
+
+            return totalBoost;
+        }
+
+        private int GetBoostableStatPoints(BoostableStat stat)
+        {
+            switch (stat)
+            {
+                case BoostableStat.Agility:
+                    return Stats.Agility.Base;
+                case BoostableStat.Strength:
+                    return Stats.Strength.Base;
+                case BoostableStat.Intelligence:
+                    return Stats.Intelligence.Base;
+                case BoostableStat.Chance:
+                    return Stats.Chance.Base;
+                case BoostableStat.Wisdom:
+                    return Stats.Wisdom.Base;
+                case BoostableStat.Vitality:
+                    return Stats.Vitality.Base;
+                default:
+                    throw new ArgumentException("stat");
+            }
         }
 
         #endregion

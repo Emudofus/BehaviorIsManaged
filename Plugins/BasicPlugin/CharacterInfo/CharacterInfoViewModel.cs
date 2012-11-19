@@ -1,7 +1,9 @@
-﻿using System.ComponentModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using AvalonDock.Layout;
 using BiM.Behaviors;
 using BiM.Behaviors.Frames;
+using BiM.Behaviors.Game.Stats;
 using BiM.Core.Messages;
 using BiM.Host.UI;
 using BiM.Host.UI.Helpers;
@@ -12,7 +14,7 @@ namespace BasicPlugin.CharacterInfo
 {
     public class CharacterStatsListRegister
     {
-        [MessageHandler(typeof(CharacterSelectedSuccessMessage))]
+        [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
         public static void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
         {
             bot.AddFrame(new CharacterInfoViewModel(bot));
@@ -21,19 +23,9 @@ namespace BasicPlugin.CharacterInfo
 
     public class CharacterInfoViewModel : Frame<CharacterInfoViewModel>, IViewModel<CharacterInfoView>
     {
-     
-
         public CharacterInfoViewModel(Bot bot)
-            :base(bot)
+            : base(bot)
         {
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        object IViewModel.View
-        {
-            get { return ViewModel; }
-            set { ViewModel = (CharacterInfoView)value; }
         }
 
         public CharacterInfoView ViewModel
@@ -41,7 +33,7 @@ namespace BasicPlugin.CharacterInfo
             get;
             set;
         }
-        
+
         #region UpgradeStats
 
         private DelegateCommand m_upgradeStatCommand;
@@ -51,13 +43,30 @@ namespace BasicPlugin.CharacterInfo
             get { return m_upgradeStatCommand ?? (m_upgradeStatCommand = new DelegateCommand(OnUpgradeButtonClick)); }
         }
 
-        private void OnUpgradeButtonClick(object element)
+        private void OnUpgradeButtonClick(object stat)
         {
-            if ((sbyte)element < 0)
-            return;
-            
-            List<uint> threshold = StatsTreshold.GetThreshold((short)Bot.Character.Stats.StatsPoints, (sbyte)element, Bot.Character.Breed);
-            Bot.SendToServer(new StatsUpgradeRequestMessage((sbyte)element, (short)threshold[1]));
+            if (stat == null)
+                return;
+
+            Bot.Character.SpendStatsPoints((BoostableStat)stat, Bot.Character.GetPointsForBoostAmount((BoostableStat) stat, 1));
+        }
+
+        #endregion
+
+        #region IViewModel<CharacterInfoView> Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        object IViewModel.View
+        {
+            get { return ViewModel; }
+            set { ViewModel = (CharacterInfoView) value; }
+        }
+
+        public CharacterInfoView View
+        {
+            get;
+            set;
         }
 
         #endregion
@@ -65,8 +74,8 @@ namespace BasicPlugin.CharacterInfo
         public override void OnAttached()
         {
             base.OnAttached();
-            var botViewModel = Bot.GetViewModel();
-            var layout = botViewModel.AddDocument(this, () => new CharacterInfoView());
+            BotViewModel botViewModel = Bot.GetViewModel();
+            LayoutDocument layout = botViewModel.AddDocument(this, () => new CharacterInfoView());
             layout.Title = "Character Info";
             layout.CanClose = false;
         }
@@ -75,14 +84,8 @@ namespace BasicPlugin.CharacterInfo
         {
             base.OnDetached();
 
-            var viewModel = Bot.GetViewModel();
+            BotViewModel viewModel = Bot.GetViewModel();
             viewModel.RemoveDocument(ViewModel);
-        }
-
-        public CharacterInfoView View
-        {
-            get;
-            set;
         }
     }
 }
