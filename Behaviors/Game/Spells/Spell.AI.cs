@@ -277,7 +277,7 @@ namespace BiM.Behaviors.Game.Spells
       if (damages == null) result = new Damages();
       SpellTargetType targetType = (SpellTargetType)effect.targetId;
 
-      //if ((targetType & SpellTargetType.ENNEMIES) == 0) return damages; // No ennemy can be targeted
+      //if ((targetType & SpellTargetType.ENEMIES) == 0) return damages; // No enemy can be targeted
 
       SpellCategory category = GetEffectCategories(effect);
 

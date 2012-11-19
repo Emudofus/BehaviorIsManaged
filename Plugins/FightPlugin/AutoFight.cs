@@ -271,13 +271,13 @@ namespace FightPlugin
 
         private void MoveFar()
         {
-            var ennemies = m_character.GetOpposedTeam().Fighters;
+            var enemies = m_character.GetOpposedTeam().Fighters;
 
             var shape = new Lozenge(0, (byte) m_character.Stats.CurrentMP);
             var possibleCells = shape.GetCells(m_character.Cell, m_character.Map);
             var orderedCells = from cell in possibleCells
                                where m_character.Fight.IsCellWalkable(cell, false, m_character.Cell)
-                               orderby ennemies.Sum(x => cell.ManhattanDistanceTo(x.Cell)) descending
+                               orderby enemies.Sum(x => cell.ManhattanDistanceTo(x.Cell)) descending
                                select cell;
 
             var dest = orderedCells.FirstOrDefault();
@@ -290,10 +290,10 @@ namespace FightPlugin
 
         private Fighter GetNearestEnemy()
         {
-            var ennemyTeam = m_character.GetOpposedTeam();
+            var enemyTeam = m_character.GetOpposedTeam();
 
             Fighter nearestFighter = null;
-            foreach (var enemy in ennemyTeam.Fighters)
+            foreach (var enemy in enemyTeam.Fighters)
             {
                 if (!enemy.IsAlive)
                     continue;
