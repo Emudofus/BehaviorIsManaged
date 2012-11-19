@@ -14,6 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
+using System.Collections.Generic;
 using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Alignement;
@@ -194,6 +195,15 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Character.Bot.SendToServer(new GameActionFightCastRequestMessage((short) spell.Template.id, cell.Id));
 
             return true;
+        }
+
+        public IEnumerable<Spells.Spell> GetOrderListOfSimpleAttackSpells(Fighter target)
+        {
+            foreach (Spells.Spell spell in Character.SpellsBook.GetOrderedAttackSpells(Character, target, null))
+            {
+                if (CanCastSpell(spell, target) && !spell.LevelTemplate.needFreeCell && !spell.LevelTemplate.needFreeCell)
+                    yield return spell;
+            }
         }
 
         /// <summary>
