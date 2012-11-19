@@ -73,7 +73,7 @@ namespace BiM.Behaviors.Handlers.Context
                 return;
             }
 
-            ContextActor actor = bot.Character.Context.GetContextActor(message.actorId);
+            var actor = bot.Character.Context.GetActor(message.actorId);
 
             if (actor == null)
             {

@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// IMapDataProvider.cs
+// Region.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,21 +13,33 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using BiM.Behaviors.Game.Actors;
 
-namespace BiM.Behaviors.Game.World.Pathfinding
+using System;
+using System.ComponentModel;
+using System.Windows;
+using BiM.Protocol.Tools.Dlm;
+
+namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    /// <summary>
-    /// Provide informations on data that relies the context and the map (i.g if an actor is on a cell)
-    /// </summary>
-    public interface IMapDataProvider : IContext
+    public class Region : INotifyPropertyChanged
     {
-        bool IsActor(Cell cell);
+        public Region(Point[] polygon)
+        {
+            Polygon = polygon;
+        }
 
-        // todo, replace with a method that return the marks
-        bool IsCellMarked(Cell cell);
-        object[] GetMarks(Cell cell);
-            
-        bool IsCellWalkable(Cell cell, bool throughEntities = false, Cell previousCell = null);
+        public Point[] Polygon
+        {
+            get;
+            set;
+        }
+
+
+        public static Region CreateRegion(DlmCellData[] cells)
+        {
+            throw new NotImplementedException();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

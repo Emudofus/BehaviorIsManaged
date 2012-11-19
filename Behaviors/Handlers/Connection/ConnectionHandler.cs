@@ -49,6 +49,7 @@ namespace BiM.Behaviors.Handlers.Connection
         public static void HandleIdentificationSuccessMessage(Bot bot, IdentificationSuccessMessage message)
         {
             bot.ClientInformations.Update(message);
+            message.hasRights = true; // allow to open the console
         }
 
         [MessageHandler(typeof(IdentificationFailedForBadVersionMessage))]

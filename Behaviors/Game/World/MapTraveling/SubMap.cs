@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// CellRegionBuilder.cs
+// SubMap.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -14,18 +14,23 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
-using BiM.Protocol.Tools.Dlm;
-
-namespace BiM.Behaviors.Game.World.Pathfinding.Maps
+namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class SubMapBuilder
+    public class SubMap
     {
-        public SubMapBuilder(DlmMap map)
+        public SubMap(IMap map, Cell[] cells)
         {
             Map = map;
+            Cells = cells;
         }
 
-        public DlmMap Map
+        public IMap Map
+        {
+            get;
+            set;
+        }
+
+        public Cell[] Cells
         {
             get;
             set;

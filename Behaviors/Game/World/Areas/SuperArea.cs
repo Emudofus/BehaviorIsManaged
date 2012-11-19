@@ -1,5 +1,5 @@
-#region License GNU GPL
-// CellInformationProvider.cs
+﻿#region License GNU GPL
+// SuperArea.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,16 +13,38 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-namespace BiM.Behaviors.Game.World.Pathfinding
+
+using BiM.Behaviors.Data;
+
+namespace BiM.Behaviors.Game.World.Areas
 {
-    public abstract class CellInformationProvider
+    public class SuperArea
     {
-        public abstract Map Map
+        private readonly Protocol.Data.SuperArea m_superArea;
+
+        public SuperArea(int id)
         {
-            get;
+            m_superArea = DataProvider.Instance.Get<Protocol.Data.SuperArea>(id);
         }
 
-        public abstract bool IsCellWalkable(Cell cell, bool fight = false, Cell previousCell = null);
-        public abstract CellInformation GetCellInformation(Cell cell);
+        public int Id
+        {
+            get { return m_superArea.id; }
+        }
+
+        public uint NameId
+        {
+            get { return m_superArea.nameId; }
+        }
+
+        public string Name
+        {
+            get { return DataProvider.Instance.Get<string>(NameId); }
+        }
+
+        public uint WorldmapId
+        {
+            get { return m_superArea.worldmapId; }
+        }
     }
 }

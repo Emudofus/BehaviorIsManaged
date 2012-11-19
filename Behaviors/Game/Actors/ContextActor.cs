@@ -153,7 +153,7 @@ namespace BiM.Behaviors.Game.Actors
             protected set;
         }
 
-        public virtual IContext Context
+        public virtual IMapContext Context
         {
             get;
             protected set;

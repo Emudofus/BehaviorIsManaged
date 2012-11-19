@@ -88,7 +88,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             return UsingInteractive != null;
         }
 
-        public override IContext Context
+        public override IMapContext Context
         {
             get;
             protected set;

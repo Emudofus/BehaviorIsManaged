@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Stats;
@@ -24,7 +25,7 @@ using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Game.Fights
 {
-    public class TimeLine
+    public class TimeLine : INotifyPropertyChanged
     {
         private ObservableCollectionMT<Fighter> m_fighters = new ObservableCollectionMT<Fighter>();
         private ReadOnlyObservableCollectionMT<Fighter> m_readOnlyFighters;
@@ -139,6 +140,14 @@ namespace BiM.Behaviors.Game.Fights
             return Fighters[index];
         }
 
+        public void InsertFighter(Fighter fighter, int index)
+        {
+            m_fighters.Insert(index, fighter);
+
+            if (Index >= index)
+                Index++;
+        }
+
         private int GetRealInitiative(Fighter fighter)
         {
             return fighter.Stats.Initiative * fighter.Stats.Health / fighter.Stats.MaxHealth;
@@ -202,6 +211,14 @@ namespace BiM.Behaviors.Game.Fights
         {
             if (msg == null) throw new ArgumentNullException("msg");
             RefreshTimeLine(msg.fighters.Select(x => x.contextualId));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

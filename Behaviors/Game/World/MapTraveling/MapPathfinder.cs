@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// SummonedFighter.cs
+// MapPathfinder.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,23 +13,10 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using BiM.Behaviors.Game.Fights;
-using BiM.Behaviors.Game.World;
-using BiM.Protocol.Types;
-
-namespace BiM.Behaviors.Game.Actors.Fighters
+namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class SummonedFighter : MonsterFighter
+    public class MapPathfinder
     {
-        public SummonedFighter(GameFightMonsterInformations msg, Fight fight)
-            : base(msg, fight)
-        {
-        }
-
-        public Fighter Summoner
-        {
-            get;
-            set;
-        }
+         
     }
 }

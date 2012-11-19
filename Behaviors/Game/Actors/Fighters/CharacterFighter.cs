@@ -46,6 +46,14 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Alignment = new AlignmentInformations(msg.alignmentInfos);
             Breed = DataProvider.Instance.Get<Breed>(msg.breed);
             Stats = new MinimalStats(msg.stats);
+            Summoned = msg.stats.summoned;
+            if (Summoned)
+            {
+                Summoner = Fight.GetActor(msg.stats.summoner);
+
+                if (Summoner == null)
+                    logger.Error("Summoner {0} of monster {1} not found", msg.stats.summoner, this);
+            }
         }
 
         public override int Id

@@ -40,7 +40,7 @@ namespace BiM.Behaviors.Handlers.Context
         public static void HandleGameContextRemoveElementMessage(Bot bot, GameContextRemoveElementMessage message)
         {
             // can be on the map or in fight
-            bot.Character.Context.RemoveContextActor(message.id);
+            bot.Character.Context.RemoveActor(message.id);
         }
     }
 }

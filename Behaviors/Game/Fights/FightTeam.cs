@@ -38,6 +38,7 @@ namespace BiM.Behaviors.Game.Fights
 
         private List<Fighter> m_fighters = new List<Fighter>();
         private Cell[] m_placementCells;
+        private int? m_unknownLeaderId;
 
         public FightTeam(Fight fight, FightTeamColor id)
         {
@@ -112,29 +113,35 @@ namespace BiM.Behaviors.Game.Fights
             private set;
         }
 
-        public void AddFighter(Fighter fighter)
+        /// <summary>
+        /// Used by Fight class only
+        /// </summary>
+        /// <param name="fighter"></param>
+        /// <returns></returns>
+        internal void AddFighter(Fighter fighter)
         {
             if (Fighters.Any(x => x.Id == fighter.Id))
                 throw new Exception(string.Format("Fighter with id {0} already exists", fighter.Id));
 
             m_fighters.Add(fighter);
 
+            if (m_unknownLeaderId != null && fighter.Id == m_unknownLeaderId)
+            {
+                Leader = fighter;
+                m_unknownLeaderId = null;
+            }
+
             var evnt = FighterAdded;
             if (evnt != null)
                 evnt(this, fighter);
         }
 
-        public bool RemoveFighter(int id)
-        {
-            var result = m_fighters.RemoveAll(entry => entry.Id == id);
-
-            if (result > 1)
-                logger.Error("Removed {0} fighters instead of one.", result);
-
-            return result > 0;
-        }
-
-        public bool RemoveFighter(Fighter fighter)
+        /// <summary>
+        /// Used by Fight class only
+        /// </summary>
+        /// <param name="fighter"></param>
+        /// <returns></returns>
+        internal bool RemoveFighter(Fighter fighter)
         {
             var result = m_fighters.Remove(fighter);
 
@@ -178,7 +185,8 @@ namespace BiM.Behaviors.Game.Fights
             Leader = GetFighter(team.leaderId);
             if (Leader == null)
             {
-                logger.Error("Cannot set the leader because fighter {0} is not in team", team.leaderId);
+                // if not found we define it later
+                m_unknownLeaderId = team.leaderId;
             }
             AlignmentSide = (AlignmentSideEnum) team.teamSide;
             TeamType = (TeamTypeEnum) team.teamTypeId;

@@ -604,7 +604,11 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (msg == null) throw new ArgumentException("msg");
 
             if (Fighter.Team == null)
+            {
+                // it's a bit tricky ...
                 Fighter.SetTeam(Fight.GetTeam((FightTeamColor) msg.teamNumber));
+                Fight.AddActor(Fighter);
+            }
 
             Fight.Update(msg);
         }

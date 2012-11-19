@@ -27,7 +27,7 @@ using NLog;
 
 namespace BiM.Behaviors.Game.Fights
 {
-    public class Fight : IContext, IMapDataProvider
+    public class Fight : MapContext<Fighter>
     {
         public delegate void StateChangedHandler(Fight fight, FightPhase phase);
         public event StateChangedHandler StateChanged;
@@ -42,6 +42,23 @@ namespace BiM.Behaviors.Game.Fights
         public delegate void TurnHandler(Fight fight, Fighter fighter);
         public event TurnHandler TurnStarted;
         public event TurnHandler TurnEnded;
+
+        public delegate void ActorAddedRemovedHandler(Fight fight, Fighter fighter);
+        public event ActorAddedRemovedHandler ActorAdded;
+
+        public void OnActorAdded(Fighter fighter)
+        {
+            ActorAddedRemovedHandler handler = ActorAdded;
+            if (handler != null) handler(this, fighter);
+        }
+
+        public event ActorAddedRemovedHandler ActorRemoved;
+
+        public void OnActorRemoved(Fighter fighter)
+        {
+            ActorAddedRemovedHandler handler = ActorRemoved;
+            if (handler != null) handler(this, fighter);
+        }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -68,6 +85,18 @@ namespace BiM.Behaviors.Game.Fights
         {
             get;
             private set;
+        }
+
+        public override CellList Cells
+        {
+            get { return Map.Cells; }
+        }
+        public override bool UsingNewMovementSystem
+        {
+            get
+            {
+                return Map.UsingNewMovementSystem;
+            }
         }
 
         public DateTime StartTime
@@ -147,27 +176,7 @@ namespace BiM.Behaviors.Game.Fights
         }
 
 
-        #region IContext Members
-
-        /// <summary>
-        /// Returns null if not found
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ContextActor RemoveContextActor(int id)
-        {
-            Fighter fighter = GetFighter(id);
-
-            if (fighter == null)
-                return null;
-
-            if (RemoveFighter(fighter))
-                return fighter;
-
-            return null;
-        }
-
-        public void Tick(int dt)
+        public override void Tick(int dt)
         {
             if (RedTeam != null)
                 foreach (var fighter in RedTeam.Fighters)
@@ -180,27 +189,6 @@ namespace BiM.Behaviors.Game.Fights
                     fighter.Tick(dt);
                 }
         }
-
-        public IEnumerable<ContextActor> Actors
-        {
-            get
-            {
-                return GetConcatedFighters();
-            }
-        }
-
-        public ContextActor GetContextActor(int id)
-        {
-            return GetFighter(id);
-        }
-
-        public ContextActor[] GetContextActors(Cell cell)
-        {
-            return GetConcatedFighters().Where(entry => entry.Cell == cell).Cast<ContextActor>().ToArray();
-        }
-
-        #endregion
-
 
         public FightTeam GetTeam(sbyte color)
         {
@@ -282,17 +270,24 @@ namespace BiM.Behaviors.Game.Fights
             return DateTime.Now >= StartTime;
         }
 
-        public void AddFighter(Fighter fighter)
+        public override bool AddActor(Fighter actor)
         {
-            if (fighter == null) throw new ArgumentNullException("fighter");
+            if (actor == null) throw new ArgumentNullException("actor");
 
-            fighter.Team.AddFighter(fighter);
+            // do it before because an existing fighter can be removed
+            bool added = base.AddActor(actor);
+
+            actor.Team.AddFighter(actor);
 
             if (Phase == FightPhase.Placement)
                 TimeLine.RefreshTimeLine();
+
+            OnActorAdded(actor);
+
+            return added;
         }
 
-        public void AddFighter(GameFightFighterInformations fighter)
+        public void AddActor(GameFightFighterInformations fighter)
         {
             if (fighter == null) throw new ArgumentNullException("fighter");
 
@@ -306,22 +301,28 @@ namespace BiM.Behaviors.Game.Fights
             }
             else
             {
-                // just update the team because it's not done
+                // normally we don't know which is our team before being added to the fight
                 if (fighter.contextualId == bot.Character.Id)
                 {
                     bot.Character.Fighter.SetTeam(GetTeam(fighter.teamId));
+                    AddActor(bot.Character.Fighter);
                 }
                 else
                 {
-                    AddFighter(CreateFighter(fighter));
+                    AddActor(CreateFighter(fighter));
                 }
             }
         }
 
-        public bool RemoveFighter(Fighter fighter)
+        public override bool RemoveActor(Fighter actor)
         {
-            if (fighter == null) throw new ArgumentNullException("fighter");
-            return fighter.Team.RemoveFighter(fighter);
+            if (actor.Team.RemoveFighter(actor) && base.RemoveActor(actor))
+            {
+                OnActorRemoved(actor);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -329,21 +330,20 @@ namespace BiM.Behaviors.Game.Fights
         /// </summary>
         /// <param name="fighter"></param>
         /// <returns></returns>
-        public Fighter CreateFighter(GameFightFighterInformations fighter)
+        protected Fighter CreateFighter(GameFightFighterInformations fighter)
         {
             if (fighter == null) throw new ArgumentNullException("fighter");
+
             if (fighter is GameFightCharacterInformations)
                 return new CharacterFighter(fighter as GameFightCharacterInformations, this);
             if (fighter is GameFightMonsterInformations)
+            {
                 return new MonsterFighter(fighter as GameFightMonsterInformations, this);
+            }
 
             throw new Exception(string.Format("Fighter of type {0} not handled", fighter.GetType()));
         }
 
-        protected IEnumerable<Fighter> GetConcatedFighters()
-        {
-            return RedTeam.Fighters.Concat(BlueTeam.Fighters);
-        }
 
         /// <summary>
         /// To get the fighters sort by Initiative use TimeLine.Fighters
@@ -351,33 +351,33 @@ namespace BiM.Behaviors.Game.Fights
         /// <returns></returns>
         public Fighter[] GetFighters()
         {
-            return GetConcatedFighters().ToArray();
+            return Actors.ToArray();
         }
 
         public Fighter GetFighter(int id)
         {
-            return GetConcatedFighters().FirstOrDefault(entry => entry.Id == id);
+            return Actors.FirstOrDefault(entry => entry.Id == id);
         }
 
         public T GetFighter<T>(int id) where T : Fighter
         {
-            return (T) GetConcatedFighters().FirstOrDefault(entry => entry is T && entry.Id == id);
+            return (T) Actors.FirstOrDefault(entry => entry is T && entry.Id == id);
         }
 
         public Fighter GetFighter(Cell cell)
         {
             // i assume 2 fighters can be on the same cell (i.g if someone carry someone)
-            return GetConcatedFighters().FirstOrDefault(entry => entry.Cell == cell);
+            return Actors.FirstOrDefault(entry => entry.Cell == cell);
         }
 
         public Fighter[] GetFighters(Cell centerCell, int radius)
         {
-            return GetConcatedFighters().Where(entry => entry.Cell.IsInRadius(centerCell, radius)).ToArray();
+            return Actors.Where(entry => entry.Cell.IsInRadius(centerCell, radius)).ToArray();
         }
 
         public Fighter[] GetFighters(Cell centerCell, int minRadius, int radius)
         {
-            return GetConcatedFighters().Where(entry => entry.Cell.IsInRadius(centerCell, minRadius, radius)).ToArray();
+            return Actors.Where(entry => entry.Cell.IsInRadius(centerCell, minRadius, radius)).ToArray();
         }
 
         public void Update(GameFightPlacementPossiblePositionsMessage msg)
@@ -498,6 +498,8 @@ namespace BiM.Behaviors.Game.Fights
                     fighter.IsAlive = false;
                 }
             }
+
+            TimeLine.RefreshTimeLine(msg.ids);
         }
 
         public void Update(GameFightOptionStateUpdateMessage msg)
@@ -505,43 +507,6 @@ namespace BiM.Behaviors.Game.Fights
             if (msg == null) throw new ArgumentNullException("msg");
             Id = msg.fightId;
             GetTeam(msg.teamId).Update(msg);
-        }
-
-        public bool IsActor(Cell cell)
-        {
-            return GetConcatedFighters().Any(x => x.Cell == cell);
-        }
-
-        public bool IsCellMarked(Cell cell)
-        {
-            return false;
-        }
-
-        public object[] GetMarks(Cell cell)
-        {
-            return new object[0];
-        }
-
-        public bool IsCellWalkable(Cell cell, bool throughEntities = false, Cell previousCell = null)
-        {
-            if (!cell.Walkable)
-                return false;
-
-            if (cell.NonWalkableDuringFight)
-                return false;
-
-            // compare the floors
-            if (Map.UsingNewMovementSystem && previousCell != null)
-            {
-                var floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
-
-                if (cell.MoveZone != previousCell.MoveZone || cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff > Map.ElevationTolerance)
-                    return false;
-            }
-
-            // todo : LoS
-
-            return true;
         }
     }
 }

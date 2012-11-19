@@ -328,7 +328,7 @@ namespace BasicPlugin.Chat
             if (!IsFloodEnabled)
                 return;
 
-            var character = bot.Character.Context.GetContextActor(message.informations.contextualId) as IPlayer;
+            var character = bot.Character.Context.GetActor(message.informations.contextualId) as IPlayer;
 
             if (character != null)
             {

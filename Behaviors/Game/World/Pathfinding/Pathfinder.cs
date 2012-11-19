@@ -51,7 +51,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
     public class Pathfinder
     {
         private readonly Map m_map;
-        private readonly IMapDataProvider m_mapDataProvider;
+        private readonly IMapContext m_context;
         private readonly bool m_throughEntities;
         private readonly bool m_useLogNodeSearch;
         public static int EstimateHeuristic = 10;
@@ -81,10 +81,10 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             return EstimateHeuristic * pointA.ManhattanDistanceTo(pointB);
         }
 
-        public Pathfinder(Map map, IMapDataProvider mapDataProvider, bool throughEntities = true, bool useLogNodeSearch = false)
+        public Pathfinder(Map map, IMapContext context, bool throughEntities = true, bool useLogNodeSearch = false)
         {
             m_map = map;
-            m_mapDataProvider = mapDataProvider;
+            m_context = context;
             m_throughEntities = throughEntities;
             // the dofus client use a bad linear algorithm to find the closest node.
             // if we use an other sort method the result may be different
@@ -147,7 +147,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                     if (matrix[newLocation.Id].Status == NodeState.Closed)
                         continue;
 
-                    if (!m_mapDataProvider.IsCellWalkable(newLocation))
+                    if (!m_context.IsCellWalkable(newLocation))
                         continue;
 
                     double baseCost;
@@ -279,7 +279,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
                     var middleCell = m_map.Cells[middle];
 
-                    if (GetCellCost(middleCell, true) < 2 && m_mapDataProvider.IsCellWalkable(middleCell, false, cell))
+                    if (GetCellCost(middleCell, true) < 2 && m_context.IsCellWalkable(middleCell, false, cell))
                     {
                         cells.Add(middleCell);
                         i += 2;
@@ -303,12 +303,12 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                         i++;
                     }
 
-                    else if (cell.X == nextCell.X && cell.X != middleCell.X && GetCellCost(middleCell2X, true) < 2 && m_mapDataProvider.IsCellWalkable(middleCell2X, false, cell))
+                    else if (cell.X == nextCell.X && cell.X != middleCell.X && GetCellCost(middleCell2X, true) < 2 && m_context.IsCellWalkable(middleCell2X, false, cell))
                     {
                         cells.Add(middleCell2X);
                         i++;
                     }
-                    else if (cell.Y == nextCell.Y && cell.Y != middleCell.Y && GetCellCost(middleCell2Y, true) < 2 && m_mapDataProvider.IsCellWalkable(middleCell2Y, false, cell))
+                    else if (cell.Y == nextCell.Y && cell.Y != middleCell.Y && GetCellCost(middleCell2Y, true) < 2 && m_context.IsCellWalkable(middleCell2Y, false, cell))
                     {
                         cells.Add(middleCell2Y);
                         i++;
@@ -325,7 +325,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
             if (throughEntities)
             {
-                if (m_mapDataProvider.GetContextActors(cell).Length > 0)
+                if (m_context.GetActorsOnCell(cell).Length > 0)
                     return 20;
 
                 if (speed >= 0)
@@ -337,27 +337,28 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             var cost = 1d;
             Cell adjCell;
 
-            if (m_mapDataProvider.GetContextActors(cell).Length > 0)
+            if (m_context.GetActorsOnCell(cell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X + 1, cell.Y];
-            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
+            if (adjCell != null && m_context.GetActorsOnCell(adjCell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X, cell.Y + 1];
-            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
+            if (adjCell != null && m_context.GetActorsOnCell(adjCell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X - 1, cell.Y];
-            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
+            if (adjCell != null && m_context.GetActorsOnCell(adjCell).Length > 0)
                 cost += 0.3;
 
             adjCell = m_map.Cells[cell.X, cell.Y - 1];
-            if (adjCell != null && m_mapDataProvider.GetContextActors(adjCell).Length > 0)
+            if (adjCell != null && m_context.GetActorsOnCell(adjCell).Length > 0)
                 cost += 0.3;
 
-            if (m_mapDataProvider.IsCellMarked(cell))
-                cost += 0.2;
+            // todo
+            /*if (m_context.IsCellMarked(cell))
+                cost += 0.2;*/
 
             return cost;
         }

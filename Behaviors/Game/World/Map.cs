@@ -21,6 +21,7 @@ using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Interactives;
+using BiM.Behaviors.Game.World.Areas;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Collections;
 using BiM.Core.Config;
@@ -32,7 +33,7 @@ using NLog;
 
 namespace BiM.Behaviors.Game.World
 {
-    public partial class Map : IContext, IMapDataProvider, IMap
+    public partial class Map : MapContext<RolePlayActor>, IMap
     {
         public const int ElevationTolerance = 11;
         public const uint Width = 14;
@@ -44,13 +45,9 @@ namespace BiM.Behaviors.Game.World
         [Configurable("MapDecryptionKey", "The decryption key used by default")]
         public static string GenericDecryptionKey = "649ae451ca33ec53bbcbcc33becf15f4";
 
-        private readonly ObservableCollectionMT<RolePlayActor> m_actors;
-
-        private readonly List<Tuple<uint, Cell>> m_elements = new List<Tuple<uint, Cell>>();
-
-        private readonly ObservableCollectionMT<InteractiveObject> m_interactives;
         private readonly DlmMap m_map;
-        private readonly ReadOnlyObservableCollectionMT<RolePlayActor> m_readOnlyActors;
+        private readonly List<Tuple<uint, Cell>> m_elements = new List<Tuple<uint, Cell>>();
+        private readonly ObservableCollectionMT<InteractiveObject> m_interactives;
         private readonly ReadOnlyObservableCollectionMT<InteractiveObject> m_readOnlyInteractives;
 
         // not used
@@ -80,12 +77,9 @@ namespace BiM.Behaviors.Game.World
             // decryption key not used ? oO
             m_map = DataProvider.Instance.Get<DlmMap>(id, GenericDecryptionKey);
             IEnumerable<Cell> cells = m_map.Cells.Select(entry => new Cell(this, entry));
-            Cells = new CellList(cells.ToArray());
+            m_cells = new CellList(cells.ToArray());
 
             InitializeElements();
-
-            m_actors = new ObservableCollectionMT<RolePlayActor>();
-            m_readOnlyActors = new ReadOnlyObservableCollectionMT<RolePlayActor>(m_actors);
 
             m_interactives = new ObservableCollectionMT<InteractiveObject>();
             m_readOnlyInteractives = new ReadOnlyObservableCollectionMT<InteractiveObject>(m_interactives);
@@ -105,19 +99,6 @@ namespace BiM.Behaviors.Game.World
             }
         }
 
-        IEnumerable<ContextActor> IContext.Actors
-        {
-            get
-            {
-                return m_readOnlyActors;
-            }
-        }
-
-        public ReadOnlyObservableCollectionMT<RolePlayActor> Actors
-        {
-            get { return m_readOnlyActors; }
-        }
-
         public ReadOnlyObservableCollectionMT<InteractiveObject> Interactives
         {
             get { return m_readOnlyInteractives; }
@@ -135,98 +116,20 @@ namespace BiM.Behaviors.Game.World
             private set;
         }
 
-        IEnumerable<ICell> IMap.Cells
+        private CellList m_cells;
+
+        public override CellList Cells
         {
-            get { return Cells.AsEnumerable<ICell>(); }
+            get { return m_cells; }
         }
 
-        public CellList Cells
-        {
-            get;
-            private set;
-        }
-
-        #region IContext Members
-
-        public ContextActor GetContextActor(int id)
-        {
-            return GetActor(id);
-        }
-
-        public ContextActor[] GetContextActors(Cell cell)
-        {
-            return Actors.Where(entry => entry.Cell == cell).Select(entry => (ContextActor) entry).ToArray();
-        }
-
-        /// <summary>
-        /// Returns null if not found
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ContextActor RemoveContextActor(int id)
-        {
-            RolePlayActor actor = GetActor(id);
-
-            if (actor == null)
-                return null;
-
-            if (m_actors.Remove(actor))
-                return actor;
-
-            return null;
-        }
-
-        public void Tick(int dt)
+        public override void Tick(int dt)
         {
             foreach (RolePlayActor actor in Actors)
             {
                 actor.Tick(dt);
             }
         }
-
-        #endregion
-
-        #region IMapDataProvider Members
-
-        public bool IsActor(Cell cell)
-        {
-            return Actors.Any(entry => entry.Cell == cell);
-        }
-
-        public bool IsCellMarked(Cell cell)
-        {
-            // todo
-            return false;
-        }
-
-        public object[] GetMarks(Cell cell)
-        {
-            return new object[0];
-        }
-
-        public bool IsCellWalkable(Cell cell, bool throughEntities = false, Cell previousCell = null)
-        {
-            if (!cell.Walkable)
-                return false;
-
-            if (cell.NonWalkableDuringRP)
-                return false;
-
-            // compare the floors
-            if (UsingNewMovementSystem && previousCell != null)
-            {
-                int floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
-
-                if (cell.MoveZone != previousCell.MoveZone || cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff > ElevationTolerance)
-                    return false;
-            }
-
-            // todo : LoS
-
-            return true;
-        }
-
-        #endregion
 
         public bool CanStopOnCell(Cell cell)
         {
@@ -242,7 +145,8 @@ namespace BiM.Behaviors.Game.World
                           {AlignmentSide = (AlignmentSideEnum) message.subareaAlignmentSide};
 
             Bot bot = BotManager.Instance.GetCurrentBot();
-            m_actors.Clear();
+            ClearActors();
+
             foreach (GameRolePlayActorInformations actor in message.actors)
             {
                 if (actor.contextualId == bot.Character.Id)
@@ -323,18 +227,6 @@ namespace BiM.Behaviors.Game.World
 
         #region World Objects Management
 
-        public RolePlayActor GetActor(int id)
-        {
-            RolePlayActor[] actors = m_actors.Where(entry => entry.Id == id).ToArray();
-
-            if (actors.Length > 1)
-            {
-                logger.Error("{0} actors found with the same id {1} !", actors.Length, id);
-            }
-
-            return actors.FirstOrDefault();
-        }
-
         public InteractiveObject GetInteractive(int id)
         {
             InteractiveObject[] interactives = m_interactives.Where(entry => entry.Id == id).ToArray();
@@ -356,19 +248,9 @@ namespace BiM.Behaviors.Game.World
                 interactive.DefinePosition(element.Item2);
         }
 
-        public void AddActor(RolePlayActor actor)
-        {
-            m_actors.Add(actor);
-        }
-
         public void AddActor(GameRolePlayActorInformations actor)
         {
-            m_actors.Add(CreateRolePlayActor(actor));
-        }
-
-        public bool RemoveActor(RolePlayActor actor)
-        {
-            return m_actors.Remove(actor);
+            AddActor(CreateRolePlayActor(actor));
         }
 
         public RolePlayActor CreateRolePlayActor(GameRolePlayActorInformations actor)
@@ -517,7 +399,7 @@ namespace BiM.Behaviors.Game.World
             get { return m_map.Layers; }
         }
 
-        public bool UsingNewMovementSystem
+        public override bool UsingNewMovementSystem
         {
             get { return m_map.UsingNewMovementSystem; }
         }

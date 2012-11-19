@@ -55,6 +55,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             get { return Character.Look; }
             protected set { }
         }
+
         public override IMinimalStats Stats
         {
             get
@@ -93,43 +94,75 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             protected set { }
         }
 
+
+        public override bool Summoned
+        {
+            get { return false; }
+            protected set { }
+        }
+
+        public override Fighter Summoner
+        {
+            get { return null; }
+            protected set { }
+        }
+
+        /// <summary>
+        /// Define the fighter team. Throws Exception if already defined.
+        /// </summary>
+        /// <param name="team">Fighter team</param>
         public void SetTeam(FightTeam team)
         {
             if (Team != null)
                 throw new Exception("Team already defined !");
 
             Team = team;
-            Team.AddFighter(this);
         }
 
-        public void ChangePrePlacement(Cell cell)
+        /// <summary>
+        /// Try to change the cell during the placement phase
+        /// </summary>
+        /// <param name="cell">Targeted cell</param>
+        /// <returns>Returns false if cannot change the placement cell</returns>
+        public bool ChangePrePlacement(Cell cell)
         {
             if (Fight.Phase != FightPhase.Placement)
             {
                 logger.Warn("Call ChangePrePlacement({0}) but the fight is not in placement phase", cell);
-                return;
+                return false;
             }
 
             if (Array.IndexOf(Team.PlacementCells, cell) == -1)
             {
                 logger.Error("Placement {0} isn't valid", cell);
-                return;
+                return false;
             }
 
             Character.Bot.SendToServer(new GameFightPlacementPositionRequestMessage(cell.Id));
+            return true;
         }
-
+        
+        /// <summary>
+        /// Check if the player can cast a spell to the targeted fighter
+        /// </summary>
+        /// <param name="spell">Casted spell</param>
+        /// <param name="fighter">Targeted fighter</param>
+        /// <returns>False if cannot cast the spell</returns>
         public bool CanCastSpell(Spells.Spell spell, Fighter fighter)
         {
             return CanCastSpell(spell, fighter.Cell);
         }
-
+        
+        /// <summary>
+        /// Check if the player can cast a spell to the targeted cell
+        /// </summary>
+        /// <param name="spell">Casted spell</param>
+        /// <param name="cell">Targeted cell</param>
+        /// <returns>False if cannot cast the spell</returns>
         public bool CanCastSpell(Spells.Spell spell, Cell cell)
         {
             // todo spells modifications
             // todo states
-
-            // todo LoS
 
             if (!IsPlaying())
                 return false;
@@ -140,9 +173,19 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             if (!IsInSpellRange(cell, spell.LevelTemplate))
                 return false;
 
+            // test the LoS
+            if (!Fight.CanBeSeen(Cell, cell, false))
+                return false;
+
             return true;
         }
 
+        /// <summary>
+        /// Try to cast a spell to a targeted cell
+        /// </summary>
+        /// <param name="spell">Spell to cast</param>
+        /// <param name="cell">Targeted cell</param>
+        /// <returns>False if cannot cast the spell</returns>
         public bool CastSpell(Spells.Spell spell, Cell cell)
         {
             if (!CanCastSpell(spell, cell))
@@ -153,29 +196,48 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             return true;
         }
 
-        public void Move(Cell cell)
+        /// <summary>
+        /// Try to move to the targeted Cell (truncate the path if the player hasn't enough MP)
+        /// </summary>
+        /// <param name="cell">Targeted cell</param>
+        public bool Move(Cell cell)
         {
-            Move(cell, Stats.CurrentMP);
+            return Move(cell, Stats.CurrentMP);
         }
 
-        public void Move(Cell cell, int mp)
+        /// <summary>
+        /// Try to move to the targeted Cell (truncate the path if the player hasn't enough MP)
+        /// </summary>
+        /// <param name="cell">Targeted cell</param>
+        /// <param name="mp">MP to use</param>
+        /// <returns>False if cannot move</returns>
+        public bool Move(Cell cell, int mp)
         {
             if(!IsPlaying())
-                return;
+                return false;
 
             var pathfinding = new Pathfinder(Map, Fight, false);
             var path = pathfinding.FindPath(Cell, cell, false, Stats.CurrentMP > mp ? Stats.CurrentMP : mp);
 
             if (NotifyStartMoving(path))
                 Character.Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
+
+            return true;
         }
 
-        public void PassTurn()
+        /// <summary>
+        /// Pass the turn
+        /// </summary>
+        /// <returns>False if cannot pass the turn</returns>
+        public bool PassTurn()
         {
             if (IsPlaying())
             {
                 Character.Bot.SendToServer(new GameFightTurnFinishMessage());
+                return true;
             }
+
+            return false;
         }
     }
 }

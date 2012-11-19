@@ -64,7 +64,7 @@ namespace BiM.Behaviors.Game.Chat
             Admin = true;
         }
 
-        public ContextActor TryGetSender(IContext context)
+        public ContextActor TryGetSender(IMapContext context)
         {
             return context.Actors.FirstOrDefault(entry => ( entry is INamed && ( entry as INamed ).Name == SenderName ) || entry.Id == SenderId);
         }

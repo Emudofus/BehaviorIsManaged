@@ -13,10 +13,137 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-namespace BiM.Protocol.Tools.Dlm
+
+using System.Drawing;
+using BiM.Protocol.Tools.Dlm;
+
+namespace BiM.Behaviors.Game.World
 {
     public interface IMap
     {
-         
+        CellList Cells
+        {
+            get;
+        }
+
+        int Id
+        {
+            get;
+        }
+
+        byte Version
+        {
+            get;
+        }
+
+        bool Encrypted
+        {
+            get;
+        }
+
+        byte EncryptionVersion
+        {
+            get;
+        }
+
+        uint RelativeId
+        {
+            get;
+        }
+
+        byte MapType
+        {
+            get;
+        }
+
+        int SubAreaId
+        {
+            get;
+        }
+
+        int BottomNeighbourId
+        {
+            get;
+        }
+
+        int LeftNeighbourId
+        {
+            get;
+        }
+
+        int RightNeighbourId
+        {
+            get;
+        }
+
+        int ShadowBonusOnEntities
+        {
+            get;
+        }
+
+        Color BackgroundColor
+        {
+            get;
+        }
+
+        ushort ZoomScale
+        {
+            get;
+        }
+
+        short ZoomOffsetX
+        {
+            get;
+        }
+
+        short ZoomOffsetY
+        {
+            get;
+        }
+
+        bool UseLowPassFilter
+        {
+            get;
+        }
+
+        bool UseReverb
+        {
+            get;
+        }
+
+        int PresetId
+        {
+            get;
+        }
+
+        DlmFixture[] BackgroudFixtures
+        {
+            get;
+        }
+
+        int TopNeighbourId
+        {
+            get;
+        }
+
+        DlmFixture[] ForegroundFixtures
+        {
+            get;
+        }
+
+        int GroundCRC
+        {
+            get;
+        }
+
+        DlmLayer[] Layers
+        {
+            get;
+        }
+
+        bool UsingNewMovementSystem
+        {
+            get;
+        }
     }
 }

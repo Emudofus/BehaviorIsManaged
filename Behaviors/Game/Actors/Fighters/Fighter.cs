@@ -14,10 +14,13 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using BiM.Behaviors.Game.Actors.Interfaces;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Stats;
 using BiM.Behaviors.Game.World;
+using BiM.Core.Collections;
 using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
@@ -26,12 +29,19 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public abstract class Fighter : ContextActor, INamed
     {
+        private ObservableCollectionMT<Fighter> m_summons = new ObservableCollectionMT<Fighter>();
+        private ReadOnlyObservableCollectionMT<Fighter> m_readOnlySummons; 
+
         protected Fighter()
         {
             CastsHistory = new SpellCastHistory(this);
+            m_readOnlySummons = new ReadOnlyObservableCollectionMT<Fighter>(m_summons);
         }
 
         public delegate void TurnHandler(Fighter fighter);
+
+
+
         public event TurnHandler TurnStarted;
 
         internal void NotifyTurnStarted()
@@ -130,12 +140,29 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             }
         }
 
-        public override IContext Context
+        public override IMapContext Context
         {
             get { return Fight; }
             protected set
             {
             }
+        }
+
+        public virtual bool Summoned
+        {
+            get;
+            protected set;
+        }
+
+        public virtual Fighter Summoner
+        {
+            get;
+            protected set;
+        }
+
+        public ReadOnlyObservableCollectionMT<Fighter> Summons
+        {
+            get { return m_readOnlySummons; }
         }
 
         /// <summary>
@@ -181,7 +208,20 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             return Cell.X == cell.X || Cell.Y == cell.Y;
         }
 
-        
+        public bool AddSummon(Fighter fighter)
+        {
+            if (!fighter.Summoned || fighter.Summoner != this)
+                return false;
+
+            m_summons.Add(fighter);
+            return true;
+        }
+
+        public bool RemoveSummon(Fighter fighter)
+        {
+            return m_summons.Remove(fighter);
+        }
+
         public FightTeam GetOpposedTeam()
         {
             return Fight.GetTeam(Team.Id == FightTeamColor.Blue ? FightTeamColor.Red : FightTeamColor.Blue);

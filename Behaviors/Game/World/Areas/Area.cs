@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// SubArea.cs
+// Area.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,31 +13,31 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System.Collections.Generic;
+
+using System;
 using BiM.Behaviors.Data;
 using BiM.Protocol.Data;
-using BiM.Protocol.Enums;
 
-namespace BiM.Behaviors.Game.World
+namespace BiM.Behaviors.Game.World.Areas
 {
-    public class SubArea
+    public class Area
     {
-        private readonly Protocol.Data.SubArea m_subArea;
+        private readonly Protocol.Data.Area m_area;
 
-        public SubArea(int id)
+        public Area(int id)
         {
-            m_subArea = DataProvider.Instance.Get<Protocol.Data.SubArea>(id);
-            Area = new Area(AreaId);
+            m_area = DataProvider.Instance.Get<Protocol.Data.Area>(id);
+            SuperArea = new SuperArea(SuperAreaId);
         }
 
         public int Id
         {
-            get { return m_subArea.id; }
+            get { return m_area.id; }
         }
 
         public uint NameId
         {
-            get { return m_subArea.nameId; }
+            get { return m_area.nameId; }
         }
 
         public string Name
@@ -45,51 +45,30 @@ namespace BiM.Behaviors.Game.World
             get { return DataProvider.Instance.Get<string>(NameId); }
         }
 
-        public int AreaId
-        {
-            get { return m_subArea.areaId; }
-        }
-
-        public Area Area
+        public SuperArea SuperArea
         {
             get;
             private set;
         }
 
-        public AlignmentSideEnum AlignmentSide
+        public int SuperAreaId
         {
-            get;
-            set;
+            get { return m_area.superAreaId; }
         }
 
-        public List<AmbientSound> AmbientSounds
+        public bool ContainHouses
         {
-            get { return m_subArea.ambientSounds; }
+            get { return m_area.containHouses; }
         }
 
-        public List<uint> MapIds
+        public Boolean ContainPaddocks
         {
-            get { return m_subArea.mapIds; }
+            get { return m_area.containPaddocks; }
         }
 
         public Rectangle Bounds
         {
-            get { return m_subArea.bounds; }
-        }
-
-        public List<int> Shape
-        {
-            get { return m_subArea.shape; }
-        }
-
-        public List<uint> CustomWorldMap
-        {
-            get { return m_subArea.customWorldMap; }
-        }
-
-        public int PackId
-        {
-            get { return m_subArea.packId; }
+            get { return m_area.bounds; }
         }
     }
 }

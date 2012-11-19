@@ -17,6 +17,10 @@ namespace BiM.Behaviors.Game.World.Light
 {
     public class LightMap
     {
-         
+        public CellList Cells
+        {
+            get;
+            set;
+        }
     }
 }

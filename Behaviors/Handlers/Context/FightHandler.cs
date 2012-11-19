@@ -60,7 +60,7 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameFightShowFighterMessage))]
         public void HandleGameFightShowFighterMessage(Bot bot, GameFightShowFighterMessage message)
         {
-            bot.Character.Fight.AddFighter(message.informations);
+            bot.Character.Fight.AddActor(message.informations);
         }
 
         [MessageHandler(typeof(GameFightRefreshFighterMessage))]
@@ -92,7 +92,7 @@ namespace BiM.Behaviors.Handlers.Context
         public void HandleGameFightRemoveTeamMemberMessage(Bot bot, GameFightRemoveTeamMemberMessage message)
         {
             if (bot.Character.Fight.Id == message.fightId)
-                bot.Character.Fight.GetTeam(message.teamId).RemoveFighter(message.charId);
+                bot.Character.Fight.RemoveActor(message.charId);
         }
 
         [MessageHandler(typeof(GameFightHumanReadyStateMessage))]
@@ -182,6 +182,12 @@ namespace BiM.Behaviors.Handlers.Context
         public void HandleGameActionFightTriggerGlyphTrapMessage(Bot bot, GameActionFightTriggerGlyphTrapMessage message)
         {
 
+        }
+
+        [MessageHandler(typeof (GameActionFightSummonMessage))]
+        public void HandleGameActionFightSummonMessage(Bot bot, GameActionFightSummonMessage message)
+        {
+            bot.Character.Fight.AddActor(message.summon);
         }
     }
 }

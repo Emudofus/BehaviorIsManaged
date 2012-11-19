@@ -24,7 +24,7 @@ using BiM.Protocol.Tools.Dlm;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class Cell : ICell
+    public class Cell
     {
         public const int StructSize = 2 + 2 + 1 + 1 + 1 + 1;
 
@@ -370,28 +370,78 @@ namespace BiM.Behaviors.Game.World
             return GetCellInDirection(direction, 1);
         }
 
-        public IEnumerable<Cell> GetAdjacentCells()
+        public IEnumerable<Cell> GetAdjacentCells(bool diagonals = false)
         {
             return GetAdjacentCells(IsInMap);
         }
 
-        public IEnumerable<Cell> GetAdjacentCells(Func<Cell, bool> predicate)
+        public IEnumerable<Cell> GetAdjacentCells(Func<Cell, bool> predicate, bool diagonal = false)
         {
-            Cell southEast = Map.Cells[Point.X + 1, Point.Y];
-            if (southEast != null && predicate(southEast))
-                yield return southEast;
-
-            Cell southWest = Map.Cells[Point.X, Point.Y - 1];
-            if (southWest != null && predicate(southWest))
-                yield return southWest;
-
             Cell northEast = Map.Cells[Point.X, Point.Y + 1];
-            if (IsInMap(northEast.X, northEast.Y) && predicate(northEast))
+            if (northEast != null && IsInMap(northEast.X, northEast.Y) && predicate(northEast))
                 yield return northEast;
 
             Cell northWest = Map.Cells[Point.X - 1, Point.Y];
-            if (IsInMap(northWest.X, northWest.Y) && predicate(northWest))
+            if (northWest != null && IsInMap(northWest.X, northWest.Y) && predicate(northWest))
                 yield return northWest;
+
+            Cell southEast = Map.Cells[Point.X + 1, Point.Y];
+            if (southEast != null && IsInMap(southEast.X, southEast.Y) && predicate(southEast))
+                yield return southEast;
+
+            Cell southWest = Map.Cells[Point.X, Point.Y - 1];
+            if (southWest != null && IsInMap(southWest.X, southWest.Y) && predicate(southWest))
+                yield return southWest;
+
+            if (diagonal)
+            {
+                Cell north = Map.Cells[Point.X - 1, Point.Y + 1];
+                if (north != null && IsInMap(north.X, north.Y) && predicate(north))
+                    yield return north;
+
+                Cell east = Map.Cells[Point.X + 1, Point.Y + 1];
+                if (east != null && IsInMap(east.X, east.Y) && predicate(east))
+                    yield return east;
+
+                Cell south = Map.Cells[Point.X + 1, Point.Y - 1];
+                if (south != null && IsInMap(south.X, south.Y) && predicate(south))
+                    yield return south;
+
+                Cell west = Map.Cells[Point.X - 1, Point.Y - 1];
+                if (west != null && IsInMap(west.X, west.Y) && predicate(west))
+                    yield return west;
+            }
+        }
+
+        public Cell[] GetCellsBetween(Cell cell, bool includeVertex = true)
+        {
+            int dx = cell.X - X;
+            int dy = Y - cell.Y;
+
+            double distance = Math.Sqrt(dx*dx + dy*dy);
+            double angleInRadians = Math.Acos(dx/distance);
+            var roundedDistance = (int)distance;
+
+            var result = new Cell[roundedDistance + (includeVertex ? 1 : 0)];
+            int i = 0;
+            if (includeVertex)
+            {
+                i++;
+                result[0] = this;
+            }
+
+            for (; i < roundedDistance; i++)
+            {
+                var x = (int) (distance * Math.Cos(angleInRadians));
+                var y = (int)( distance * Math.Sin(angleInRadians) );
+
+                result[i] = Map.Cells[x, y];
+            }
+
+            if (includeVertex)
+                result[i] = cell;
+
+            return result;
         }
 
         public bool IsChangeZone(Cell cell)

@@ -42,6 +42,16 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
             Stats = new MinimalStats(msg.stats);
             Level = (int) MonsterGrade.level;
+
+            Summoned = msg.stats.summoned;
+
+            if (Summoned)
+            {
+                Summoner = Fight.GetActor(msg.stats.summoner);
+
+                if (Summoner == null)
+                    logger.Error("Summoner {0} of monster {1} not found", msg.stats.summoner, this);
+            }
         }
 
         public override int Id
