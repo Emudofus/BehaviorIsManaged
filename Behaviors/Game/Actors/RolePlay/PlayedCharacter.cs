@@ -612,5 +612,18 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             Fight.Update(msg);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="TargetId"></param>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        public IEnumerable<Spells.Spell> GetAvailableSpells(int? TargetId, Spells.Spell.SpellCategory category)
+        {
+            foreach (Spells.Spell spell in SpellsBook.GetAvailableSpells(TargetId, category))
+                if (spell.LevelTemplate.apCost <= Stats.CurrentAP)
+                    yield return spell;
+        }
     }
 }

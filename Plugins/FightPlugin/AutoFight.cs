@@ -93,7 +93,9 @@ namespace FightPlugin
         {
             if (!m_sit)
             {
-                Bot.Character.Say("/sit");
+                Bot.SendToServer(new EmotePlayRequestMessage(1));
+                //Bot.Character.Say("/sit");
+
                 m_sit = true;
 
                 Bot.Character.StartMoving += StandUp;
@@ -113,7 +115,7 @@ namespace FightPlugin
             {
                 if (!m_sit)
                 {
-                    Bot.Character.SendMessage("Character health too low");
+                    Bot.Character.SendMessage(String.Format("Character health too low : {0}/{1}", Bot.Character.Stats.Health, Bot.Character.Stats.MaxHealth));
 
                     Bot.CallDelayed(500, Sit);
                 }
@@ -127,7 +129,7 @@ namespace FightPlugin
 
             if (monster != null)
             {
-                Debug.WriteLine(String.Format("Trying to start a fight with group lv {0}, cell {1}, leader {2} lv {3}", monster.Level,  monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
+                Bot.Character.SendMessage(String.Format("Trying to start a fight with group lv {0}, cell {1}, leader {2} lv {3}", monster.Level, monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
                 Bot.Character.TryStartFightWith(monster);
             }
         }
@@ -177,21 +179,20 @@ namespace FightPlugin
                 var shortcut = shortcutgen;
                 if (shortcut == null)
                 {
-                    logger.Debug("[ShortCut {0}] No SpellShortcut at this slot.", noSlot);
-                    m_character.Character.SendMessage("No spell on slot 1");
+                    m_character.Character.SendMessage(String.Format("[ShortCut {0}] No SpellShortcut at this slot.", noSlot));
                     continue;
                 }
 
                 var spell = shortcut.GetSpell();
                 if (spell == null)
                 {
-                    logger.Debug("[ShortCut {0}] Spell Id {1} can't be found in SpellsBook with {2} entries : {3}.", noSlot, shortcut.SpellId, m_character.Character.SpellsBook.Spells.Count, String.Join(",",m_character.Character.SpellsBook.Spells));
+                    m_character.Character.SendMessage(String.Format("[ShortCut {0}] Spell Id {1} can't be found in SpellsBook with {2} entries : {3}.", noSlot, shortcut.SpellId, m_character.Character.SpellsBook.Spells.Count, String.Join(",",m_character.Character.SpellsBook.Spells)));
                     continue;
                 }
                 noSlot++;
-                bool available = spell.IsAvailable(nearestMonster.Id);
+                bool available = m_character.CanCastSpell(spell, nearestMonster);
                 bool inRange = m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
-                logger.Debug("[ShortCut {7}] Spell {0} to be cast by {1} ({2}) on {3} ({4}) : available {5}, InRange {6}", spell, m_character.Name, m_character.Cell, nearestMonster, nearestMonster.Cell, available, inRange, noSlot);
+                //logger.Debug("[ShortCut {7}] Spell {0} to be cast by {1} ({2}) on {3} ({4}) : available {5}, InRange {6}", spell, m_character.Name, m_character.Cell, nearestMonster, nearestMonster.Cell, available, inRange, noSlot);
                 if (available)
                 {
                     if (inRange)

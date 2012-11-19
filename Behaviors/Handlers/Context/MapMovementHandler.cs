@@ -25,6 +25,7 @@ using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using NLog;
+using BiM.Behaviors.Game.Actors.Fighters;
 
 namespace BiM.Behaviors.Handlers.Context
 {
@@ -77,7 +78,7 @@ namespace BiM.Behaviors.Handlers.Context
 
             if (actor == null)
             {
-                logger.Error("Actor {0} not found", message.actorId); // only a log for the moment until context are fully handled
+                logger.Error("Actor {0} not found (known : {1})", message.actorId, String.Join(",", bot.Character.Context.Actors)); // only a log for the moment until context are fully handled
                 return;
             }
 
@@ -100,6 +101,8 @@ namespace BiM.Behaviors.Handlers.Context
                 movement.Start(DateTime.Now + TimeSpan.FromMilliseconds(EstimatedMovementLag));
 
                 actor.NotifyStartMoving(movement);
+                
+                
             }
         }
     }

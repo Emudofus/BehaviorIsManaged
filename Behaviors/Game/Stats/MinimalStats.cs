@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
+using NLog;
 
 namespace BiM.Behaviors.Game.Stats
 {
@@ -26,6 +27,8 @@ namespace BiM.Behaviors.Game.Stats
     /// </summary>
     public class MinimalStats : IMinimalStats, INotifyPropertyChanged
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public MinimalStats(GameFightMinimalStats stats)
         {
             Update(stats);
@@ -181,6 +184,16 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
+        void IMinimalStats.UpdateHP(int delta)
+        {
+            Health += delta;
+        }
+
+        void IMinimalStats.UpdateAP(int delta)
+        {
+            CurrentAP += delta;
+        }
+
         public void Update(GameFightMinimalStats stats)
         {
             if (stats == null) throw new ArgumentNullException("stats");
@@ -205,7 +218,8 @@ namespace BiM.Behaviors.Game.Stats
             EarthElementReduction = stats.earthElementReduction;
             WaterElementReduction = stats.waterElementReduction;
             AirElementReduction = stats.airElementReduction;
-            FireElementReduction = stats.fireElementReduction;
+            FireElementReduction = stats.fireElementReduction;            
+            logger.Debug("{0}/{1} AP, {2}/{3} MP, {4}/{5} HP", CurrentAP, MaxAP, CurrentMP, MaxMP, Health, MaxHealth);
 
             InvisibilityState = (GameActionFightInvisibilityStateEnum) stats.invisibilityState;
         }
@@ -217,7 +231,7 @@ namespace BiM.Behaviors.Game.Stats
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void FirePropertyChanged(string propertyName)
+        protected void OnPropertyChanged(string propertyName)
         {
           if (PropertyChanged != null)
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
