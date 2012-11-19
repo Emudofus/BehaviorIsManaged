@@ -13,28 +13,22 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System.Drawing;
+using System;
 using System.Linq;
-using System.Timers;
 using BiM.Behaviors;
 using BiM.Behaviors.Frames;
+using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Fights;
+using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.Spells.Shapes;
 using BiM.Behaviors.Game.World;
-using BiM.Behaviors.Game.World.Pathfinding;
-using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Core.Threading;
 using BiM.Protocol.Messages;
-using System;
-using BiM.Behaviors.Game.Movements;
-using BiM.Behaviors.Game.Actors;
 using NLog;
-using BiM.Behaviors.Game.Shortcuts;
-using System.Diagnostics;
 
 namespace FightPlugin
 {
@@ -43,27 +37,27 @@ namespace FightPlugin
         [MessageHandler(typeof(ChatClientMultiMessage))]
         public static void HandleChatMessage(Bot bot, ChatClientMultiMessage message)
         {
-            if (message.content == ".fight on")
+            if (message.content == ".FF on")
             {
                 message.BlockNetworkSend();// do not send this message to the server
 
-                bot.AddFrame(new AutoFight(bot));
-                bot.Character.SendMessage("Auto fight started");
+                bot.AddFrame(new FFight(bot));
+                bot.Character.SendMessage("Experimental AI fight started");
             }
-            else if (message.content == ".fight off")
+            else if (message.content == ".FF off")
             {
                 message.BlockNetworkSend();// do not send this message to the server
 
 
-                bot.RemoveFrame<AutoFight>();
-                bot.Character.SendMessage("Auto fight stopped");
+                bot.RemoveFrame<FFight>();
+                bot.Character.SendMessage("Experimental AI fight stopped");
 
             }
         }
     }
 
 
-    internal class AutoFight : Frame<AutoFight>
+    internal class FFight : Frame<FFight>
     {
         private PlayedFighter m_character;
         private SimplerTimer m_checkTimer;
@@ -71,8 +65,8 @@ namespace FightPlugin
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private ContextActor.MoveStopHandler m_stopMovingDelegate;
 
-        public AutoFight(Bot bot)
-            : base (bot)
+        public FFight(Bot bot)
+            : base(bot)
         {
             bot.Character.FightJoined += OnFightJoined;
             bot.Character.FightLeft += OnFightLeft;
@@ -168,31 +162,16 @@ namespace FightPlugin
             StartAI();
         }
 
+
         private void StartAI()
         {
             var nearestMonster = GetNearestEnemy();
             int maxDistanceWished = 1;
             bool inLine = false;
-            int noSlot = 0;
-            foreach (var shortcutgen in m_character.Character.SpellShortcuts.Shortcuts)
+            foreach (Spell spell in m_character.GetOrderListOfSimpleAttackSpells(nearestMonster))
             {
-                var shortcut = shortcutgen;
-                if (shortcut == null)
-                {
-                    m_character.Character.SendMessage(String.Format("[ShortCut {0}] No SpellShortcut at this slot.", noSlot));
-                    continue;
-                }
-
-                var spell = shortcut.GetSpell();
-                if (spell == null)
-                {
-                    m_character.Character.SendMessage(String.Format("[ShortCut {0}] Spell Id {1} can't be found in SpellsBook with {2} entries : {3}.", noSlot, shortcut.SpellId, m_character.Character.SpellsBook.Spells.Count, String.Join(",",m_character.Character.SpellsBook.Spells)));
-                    continue;
-                }
-                noSlot++;
                 bool available = m_character.CanCastSpell(spell, nearestMonster);
                 bool inRange = m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
-                //logger.Debug("[ShortCut {7}] Spell {0} to be cast by {1} ({2}) on {3} ({4}) : available {5}, InRange {6}", spell, m_character.Name, m_character.Cell, nearestMonster, nearestMonster.Cell, available, inRange, noSlot);
                 if (available)
                 {
                     if (inRange)
@@ -223,8 +202,7 @@ namespace FightPlugin
             }
 
             m_stopMovingDelegate = (sender, behavior, canceled) => StartAI();
-            Bot.Character.Fighter.StopMoving += m_stopMovingDelegate;            
-
+            Bot.Character.Fighter.StopMoving += m_stopMovingDelegate;
         }
 
         private void OnStopMoving(Spell spell, Fighter enemy)
@@ -273,7 +251,7 @@ namespace FightPlugin
         {
             var enemies = m_character.GetOpposedTeam().Fighters;
 
-            var shape = new Lozenge(0, (byte) m_character.Stats.CurrentMP);
+            var shape = new Lozenge(0, (byte)m_character.Stats.CurrentMP);
             var possibleCells = shape.GetCells(m_character.Cell, m_character.Map);
             var orderedCells = from cell in possibleCells
                                where m_character.Fight.IsCellWalkable(cell, false, m_character.Cell)
@@ -301,7 +279,7 @@ namespace FightPlugin
                 if (nearestFighter == null)
                     nearestFighter = enemy;
 
-                else if (m_character.Cell.ManhattanDistanceTo(enemy.Cell) < 
+                else if (m_character.Cell.ManhattanDistanceTo(enemy.Cell) <
                     nearestFighter.Cell.ManhattanDistanceTo(m_character.Cell))
                 {
                     nearestFighter = enemy;

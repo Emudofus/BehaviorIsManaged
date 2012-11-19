@@ -99,7 +99,11 @@ namespace AvalonDock.Controls
         public event EventHandler<FocusChangeEventArgs> FocusChanged;
 
         public event EventHandler<WindowActivateEventArgs> Activate;
-
+        protected void OnActivate(IntPtr wndHandle)
+        {
+            if (Activate != null)
+                Activate(this, new WindowActivateEventArgs(wndHandle));
+        }
         ReentrantFlag _insideActivateEvent = new ReentrantFlag();
     }
 }

@@ -15,7 +15,6 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Alignement;
 using BiM.Behaviors.Game.Fights;
@@ -29,7 +28,7 @@ using Breed = BiM.Behaviors.Game.Breeds.Breed;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
-    public class PlayedFighter : CharacterFighter
+    public partial class PlayedFighter : CharacterFighter
     {
         public PlayedFighter(PlayedCharacter character, Fight fight)
             : base(fight)
@@ -143,7 +142,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Character.Bot.SendToServer(new GameFightPlacementPositionRequestMessage(cell.Id));
             return true;
         }
-        
+
         /// <summary>
         /// Check if the player can cast a spell to the targeted fighter
         /// </summary>
@@ -154,7 +153,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             return CanCastSpell(spell, fighter.Cell);
         }
-        
+
         /// <summary>
         /// Check if the player can cast a spell to the targeted cell
         /// </summary>
@@ -193,18 +192,9 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             if (!CanCastSpell(spell, cell))
                 return false;
 
-            Character.Bot.SendToServer(new GameActionFightCastRequestMessage((short) spell.Template.id, cell.Id));
+            Character.Bot.SendToServer(new GameActionFightCastRequestMessage((short)spell.Template.id, cell.Id));
 
             return true;
-        }
-
-        public IEnumerable<Spells.Spell> GetOrderListOfSimpleAttackSpells(Fighter target)
-        {
-            foreach (Spells.Spell spell in Character.SpellsBook.GetOrderedAttackSpells(Character, target, null))
-            {
-                if (CanCastSpell(spell, target) && !spell.LevelTemplate.needFreeCell && !spell.LevelTemplate.needFreeCell)
-                    yield return spell;
-            }
         }
 
         /// <summary>
@@ -224,7 +214,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// <returns>False if cannot move</returns>
         public bool Move(Cell cell, int mp)
         {
-            if(!IsPlaying())
+            if (!IsPlaying())
                 return false;
 
             var pathfinding = new Pathfinder(Map, Fight, false);
@@ -250,5 +240,6 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
             return false;
         }
+
     }
 }

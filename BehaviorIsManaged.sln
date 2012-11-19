@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFToolkit.Extended", "Libr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnifferPlugin", "Plugins\SnifferPlugin\SnifferPlugin.csproj", "{FE247DB3-2059-46AF-8C09-2D25CBDBB518}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFFightPlugin", "FFFightPlugin\FFFightPlugin.csproj", "{0E425E15-3E38-4B7C-94CC-CC03A4BD77F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFFightPlugin", "Plugins\FFFightPlugin\FFFightPlugin.csproj", "{0E425E15-3E38-4B7C-94CC-CC03A4BD77F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
