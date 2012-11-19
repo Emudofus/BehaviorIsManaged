@@ -370,7 +370,6 @@ namespace BiM.Behaviors.Game.Stats
             get { return this[PvP ? PlayerField.PvpFireElementReduction : PlayerField.FireElementReduction].Total; }
         }
 
-
         public int CurrentAP
         {
             get;
@@ -422,6 +421,16 @@ namespace BiM.Behaviors.Game.Stats
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
+        void IMinimalStats.UpdateHP(int delta)
+        {
+            Health += delta;
+        }
+
+        void IMinimalStats.UpdateAP(int delta)
+        {
+            CurrentAP += delta;
+        }
 
         public void Update(CharacterCharacteristicsInformations stats)
         {
@@ -498,7 +507,7 @@ namespace BiM.Behaviors.Game.Stats
             this[PlayerField.PvpWaterElementReduction].Update(stats.pvpWaterElementReduction);
             this[PlayerField.AirElementReduction].Update(stats.pvpAirElementReduction);
             this[PlayerField.PvpFireElementReduction].Update(stats.pvpFireElementReduction);
-
+            
             SpellsModifications.Clear();
             foreach (SpellModification spell in stats.spellModifications.Select(entry => new SpellModification(entry)))
             {

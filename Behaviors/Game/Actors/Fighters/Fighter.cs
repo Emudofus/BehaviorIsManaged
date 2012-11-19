@@ -21,11 +21,14 @@ using BiM.Behaviors.Game.World;
 using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
+using NLog;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public abstract class Fighter : ContextActor, INamed
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         protected Fighter()
         {
             CastsHistory = new SpellCastHistory(this);
@@ -201,6 +204,24 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public override string ToString()
         {
             return String.Format("{0} (lv {1} {2})", Name, Level, Team.TeamType == TeamTypeEnum.TEAM_TYPE_PLAYER ? "friend" : "foe");
+        }
+
+        internal void UpdateHP(Protocol.Messages.GameActionFightLifePointsLostMessage message)
+        {
+            logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health - message.loss);
+            Stats.UpdateHP(-message.loss);
+        }
+
+        internal void UpdateHP(Protocol.Messages.GameActionFightLifePointsGainMessage message)
+        {
+            logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health + message.delta);
+            Stats.UpdateHP(message.delta);
+        }
+
+        internal void UpdateAP(Protocol.Messages.GameActionFightPointsVariationMessage message)
+        {
+            logger.Debug("AP of {0} : {1} => {2}", Name, Stats.CurrentAP, Stats.CurrentAP + message.delta);
+            Stats.UpdateAP(message.delta);
         }
     }
 }

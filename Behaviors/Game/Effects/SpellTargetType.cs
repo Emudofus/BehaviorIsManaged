@@ -36,6 +36,8 @@ namespace BiM.Behaviors.Game.Effects
         ENNEMY_3 = 0x1000,
         ENNEMY_4 = 0x2000,
         ENNEMY_5 = 0x4000,
+        ALLIES = 0xFE,
+        ENNEMIES = 0x7F00,
         ALL = 0x7FFF,
         ONLY_SELF = 0x8000,
     }

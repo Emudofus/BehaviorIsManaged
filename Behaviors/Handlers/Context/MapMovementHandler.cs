@@ -25,7 +25,6 @@ using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using NLog;
-using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.Fighters;
 
 namespace BiM.Behaviors.Handlers.Context

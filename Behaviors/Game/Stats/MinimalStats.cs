@@ -184,6 +184,16 @@ namespace BiM.Behaviors.Game.Stats
             set;
         }
 
+        void IMinimalStats.UpdateHP(int delta)
+        {
+            Health += delta;
+        }
+
+        void IMinimalStats.UpdateAP(int delta)
+        {
+            CurrentAP += delta;
+        }
+
         public void Update(GameFightMinimalStats stats)
         {
             if (stats == null) throw new ArgumentNullException("stats");

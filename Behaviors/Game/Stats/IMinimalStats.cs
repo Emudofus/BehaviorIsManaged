@@ -139,5 +139,7 @@ namespace BiM.Behaviors.Game.Stats
             get;
         }
         void Update(GameFightMinimalStats stats);
+        void UpdateAP(int deltaAP);
+        void UpdateHP(int deltaHP);
     }
 }

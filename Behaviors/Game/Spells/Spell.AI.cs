@@ -21,7 +21,10 @@ using System.Linq;
 using System.Text;
 using BiM.Protocol.Data;
 using BiM.Behaviors.Game.Effects;
-
+using BiM.Behaviors.Game.Actors.Fighters;
+using BiM.Behaviors.Game.Actors.RolePlay;
+using DamageType = System.Double; // One can either try as double or uint. Results will sightly differ. 
+        
 namespace BiM.Behaviors.Game.Spells
 {
     public partial class Spell
@@ -189,29 +192,29 @@ namespace BiM.Behaviors.Game.Spells
                 if (category == null || (GetEffectCategories(effect) & category) > 0)
                     yield return new EffectBase(effect);
         }
-
+        
         public class Damages
         {
-            public uint MinFire, MaxFire,
+            public DamageType MinFire, MaxFire,
                  MinWater, MaxWater,
                  MinEarth, MaxEarth,
                  MinAir, MaxAir,
                  MinNeutral, MaxNeutral;
 
-            public uint Fire { get { return (MinFire + MaxFire) / 2; } }
-            public uint Air { get { return (MinAir + MaxAir) / 2; } }
-            public uint Earth { get { return (MinEarth + MaxEarth) / 2; } }
-            public uint Water { get { return (MinWater + MaxWater) / 2; } }
-            public uint Neutral { get { return (MinEarth + MaxEarth) / 2; } }
+            public DamageType Fire { get { return (MinFire + MaxFire) / 2; } }
+            public DamageType Air { get { return (MinAir + MaxAir) / 2; } }
+            public DamageType Earth { get { return (MinEarth + MaxEarth) / 2; } }
+            public DamageType Water { get { return (MinWater + MaxWater) / 2; } }
+            public DamageType Neutral { get { return (MinEarth + MaxEarth) / 2; } }
             
             // Min total damage            
-            public uint MinDamage { get { return MinFire + MinAir + MinEarth + MinWater + MinNeutral; } }
+            public DamageType MinDamage { get { return MinFire + MinAir + MinEarth + MinWater + MinNeutral; } }
 
             // Max total damage            
-            public uint MaxDamage { get { return MaxFire + MaxAir + MaxEarth + MaxWater + MaxNeutral; } }
+            public DamageType MaxDamage { get { return MaxFire + MaxAir + MaxEarth + MaxWater + MaxNeutral; } }
             
             // Average total damage
-            public uint Damage { get { return (MinDamage + MaxDamage) / 2; } }
+            public DamageType Damage { get { return (MinDamage + MaxDamage) / 2; } }
 
             public void Add(Damages dmg)
             {
@@ -228,47 +231,110 @@ namespace BiM.Behaviors.Game.Spells
             }            
         }
 
-        public static Damages CumulDamages(EffectInstanceDice effect, Damages damages)
+        private static void AdjustDamage(Damages damages, uint damage1, uint damage2, SpellCategory category, double chanceToHappen, int addDamage, int addDamagePercent, int reduceDamage, int reduceDamagePercent)
+        {
+            DamageType minDamage = damage1 >= damage2 ? damage2 : damage1;
+            DamageType maxDamage = damage1 >= damage2 ? damage1 : damage2;
+            if (reduceDamagePercent >= 100)
+                return; // No damage
+            minDamage = (DamageType)(((minDamage * (1 + (addDamagePercent / 100.0)) + addDamagePercent) - reduceDamage) * (1 - (reduceDamagePercent / 100.0)) * chanceToHappen);
+            maxDamage = (DamageType)(((maxDamage * (1 + (addDamagePercent / 100.0)) + addDamagePercent) - reduceDamage) * (1 - (reduceDamagePercent / 100.0)) * chanceToHappen);
+            switch (category)
+            {
+                case SpellCategory.DamagesNeutral:
+                    damages.MinNeutral += minDamage;
+                    damages.MaxNeutral += maxDamage;
+                    break;
+                case SpellCategory.DamagesFire:
+                    damages.MinFire += minDamage;
+                    damages.MaxAir += maxDamage;
+                    break;
+                case SpellCategory.DamagesAir:
+                    damages.MinAir += minDamage;
+                    damages.MaxAir += maxDamage;
+                    break;
+                case SpellCategory.DamagesWater:
+                    damages.MinWater += minDamage;
+                    damages.MaxWater += maxDamage;
+                    break;
+                case SpellCategory.DamagesEarth:
+                    damages.MinEarth += minDamage;
+                    damages.MaxEarth += maxDamage;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Add damages for a given effect, taking into account caster bonus and target resistance. 
+        /// </summary>
+        /// <param name="effect"></param>
+        /// <param name="damages"></param>
+        /// <param name="caster"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public static Damages CumulDamages(EffectInstanceDice effect, Damages damages, PlayedCharacter caster, Fighter target)
         {
             Damages result = damages;
             if (damages==null) result = new Damages();
+            SpellTargetType targetType = (SpellTargetType)effect.targetId;
+            
+            //if ((targetType & SpellTargetType.ENNEMIES) == 0) return damages; // No ennemy can be targeted
+            
             SpellCategory category = GetEffectCategories(effect);
+           
+            double chanceToHappen = 1.0; // 
+
+            // When chances to happen is under 100%, then we reduce damages accordingly, for simplicity, but after having apply damage bonus & reduction. 
+            // So average damage should remain exact even if Min and Max are not. 
+            if (effect.random > 0)
+                chanceToHappen = effect.random / 100.0; 
+            
             if ((category & SpellCategory.DamagesNeutral) > 0)
-            {
-                result.MinNeutral += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
-                result.MaxNeutral += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
-            }
+                AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesNeutral, chanceToHappen,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.NeutralDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.PhysicalDamage].Total,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+                    target == null ? 0 : target.Stats.NeutralElementReduction,
+                    target == null ? 0 : target.Stats.NeutralResistPercent);
+
             if ((category & SpellCategory.DamagesFire) > 0)
-            {
-                result.MinFire += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
-                result.MaxFire += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
-            }
+                AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesFire, chanceToHappen,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.FireDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+                    target == null ? 0 : target.Stats.FireElementReduction,
+                    target == null ? 0 : target.Stats.FireResistPercent);
+
             if ((category & SpellCategory.DamagesAir) > 0)
-            {
-                result.MinAir += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
-                result.MaxAir += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
-            }
+                AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesAir, chanceToHappen,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.AirDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+                    target == null ? 0 : target.Stats.AirElementReduction,
+                    target == null ? 0 : target.Stats.AirResistPercent);
+
             if ((category & SpellCategory.DamagesWater) > 0)
-            {
-                result.MinWater += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
-                result.MaxWater += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
-            }
+                AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesWater, chanceToHappen,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.WaterDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+                    target == null ? 0 : target.Stats.WaterElementReduction,
+                    target == null ? 0 : target.Stats.WaterResistPercent);
+
             if ((category & SpellCategory.DamagesEarth) > 0)
-            {
-                result.MinEarth += effect.diceNum <= effect.diceSide ? effect.diceNum : effect.diceSide;
-                result.MaxEarth += effect.diceNum >= effect.diceSide ? effect.diceNum : effect.diceSide;
-            }
+                AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesEarth, chanceToHappen,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.EarthDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
+                    caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+                    target == null ? 0 : target.Stats.EarthElementReduction,
+                    target == null ? 0 : target.Stats.EarthResistPercent);
+
             return result;
         }
 
         #endregion Effects
 
-        public static Damages GetSpellDamages(Spell spell)
+        public static Damages GetSpellDamages(Spell spell, PlayedCharacter caster, Fighter target)
         {
             Damages damages = new Damages();
             foreach (var effect in spell.LevelTemplate.effects)
             {
-                CumulDamages(effect, damages);
+                CumulDamages(effect, damages, caster, target);
             }
             return damages;
         }

@@ -187,25 +187,46 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameActionFightLifePointsLostMessage))]
         public static void HandleGameActionFightLifePointsLostMessage(Bot bot, GameActionFightLifePointsLostMessage message)
         {
-            
+            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
+
+            if (fighter == null)
+                logger.Error("Fighter {0} has lost HP cast but doesn't exist", message.sourceId);
+            else
+            {
+                fighter.UpdateHP(message);
+            }
         }
 
         [MessageHandler(typeof(GameActionFightLifeAndShieldPointsLostMessage))]
         public static void HandleGameActionFightLifeAndShieldPointsLostMessage(Bot bot, GameActionFightLifeAndShieldPointsLostMessage message)
         {
-            
+            HandleGameActionFightLifePointsLostMessage(bot, message);
         }
 
         [MessageHandler(typeof(GameActionFightLifePointsGainMessage))]
         public static void HandleGameActionFightLifePointsGainMessage(Bot bot, GameActionFightLifePointsGainMessage message)
         {
-            
+            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
+
+            if (fighter == null)
+                logger.Error("Fighter {0} has lost HP cast but doesn't exist", message.sourceId);
+            else
+            {
+                fighter.UpdateHP(message);
+            }            
         }
 
         [MessageHandler(typeof(GameActionFightPointsVariationMessage))]
         public static void HandleGameActionFightPointsVariationMessage(Bot bot, GameActionFightPointsVariationMessage message)
         {
+            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
 
+            if (fighter == null)
+                logger.Error("Fighter {0} has lost HP cast but doesn't exist", message.sourceId);
+            else
+            {
+                fighter.UpdateAP(message);
+            }            
         }
         
         [MessageHandler(typeof(GameActionFightSpellCooldownVariationMessage))]

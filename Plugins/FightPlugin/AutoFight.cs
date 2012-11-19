@@ -115,7 +115,7 @@ namespace FightPlugin
             {
                 if (!m_sit)
                 {
-                    Bot.Character.SendMessage("Character health too low");
+                    Bot.Character.SendMessage(String.Format("Character health too low : {0}/{1}", Bot.Character.Stats.Health, Bot.Character.Stats.MaxHealth));
 
                     Bot.CallDelayed(500, Sit);
                 }
@@ -129,7 +129,7 @@ namespace FightPlugin
 
             if (monster != null)
             {
-                Debug.WriteLine(String.Format("Trying to start a fight with group lv {0}, cell {1}, leader {2} lv {3}", monster.Level,  monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
+                Bot.Character.SendMessage(String.Format("Trying to start a fight with group lv {0}, cell {1}, leader {2} lv {3}", monster.Level, monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
                 Bot.Character.TryStartFightWith(monster);
             }
         }
@@ -190,7 +190,7 @@ namespace FightPlugin
                     continue;
                 }
                 noSlot++;
-                bool available = spell.IsAvailable(nearestMonster.Id);
+                bool available = m_character.CanCastSpell(spell, nearestMonster);
                 bool inRange = m_character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
                 //logger.Debug("[ShortCut {7}] Spell {0} to be cast by {1} ({2}) on {3} ({4}) : available {5}, InRange {6}", spell, m_character.Name, m_character.Cell, nearestMonster, nearestMonster.Cell, available, inRange, noSlot);
                 if (available)

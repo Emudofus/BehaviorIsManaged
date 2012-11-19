@@ -121,10 +121,10 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
         public bool CanCastSpell(Spells.Spell spell, Fighter fighter)
         {
-            return CanCastSpell(spell, fighter.Cell);
+            return CanCastSpell(spell, fighter.Cell, fighter.Id);
         }
 
-        public bool CanCastSpell(Spells.Spell spell, Cell cell)
+        public bool CanCastSpell(Spells.Spell spell, Cell cell, int? actorId)
         {
             // todo spells modifications
             // todo states
@@ -133,10 +133,10 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
             if (!IsPlaying())
                 return false;
-
+            if (!spell.IsAvailable(actorId)) 
+                return false;
             if (spell.LevelTemplate.apCost > Stats.CurrentAP)
                 return false;
-
             if (!IsInSpellRange(cell, spell.LevelTemplate))
                 return false;
 
@@ -145,7 +145,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
         public bool CastSpell(Spells.Spell spell, Cell cell)
         {
-            if (!CanCastSpell(spell, cell))
+            if (!CanCastSpell(spell, cell, null))
                 return false;
 
             Character.Bot.SendToServer(new GameActionFightCastRequestMessage((short) spell.Template.id, cell.Id));
