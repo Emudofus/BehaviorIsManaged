@@ -84,6 +84,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicPluginSettings.cs" />
+    <Compile Include="CharacterInfo\CharacterInfoView.xaml.cs">
+      <DependentUpon>CharacterInfoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CharacterInfo\CharacterInfoViewModel.cs" />
     <Compile Include="CharacterSelection\CharacterCreationData.cs" />
     <Compile Include="CharacterSelection\CharacterCreationDialog.xaml.cs">
       <DependentUpon>CharacterCreationDialog.xaml</DependentUpon>
@@ -164,6 +168,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="CharacterInfo\CharacterInfoView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="CharacterSelection\CharacterCreationDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -193,7 +201,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterCompile">
     <NotifyPropertyWeaverMsBuildTask.WeavingTask />
