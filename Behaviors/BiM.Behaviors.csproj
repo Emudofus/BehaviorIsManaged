@@ -94,6 +94,7 @@
     <Compile Include="Game\Actors\Fighters\CharacterFighter.cs" />
     <Compile Include="Game\Actors\Fighters\Fighter.cs" />
     <Compile Include="Game\Actors\Fighters\MonsterFighter.cs" />
+    <Compile Include="Game\Actors\Fighters\PlayedFighter.AI.cs" />
     <Compile Include="Game\Actors\Fighters\PlayedFighter.cs" />
     <Compile Include="Game\Actors\Interfaces\IAlignedActor.cs" />
     <Compile Include="Game\Actors\Interfaces\INamed.cs" />
