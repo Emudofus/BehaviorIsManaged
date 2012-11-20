@@ -384,7 +384,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _isGlassEnabled)
                 {
                     _isGlassEnabled = value;
-                    _OnPropertyChanged("IsGlassEnabled");
+                    _NotifyPropertyChanged("IsGlassEnabled");
                 }
             }
         }
@@ -397,7 +397,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _glassColor)
                 {
                     _glassColor = value;
-                    _OnPropertyChanged("WindowGlassColor");
+                    _NotifyPropertyChanged("WindowGlassColor");
                 }
             }
         }
@@ -412,7 +412,7 @@ namespace Microsoft.Windows.Shell
                 if (_glassColorBrush == null || value.Color != _glassColorBrush.Color)
                 {
                     _glassColorBrush = value;
-                    _OnPropertyChanged("WindowGlassBrush");
+                    _NotifyPropertyChanged("WindowGlassBrush");
                 }
             }
         }
@@ -425,7 +425,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _windowResizeBorderThickness)
                 {
                     _windowResizeBorderThickness = value;
-                    _OnPropertyChanged("WindowResizeBorderThickness");
+                    _NotifyPropertyChanged("WindowResizeBorderThickness");
                 }
             }
         }
@@ -438,7 +438,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _windowNonClientFrameThickness)
                 {
                     _windowNonClientFrameThickness = value;
-                    _OnPropertyChanged("WindowNonClientFrameThickness");
+                    _NotifyPropertyChanged("WindowNonClientFrameThickness");
                 }
             }
         }
@@ -451,7 +451,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _captionHeight)
                 {
                     _captionHeight = value;
-                    _OnPropertyChanged("WindowCaptionHeight");
+                    _NotifyPropertyChanged("WindowCaptionHeight");
                 }
             }
         }
@@ -464,7 +464,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _smallIconSize)
                 {
                     _smallIconSize = value;
-                    _OnPropertyChanged("SmallIconSize");
+                    _NotifyPropertyChanged("SmallIconSize");
                 }
             }
         }
@@ -479,7 +479,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _uxThemeName)
                 {
                     _uxThemeName = value;
-                    _OnPropertyChanged("UxThemeName");
+                    _NotifyPropertyChanged("UxThemeName");
                 }
             }
         }
@@ -494,7 +494,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _uxThemeColor)
                 {
                     _uxThemeColor = value;
-                    _OnPropertyChanged("UxThemeColor");
+                    _NotifyPropertyChanged("UxThemeColor");
                 }
             }
         }
@@ -507,7 +507,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _isHighContrast)
                 {
                     _isHighContrast = value;
-                    _OnPropertyChanged("HighContrast");
+                    _NotifyPropertyChanged("HighContrast");
                 }
             }
         }
@@ -520,7 +520,7 @@ namespace Microsoft.Windows.Shell
                 if (value != _windowCornerRadius)
                 {
                     _windowCornerRadius = value;
-                    _OnPropertyChanged("WindowCornerRadius");
+                    _NotifyPropertyChanged("WindowCornerRadius");
                 }
             }
         }
@@ -533,14 +533,14 @@ namespace Microsoft.Windows.Shell
                 if (value != _captionButtonLocation)
                 {
                     _captionButtonLocation = value;
-                    _OnPropertyChanged("WindowCaptionButtonsLocation");
+                    _NotifyPropertyChanged("WindowCaptionButtonsLocation");
                 }
             }
         }
 
         #region INotifyPropertyChanged Members
 
-        private void _OnPropertyChanged(string propertyName)
+        private void _NotifyPropertyChanged(string propertyName)
         {
             Assert.IsNeitherNullNorEmpty(propertyName);
             var handler = PropertyChanged;

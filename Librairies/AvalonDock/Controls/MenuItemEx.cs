@@ -33,7 +33,7 @@ namespace AvalonDock.Controls
     {
         static MenuItemEx()
         {
-            IconProperty.OverrideMetadata(typeof(MenuItemEx), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnIcOnPropertyChanged)));
+            IconProperty.OverrideMetadata(typeof(MenuItemEx), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnIconPropertyChanged)));
         }
 
 
@@ -116,7 +116,7 @@ namespace AvalonDock.Controls
 
         #endregion
 
-        static void OnIcOnPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        static void OnIconPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != null)
             {

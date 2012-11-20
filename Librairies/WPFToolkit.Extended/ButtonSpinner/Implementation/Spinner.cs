@@ -33,7 +33,7 @@ namespace Xceed.Wpf.Toolkit
     /// <summary>
     /// Identifies the ValidSpinDirection dependency property.
     /// </summary>
-    public static readonly DependencyProperty ValidSpinDirectionProperty = DependencyProperty.Register( "ValidSpinDirection", typeof( ValidSpinDirections ), typeof( Spinner ), new PropertyMetadata( ValidSpinDirections.Increase | ValidSpinDirections.Decrease, OnValidSpinDirectiOnPropertyChanged ) );
+    public static readonly DependencyProperty ValidSpinDirectionProperty = DependencyProperty.Register( "ValidSpinDirection", typeof( ValidSpinDirections ), typeof( Spinner ), new PropertyMetadata( ValidSpinDirections.Increase | ValidSpinDirections.Decrease, OnValidSpinDirectionPropertyChanged ) );
     public ValidSpinDirections ValidSpinDirection
     {
       get
@@ -51,7 +51,7 @@ namespace Xceed.Wpf.Toolkit
     /// </summary>
     /// <param name="d">ButtonSpinner that changed its ValidSpinDirection.</param>
     /// <param name="e">Event arguments.</param>
-    private static void OnValidSpinDirectiOnPropertyChanged( DependencyObject d, DependencyPropertyChangedEventArgs e )
+    private static void OnValidSpinDirectionPropertyChanged( DependencyObject d, DependencyPropertyChangedEventArgs e )
     {
       Spinner source = ( Spinner )d;
       ValidSpinDirections oldvalue = ( ValidSpinDirections )e.OldValue;
