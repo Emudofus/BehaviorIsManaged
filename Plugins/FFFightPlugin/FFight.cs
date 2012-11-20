@@ -248,10 +248,12 @@ namespace FightPlugin
             Spell bestSpell = _character.GetOrderListOfSimpleAttackSpells(weakestEnemy, true).FirstOrDefault();
             if (bestSpell == null || weakestEnemy == null)
             {
-                logger.Warn("FindOptimalPlacement : can't find a position");
+                logger.Warn("FindOptimalPlacement : can't find a position (bestSpell: {0}, weakestEnnemy: {1})", bestSpell, weakestEnemy);
                 PlaceToWeakestEnemy();
                 return;
             }
+            logger.Warn("FindOptimalPlacement : bestSpell: {0}, weakestEnnemy: {1} ({2})", bestSpell, weakestEnemy, weakestEnemy.Cell);
+                
             PlaceAtDistanceFromWeakestEnemy(_character.GetRealSpellRange(bestSpell.LevelTemplate), bestSpell.LevelTemplate.castInLine);
         }
 
