@@ -13,28 +13,22 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System.Drawing;
+using System;
 using System.Linq;
-using System.Timers;
 using BiM.Behaviors;
 using BiM.Behaviors.Frames;
+using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Fights;
+using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.Spells.Shapes;
 using BiM.Behaviors.Game.World;
-using BiM.Behaviors.Game.World.Pathfinding;
-using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
 using BiM.Core.Threading;
 using BiM.Protocol.Messages;
-using System;
-using BiM.Behaviors.Game.Movements;
-using BiM.Behaviors.Game.Actors;
 using NLog;
-using BiM.Behaviors.Game.Shortcuts;
-using System.Diagnostics;
 
 namespace FightPlugin
 {
@@ -72,7 +66,7 @@ namespace FightPlugin
         private ContextActor.MoveStopHandler m_stopMovingDelegate;
 
         public AutoFight(Bot bot)
-            : base (bot)
+            : base(bot)
         {
             bot.Character.FightJoined += OnFightJoined;
             bot.Character.FightLeft += OnFightLeft;
@@ -188,13 +182,13 @@ namespace FightPlugin
             {
                 m_character.CastSpell(shortcut.GetSpell(), nearestMonster.Cell);
                 MoveFar();
-                m_character.PassTurn(); 
+                m_character.PassTurn();
             }
             else
             {
                 MoveNear(nearestMonster, (int)(m_character.Cell.DistanceTo(nearestMonster.Cell) - m_character.GetRealSpellRange(spell.LevelTemplate)));
 
-               // wait until the movement ends
+                // wait until the movement ends
                 if (m_stopMovingDelegate != null)
                 {
                     Bot.Character.Fighter.StopMoving -= m_stopMovingDelegate;
@@ -205,7 +199,7 @@ namespace FightPlugin
                 Bot.Character.Fighter.StopMoving += m_stopMovingDelegate;
             }
 
-                       
+
         }
 
         private void OnStopMoving(Spell spell, Fighter enemy)
@@ -246,7 +240,7 @@ namespace FightPlugin
         {
             var enemies = m_character.GetOpposedTeam().Fighters;
 
-            var shape = new Lozenge(0, (byte) m_character.Stats.CurrentMP);
+            var shape = new Lozenge(0, (byte)m_character.Stats.CurrentMP);
             var possibleCells = shape.GetCells(m_character.Cell, m_character.Map);
             var orderedCells = from cell in possibleCells
                                where m_character.Fight.IsCellWalkable(cell, false, m_character.Cell)
@@ -274,7 +268,7 @@ namespace FightPlugin
                 if (nearestFighter == null)
                     nearestFighter = enemy;
 
-                else if (m_character.Cell.ManhattanDistanceTo(enemy.Cell) < 
+                else if (m_character.Cell.ManhattanDistanceTo(enemy.Cell) <
                     nearestFighter.Cell.ManhattanDistanceTo(m_character.Cell))
                 {
                     nearestFighter = enemy;
@@ -305,6 +299,7 @@ namespace FightPlugin
                 m_character.Fight.StateChanged -= OnStateChanged;
                 m_character = null;
             }
+            base.OnDetached();
         }
     }
 }
