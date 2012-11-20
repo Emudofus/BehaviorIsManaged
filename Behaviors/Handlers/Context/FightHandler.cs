@@ -213,9 +213,19 @@ namespace BiM.Behaviors.Handlers.Context
                 return; // Can't handle the message
             }
             bot.Character.Fight.Update(message);
-
         }
 
+        [MessageHandler(typeof(SequenceEndMessage))]
+        public void HandleSequenceEndMessage(Bot bot, SequenceEndMessage message)
+        {
+            if (bot == null || bot.Character == null || bot.Character.Fight == null)
+            {
+                logger.Error("Fight is not properly initialized.");
+                return; // Can't handle the message
+            }
+            bot.Character.Fight.EndSequence(message);
+        }
+        
         [MessageHandler(typeof(GameFightTurnEndMessage))]
         public void HandleGameFightTurnEndMessage(Bot bot, GameFightTurnEndMessage message)
         {

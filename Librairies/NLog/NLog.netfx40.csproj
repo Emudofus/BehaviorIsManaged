@@ -30,6 +30,7 @@
     <CodeAnalysisRuleSet>NLog.netfx40.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>\bin\Debug.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <WarningsAsErrors>0067</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

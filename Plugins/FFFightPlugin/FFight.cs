@@ -60,8 +60,8 @@ namespace FightPlugin
         private SimplerTimer _checkTimer;
         private bool _sit = false;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private ContextActor.MoveStopHandler _stopMovingDelegate;
-        private Fighter.SpellCastHandler _spellCastedDelegate;
+        private ContextActor.MoveStopHandler _stopMovingDelegate;        
+        private Fighter.TurnHandler _sequenceEnded;
 
         public FFight(Bot bot)
             : base(bot)
@@ -152,10 +152,10 @@ namespace FightPlugin
             _character = null;
             character.Fighter.TurnStarted -= OnTurnStarted;
             fight.StateChanged -= OnStateChanged;
-            if (_spellCastedDelegate != null)
+            if (_sequenceEnded != null)
             {
-                character.Fighter.SpellCasted -= _spellCastedDelegate;
-                _spellCastedDelegate = null;
+                character.Fighter.SequenceEnded -= _sequenceEnded;
+                _sequenceEnded = null;
             }
             if (_stopMovingDelegate != null)
             {
@@ -169,7 +169,7 @@ namespace FightPlugin
         {
             var bot = BotManager.Instance.GetCurrentBot();
 
-            StartAI();
+            Bot.CallDelayed(500, StartAI); 
         }
 
 
@@ -180,10 +180,10 @@ namespace FightPlugin
                 _character.StopMoving -= _stopMovingDelegate;
                 _stopMovingDelegate = null;
             }
-            if (_spellCastedDelegate != null)
+            if (_sequenceEnded != null)
             {
-                _character.SpellCasted -= _spellCastedDelegate;
-                _spellCastedDelegate = null;
+                _character.SequenceEnded -= _sequenceEnded;
+                _sequenceEnded = null;
             }
 
             var nearestMonster = GetNearestEnemy();
@@ -197,8 +197,8 @@ namespace FightPlugin
                 {
                     _character.CastSpell(spell, nearestMonster.Cell);
                     //_spellCastedDelegate = (sender, spellCast) => StartAI();
-                    _spellCastedDelegate = OnSpellCasted;
-                    _character.SpellCasted += _spellCastedDelegate;
+                    _sequenceEnded = OnSequenceEnd;
+                    _character.SequenceEnded += _sequenceEnded;
                     return;
                 }
 
@@ -225,9 +225,9 @@ namespace FightPlugin
             Bot.Character.Fighter.StopMoving += _stopMovingDelegate;
         }
 
-        private void OnSpellCasted(Fighter fighter, SpellCast spellCast)
+        
+        private void OnSequenceEnd(Fighter fighter)
         {
-            logger.Debug("OnSpellCasted : {0} casted {1}", fighter.Name, DataProvider.Instance.Get<string>(spellCast.Spell.nameId));
             Bot.CallDelayed(300, StartAI);
         }
 
