@@ -282,13 +282,14 @@ namespace FightPlugin
                 return;
             }
             // find the cells under distance from weakestEnemy, and - if needed - in line
-            Cell[] startingSet;
-            startingSet = startingSet = Bot.Character.Fighter.Team.PlacementCells.Where(cell => ((cell.ManhattanDistanceTo(weakestEnemy.Cell) <= distance) && (!InLine || cell.X == weakestEnemy.Cell.X || cell.Y == weakestEnemy.Cell.Y))).ToArray();
+            Cell[] startingSet = Bot.Character.Fighter.Team.PlacementCells.Where(cell => ((cell.ManhattanDistanceTo(weakestEnemy.Cell) <= distance) && (!InLine || cell.X == weakestEnemy.Cell.X || cell.Y == weakestEnemy.Cell.Y))).ToArray();
             if (startingSet.Length == 0)
             {
+                logger.Debug("No cell at range => PlaceToWeakestEnemy");
                 PlaceToWeakestEnemy();
                 return;
             }
+            logger.Debug("Placement of {0} vs {1} (cell {2}) - max Distance {4} - InLine {5} - choices : {3}", _character.Name, weakestEnemy.ToString(), weakestEnemy.Cell, string.Join<Cell>(",", startingSet), distance, InLine);
 
             Cell[] finalSet = startingSet;
             if (finalSet.Length > 1 && _character.GetOpposedTeam().Fighters.Count > 1)
@@ -297,6 +298,7 @@ namespace FightPlugin
                 foreach (Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
                     if (otherEnnemy != weakestEnemy)
                         finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) >= x.ManhattanDistanceTo(weakestEnemy.Cell)).ToArray();
+                logger.Debug("Rule 1 : choices {0}", string.Join<Cell>(",", finalSet));
 
                 // if none, then we only remove cells where we are in contact of any other ennemy 
                 if (startingSet.Length == 0)
@@ -305,11 +307,15 @@ namespace FightPlugin
                     foreach (Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
                         if (otherEnnemy != weakestEnemy)
                             finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) > 1).ToArray();
+                    logger.Debug("Rule 2 : choices {0}", string.Join<Cell>(",", finalSet));
                 }
 
                 // if still none, just keep all cells, ignoring other enemies
                 if (finalSet.Length == 0)
+                {
                     finalSet = startingSet;
+                    logger.Debug("Rule 3 (full set) : choices {0}", string.Join<Cell>(",", finalSet));
+                }
             }
             // Find a cell as far as possible from weakest ennemy, but not over distance
             var bestCell = finalSet.OrderBy(x => x.ManhattanDistanceTo(weakestEnemy.Cell)).LastOrDefault();
@@ -317,9 +323,11 @@ namespace FightPlugin
             // If none under distance, then the closest
             if (bestCell == null)
             {
+                logger.Debug("No cell at range => PlaceToWeakestEnemy");
                 PlaceToWeakestEnemy();
                 return;
             }
+            logger.Debug("Cell selected : {0}, distance {1}", bestCell, bestCell.ManhattanDistanceTo(weakestEnemy.Cell));
             Bot.Character.Fighter.ChangePrePlacement(bestCell);
         }
 

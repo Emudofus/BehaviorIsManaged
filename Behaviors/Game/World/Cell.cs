@@ -121,7 +121,7 @@ namespace BiM.Behaviors.Game.World
             if (!m_initialized)
                 InitializeStaticGrid();
 
-            return (short) ((point.X - point.Y)*Map.Width + point.Y + (point.X - point.Y)/2);
+            return (short)((point.X - point.Y) * Map.Width + point.Y + (point.X - point.Y) / 2);
         }
 
         public static Point GetPointFromCell(short id)
@@ -170,11 +170,11 @@ namespace BiM.Behaviors.Game.World
         {
             var bytes = new byte[StructSize];
 
-            bytes[0] = (byte) (Id >> 8);
-            bytes[1] = (byte) (Id & 0xFF);
+            bytes[0] = (byte)(Id >> 8);
+            bytes[1] = (byte)(Id & 0xFF);
 
-            bytes[2] = (byte) (Floor >> 8);
-            bytes[3] = (byte) (Floor & 0xFF);
+            bytes[2] = (byte)(Floor >> 8);
+            bytes[3] = (byte)(Floor & 0xFF);
 
             bytes[4] = LosMov;
             bytes[5] = MapChangeData;
@@ -187,9 +187,9 @@ namespace BiM.Behaviors.Game.World
 
         public void Deserialize(byte[] data, int index = 0)
         {
-            Id = (short) ((data[index + 0] << 8) | data[index + 1]);
+            Id = (short)((data[index + 0] << 8) | data[index + 1]);
 
-            Floor = (short) ((data[index + 2] << 8) | data[index + 3]);
+            Floor = (short)((data[index + 2] << 8) | data[index + 3]);
 
             LosMov = data[index + 4];
             MapChangeData = data[index + 5];
@@ -204,12 +204,12 @@ namespace BiM.Behaviors.Game.World
 
         public uint DistanceTo(Cell cell)
         {
-            return (uint) Math.Sqrt((cell.X - Point.X)*(cell.X - Point.X) + (cell.Y - Point.Y)*(cell.Y - Point.Y));
+            return (uint)Math.Sqrt((cell.X - Point.X) * (cell.X - Point.X) + (cell.Y - Point.Y) * (cell.Y - Point.Y));
         }
 
         public uint ManhattanDistanceTo(Cell cell)
         {
-            return (uint) (Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y));
+            return (uint)(Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y));
         }
 
         public bool IsInRadius(Cell cell, int radius)
@@ -237,7 +237,7 @@ namespace BiM.Behaviors.Game.World
 
         public static bool IsInMap(int x, int y)
         {
-            return x + y >= 0 && x - y >= 0 && x - y < Map.Height*2 && x + y < Map.Width*2;
+            return x + y >= 0 && x - y >= 0 && x - y < Map.Height * 2 && x + y < Map.Width * 2;
         }
 
         public DirectionsEnum OrientationTo(Cell cell, Boolean diagonal = true)
@@ -245,20 +245,20 @@ namespace BiM.Behaviors.Game.World
             int dx = cell.X - X;
             int dy = Y - cell.Y;
 
-            double distance = Math.Sqrt(dx*dx + dy*dy);
-            double angleInRadians = Math.Acos(dx/distance);
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+            double angleInRadians = Math.Acos(dx / distance);
 
-            double angleInDegrees = angleInRadians*180/Math.PI;
-            double transformedAngle = angleInDegrees*(cell.Y > Y ? (-1) : (1));
+            double angleInDegrees = angleInRadians * 180 / Math.PI;
+            double transformedAngle = angleInDegrees * (cell.Y > Y ? (-1) : (1));
 
-            double orientation = !diagonal ? Math.Round(transformedAngle/90)*2 + 1 : Math.Round(transformedAngle/45) + 1;
+            double orientation = !diagonal ? Math.Round(transformedAngle / 90) * 2 + 1 : Math.Round(transformedAngle / 45) + 1;
 
             if (orientation < 0)
             {
                 orientation = orientation + 8;
             }
 
-            return (DirectionsEnum) (uint) orientation;
+            return (DirectionsEnum)(uint)orientation;
         }
 
         public DirectionsEnum OrientationToAdjacent(Cell cell)
@@ -418,8 +418,8 @@ namespace BiM.Behaviors.Game.World
             int dx = cell.X - X;
             int dy = Y - cell.Y;
 
-            double distance = Math.Sqrt(dx*dx + dy*dy);
-            double angleInRadians = Math.Acos(dx/distance);
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+            double angleInRadians = Math.Acos(dx / distance);
             var roundedDistance = (int)distance;
 
             var result = new Cell[roundedDistance + (includeVertex ? 1 : 0)];
@@ -432,8 +432,8 @@ namespace BiM.Behaviors.Game.World
 
             for (; i < roundedDistance; i++)
             {
-                var x = (int) (distance * Math.Cos(angleInRadians));
-                var y = (int)( distance * Math.Sin(angleInRadians) );
+                var x = (int)(distance * Math.Cos(angleInRadians));
+                var y = (int)(distance * Math.Sin(angleInRadians));
 
                 result[i] = Map.Cells[x, y];
             }
@@ -493,7 +493,7 @@ namespace BiM.Behaviors.Game.World
 
         public override string ToString()
         {
-            return Id.ToString();
+            return string.Format("{0}[{1},{2}]", Id, X, Y);
         }
     }
 }
