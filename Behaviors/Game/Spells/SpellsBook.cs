@@ -153,14 +153,17 @@ namespace BiM.Behaviors.Game.Spells
       int No = 0;
       foreach (Spell spell in m_spells)
       {
-        if (spell.IsAvailable(target.Id, category))
-        {
-          int averageDamage = (int)(spell.GetSpellDamages(caster, target).Damage);
-          if (averageDamage > 0)
-            sortedSpellList.Add(
-              averageDamage * 100 + No++,  // Infamous hack, to accept several spells having same damage
-              spell);
-        }
+          // Check AP
+        if (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost)
+            if (spell.IsAvailable(target.Id, category))
+            {
+              int averageDamage = (int)(spell.GetSpellDamages(caster, target).Damage);
+              averageDamage *= caster.Stats.CurrentAP / (int)spell.LevelTemplate.apCost; // if we can cast several time this spell, increase damage accordingly
+              if (averageDamage > 0)
+                sortedSpellList.Add(
+                  averageDamage * 100 + No++,  // Infamous hack, to accept several spells having same damage
+                  spell);
+            }
       }
       return sortedSpellList.Values.Reverse();
     }
