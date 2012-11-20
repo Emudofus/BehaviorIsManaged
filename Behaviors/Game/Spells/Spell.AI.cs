@@ -21,7 +21,8 @@ using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Effects;
 using BiM.Protocol.Data;
-using DamageType = System.Double; // One can either try as double or uint. Results will sightly differ. 
+using DamageType = System.Double;
+using BiM.Behaviors.Game.Stats; // One can either try as double or uint. Results will sightly differ. 
 
 namespace BiM.Behaviors.Game.Spells
 {
@@ -262,6 +263,12 @@ namespace BiM.Behaviors.Game.Spells
           break;
       }
     }
+    private static int GetSafetotal(PlayedCharacter caster, Stats.PlayerField field)
+    {
+        StatsRow row =  caster.Stats[field];
+        if (row == null) return 0;
+        return row.Total;
+    }
 
     /// <summary>
     /// Add damages for a given effect, taking into account caster bonus and target resistance. 
@@ -290,36 +297,36 @@ namespace BiM.Behaviors.Game.Spells
 
       if ((category & SpellCategory.DamagesNeutral) > 0)
         AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesNeutral, chanceToHappen,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.NeutralDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.PhysicalDamage].Total,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.NeutralDamageBonus) + GetSafetotal(caster,Stats.PlayerField.DamageBonus) + GetSafetotal(caster,Stats.PlayerField.PhysicalDamage),
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.DamageBonusPercent),
             target == null ? 0 : target.Stats.NeutralElementReduction,
             target == null ? 0 : target.Stats.NeutralResistPercent);
 
       if ((category & SpellCategory.DamagesFire) > 0)
         AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesFire, chanceToHappen,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.FireDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.FireDamageBonus) + GetSafetotal(caster,Stats.PlayerField.DamageBonus) + GetSafetotal(caster,Stats.PlayerField.MagicDamage),
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.DamageBonusPercent),
             target == null ? 0 : target.Stats.FireElementReduction,
             target == null ? 0 : target.Stats.FireResistPercent);
 
       if ((category & SpellCategory.DamagesAir) > 0)
         AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesAir, chanceToHappen,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.AirDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.AirDamageBonus) + GetSafetotal(caster,Stats.PlayerField.DamageBonus) + GetSafetotal(caster,Stats.PlayerField.MagicDamage),
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.DamageBonusPercent),
             target == null ? 0 : target.Stats.AirElementReduction,
             target == null ? 0 : target.Stats.AirResistPercent);
 
       if ((category & SpellCategory.DamagesWater) > 0)
         AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesWater, chanceToHappen,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.WaterDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.WaterDamageBonus) + GetSafetotal(caster,Stats.PlayerField.DamageBonus) + GetSafetotal(caster,Stats.PlayerField.MagicDamage),
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.DamageBonusPercent),
             target == null ? 0 : target.Stats.WaterElementReduction,
             target == null ? 0 : target.Stats.WaterResistPercent);
 
       if ((category & SpellCategory.DamagesEarth) > 0)
         AdjustDamage(damages, effect.diceNum, effect.diceSide, SpellCategory.DamagesEarth, chanceToHappen,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.EarthDamageBonus].Total + caster.Stats[Stats.PlayerField.DamageBonus].Total + caster.Stats[Stats.PlayerField.MagicDamage].Total,
-            caster == null ? 0 : caster.Stats[Stats.PlayerField.DamageBonusPercent].Total,
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.EarthDamageBonus) + GetSafetotal(caster,Stats.PlayerField.DamageBonus) + GetSafetotal(caster,Stats.PlayerField.MagicDamage),
+            caster == null ? 0 : GetSafetotal(caster,Stats.PlayerField.DamageBonusPercent),
             target == null ? 0 : target.Stats.EarthElementReduction,
             target == null ? 0 : target.Stats.EarthResistPercent);
 
