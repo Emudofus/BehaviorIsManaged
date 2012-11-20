@@ -366,10 +366,14 @@ namespace BasicPlugin.Chat
         [MessageHandler(typeof (ChatMessageServer))]
         public void HandleChatMessageServer(Bot bot, ChatMessageServer message)
         {
+            // server sends a copy from private messages
+            if (message.Copy)
+                return;
+
             if (message.Channel == ChatActivableChannelsEnum.PSEUDO_CHANNEL_PRIVATE)
             {
                 AppendChatText(string.Format("[{0}] ({1}) {2} [{3}] : {4}\n", DateTime.Now.ToString("hh:mm"),
-                    GetChannelName(message.Channel), m_wordFrom, message.ReceiverName, message.Content), GetChannelColor(message.Channel));
+                    GetChannelName(message.Channel), m_wordFrom, message.SenderName, message.Content), GetChannelColor(message.Channel));
             }
             else
             {

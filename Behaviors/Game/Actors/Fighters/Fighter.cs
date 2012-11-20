@@ -248,19 +248,22 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
         internal void UpdateHP(Protocol.Messages.GameActionFightLifePointsLostMessage message)
         {
-            logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health - message.loss);
+            if (this is PlayedFighter)
+                logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health - message.loss);
             Stats.UpdateHP(-message.loss);
         }
 
         internal void UpdateHP(Protocol.Messages.GameActionFightLifePointsGainMessage message)
         {
-            logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health + message.delta);
+            if (this is PlayedFighter)
+                logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health + message.delta);
             Stats.UpdateHP(message.delta);
         }
 
         internal void UpdateAP(Protocol.Messages.GameActionFightPointsVariationMessage message)
         {
-            logger.Debug("AP of {0} : {1} => {2}", Name, Stats.CurrentAP, Stats.CurrentAP + message.delta);
+            if (this is PlayedFighter)
+                logger.Debug("AP of {0} : {1} => {2}", Name, Stats.CurrentAP, Stats.CurrentAP + message.delta);
             Stats.UpdateAP(message.delta);
         }
     }

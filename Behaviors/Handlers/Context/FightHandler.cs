@@ -194,10 +194,10 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameActionFightLifePointsLostMessage))]
         public static void HandleGameActionFightLifePointsLostMessage(Bot bot, GameActionFightLifePointsLostMessage message)
         {
-            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
+            var fighter = bot.Character.Fight.GetFighter(message.targetId);
 
             if (fighter == null)
-                logger.Error("Fighter {0} has lost HP cast but doesn't exist", message.sourceId);
+                logger.Error("Fighter {0} has lost {2} HP cast but doesn't exist, or is it {1} ?", message.targetId, message.sourceId, message.loss);
             else
             {
                 fighter.UpdateHP(message);
@@ -213,10 +213,10 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameActionFightLifePointsGainMessage))]
         public static void HandleGameActionFightLifePointsGainMessage(Bot bot, GameActionFightLifePointsGainMessage message)
         {
-            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
+            var fighter = bot.Character.Fight.GetFighter(message.targetId);
 
             if (fighter == null)
-                logger.Error("Fighter {0} has lost HP cast but doesn't exist", message.sourceId);
+                logger.Error("Fighter {0} has gain {2} HP cast but doesn't exist, or is it {1} ?", message.targetId, message.sourceId, message.delta);
             else
             {
                 fighter.UpdateHP(message);
@@ -226,10 +226,10 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameActionFightPointsVariationMessage))]
         public static void HandleGameActionFightPointsVariationMessage(Bot bot, GameActionFightPointsVariationMessage message)
         {
-            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
+            var fighter = bot.Character.Fight.GetFighter(message.targetId);
 
             if (fighter == null)
-                logger.Error("Fighter {0} has lost HP cast but doesn't exist", message.sourceId);
+                logger.Error("Fighter {0} has lost {2} AP cast but doesn't exist, or is it {1} ?", message.sourceId, message.targetId, -message.delta);
             else
             {
                 fighter.UpdateAP(message);

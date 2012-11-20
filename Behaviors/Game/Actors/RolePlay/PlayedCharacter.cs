@@ -410,7 +410,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 // must fill the current threshold first
                 if (nextThreshold != null && amount > ( nextThreshold.PointsThreshold - currentPoints ))
                 {
-                    boost = (short)( threshold.PointsThreshold - pointsToSpend );
+                    boost = (short)( nextThreshold.PointsThreshold - pointsToSpend );
                     pointsToSpend += (short)( boost * threshold.PointsPerBoost );
 
                     boost = (short)( boost * threshold.BoostPerPoints );
@@ -419,11 +419,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 {
                     pointsToSpend += (short)( amount * threshold.PointsPerBoost );
 
-                    boost = (short)( boost * threshold.BoostPerPoints );
+                    boost = (short)( amount * threshold.BoostPerPoints );
                 }
 
                 amount -= boost;
                 currentPoints += boost;
+                totalBoost += boost;
             }
 
             return pointsToSpend;
