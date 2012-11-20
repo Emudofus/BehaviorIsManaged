@@ -146,7 +146,7 @@ namespace FightPlugin
         }
 
         private void OnFightLeft(PlayedCharacter character, Fight fight)
-        {            
+        {
             _character = null;
             character.Fighter.TurnStarted -= OnTurnStarted;
             fight.StateChanged -= OnStateChanged;
@@ -180,7 +180,7 @@ namespace FightPlugin
             foreach (Spell spell in _character.GetOrderListOfSimpleAttackSpells(nearestMonster, true))
             {
                 bool inRange = _character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
-                
+
                 if (inRange)
                 {
                     _character.CastSpell(spell, nearestMonster.Cell);
@@ -196,17 +196,17 @@ namespace FightPlugin
                     inLine = spell.LevelTemplate.castInLine;
                 }
             }
-            
+
             // No other spells can be cast => move away and pass the turn
             if (maxDistanceWished == -1)
-            { 
+            {
                 MoveFar();
                 _character.PassTurn();
                 return;
             }
 
             // If no spell is at range, then try to come closer and try again
-            MoveNear(nearestMonster, (int)(_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - maxDistanceWished), inLine);           
+            MoveNear(nearestMonster, (int)(_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - maxDistanceWished), inLine);
 
             _stopMovingDelegate = (sender, behavior, canceled) => StartAI();
             Bot.Character.Fighter.StopMoving += _stopMovingDelegate;
@@ -233,7 +233,7 @@ namespace FightPlugin
                 PlaceToWeakestEnemy();
                 return;
             }
-            PlaceAtDistanceFromWeakestEnemy(_character.GetRealSpellRange(bestSpell.LevelTemplate));
+            PlaceAtDistanceFromWeakestEnemy(_character.GetRealSpellRange(bestSpell.LevelTemplate), bestSpell.LevelTemplate.castInLine);
         }
 
         private Fighter FindWeakestEnemy()
@@ -254,40 +254,56 @@ namespace FightPlugin
             Bot.Character.Fighter.ChangePrePlacement(cell);
         }
 
-        private void PlaceAtDistanceFromWeakestEnemy(int distance)
+        private void PlaceAtDistanceFromWeakestEnemy(int distance, bool InLine)
         {
             var weakestEnemy = _character.GetOpposedTeam().Fighters.OrderBy(x => x.Level).FirstOrDefault();
             if (weakestEnemy == null)
             {
-                logger.Warn("PlaceToWeakestEnemy : enemy is null");
+                logger.Warn("PlaceAtDistanceFromWeakestEnemy : weakestEnemy is null");
                 return;
             }
-            // 1st step : we try to find all cells where weakest ennemy is closest than all other ennemies
-            Cell[] startingSet = Bot.Character.Fighter.Team.PlacementCells;
-            foreach(Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
-                if (otherEnnemy != weakestEnemy)
-                    startingSet = startingSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) >= x.ManhattanDistanceTo(weakestEnemy.Cell)).ToArray();
-            // 2nd step : if none, then we only remove cells where we are in contact of any other ennemy 
+            // find the cells under distance from weakestEnemy, and - if needed - in line
+            Cell[] startingSet;
+            startingSet = startingSet = Bot.Character.Fighter.Team.PlacementCells.Where(cell => ((cell.ManhattanDistanceTo(weakestEnemy.Cell) <= distance) && (!InLine || cell.X == weakestEnemy.Cell.X || cell.Y == weakestEnemy.Cell.Y))).ToArray();
             if (startingSet.Length == 0)
             {
-                startingSet = Bot.Character.Fighter.Team.PlacementCells;
-                foreach (Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
-                    if (otherEnnemy != weakestEnemy)
-                        startingSet = startingSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) > 1).ToArray();
+                PlaceToWeakestEnemy();
+                return;
             }
 
-            // 3st step : if still none, just keep all cells. 
-            if (startingSet.Length == 0)
-                startingSet = Bot.Character.Fighter.Team.PlacementCells;
-            
+            Cell[] finalSet = startingSet;
+            if (finalSet.Length > 1 && _character.GetOpposedTeam().Fighters.Count > 1)
+            {
+                // remove all cells where another enemy is closer
+                foreach (Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
+                    if (otherEnnemy != weakestEnemy)
+                        finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) >= x.ManhattanDistanceTo(weakestEnemy.Cell)).ToArray();
+
+                // if none, then we only remove cells where we are in contact of any other ennemy 
+                if (startingSet.Length == 0)
+                {
+                    finalSet = startingSet;
+                    foreach (Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
+                        if (otherEnnemy != weakestEnemy)
+                            finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) > 1).ToArray();
+                }
+
+                // if still none, just keep all cells, ignoring other enemies
+                if (finalSet.Length == 0)
+                    finalSet = startingSet;
+            }
             // Find a cell as far as possible from weakest ennemy, but not over distance
-            var cell = startingSet.Where(x => x.ManhattanDistanceTo(weakestEnemy.Cell) <= distance).OrderBy(x => x.ManhattanDistanceTo(weakestEnemy.Cell)).LastOrDefault();
+            var bestCell = finalSet.OrderBy(x => x.ManhattanDistanceTo(weakestEnemy.Cell)).LastOrDefault();
 
             // If none under distance, then the closest
-            if (cell==null)
-                cell = startingSet.OrderBy(x => x.ManhattanDistanceTo(weakestEnemy.Cell)).FirstOrDefault();
-            Bot.Character.Fighter.ChangePrePlacement(cell);
+            if (bestCell == null)
+            {
+                PlaceToWeakestEnemy();
+                return;
+            }
+            Bot.Character.Fighter.ChangePrePlacement(bestCell);
         }
+
 
         private void MoveNear(Fighter fighter, int mp, bool inLine = false)
         {
@@ -370,6 +386,8 @@ namespace FightPlugin
                 _character.Fight.StateChanged -= OnStateChanged;
                 _character = null;
             }
+
+            base.OnDetached();
         }
     }
 }
