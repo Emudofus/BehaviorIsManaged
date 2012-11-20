@@ -392,9 +392,11 @@ namespace BiM.Behaviors.Game.Stats
             InvisibilityState = (GameActionFightInvisibilityStateEnum) stats.invisibilityState;
 
 
-            this[PlayerField.AP].Update(stats.actionPoints);
-            this[PlayerField.MP].Update(stats.movementPoints);
-
+            //this[PlayerField.AP].Update(stats.actionPoints);
+            CurrentAP = stats.actionPoints;
+            //this[PlayerField.MP].Update(stats.movementPoints);
+            CurrentMP = stats.movementPoints;
+            
             this[PlayerField.PermanentDamagePercent].Update(stats.permanentDamagePercent);
             this[PlayerField.TackleBlock].Update(stats.tackleBlock);
             this[PlayerField.TackleEvade].Update(stats.tackleEvade);

@@ -29,6 +29,7 @@ using BiM.Core.Messages;
 using BiM.Core.Threading;
 using BiM.Protocol.Messages;
 using NLog;
+using BiM.Behaviors.Data;
 
 namespace FightPlugin
 {
@@ -145,12 +146,23 @@ namespace FightPlugin
             }
         }
 
+        
         private void OnFightLeft(PlayedCharacter character, Fight fight)
         {
             _character = null;
             character.Fighter.TurnStarted -= OnTurnStarted;
             fight.StateChanged -= OnStateChanged;
-            character.Fighter.SpellCasted -= _spellCastedDelegate;
+            if (_spellCastedDelegate != null)
+            {
+                character.Fighter.SpellCasted -= _spellCastedDelegate;
+                _spellCastedDelegate = null;
+            }
+            if (_stopMovingDelegate != null)
+            {
+                character.Fighter.StopMoving -= _stopMovingDelegate;
+                _stopMovingDelegate = null;
+            }
+
         }
 
         private void OnTurnStarted(Fighter fighter)
@@ -170,8 +182,8 @@ namespace FightPlugin
             }
             if (_spellCastedDelegate != null)
             {
-                _character.StopMoving -= _stopMovingDelegate;
-                _stopMovingDelegate = null;
+                _character.SpellCasted -= _spellCastedDelegate;
+                _spellCastedDelegate = null;
             }
 
             var nearestMonster = GetNearestEnemy();
@@ -184,7 +196,8 @@ namespace FightPlugin
                 if (inRange)
                 {
                     _character.CastSpell(spell, nearestMonster.Cell);
-                    _spellCastedDelegate = (sender, canceled) => StartAI();
+                    //_spellCastedDelegate = (sender, spellCast) => StartAI();
+                    _spellCastedDelegate = OnSpellCasted;
                     _character.SpellCasted += _spellCastedDelegate;
                     return;
                 }
@@ -210,6 +223,12 @@ namespace FightPlugin
 
             _stopMovingDelegate = (sender, behavior, canceled) => StartAI();
             Bot.Character.Fighter.StopMoving += _stopMovingDelegate;
+        }
+
+        private void OnSpellCasted(Fighter fighter, SpellCast spellCast)
+        {
+            logger.Debug("OnSpellCasted : {0} casted {1}", fighter.Name, DataProvider.Instance.Get<string>(spellCast.Spell.nameId));
+            Bot.CallDelayed(300, StartAI);
         }
 
         private void OnStopMoving(Spell spell, Fighter enemy)
