@@ -203,7 +203,7 @@ namespace FightPlugin
                     }
                     else
                         if (!_character.CastSpell(spell, nearestMonster.Cell))
-                            _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1} on {2}", _character.Name, spell, _character.));
+                            _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1}", _character.Name, spell));
                         else
                         {
                             //_spellCastedDelegate = (sender, spellCast) => StartAI();
