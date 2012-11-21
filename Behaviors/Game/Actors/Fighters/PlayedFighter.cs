@@ -177,7 +177,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
                 return false;
 
             // test the LoS
-            if (!NoRangeCheck && !Fight.CanBeSeen(Cell, cell, false))
+            if (!NoRangeCheck && spell.LevelTemplate.castTestLos && !Fight.CanBeSeen(Cell, cell, false))
                 return false;
 
             return true;
