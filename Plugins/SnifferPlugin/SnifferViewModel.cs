@@ -281,7 +281,8 @@ namespace SnifferPlugin
 
             Bot.Dispatcher.MessageDispatched -= OnMesssageDispatched;
             BotViewModel viewModel = Bot.GetViewModel();
-            viewModel.RemoveDocument(View);
+            if (viewModel != null)
+                viewModel.RemoveDocument(View);
         }
     }
 }

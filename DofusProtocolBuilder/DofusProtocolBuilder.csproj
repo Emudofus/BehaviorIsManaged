@@ -51,6 +51,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <DocumentationFile>bin\Debug\DofusProtocolBuilder.XML</DocumentationFile>
     <WarningLevel>0</WarningLevel>
+    <WarningsAsErrors>0067</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
