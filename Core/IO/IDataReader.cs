@@ -18,8 +18,18 @@ using System.IO;
 
 namespace BiM.Core.IO
 {
-    public interface IDataReader
+    public interface IDataReader : IDisposable
     {
+        long Position
+        {
+            get;
+        }
+
+        long BytesAvailable
+        {
+            get;
+        }
+
         /// <summary>
         ///   Read a Short from the Buffer
         /// </summary>
@@ -38,11 +48,6 @@ namespace BiM.Core.IO
         /// <returns></returns>
         Int64 ReadLong();
 
-        /// <summary>
-        ///   Read a Float from the Buffer
-        /// </summary>
-        /// <returns></returns>
-        float ReadFloat();
 
         /// <summary>
         ///   Read a UShort from the Buffer
@@ -95,10 +100,10 @@ namespace BiM.Core.IO
         Double ReadDouble();
 
         /// <summary>
-        ///   Read a Single from the Buffer
+        ///   Read a Float from the Buffer
         /// </summary>
         /// <returns></returns>
-        Single ReadSingle();
+        float ReadFloat();
 
         /// <summary>
         ///   Read a string from the Buffer

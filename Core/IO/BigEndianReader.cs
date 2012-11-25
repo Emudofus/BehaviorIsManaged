@@ -33,6 +33,15 @@ namespace BiM.Core.IO
             get { return m_reader.BaseStream.Length - m_reader.BaseStream.Position; }
         }
 
+        public long Position
+        {
+            get
+            {
+               return m_reader.BaseStream.Position;
+            }
+        }
+
+
         public Stream BaseStream
         {
             get
@@ -85,7 +94,7 @@ namespace BiM.Core.IO
             var bytes = new byte[count];
             int i;
             for (i = count - 1; i >= 0; i--)
-                bytes[i] = m_reader.ReadByte();
+                bytes[i] = (byte)BaseStream.ReadByte();
             return bytes;
         }
 

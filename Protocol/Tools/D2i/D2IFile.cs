@@ -38,7 +38,7 @@ namespace BiM.Protocol.Tools
 
         private void Initialize()
         {
-            using (var reader = new BigEndianReader(new StreamReader(m_uri).BaseStream))
+            using (var reader = new FastBigEndianReader(File.ReadAllBytes(m_uri)))
             {
                 var indexPos = reader.ReadInt();
                 reader.Seek(indexPos, SeekOrigin.Begin);
@@ -48,7 +48,7 @@ namespace BiM.Protocol.Tools
                 {
                     var key = reader.ReadInt();
                     var dataPos = reader.ReadInt();
-                    var pos = (int)reader.BaseStream.Position;
+                    var pos = (int)reader.Position;
                     reader.Seek(dataPos, SeekOrigin.Begin);
                     m_indexes.Add(key, reader.ReadUTF());
                     reader.Seek(pos, SeekOrigin.Begin);
@@ -58,7 +58,7 @@ namespace BiM.Protocol.Tools
                 {
                     var key = reader.ReadUTF();
                     var dataPos = reader.ReadInt();
-                    var pos = (int)reader.BaseStream.Position;
+                    var pos = (int)reader.Position;
                     reader.Seek(dataPos, SeekOrigin.Begin);
                     m_textIndexes.Add(key, reader.ReadUTF());
                     reader.Seek(pos, SeekOrigin.Begin);

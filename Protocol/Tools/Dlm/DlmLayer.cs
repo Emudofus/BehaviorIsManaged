@@ -18,9 +18,8 @@ using BiM.Core.IO;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmLayer : INotifyPropertyChanged
+    public class DlmLayer
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public DlmLayer(DlmMap map)
         {
             Map = map;
@@ -43,7 +42,7 @@ namespace BiM.Protocol.Tools.Dlm
             set;
         }
 
-        public static DlmLayer ReadFromStream(DlmMap map, BigEndianReader reader)
+        public static DlmLayer ReadFromStream(DlmMap map, IDataReader reader)
         {
             var layer = new DlmLayer(map);
 

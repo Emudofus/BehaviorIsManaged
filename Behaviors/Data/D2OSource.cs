@@ -65,6 +65,25 @@ namespace BiM.Behaviors.Data
 
         }
 
+        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        {
+            if (!DoesHandleType(typeof(T)))
+                throw new ArgumentException("typeof(T)");
+
+            if (!m_readers.ContainsKey(typeof(T)))
+                throw new ArgumentException("Cannot find data corresponding to type : " + typeof(T));
+
+            var reader = m_readers[typeof(T)];
+
+            foreach (var index in reader.Indexes)
+            {
+                var obj = reader.ReadObject(index.Key, false);
+
+                if (obj is T)
+                    yield return obj as T;
+            }
+        }
+
         public bool DoesHandleType(Type type)
         {
             return m_readers.ContainsKey(type);

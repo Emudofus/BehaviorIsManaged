@@ -28,7 +28,7 @@ namespace BiM.Behaviors.Data
         private Dictionary<Type, D2pEntry[]> m_types = new Dictionary<Type, D2pEntry[]>();
         private Dictionary<int, D2pEntry> m_entriesLinks = new Dictionary<int, D2pEntry>(); 
         private Dictionary<D2pEntry, IDataSource> m_sources = new Dictionary<D2pEntry, IDataSource>(); 
-        private D2pFile m_reader;
+        private readonly D2pFile m_reader;
 
         public D2PSource(D2pFile reader)
         {
@@ -36,6 +36,11 @@ namespace BiM.Behaviors.Data
             m_reader = reader;
 
             BindTypeWithExtension(typeof(DlmMap), ".dlm");
+        }
+
+        public D2pFile Reader
+        {
+            get { return m_reader; }
         }
 
         public void BindTypeWithExtension(Type type, string ext)
@@ -84,10 +89,33 @@ namespace BiM.Behaviors.Data
             return source.ReadObject<T>(keys);
         }
 
+        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        {
+            if (!DoesHandleType(typeof(T)))
+                throw new ArgumentException(string.Format("type {0} not handled", typeof(T)));
+
+            var entries = m_types[typeof(T)];
+
+            foreach (D2pEntry entry in entries)
+            {
+                IDataSource source = CreateDataSource(entry, typeof (T));
+                IEnumerator<T> enumerator = source.EnumerateObjects<T>(keys).GetEnumerator();
+
+                bool hasNext = true;
+                while (hasNext)
+                {
+                    hasNext = enumerator.MoveNext();
+
+                    if (hasNext)
+                        yield return enumerator.Current;
+                }
+            }
+        }
+
         private IDataSource CreateDataSource(D2pEntry entry, Type type)
         {
             if (type == typeof(DlmMap))
-                return new DLMSource(new DlmReader(new MemoryStream(m_reader.ReadFile(entry))));
+                return new DLMSource(new DlmReader(m_reader.ReadFile(entry)));
 
             throw new ArgumentException(string.Format("type {0} not handled", type));
         }

@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // SubMap.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,22 +13,40 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
+
+using System.Collections.Generic;
 
 namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class SubMap
+    public class SubMap : SerializableSubMap
     {
-        public SubMap(IMap map, Cell[] cells)
+        public SubMap(Map map, Cell[] cells)
         {
             Map = map;
             Cells = cells;
         }
 
-        public IMap Map
+        public Map Map
         {
             get;
-            set;
+            private set;
+        }
+
+        public override int MapId
+        {
+            get { return Map.Id; }
+        }
+
+        public override int X
+        {
+            get { return Map.PosX; }
+        }
+
+        public override int Y
+        {
+            get { return Map.PosY; }
         }
 
         public Cell[] Cells

@@ -18,9 +18,8 @@ using BiM.Core.IO;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmSoundElement : DlmBasicElement, INotifyPropertyChanged
+    public class DlmSoundElement : DlmBasicElement
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         private int m_baseVolume;
         private int m_fullVolumedistance;
         private int m_maxDelayBetweenloops;
@@ -71,7 +70,7 @@ namespace BiM.Protocol.Tools.Dlm
         }
 
 
-        public new static DlmSoundElement ReadFromStream(DlmCell cell, BigEndianReader reader)
+        public new static DlmSoundElement ReadFromStream(DlmCell cell, IDataReader reader)
         {
             var element = new DlmSoundElement(cell);
 

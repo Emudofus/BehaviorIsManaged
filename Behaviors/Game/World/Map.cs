@@ -21,19 +21,21 @@ using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Interactives;
-using BiM.Behaviors.Game.World.Areas;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Collections;
 using BiM.Core.Config;
+using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Tools.Dlm;
 using BiM.Protocol.Types;
 using NLog;
+using Npc = BiM.Behaviors.Game.Actors.RolePlay.Npc;
+using SubArea = BiM.Behaviors.Game.World.Areas.SubArea;
 
 namespace BiM.Behaviors.Game.World
 {
-    public partial class Map : MapContext<RolePlayActor>, IMap
+    public partial class Map : MapContext<RolePlayActor>
     {
         public const int ElevationTolerance = 11;
         public const uint Width = 14;
@@ -46,6 +48,7 @@ namespace BiM.Behaviors.Game.World
         public static string GenericDecryptionKey = "649ae451ca33ec53bbcbcc33becf15f4";
 
         private readonly DlmMap m_map;
+        private readonly MapPosition m_position;
         private readonly List<Tuple<uint, Cell>> m_elements = new List<Tuple<uint, Cell>>();
         private readonly ObservableCollectionMT<InteractiveObject> m_interactives;
         private readonly ReadOnlyObservableCollectionMT<InteractiveObject> m_readOnlyInteractives;
@@ -67,6 +70,14 @@ namespace BiM.Behaviors.Game.World
             {MapNeighbour.Bottom, 4},
         };
 
+        /// <summary>
+        /// Create a Map instance only used to store datas (cells, properties ...)
+        /// </summary>
+        public static Map CreateDataMapInstance(DlmMap map)
+        {
+            return new Map(map);
+        }
+
         public Map(int id)
             : this(id, GenericDecryptionKey)
         {
@@ -76,6 +87,7 @@ namespace BiM.Behaviors.Game.World
         {
             // decryption key not used ? oO
             m_map = DataProvider.Instance.Get<DlmMap>(id, GenericDecryptionKey);
+            m_position = DataProvider.Instance.GetOrDefault<MapPosition>(id);
             IEnumerable<Cell> cells = m_map.Cells.Select(entry => new Cell(this, entry));
             m_cells = new CellList(cells.ToArray());
 
@@ -83,6 +95,13 @@ namespace BiM.Behaviors.Game.World
 
             m_interactives = new ObservableCollectionMT<InteractiveObject>();
             m_readOnlyInteractives = new ReadOnlyObservableCollectionMT<InteractiveObject>(m_interactives);
+        }
+
+        private Map(DlmMap map)
+        {
+            m_position = DataProvider.Instance.GetOrDefault<MapPosition>(map.Id);
+            IEnumerable<Cell> cells = map.Cells.Select(entry => new Cell(this, entry));
+            m_cells = new CellList(cells.ToArray());
         }
 
         private void InitializeElements()
@@ -117,6 +136,7 @@ namespace BiM.Behaviors.Game.World
         }
 
         private CellList m_cells;
+        private string m_name;
 
         public override CellList Cells
         {
@@ -388,7 +408,6 @@ namespace BiM.Behaviors.Game.World
             get { return m_map.ForegroundFixtures; }
         }
 
-
         public int GroundCRC
         {
             get { return m_map.GroundCRC; }
@@ -402,6 +421,66 @@ namespace BiM.Behaviors.Game.World
         public override bool UsingNewMovementSystem
         {
             get { return m_map.UsingNewMovementSystem; }
+        }
+
+        #endregion
+
+        #region Position
+
+        public int PosX
+        {
+            get
+            {
+                return m_position != null ? m_position.posX : 255;
+            }
+        }
+
+        public int PosY
+        {
+            get
+            {
+                return m_position != null ? m_position.posY : 255;
+            }
+        }
+
+        public bool Outdoor
+        {
+            get
+            {
+                return m_position != null && m_position.outdoor;
+            }
+        }
+
+        public int Capabilities
+        {
+            get
+            {
+                return m_position != null ? m_position.capabilities : 0;
+            }
+        }
+
+        public string Name
+        {
+            get { if (m_position == null)
+                return string.Empty;
+                
+                return m_name ?? (m_name = DataProvider.Instance.Get<string>(m_position.nameId)); }
+        }
+
+        public int WorldMap
+        {
+            get
+            {
+                return m_position != null ? m_position.worldMap : -1;
+            }
+        }
+
+        public bool HasProprityOnWorldmap
+        {
+            get
+            {
+                return m_position != null && m_position.hasPriorityOnWorldmap;
+            }
         }
 
         #endregion

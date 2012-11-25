@@ -18,58 +18,35 @@ using BiM.Core.IO;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmCellData : INotifyPropertyChanged
+    public struct DlmCellData
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public DlmCellData(DlmMap map, short id)
+        public DlmCellData(short id)
         {
-            Map = map;
             Id = id;
             LosMov = 3;
+            m_rawFloor = 0;
+            m_floor = 0;
+            Speed = 0;
+            MapChangeData = 0;
+            MoveZone = 0;
         }
 
-        public DlmMap Map
-        {
-            get;
-            private set;
-        }
-
-        public short Id
-        {
-            get;
-            private set;
-        }
+        public short Id;
 
         public short Floor
         {
-            get;
-            set;
+            get { return m_floor ?? (m_floor = (short) (m_rawFloor*10)).Value; }
         }
 
-        public byte LosMov
-        {
-            get;
-            set;
-        }
+        private sbyte m_rawFloor;
+        private short? m_floor;
 
-        public byte Speed
-        {
-            get;
-            set;
-        }
+        public byte LosMov;
 
-        public byte MapChangeData
-        {
-            get;
-            set;
-        }
+        public byte Speed;
 
-        public byte MoveZone
-        {
-            get;
-            set;
-        }
-
+        public byte MapChangeData;
+        public byte MoveZone;
         public bool Los
         {
             get { return (LosMov & 2) >> 1 == 1; }
@@ -107,22 +84,23 @@ namespace BiM.Protocol.Tools.Dlm
 
 
 
-        public static DlmCellData ReadFromStream(DlmMap map, short id, BigEndianReader reader)
+        public static DlmCellData ReadFromStream(short id, byte version, IDataReader reader)
         {
-            var cell = new DlmCellData(map, id);
+            var cell = new DlmCellData(id);
 
-            cell.Floor = (short) (reader.ReadByte()*10);
+            cell.m_rawFloor = reader.ReadSByte();
 
-            if (cell.Floor == -1280)
+            if (cell.m_rawFloor == -128)
             {
                 return cell;
             }
+
 
             cell.LosMov = reader.ReadByte();
             cell.Speed = reader.ReadByte();
             cell.MapChangeData = reader.ReadByte();
 
-            if (map.Version > 5)
+            if (version > 5)
             {
                 cell.MoveZone = reader.ReadByte();
             }

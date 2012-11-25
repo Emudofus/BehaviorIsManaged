@@ -85,6 +85,16 @@ namespace BiM.Behaviors.Data
             logger.Info("File added : {0}", Path.GetFileName(d2iFile.FilePath));
         }
 
+        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        {
+            if (!DoesHandleType(typeof(T)))
+                throw new ArgumentException("typeof(T)");
+
+            var language = keys.Length == 1 ? (Languages)keys[0] : DefaultLanguage;
+
+            return m_readers[language].GetAllText().Values as IEnumerable<T>;
+        }
+
         public bool DoesHandleType(Type type)
         {
             return type == typeof(string);

@@ -14,6 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
+using System.Collections.Generic;
 using BiM.Behaviors.Data;
 using BiM.Behaviors.Messages;
 using BiM.Core.Messages;
@@ -46,6 +47,23 @@ namespace BiM.Behaviors.Game.Items.Icons
             var data = m_d2PFile.ReadFile(id + ".png");
 
             return new ItemIcon(id, id + ".png", data) as T;
+        }
+
+        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        {
+            if (!DoesHandleType(typeof(T)))
+                throw new ArgumentException("typeof(T)");
+
+            foreach (var entry in m_d2PFile.Entries)
+            {
+                if (!entry.FullFileName.EndsWith(".png"))
+                    continue;
+
+                var data = m_d2PFile.ReadFile(entry);
+                var id = int.Parse(entry.FileName.Replace(".png", ""));
+
+                yield return new ItemIcon(id, entry.FileName, data) as T;
+            }
         }
 
         public bool DoesHandleType(Type type)

@@ -58,9 +58,9 @@ namespace BiM.Protocol.Tools.D2p
             set { m_entries = value; }
         }
 
-        private List<D2pDirectory> m_directories = new List<D2pDirectory>();
+        private Dictionary<string, D2pDirectory> m_directories = new Dictionary<string, D2pDirectory>();
 
-        public List<D2pDirectory> Directories
+        public Dictionary<string, D2pDirectory> Directories
         {
             get { return m_directories; }
             set { m_directories = value; }
@@ -84,12 +84,16 @@ namespace BiM.Protocol.Tools.D2p
 
         public bool HasDirectory(string directory)
         {
-            return m_directories.Any(entry => entry.Name == directory);
+            return m_directories.ContainsKey(directory);
         }
 
-        public D2pDirectory TryGetDirectory(string directory)
+        public D2pDirectory TryGetDirectory(string name)
         {
-            return m_directories.SingleOrDefault(entry => entry.Name == directory);
+            D2pDirectory directory;
+            if (m_directories.TryGetValue(name, out directory))
+                return directory;
+
+            return null;
         }
 
         public bool HasEntry(string entryName)

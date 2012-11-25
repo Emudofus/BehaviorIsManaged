@@ -50,21 +50,28 @@ namespace BiM.Protocol.Tools
         private int m_headeroffset;
         private Dictionary<int, int> m_indextable = new Dictionary<int, int>();
         private int m_indextablelen;
-        private BigEndianReader m_reader;
+        private IDataReader m_reader;
 
         /// <summary>
         ///   Create and initialise a new D2o file
         /// </summary>
         /// <param name = "filePath">Path of the file</param>
         public D2OReader(string filePath)
-            : this(new MemoryStream(File.ReadAllBytes(filePath)))
+            : this(new FastBigEndianReader(File.ReadAllBytes(filePath)))
         {
             m_filePath = filePath;
         }
 
         public D2OReader(Stream stream)
         {
-            Initialize(stream);
+            m_reader = new BigEndianReader(stream);
+            Initialize();
+        }
+
+        public D2OReader(IDataReader reader)
+        {
+            m_reader = reader;
+            Initialize();
         }
 
         public string FilePath
@@ -107,10 +114,8 @@ namespace BiM.Protocol.Tools
             }
         }
 
-        private void Initialize(Stream stream)
+        private void Initialize()
         {
-            m_reader = new BigEndianReader(stream);
-
             lock (m_reader)
             {
                 string header = m_reader.ReadUTFBytes(3);
@@ -177,13 +182,13 @@ namespace BiM.Protocol.Tools
                     if (field == null)
                         throw new Exception(string.Format("Missing field '{0}' ({1}) in class '{2}'", fieldname, fieldtype, classType.Name));
 
-                    fields.Add(new D2OFieldDefinition(fieldname, fieldtype, field, m_reader.BaseStream.Position,
+                    fields.Add(new D2OFieldDefinition(fieldname, fieldtype, field, m_reader.Position,
                                                       vectorTypes.ToArray()));
                 }
 
                 m_classes.Add(classId,
                               new D2OClassDefinition(classId, classMembername, classPackagename, classType, fields,
-                                                     m_reader.BaseStream.Position));
+                                                     m_reader.Position));
             }
         }
 
@@ -210,14 +215,14 @@ namespace BiM.Protocol.Tools
         /// <param name = "allownulled">True to adding null instead of throwing an exception</param>
         /// <returns></returns>
         public Dictionary<int, T> ReadObjects<T>(bool allownulled = false)
-            where T : class, IDataObject
+            where T : class
         {
             if (!IsTypeDefined(typeof (T)))
                 throw new Exception("The file doesn't contain this class");
 
             var result = new Dictionary<int, T>(m_indextable.Count);
 
-            using (BigEndianReader reader = CloneReader())
+            using (var reader = CloneReader())
             {
                 foreach (var index in m_indextable)
                 {
@@ -250,29 +255,32 @@ namespace BiM.Protocol.Tools
         /// </summary>
         /// <param name = "allownulled">True to adding null instead of throwing an exception</param>
         /// <returns></returns>
-        public Dictionary<int, object> ReadObjects(bool allownulled = false)
+        public Dictionary<int, object> ReadObjects(bool allownulled = false, bool cloneReader = false)
         {
             var result = new Dictionary<int, object>(m_indextable.Count);
 
-            using (BigEndianReader reader = CloneReader())
-            {
-                foreach (var index in m_indextable)
-                {
-                    reader.Seek(index.Value, SeekOrigin.Begin);
+            IDataReader reader = cloneReader ? CloneReader() : m_reader;
 
-                    try
-                    {
-                        result.Add(index.Key, ReadObject(index.Key, reader));
-                    }
-                    catch
-                    {
-                        if (allownulled)
-                            result.Add(index.Key, null);
-                        else
-                            throw;
-                    }
+            foreach (var index in m_indextable)
+            {
+                reader.Seek(index.Value, SeekOrigin.Begin);
+
+                try
+                {
+                    result.Add(index.Key, ReadObject(index.Key, reader));
+                }
+                catch
+                {
+                    if (allownulled)
+                        result.Add(index.Key, null);
+                    else
+                        throw;
                 }
             }
+
+            if (cloneReader)
+                reader.Dispose();
+
             return result;
         }
 
@@ -285,7 +293,7 @@ namespace BiM.Protocol.Tools
         {
             if (cloneReader)
             {
-                using (BigEndianReader reader = CloneReader())
+                using (var reader = CloneReader())
                 {
                     return ReadObject(index, reader);
                 }
@@ -297,7 +305,7 @@ namespace BiM.Protocol.Tools
             }
         }
 
-        private object ReadObject(int index, BigEndianReader reader)
+        private object ReadObject(int index, IDataReader reader)
         {
             int offset = m_indextable[index];
             reader.Seek(offset, SeekOrigin.Begin);
@@ -309,7 +317,7 @@ namespace BiM.Protocol.Tools
             return result;
         }
 
-        private object BuildObject(D2OClassDefinition classDefinition, BigEndianReader reader)
+        private object BuildObject(D2OClassDefinition classDefinition, IDataReader reader)
         {
             if (!objectCreators.ContainsKey(classDefinition.ClassType))
             {
@@ -353,16 +361,21 @@ namespace BiM.Protocol.Tools
             return objectCreators[classDefinition.ClassType](values.ToArray());
         }
 
-        public T ReadObject<T>(int index)
+        public T ReadObject<T>(int index, bool cloneReader = false)
             where T : class
         {
-            using (BigEndianReader reader = CloneReader())
+            if (cloneReader)
             {
-                return ReadObject<T>(index, reader);
+                using (var reader = CloneReader())
+                {
+                    return ReadObject<T>(index, reader);
+                }
             }
+
+            return ReadObject<T>(index, m_reader);
         }
 
-        private T ReadObject<T>(int index, BigEndianReader reader)
+        private T ReadObject<T>(int index, IDataReader reader)
             where T : class
         {
             if (!IsTypeDefined(typeof (T)))
@@ -404,7 +417,7 @@ namespace BiM.Protocol.Tools
             }
         }
 
-        private object ReadField(BigEndianReader reader, D2OFieldDefinition field, D2OFieldType typeId,
+        private object ReadField(IDataReader reader, D2OFieldDefinition field, D2OFieldType typeId,
                                  int vectorDimension = 0)
         {
             switch (typeId)
@@ -429,7 +442,7 @@ namespace BiM.Protocol.Tools
         }
 
 
-        private object ReadFieldVector(BigEndianReader reader, D2OFieldDefinition field, int vectorDimension)
+        private object ReadFieldVector(IDataReader reader, D2OFieldDefinition field, int vectorDimension)
         {
             int count = reader.ReadInt();
 
@@ -459,7 +472,7 @@ namespace BiM.Protocol.Tools
             return result;
         }
 
-        private object ReadFieldObject(BigEndianReader reader)
+        private object ReadFieldObject(IDataReader reader)
         {
             int classid = reader.ReadInt();
 
@@ -472,45 +485,52 @@ namespace BiM.Protocol.Tools
             return null;
         }
 
-        private static int ReadFieldInt(BigEndianReader reader)
+        private static int ReadFieldInt(IDataReader reader)
         {
             return reader.ReadInt();
         }
 
-        private static uint ReadFieldUInt(BigEndianReader reader)
+        private static uint ReadFieldUInt(IDataReader reader)
         {
             return reader.ReadUInt();
         }
 
-        private static bool ReadFieldBool(BigEndianReader reader)
+        private static bool ReadFieldBool(IDataReader reader)
         {
             return reader.ReadByte() != 0;
         }
 
-        private static string ReadFieldUTF(BigEndianReader reader)
+        private static string ReadFieldUTF(IDataReader reader)
         {
             return reader.ReadUTF();
         }
 
-        private static double ReadFieldDouble(BigEndianReader reader)
+        private static double ReadFieldDouble(IDataReader reader)
         {
             return reader.ReadDouble();
         }
 
-        private static int ReadFieldI18n(BigEndianReader reader)
+        private static int ReadFieldI18n(IDataReader reader)
         {
             return reader.ReadInt();
         }
 
-        internal BigEndianReader CloneReader()
+        internal IDataReader CloneReader()
         {
             lock (m_reader)
             {
-                if (m_reader.BaseStream.Position > 0)
+                if (m_reader.Position > 0)
                     m_reader.Seek(0, SeekOrigin.Begin);
 
-                Stream streamClone = new MemoryStream();
-                m_reader.BaseStream.CopyTo(streamClone);
+                Stream streamClone;
+
+                if (m_reader is FastBigEndianReader)
+                    return new FastBigEndianReader(( m_reader as FastBigEndianReader ).Buffer);
+                else
+                {
+                    streamClone = new MemoryStream();
+                    ((BigEndianReader)m_reader).BaseStream.CopyTo(streamClone);
+                }
 
                 return new BigEndianReader(streamClone);
             }
