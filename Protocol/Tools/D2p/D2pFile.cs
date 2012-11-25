@@ -34,11 +34,11 @@ namespace BiM.Protocol.Tools.D2p
         private readonly Queue<D2pFile> m_linksToSave = new Queue<D2pFile>();
         private readonly List<D2pProperty> m_properties = new List<D2pProperty>();
 
-        private readonly List<D2pDirectory> m_rootDirectories = new List<D2pDirectory>();
+        private readonly Dictionary<string, D2pDirectory> m_rootDirectories = new Dictionary<string, D2pDirectory>();
         private string m_filePath;
 
         private bool m_isDisposed;
-        private BigEndianReader m_reader;
+        private IDataReader m_reader;
 
         public D2pFile()
         {
@@ -46,17 +46,15 @@ namespace BiM.Protocol.Tools.D2p
             m_reader = new BigEndianReader(new byte[0]);
         }
 
-        public D2pFile(string file)
+        public D2pFile(string file, bool preload=false)
         {
             FilePath = file;
-            m_reader = new BigEndianReader(File.OpenRead(file));
+            if (preload)
+                m_reader = new FastBigEndianReader(File.ReadAllBytes(file));
+            else
+                m_reader = new BigEndianReader(File.OpenRead(file));
 
             InternalOpen();
-        }
-
-        public Stream Stream
-        {
-            get { return m_reader != null ? m_reader.BaseStream : null; }
         }
 
         public D2pIndexTable IndexTable
@@ -80,9 +78,9 @@ namespace BiM.Protocol.Tools.D2p
             get { return m_links.AsReadOnly(); }
         }
 
-        public ReadOnlyCollection<D2pDirectory> RootDirectories
+        public IEnumerable<D2pDirectory> RootDirectories
         {
-            get { return m_rootDirectories.AsReadOnly(); }
+            get { return m_rootDirectories.Values; }
         }
 
         public string FilePath
@@ -157,9 +155,6 @@ namespace BiM.Protocol.Tools.D2p
 
         private void InternalOpen()
         {
-            if (!Stream.CanSeek)
-                m_reader = m_reader.ReadBytesInNewBigEndianReader((int) m_reader.BytesAvailable);
-
             if (m_reader.ReadByte() != 2 || m_reader.ReadByte() != 1)
                 throw new FileLoadException("Corrupted d2p header");
 
@@ -384,28 +379,27 @@ namespace BiM.Protocol.Tools.D2p
                 return;
 
             D2pDirectory current = null;
-            if (!HasDirectory(directories[0]))
+            if (!m_rootDirectories.ContainsKey(directories[0]))
             {
-                current = new D2pDirectory(directories[0]);
-
-                m_rootDirectories.Add(current);
+                m_rootDirectories.Add(directories[0], current = new D2pDirectory(directories[0]));
             }
             else
             {
-                current = TryGetDirectory(directories[0]);
+                current = m_rootDirectories[directories[0]];
             }
 
             current.Entries.Add(entry);
 
             foreach (string directory in directories.Skip(1))
             {
-                if (!current.HasDirectory(directory))
+                var next = current.TryGetDirectory(directory);
+                if (next == null)
                 {
                     var dir = new D2pDirectory(directory)
                                   {
                                       Parent = current
                                   };
-                    current.Directories.Add(dir);
+                    current.Directories.Add(directory, dir);
 
                     current = dir;
                 }
@@ -454,9 +448,9 @@ namespace BiM.Protocol.Tools.D2p
                 current.Entries.Remove(entry);
 
                 if (current.Parent != null && current.Entries.Count == 0)
-                    current.Parent.Directories.Remove(current);
+                    current.Parent.Directories.Remove(current.Name);
                 else if (current.IsRoot && current.Entries.Count == 0)
-                    m_rootDirectories.Remove(current);
+                    m_rootDirectories.Remove(current.Name);
 
                 current = current.Parent;
             }
@@ -558,9 +552,9 @@ namespace BiM.Protocol.Tools.D2p
                 ExtractFile(entry.FullFileName, Path.Combine(destination, entry.FullFileName));
             }
 
-            foreach (D2pDirectory pDirectory in directory.Directories)
+            foreach (var pDirectory in directory.Directories)
             {
-                ExtractDirectory(pDirectory.FullName, destination);
+                ExtractDirectory(pDirectory.Value.FullName, destination);
             }
         }
 
@@ -746,7 +740,8 @@ namespace BiM.Protocol.Tools.D2p
             if (directoriesName.Length == 0)
                 return false;
 
-            D2pDirectory current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
+            D2pDirectory current = null;
+            m_rootDirectories.TryGetValue(directoriesName[0], out current);
 
             if (current == null)
                 return false;
@@ -769,7 +764,8 @@ namespace BiM.Protocol.Tools.D2p
             if (directoriesName.Length == 0)
                 return null;
 
-            D2pDirectory current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
+            D2pDirectory current = null;
+            m_rootDirectories.TryGetValue(directoriesName[0], out current);
 
             if (current == null)
                 return null;
@@ -793,7 +789,8 @@ namespace BiM.Protocol.Tools.D2p
             if (directoriesName.Length == 0)
                 return new D2pDirectory[0];
 
-            D2pDirectory current = m_rootDirectories.SingleOrDefault(entry => entry.Name == directoriesName[0]);
+            D2pDirectory current = null;
+            m_rootDirectories.TryGetValue(directoriesName[0], out current);
 
             if (current == null)
                 return new D2pDirectory[0];

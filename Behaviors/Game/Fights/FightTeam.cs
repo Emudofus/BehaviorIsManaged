@@ -71,6 +71,11 @@ namespace BiM.Behaviors.Game.Fights
             get { return m_fighters.AsReadOnly(); }
         }
 
+        public Fighter[] FightersAlive
+        {
+            get { return m_fighters.Where(x => x.IsAlive).ToArray(); }
+        }
+
         public Fighter Leader
         {
             get;

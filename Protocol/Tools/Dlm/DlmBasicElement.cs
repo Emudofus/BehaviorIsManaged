@@ -37,7 +37,7 @@ namespace BiM.Protocol.Tools.Dlm
             private set;
         }
 
-        public static DlmBasicElement ReadFromStream(DlmCell cell, BigEndianReader reader)
+        public static DlmBasicElement ReadFromStream(DlmCell cell, IDataReader reader)
         {
             var type = reader.ReadByte();
 

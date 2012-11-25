@@ -42,6 +42,7 @@ namespace BiM.Behaviors.Game.Fights
         public delegate void TurnHandler(Fight fight, Fighter fighter);
         public event TurnHandler TurnStarted;
         public event TurnHandler TurnEnded;
+        public event TurnHandler SequenceEnded;
 
         public delegate void ActorAddedRemovedHandler(Fight fight, Fighter fighter);
         public event ActorAddedRemovedHandler ActorAdded;
@@ -507,6 +508,23 @@ namespace BiM.Behaviors.Game.Fights
             if (msg == null) throw new ArgumentNullException("msg");
             Id = msg.fightId;
             GetTeam(msg.teamId).Update(msg);
+        }
+
+        public void EndSequence(SequenceEndMessage message)
+        {
+            var fighter = GetFighter(message.authorId);
+            
+            if (fighter == null)
+                throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot start turn", message.authorId));
+
+            if (SequenceEnded != null)
+                SequenceEnded(this, fighter);
+
+            if ((TimeLine.CurrentPlayer != null) && (message.authorId != fighter.Id))
+                throw new InvalidOperationException(string.Format("EndSequence authorId {0} is not current Player {1}", message.authorId, fighter.Id));
+
+            if (TimeLine.CurrentPlayer != null)
+                TimeLine.CurrentPlayer.NotifySequenceEnded();
         }
     }
 }

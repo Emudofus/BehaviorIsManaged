@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// Region.cs
+// TransitionAttribute.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -15,36 +15,15 @@
 #endregion
 
 using System;
-using System.ComponentModel;
-using System.Windows;
-using BiM.Protocol.Tools.Dlm;
 
-namespace BiM.Behaviors.Game.World.MapTraveling
+namespace BiM.Behaviors.Game.World.MapTraveling.Transitions
 {
-    public class Region : INotifyPropertyChanged
+    public class TransitionAttribute : Attribute
     {
-        public Region(Point[] polygon)
-        {
-            Polygon = polygon;
-        }
-
-        public Point[] Polygon
+        public int Identifier
         {
             get;
             set;
-        }
-
-
-        public static Region CreateRegion(DlmCellData[] cells)
-        {
-            throw new NotImplementedException();
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

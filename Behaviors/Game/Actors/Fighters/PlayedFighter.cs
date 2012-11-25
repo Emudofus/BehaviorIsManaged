@@ -151,7 +151,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// <returns>False if cannot cast the spell</returns>
         public bool CanCastSpell(Spells.Spell spell, Fighter fighter, bool NoRangeCheck = false)
         {
-            return CanCastSpell(spell, fighter.Cell);
+            return CanCastSpell(spell, fighter.Cell, NoRangeCheck);
         }
 
         /// <summary>
@@ -159,23 +159,25 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// </summary>
         /// <param name="spell">Casted spell</param>
         /// <param name="cell">Targeted cell</param>
+        /// <param name="NoRangeCheck">if true, then skip all checking related with caster position, 
+        /// (preparatory stuff, before fight)</param>
         /// <returns>False if cannot cast the spell</returns>
         public bool CanCastSpell(Spells.Spell spell, Cell cell, bool NoRangeCheck = false)
         {
             // todo spells modifications
             // todo states
 
-            if (!IsPlaying())
+            if (!NoRangeCheck && !IsPlaying()) 
                 return false;
 
             if (spell.LevelTemplate.apCost > Stats.CurrentAP)
                 return false;
 
-            if (!IsInSpellRange(cell, spell.LevelTemplate))
+            if (!NoRangeCheck && !IsInSpellRange(cell, spell.LevelTemplate))
                 return false;
 
             // test the LoS
-            if (!NoRangeCheck && !Fight.CanBeSeen(Cell, cell, false))
+            if (!NoRangeCheck && spell.LevelTemplate.castTestLos && !Fight.CanBeSeen(Cell, cell, false))
                 return false;
 
             return true;

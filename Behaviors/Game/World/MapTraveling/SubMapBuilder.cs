@@ -24,7 +24,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
     /// <summary>
     /// Generate the submaps composing a Map
     /// </summary>
-    public class SubMapBuilder
+    public class SubMapBuilder : IDisposable
     {
         private class BoundCell
         {
@@ -51,12 +51,12 @@ namespace BiM.Behaviors.Game.World.MapTraveling
         private Dictionary<int, BoundCell> m_availableCells = new Dictionary<int, BoundCell>();
         private bool m_initialized;
 
-        public SubMapBuilder(IMap map)
+        public SubMapBuilder(Map map)
         {
             Map = map;
         }
 
-        public IMap Map
+        public Map Map
         {
             get;
             set;
@@ -115,7 +115,6 @@ namespace BiM.Behaviors.Game.World.MapTraveling
 
             return results.ToArray();
         }
-
 
         // useless
         /*
@@ -209,6 +208,14 @@ namespace BiM.Behaviors.Game.World.MapTraveling
                     yield return connectedCell;
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            m_availableCells.Clear();
+            m_availableCells = null;
+            m_treatedCells.Clear();
+            m_treatedCells = null;
         }
     }
 }

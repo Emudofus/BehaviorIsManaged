@@ -43,14 +43,19 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
         public delegate void TurnHandler(Fighter fighter);
 
+        public event TurnHandler SequenceEnded;
+
+        internal void NotifySequenceEnded()
+        {
+            if (SequenceEnded != null) SequenceEnded(this);
+        }
 
 
         public event TurnHandler TurnStarted;
 
         internal void NotifyTurnStarted()
         {
-            TurnHandler handler = TurnStarted;
-            if (handler != null) handler( this);
+            if (TurnStarted != null) TurnStarted(this);
         }
 
         public event TurnHandler TurnEnded;

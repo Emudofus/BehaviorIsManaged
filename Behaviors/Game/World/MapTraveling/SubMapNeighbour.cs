@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// LightMap.cs
+// SubMapNeighbour.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,11 +13,31 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-namespace BiM.Behaviors.Game.World.Light
+
+using BiM.Behaviors.Game.World.MapTraveling.Transitions;
+
+namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class LightMap
+    public class SubMapNeighbour
     {
-        public CellList Cells
+        public SubMapNeighbour()
+        {
+            
+        }
+
+        public SubMapNeighbour(long globalId, SubMapTransition transition)
+        {
+            GlobalId = globalId;
+            Transition = transition;
+        }
+
+        public long GlobalId
+        {
+            get;
+            set;
+        }
+
+        public SubMapTransition Transition
         {
             get;
             set;

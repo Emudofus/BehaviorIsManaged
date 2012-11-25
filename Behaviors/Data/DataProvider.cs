@@ -77,5 +77,45 @@ namespace BiM.Behaviors.Data
 
             throw new AggregateException(string.Format("Cannot retrieve {0} with these keys {1}", typeof(T), string.Join(",", keys)), exceptions);
         }
+
+        public T GetOrDefault<T>(params object[] keys) where T : class
+        {
+            try
+            {
+                return Get<T>(keys);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public IEnumerable<T> EnumerateAll<T>(params object[] keys) where T : class
+        {
+            // try each source before throwing an exception
+            var exceptions = new List<Exception>();
+            var sources = GetSourcesMatching(typeof(T));
+            foreach (var source in sources)
+            {
+                try
+                {
+                    // lock the source to ensure thread safe context
+                    // sacrify some performances
+                    lock (source)
+                    {
+                        var data = source.EnumerateObjects<T>(keys);
+                        
+                        return data;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+
+            throw new AggregateException(string.Format("Cannot retrieve {0} with these keys {1}", typeof(T), string.Join(",", keys)), exceptions);
+
+        }
     }
 }

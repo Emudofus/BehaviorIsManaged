@@ -60,8 +60,8 @@ namespace FightPlugin
         private SimplerTimer _checkTimer;
         private bool _sit = false;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private ContextActor.MoveStopHandler _stopMovingDelegate;
-        private Fighter.SpellCastHandler _spellCastedDelegate;
+        private ContextActor.MoveStopHandler _stopMovingDelegate;        
+        private Fighter.TurnHandler _sequenceEnded;
 
         public FFight(Bot bot)
             : base(bot)
@@ -103,12 +103,11 @@ namespace FightPlugin
 
         private void CheckMonsters()
         {
-            if ((Bot.Character.Stats.Health * 2) < Bot.Character.Stats.MaxHealth)
+            if (Bot.Character.Stats.Health < Bot.Character.Stats.MaxHealth)
             {
                 if (!_sit)
                 {
                     Bot.Character.SendMessage(String.Format("Character health too low : {0}/{1}", Bot.Character.Stats.Health, Bot.Character.Stats.MaxHealth));
-
                     Bot.CallDelayed(500, Sit);
                 }
 
@@ -116,8 +115,8 @@ namespace FightPlugin
             }
 
             var monster = Bot.Character.Map.Actors.OfType<GroupMonster>()
-                .Where(x => x.Level < Bot.Character.Level * 2)
-                .OrderBy(x => x.Level).FirstOrDefault();
+                .Where(x => x.Level < Math.Min(Bot.Character.Level * 2 + 1, Bot.Character.Level + 10))
+                .OrderBy(x => Math.Abs(x.Level - Bot.Character.Level)).FirstOrDefault(); // As close as possible from character's level
 
             if (monster != null)
             {
@@ -149,27 +148,27 @@ namespace FightPlugin
         
         private void OnFightLeft(PlayedCharacter character, Fight fight)
         {
-            _character = null;
-            character.Fighter.TurnStarted -= OnTurnStarted;
-            fight.StateChanged -= OnStateChanged;
-            if (_spellCastedDelegate != null)
+            if (_sequenceEnded != null)
             {
-                character.Fighter.SpellCasted -= _spellCastedDelegate;
-                _spellCastedDelegate = null;
+                if (_character != null) _character.SequenceEnded -= _sequenceEnded;
+                _sequenceEnded = null;
             }
             if (_stopMovingDelegate != null)
             {
-                character.Fighter.StopMoving -= _stopMovingDelegate;
+                if (_character != null) _character.StopMoving -= _stopMovingDelegate;
                 _stopMovingDelegate = null;
             }
-
+            if (_character != null) _character.TurnStarted -= OnTurnStarted;
+            fight.StateChanged -= OnStateChanged;
+            _character.Dispose();
+            _character = null;
         }
 
         private void OnTurnStarted(Fighter fighter)
         {
             var bot = BotManager.Instance.GetCurrentBot();
 
-            StartAI();
+            Bot.CallDelayed(500, StartAI); 
         }
 
 
@@ -180,34 +179,47 @@ namespace FightPlugin
                 _character.StopMoving -= _stopMovingDelegate;
                 _stopMovingDelegate = null;
             }
-            if (_spellCastedDelegate != null)
+            if (_sequenceEnded != null)
             {
-                _character.SpellCasted -= _spellCastedDelegate;
-                _spellCastedDelegate = null;
+                _character.SequenceEnded -= _sequenceEnded;
+                _sequenceEnded = null;
             }
 
             var nearestMonster = GetNearestEnemy();
             int maxDistanceWished = -1;
             bool inLine = false;
+            bool needLOSCheck = false;
             foreach (Spell spell in _character.GetOrderListOfSimpleAttackSpells(nearestMonster, true))
             {
                 bool inRange = _character.IsInSpellRange(nearestMonster.Cell, spell.LevelTemplate);
-
+                bool LoSisOK = !spell.LevelTemplate.castTestLos || _character.Fight.CanBeSeen(_character.Cell, nearestMonster.Cell, false);
                 if (inRange)
                 {
-                    _character.CastSpell(spell, nearestMonster.Cell);
-                    //_spellCastedDelegate = (sender, spellCast) => StartAI();
-                    _spellCastedDelegate = OnSpellCasted;
-                    _character.SpellCasted += _spellCastedDelegate;
-                    return;
+                    if (spell.LevelTemplate.castTestLos && !_character.Fight.CanBeSeen(_character.Cell, nearestMonster.Cell, false))
+                    {
+                        maxDistanceWished = _character.GetRealSpellRange(spell.LevelTemplate);
+                        inLine = spell.LevelTemplate.castInLine;
+                        needLOSCheck = true;
+                    }
+                    else
+                        if (!_character.CastSpell(spell, nearestMonster.Cell))
+                            _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1}", _character.Name, spell));
+                        else
+                        {
+                            //_spellCastedDelegate = (sender, spellCast) => StartAI();
+                            _sequenceEnded = OnSequenceEnd;
+                            _character.SequenceEnded += _sequenceEnded;
+                            return;
+                        }
                 }
-
-                // Available but not in range
-                if (_character.GetRealSpellRange(spell.LevelTemplate) > maxDistanceWished)
-                {
-                    maxDistanceWished = _character.GetRealSpellRange(spell.LevelTemplate);
-                    inLine = spell.LevelTemplate.castInLine;
-                }
+                else
+                    // Available but not in range
+                    if (_character.GetRealSpellRange(spell.LevelTemplate) > maxDistanceWished)
+                    {
+                        maxDistanceWished = _character.GetRealSpellRange(spell.LevelTemplate);
+                        inLine = spell.LevelTemplate.castInLine;
+                        needLOSCheck = spell.LevelTemplate.castTestLos;
+                    }
             }
 
             // No other spells can be cast => move away and pass the turn
@@ -219,15 +231,15 @@ namespace FightPlugin
             }
 
             // If no spell is at range, then try to come closer and try again
-            MoveNear(nearestMonster, (int)(_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - maxDistanceWished), inLine);
+            MoveNear(nearestMonster, (int)(_character.Cell.ManhattanDistanceTo(nearestMonster.Cell) - maxDistanceWished), inLine, needLOSCheck);
 
             _stopMovingDelegate = (sender, behavior, canceled) => StartAI();
             Bot.Character.Fighter.StopMoving += _stopMovingDelegate;
         }
 
-        private void OnSpellCasted(Fighter fighter, SpellCast spellCast)
+        
+        private void OnSequenceEnd(Fighter fighter)
         {
-            logger.Debug("OnSpellCasted : {0} casted {1}", fighter.Name, DataProvider.Instance.Get<string>(spellCast.Spell.nameId));
             Bot.CallDelayed(300, StartAI);
         }
 
@@ -248,21 +260,23 @@ namespace FightPlugin
             Spell bestSpell = _character.GetOrderListOfSimpleAttackSpells(weakestEnemy, true).FirstOrDefault();
             if (bestSpell == null || weakestEnemy == null)
             {
-                logger.Warn("FindOptimalPlacement : can't find a position");
+                logger.Warn("FindOptimalPlacement : can't find a position (bestSpell: {0}, weakestEnnemy: {1})", bestSpell, weakestEnemy);
                 PlaceToWeakestEnemy();
                 return;
             }
+            logger.Warn("FindOptimalPlacement : bestSpell: {0}, weakestEnnemy: {1} ({2})", bestSpell, weakestEnemy, weakestEnemy.Cell);
+                
             PlaceAtDistanceFromWeakestEnemy(_character.GetRealSpellRange(bestSpell.LevelTemplate), bestSpell.LevelTemplate.castInLine);
         }
 
         private Fighter FindWeakestEnemy()
         {
-            return _character.GetOpposedTeam().Fighters.OrderBy(x => x.Level).FirstOrDefault();
+            return _character.GetOpposedTeam().FightersAlive.OrderBy(x => x.Level).FirstOrDefault();
         }
 
         private void PlaceToWeakestEnemy()
         {
-            var enemy = _character.GetOpposedTeam().Fighters.OrderBy(x => x.Level).FirstOrDefault();
+            var enemy = _character.GetOpposedTeam().FightersAlive.OrderBy(x => x.Level).FirstOrDefault();
             if (enemy == null)
             {
                 logger.Warn("PlaceToWeakestEnemy : enemy is null");
@@ -275,7 +289,7 @@ namespace FightPlugin
 
         private void PlaceAtDistanceFromWeakestEnemy(int distance, bool InLine)
         {
-            var weakestEnemy = _character.GetOpposedTeam().Fighters.OrderBy(x => x.Level).FirstOrDefault();
+            var weakestEnemy = _character.GetOpposedTeam().FightersAlive.OrderBy(x => x.Level).FirstOrDefault();
             if (weakestEnemy == null)
             {
                 logger.Warn("PlaceAtDistanceFromWeakestEnemy : weakestEnemy is null");
@@ -292,10 +306,10 @@ namespace FightPlugin
             logger.Debug("Placement of {0} vs {1} (cell {2}) - max Distance {4} - InLine {5} - choices : {3}", _character.Name, weakestEnemy.ToString(), weakestEnemy.Cell, string.Join<Cell>(",", startingSet), distance, InLine);
 
             Cell[] finalSet = startingSet;
-            if (finalSet.Length > 1 && _character.GetOpposedTeam().Fighters.Count > 1)
+            if (finalSet.Length > 1 && _character.GetOpposedTeam().FightersAlive.Length > 1)
             {
                 // remove all cells where another enemy is closer
-                foreach (Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
+                foreach (Fighter otherEnnemy in _character.GetOpposedTeam().FightersAlive)
                     if (otherEnnemy != weakestEnemy)
                         finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) >= x.ManhattanDistanceTo(weakestEnemy.Cell)).ToArray();
                 logger.Debug("Rule 1 : choices {0}", string.Join<Cell>(",", finalSet));
@@ -304,7 +318,7 @@ namespace FightPlugin
                 if (startingSet.Length == 0)
                 {
                     finalSet = startingSet;
-                    foreach (Fighter otherEnnemy in _character.GetOpposedTeam().Fighters)
+                    foreach (Fighter otherEnnemy in _character.GetOpposedTeam().FightersAlive)
                         if (otherEnnemy != weakestEnemy)
                             finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) > 1).ToArray();
                     logger.Debug("Rule 2 : choices {0}", string.Join<Cell>(",", finalSet));
@@ -332,8 +346,9 @@ namespace FightPlugin
         }
 
 
-        private void MoveNear(Fighter fighter, int mp, bool inLine = false)
+        private void MoveNear(Fighter fighter, int mp, bool inLine = false, bool needLOSCheck = false)
         {
+            // TODO : find a cell with LOS OK, when needLOSCheck set
             Cell dest = null;
             if (inLine)
                 _character.Move(
@@ -352,7 +367,7 @@ namespace FightPlugin
 
         private void MoveFar()
         {
-            var enemies = _character.GetOpposedTeam().Fighters;
+            var enemies = _character.GetOpposedTeam().FightersAlive;
 
             var shape = new Lozenge(0, (byte)_character.Stats.CurrentMP);
             var possibleCells = shape.GetCells(_character.Cell, _character.Map);
@@ -374,7 +389,7 @@ namespace FightPlugin
             var enemyTeam = _character.GetOpposedTeam();
 
             Fighter nearestFighter = null;
-            foreach (var enemy in enemyTeam.Fighters)
+            foreach (var enemy in enemyTeam.FightersAlive)
             {
                 if (!enemy.IsAlive)
                     continue;
@@ -405,14 +420,30 @@ namespace FightPlugin
                 Bot.Character.FightJoined -= OnFightJoined;
                 Bot.Character.FightLeft -= OnFightLeft;
                 Bot.Character.MapJoined -= OnMapJoined;
+                Bot.Character.StartMoving -= StandUp;
             }
 
             if (_character != null)
             {
                 _character.TurnStarted -= OnTurnStarted;
-                _character.Fight.StateChanged -= OnStateChanged;
+                if (_character.Fight != null)
+                    _character.Fight.StateChanged -= OnStateChanged;
                 _character = null;
+                if (_sequenceEnded != null)
+                {
+                    _character.SequenceEnded -= _sequenceEnded;
+                    _sequenceEnded = null;
+                }
+                if (_stopMovingDelegate != null)
+                {
+                    _character.StopMoving -= _stopMovingDelegate;
+                    _stopMovingDelegate = null;
+                }
+
             }
+
+            if (_checkTimer != null)
+                _checkTimer.Dispose();
 
             base.OnDetached();
         }

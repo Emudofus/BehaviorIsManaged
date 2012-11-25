@@ -26,7 +26,7 @@ using Point = System.Drawing.Point;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmMap : INotifyPropertyChanged, IDataObject
+    public class DlmMap : IDataObject
     {
         private static readonly Point[] s_orthogonalGridReference = new Point[DlmMap.CellCount];
         private static bool m_initialized;
@@ -34,7 +34,6 @@ namespace BiM.Protocol.Tools.Dlm
         public const uint Width = 14;
         public const uint Height = 20;
 
-        public event PropertyChangedEventHandler PropertyChanged;
         public const int CellCount = 560;
 
         public DlmMap()
@@ -192,7 +191,7 @@ namespace BiM.Protocol.Tools.Dlm
             set;
         }
 
-        public static DlmMap ReadFromStream(BigEndianReader givenReader, DlmReader dlmReader)
+        public static DlmMap ReadFromStream(IDataReader givenReader, DlmReader dlmReader)
         {
             var reader = givenReader;
             var map = new DlmMap();
@@ -229,13 +228,18 @@ namespace BiM.Protocol.Tools.Dlm
                             data[i] = (byte)( data[i] ^ encodedKey[i % key.Length] );
                         }
 
-                        reader = new BigEndianReader(new MemoryStream(data));
+                        reader = new FastBigEndianReader(data);
                     }
                 }
             }
 
             map.RelativeId = reader.ReadUInt();
             map.MapType = reader.ReadByte();
+
+            // temp, just to know if the result is coherent
+            if (map.MapType < 0 || map.MapType > 1)
+                throw new Exception("Invalid decryption key");
+
             map.SubAreaId = reader.ReadInt();
             map.TopNeighbourId = reader.ReadInt();
             map.BottomNeighbourId = reader.ReadInt();
@@ -291,7 +295,7 @@ namespace BiM.Protocol.Tools.Dlm
             int? lastMoveZone = null;
             for (short i = 0; i < map.Cells.Length; i++)
             {
-                map.Cells[i] = DlmCellData.ReadFromStream(map, i, reader);
+                map.Cells[i] = DlmCellData.ReadFromStream(i, map.Version, reader);
                 if (!lastMoveZone.HasValue)
                     lastMoveZone = map.Cells[i].MoveZone;
                 else if (lastMoveZone != map.Cells[i].MoveZone) // if a cell is different the new system is used

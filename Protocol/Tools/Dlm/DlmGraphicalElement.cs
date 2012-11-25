@@ -18,9 +18,8 @@ using BiM.Core.IO;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmGraphicalElement : DlmBasicElement, INotifyPropertyChanged
+    public class DlmGraphicalElement : DlmBasicElement
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public const float CELL_HALF_WIDTH = 43;
         public const float CELL_HALF_HEIGHT = 21.5f;
 
@@ -97,7 +96,7 @@ namespace BiM.Protocol.Tools.Dlm
             set { m_shadow = value; }
         }
 
-        public new static DlmGraphicalElement ReadFromStream(DlmCell cell, BigEndianReader reader)
+        public new static DlmGraphicalElement ReadFromStream(DlmCell cell, IDataReader reader)
         {
             var element = new DlmGraphicalElement(cell);
 
@@ -123,7 +122,8 @@ namespace BiM.Protocol.Tools.Dlm
             element.m_altitude = reader.ReadByte();
             element.m_identifier = reader.ReadUInt();
 
-            element.CalculateFinalTeint();
+            // we don't care
+            //element.CalculateFinalTeint();
 
             return element;
         }

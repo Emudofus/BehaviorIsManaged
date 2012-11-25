@@ -14,6 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
+using System.Collections.Generic;
 using BiM.Protocol.Data;
 using BiM.Protocol.Tools.Dlm;
 
@@ -38,14 +39,17 @@ namespace BiM.Behaviors.Data
             if (m_map != null)
                 return m_map as T;
 
-            if (keys.Length <= 0 || keys.Length > 2 || !( keys[0] is IConvertible ) || ( keys.Length == 2 && !( keys[1] is string ) ))
-                throw new ArgumentException("DLMSource needs a int key and can have a decryptionKey as string, use ReadObject(int) or ReadObject(int, string)");
+            if (keys.Length <= 0 || keys.Length > 2 || !( keys[0] is IConvertible ) || ( keys.Length == 2 && !( keys[1] is string ) && !(keys[1] is DlmReader.KeyProvider) ))
+                throw new ArgumentException("DLMSource needs a int key and can have a decryptionKey as string, use ReadObject(int) or ReadObject(int, string)" +
+                    " or ReadObject(int, DlmReader.KeyProvider)");
 
 
             int id = Convert.ToInt32(keys[0]);
 
             if (keys[1] is string)
                 m_reader.DecryptionKey = (string)keys[1];
+            else if (keys[1] is DlmReader.KeyProvider)
+                m_reader.DecryptionKeyProvider = (DlmReader.KeyProvider)keys[1];
             
             m_map = m_reader.ReadMap();
 
@@ -53,6 +57,25 @@ namespace BiM.Behaviors.Data
                 throw new ArgumentException("id != map.id");
 
             return m_map as T;
+        }
+
+        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        {
+            if (!DoesHandleType(typeof(T)))
+                throw new ArgumentException("typeof(T)");
+
+            if (m_map != null)
+                yield return m_map as T;
+
+            if (keys.Length >= 1)
+                if (keys[0] is string)
+                    m_reader.DecryptionKey = (string)keys[0];
+                else if (keys[0] is DlmReader.KeyProvider)
+                    m_reader.DecryptionKeyProvider = (DlmReader.KeyProvider) keys[0];
+
+            m_map = m_reader.ReadMap();
+
+            yield return m_map as T;
         }
 
         public bool DoesHandleType(Type type)

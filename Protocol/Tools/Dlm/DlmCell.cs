@@ -18,9 +18,8 @@ using BiM.Core.IO;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmCell : INotifyPropertyChanged
+    public class DlmCell
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public DlmCell(DlmLayer layer)
         {
             Layer = layer;
@@ -46,7 +45,7 @@ namespace BiM.Protocol.Tools.Dlm
             set;
         }
 
-        public static DlmCell ReadFromStream(DlmLayer layer, BigEndianReader reader)
+        public static DlmCell ReadFromStream(DlmLayer layer, IDataReader reader)
         {
             var cell = new DlmCell(layer);
 

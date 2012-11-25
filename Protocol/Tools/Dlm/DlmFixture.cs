@@ -18,9 +18,8 @@ using BiM.Core.IO;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class DlmFixture : INotifyPropertyChanged
+    public class DlmFixture
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public DlmFixture(DlmMap map)
         {
             Map = map;
@@ -74,7 +73,7 @@ namespace BiM.Protocol.Tools.Dlm
             set;
         }
 
-        public static DlmFixture ReadFromStream(DlmMap map, BigEndianReader reader)
+        public static DlmFixture ReadFromStream(DlmMap map, IDataReader reader)
         {
             var fixture = new DlmFixture(map);
 

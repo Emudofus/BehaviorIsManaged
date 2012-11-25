@@ -18,9 +18,8 @@ using System.ComponentModel;
 
 namespace BiM.Protocol.Tools.Dlm
 {
-    public class ColorMultiplicator : INotifyPropertyChanged
+    public class ColorMultiplicator
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         private int m_blue;
         private int m_green;
         private int m_red;

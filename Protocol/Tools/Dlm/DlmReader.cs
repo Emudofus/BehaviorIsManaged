@@ -22,33 +22,39 @@ namespace BiM.Protocol.Tools.Dlm
 {
     public class DlmReader : IDisposable
     {
-        private BigEndianReader m_reader;
-        private Stream m_stream;
+        /// <summary>
+        /// Returns the decryption key
+        /// </summary>
+        /// <param name="mapId">The map to decrypt</param>
+        /// <returns>The decryption key</returns>
+        public delegate string KeyProvider(int mapId);
+
+        private IDataReader m_reader;
 
         public DlmReader(string filePath)
         {
-            m_stream = File.OpenRead(filePath);
-            m_reader = new BigEndianReader(m_stream);
-        }
-
-        public DlmReader(Stream stream)
-        {
-            m_stream = stream;
-            m_reader = new BigEndianReader(m_stream);
+            m_reader = new FastBigEndianReader(File.ReadAllBytes(filePath));
         }
 
         public DlmReader(string filePath, string decryptionKey)
         {
-            m_stream = File.OpenRead(filePath);
-            m_reader = new BigEndianReader(m_stream);
+            m_reader = new FastBigEndianReader(File.ReadAllBytes(filePath));
             DecryptionKey = decryptionKey;
         }
 
-        public DlmReader(Stream stream, string decryptionKey)
+        public DlmReader(IDataReader reader)
         {
-            m_stream = stream;
-            m_reader = new BigEndianReader(m_stream);
-            DecryptionKey = decryptionKey;
+            m_reader = reader;
+        }
+
+        public DlmReader(Stream stream)
+        {
+            m_reader = new BigEndianReader(stream);
+        }
+
+        public DlmReader(byte[] buffer)
+        {
+            m_reader = new FastBigEndianReader(buffer);
         }
 
         public string DecryptionKey
@@ -57,7 +63,7 @@ namespace BiM.Protocol.Tools.Dlm
             set;
         }
 
-        public Func<int, string> DecryptionKeyProvider
+        public KeyProvider DecryptionKeyProvider
         {
             get;
             set;
@@ -78,7 +84,8 @@ namespace BiM.Protocol.Tools.Dlm
 
                     var uncompress = output.ToArray();
 
-                    ChangeStream(new MemoryStream(uncompress));
+                    m_reader.Dispose();
+                    m_reader = new FastBigEndianReader(uncompress);
 
                     header = m_reader.ReadByte();
 
@@ -97,18 +104,8 @@ namespace BiM.Protocol.Tools.Dlm
             return map;
         }
 
-        internal void ChangeStream(Stream stream)
-        {
-            m_stream.Dispose();
-            m_reader.Dispose();
-
-            m_stream = stream;
-            m_reader = new BigEndianReader(m_stream);
-        }
-
         public void Dispose()
         {
-            m_stream.Dispose();
             m_reader.Dispose();
         }
     }

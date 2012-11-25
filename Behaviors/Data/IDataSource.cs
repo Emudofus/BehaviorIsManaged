@@ -14,6 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
+using System.Collections.Generic;
 using BiM.Protocol.Data;
 
 namespace BiM.Behaviors.Data
@@ -21,6 +22,7 @@ namespace BiM.Behaviors.Data
     public interface IDataSource
     {
         T ReadObject<T>(params object[] keys) where T : class;
+        IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class;
         bool DoesHandleType(Type type);
     }
 }
