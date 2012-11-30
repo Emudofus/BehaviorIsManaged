@@ -79,7 +79,25 @@ namespace BiM.Behaviors.Game
             if (Map == null)
                 logger.Error("Cannot define position of {0} with EntityDispositionInformations because Map is null", this);
             else
-                Cell = Map.Cells[informations.cellId];
+                if (Cell == null || Cell.Id != informations.cellId)
+                {
+                    OnPropertyChanged("Cell");
+                    Cell = Map.Cells[informations.cellId];
+                }
+        }
+
+        public void SetPos(int cellId)        
+        {
+            if (Map == null)
+                logger.Error("Cannot define position of {0} with new cellId because Map is null", this);
+            else
+            {
+                if (Cell == null || Cell.Id != cellId)
+                {
+                    OnPropertyChanged("Cell");
+                    Cell = Map.Cells[cellId];
+                }
+            }
         }
     }
 }

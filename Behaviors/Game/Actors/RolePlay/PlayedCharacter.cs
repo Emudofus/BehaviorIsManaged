@@ -108,6 +108,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             m_readOnlyEmotes = new ReadOnlyObservableCollectionMT<Emoticon>(m_emotes);
         }
 
+        public override void Tick(int dt)
+        {
+            base.Tick(dt);
+            UpdateRegen();
+        }
+
         public Bot Bot
         {
             get;
@@ -187,6 +193,39 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             set;
         }
 
+        public DateTime? RegenStartTime
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Call this periodically, to update Health according to current regen rate
+        /// </summary>
+        public void UpdateRegen()
+        {
+            if (IsFighting()) return; // No regen in fights ? Well... anyway it would be turn-based
+
+            if (RegenRate > 0 && RegenStartTime != null)
+            {
+                double elapsedSeconds = (DateTime.Now - RegenStartTime).Value.TotalSeconds;
+                if (elapsedSeconds < 3.0) return; // Avoids significative errors when UpdateRegen is called too often.
+                var regainedLife = (int)Math.Floor(elapsedSeconds / (RegenRate / 10.0f));
+                if (regainedLife <= 0) return; // Avoids significative errors when UpdateRegen is called too often when regenRate is low.
+                if (Stats.Health + regainedLife > Stats.MaxHealth)
+                {
+                    Stats.Health = Stats.MaxHealth;
+                    RegenRate = 0;
+                    RegenStartTime = null;
+                }
+                else
+                {
+                    Stats.Health += regainedLife;
+                    RegenStartTime = DateTime.Now;
+                }
+            }
+        }
+
         /// <summary>
         /// Not recommanded to use this
         /// </summary>
@@ -214,44 +253,77 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             return Map != null && !IsFighting();
         }
 
-        public bool Move(short cellId)
+        public bool Move(short cellId, ISimplePathFinder pathFinder = null, int minDistance = 0)
         {
             if (CanMove())
-                return Move(Map.Cells[cellId]);
+                return Move(Map.Cells[cellId], pathFinder, minDistance);
 
             return false;
         }
 
-        public bool Move(Cell cell)
+        public bool Move(Path path, Cell dest)
+        {
+            if (IsMoving())
+                CancelMove(false);
+
+            // DEBUG
+            //SendMessage(String.Format("Move {0} => {1} : {2}", Cell, dest, String.Join<Cell>(",", path.Cells)));
+            //ResetCellsHighlight();
+            //HighlightCells(path.Cells, Color.YellowGreen);
+            if (path.Cells.Length == 0)
+            {
+                SendMessage("Empty path skipped", Color.Gray);
+                return false;
+            }
+            else
+                if (path.Start.Id != Cell.Id)
+                {
+                    SendMessage(String.Format("Path start with {0} instead of {1}", path.Start, Cell), Color.Red);
+                    return false;
+                }
+
+            Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
+            return true;
+
+        }
+
+        public bool Move(Cell cell, ISimplePathFinder pathFinder = null, int minDistance = 0)
         {
             if (cell == null) throw new ArgumentNullException("cell");
 
             if (!CanMove())
                 return false;
+            if (pathFinder==null)
+                if (minDistance == 0)
+                    pathFinder = new Pathfinder(Map, Map);
+                else
+                    pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
+            Path path = null;
+            if (pathFinder is IAdvancedPathFinder)
+                path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, false, -1, minDistance);
+            else
+                path = pathFinder.FindPath(Cell, cell, false, -1);
 
-            var pathfinder = new Pathfinder(Map, Map);
-            var path = pathfinder.FindPath(Cell, cell, true);
-
-            if (IsMoving())
-                CancelMove();
-
-            Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
-            return true;
+            return Move(path, cell);
         }
 
-        public void CancelMove()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="refused">true if path were rejected (not even started)</param>
+        public void CancelMove(bool refused)
         {
             if (!IsMoving())
                 return;
 
-            NotifyStopMoving(true);
+            NotifyStopMoving(true, refused);
 
             Bot.SendToServer(new GameMapMovementCancelMessage(Cell.Id));
         }
 
-        public override void NotifyStopMoving(bool canceled)
+        public override void NotifyStopMoving(bool canceled, bool refused)
         {
-            base.NotifyStopMoving(canceled);
+            base.NotifyStopMoving(canceled, refused);
 
             if (m_useAfterMove != null)
             {
@@ -276,33 +348,40 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
         }
 
-        public bool ChangeMap(MapNeighbour neighbour)
+        public bool ChangeMap(MapNeighbour neighbour, ISimplePathFinder pathfinder=null)
         {
             var neighbourId = GetNeighbourId(neighbour);
             if (neighbourId < 0)
                 return false;
 
             var mapChangeData = Map.MapChangeDatas[neighbour];
-            var cells = Map.Cells.Where(x => x != Cell && ( x.MapChangeData & mapChangeData ) != 0 && Map.IsCellWalkable(x)).
-                OrderBy(x => x.DistanceTo(Cell));
-
             Path path = null;
-            var pathfinder = new Pathfinder(Map, Map, true, true);
-            var enumerator = cells.GetEnumerator();
             bool found = false;
-            while ((path == null || path.IsEmpty()) && (found = enumerator.MoveNext()))
+                
+            if (pathfinder != null && pathfinder is IAdvancedPathFinder)
+                path = (pathfinder as IAdvancedPathFinder).FindPath(Cell, Map.Cells.Where(x => x != Cell && (x.MapChangeData & mapChangeData) != 0 && Map.IsCellWalkable(x)), true);                
+            else
             {
-                path = pathfinder.FindPath(Cell, enumerator.Current, true);
-            }
+                var cells = Map.Cells.Where(x => x != Cell && (x.MapChangeData & mapChangeData) != 0 && Map.IsCellWalkable(x)).
+                    OrderBy(x => x.DistanceTo(Cell));
 
-            if (found)
+                if (pathfinder == null)
+                    pathfinder = new Pathfinder(Map, Map, true, true);
+                var enumerator = cells.GetEnumerator();
+                while ((path == null || path.IsEmpty()) && (found = enumerator.MoveNext()))
+                {
+                    path = pathfinder.FindPath(Cell, enumerator.Current, true);
+                }
+
+            
+            }
+            if (path != null)
             {
-                if (Move(enumerator.Current))
+                if (Move(path, path.End))
                 {
                     m_nextMap = neighbourId;
                     return true;
                 }
-
                 return false;
             }
 
@@ -605,12 +684,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         #region Fights
 
-        public void TryStartFightWith(GroupMonster monster)
+        public void TryStartFightWith(GroupMonster monster, ISimplePathFinder pathFinder=null)
         {
             // todo
             var cell = monster.Cell;
 
-            Move(cell);
+            Move(cell, pathFinder);
         }
 
         public void EnterFight(GameFightJoinMessage message)
@@ -748,6 +827,19 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             foreach (Spells.Spell spell in SpellsBook.GetAvailableSpells(TargetId, category))
                 if (spell.LevelTemplate.apCost <= Stats.CurrentAP)
                     yield return spell;
+        }
+
+        public void Update(LifePointsRegenEndMessage message)
+        {
+            Stats.Health = message.lifePoints;  
+            // TODO : unfortunately, we never receive a message saying we have full health. 
+            // So have to consider regen rate and compute current health based on it. 
+        }
+
+        internal void Update(GameMapNoMovementMessage message)
+        {
+            if (IsMoving())
+                NotifyStopMoving(true, true);
         }
     }
 }

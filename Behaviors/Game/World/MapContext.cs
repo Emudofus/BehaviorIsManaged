@@ -190,7 +190,7 @@ namespace BiM.Behaviors.Game.World
 
         public T[] GetActorsOnCell(int cellId)
         {
-            return Actors.Where(x => x.Cell != null && x.Cell.Id == cellId).ToArray();
+            return Actors.Where(actor => actor.Cell != null && actor.Cell.Id == cellId).ToArray();
         }
 
         public T[] GetActorsOnCell(Cell cell)
@@ -204,7 +204,7 @@ namespace BiM.Behaviors.Game.World
 
         public bool IsActorOnCell(int cellId)
         {
-            return m_collectionActors.Any(x => x.Cell != null && x.Cell.Id == cellId);
+            return m_collectionActors.Any(actor => actor.Cell != null && actor.Cell.Id == cellId);
         }
 
         public bool IsActorOnCell(Cell cell)
@@ -325,7 +325,7 @@ namespace BiM.Behaviors.Game.World
             if (!throughEntities && IsActorOnCell(cell))
                 return false;
 
-            // todo : LoS
+            // todo : LoS => Sure ? LoS may stop a walk ?!
 
             return true;
         }

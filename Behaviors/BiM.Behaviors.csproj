@@ -22,6 +22,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <WarningsAsErrors>0067</WarningsAsErrors>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -91,6 +93,7 @@
     <Compile Include="DisplayState.cs" />
     <Compile Include="Frames\Frame.cs" />
     <Compile Include="Frames\IFrame.cs" />
+    <Compile Include="Game\Actions\ActionIdEnum.cs" />
     <Compile Include="Game\Actors\ContextActor.cs" />
     <Compile Include="Game\Actors\Fighters\CharacterFighter.cs" />
     <Compile Include="Game\Actors\Fighters\Fighter.cs" />
@@ -208,9 +211,19 @@
     <Compile Include="Game\World\Cell.cs" />
     <Compile Include="Game\World\CellList.cs" />
     <Compile Include="Game\Actors\RolePlay\GroupMonster.cs" />
+    <Compile Include="Game\World\IMap.cs" />
+    <Compile Include="Game\World\LOSMap.cs" />
     <Compile Include="Game\World\Map.cs" />
     <Compile Include="Game\World\MapContext.cs" />
     <Compile Include="Game\World\MapNeighbour.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\CellInfo.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\IWorldMapProvider.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\MapExtensions.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\MapMovement.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\PathFinder.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldMap.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPathFinder.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPoint.cs" />
     <Compile Include="Game\World\MapTraveling\SerializableSubMap.cs" />
     <Compile Include="Game\World\MapTraveling\Storage\SubMapsFileGenerator.cs" />
     <Compile Include="Game\World\MapTraveling\SubMapNeighbour.cs" />
@@ -218,7 +231,9 @@
     <Compile Include="Game\World\MapTraveling\Transitions\SubMapTransition.cs" />
     <Compile Include="Game\World\MapTraveling\Transitions\TransitionAttribute.cs" />
     <Compile Include="Game\World\MapTraveling\Transitions\TransitionsManager.cs" />
+    <Compile Include="Game\World\Pathfinding\IAdvancedPathFinder.cs" />
     <Compile Include="Game\World\Pathfinding\IOpenList.cs" />
+    <Compile Include="Game\World\Pathfinding\ISimplePathFinder.cs" />
     <Compile Include="Game\World\Pathfinding\LinearOpenList.cs" />
     <Compile Include="Game\World\Pathfinding\LogOpenList.cs" />
     <Compile Include="Game\World\MapTraveling\MapPathfinder.cs" />

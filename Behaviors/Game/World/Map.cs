@@ -21,6 +21,7 @@ using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Interactives;
+using BiM.Behaviors.Game.World.Areas;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Collections;
 using BiM.Core.Config;

@@ -32,16 +32,13 @@ namespace BiM.Behaviors.Game.Spells
         private Dictionary<int, int> m_targeted;
 
         public void StartFight()
-        {
+        {           
             m_nbTurnToWait = LevelTemplate.initialCooldown;
             if (m_nbTurnToWait == 0)
                 m_nbCastAllowed = LevelTemplate.maxCastPerTurn;
             else
                 m_nbCastAllowed = 0;
-            if (LevelTemplate.maxCastPerTarget > 0)
-                m_targeted = new Dictionary<int, int>();
-            else
-                m_targeted = null;
+            m_targeted = null;
         }
 
         public void EndTurn()
@@ -50,10 +47,7 @@ namespace BiM.Behaviors.Game.Spells
                 m_nbTurnToWait--;
             if (m_nbTurnToWait == 0)
                 m_nbCastAllowed = LevelTemplate.maxCastPerTurn;
-            if (LevelTemplate.maxCastPerTarget > 0)
-                m_targeted = new Dictionary<int, int>();
-            else
-                m_targeted = null; // Reset targeted counts
+            m_targeted = null; // Reset targeted counts
         }
 
         public void CastAt(int idTarget)
@@ -62,6 +56,8 @@ namespace BiM.Behaviors.Game.Spells
             if (LevelTemplate.maxCastPerTarget > 0)
             {
                 int targetCount = 1;
+                if (m_targeted == null)
+                    m_targeted = new Dictionary<int, int>();
                 if (!m_targeted.TryGetValue(idTarget, out targetCount))
                     targetCount = 1;
                 else
@@ -69,8 +65,8 @@ namespace BiM.Behaviors.Game.Spells
                 m_targeted[idTarget] = targetCount;
                 Debug.Assert(targetCount <= LevelTemplate.maxCastPerTarget);
             }
-            Debug.Assert(m_nbCastAllowed > 0 || LevelTemplate.maxCastPerTarget <= 0);
-            m_nbTurnToWait = (uint) LevelTemplate.globalCooldown;
+            Debug.Assert(m_nbCastAllowed > 0 || LevelTemplate.maxCastPerTurn <= 0);
+            m_nbTurnToWait = (uint) LevelTemplate.minCastInterval;
 
             if (m_nbCastAllowed > 0)
                 m_nbCastAllowed--;
@@ -94,8 +90,9 @@ namespace BiM.Behaviors.Game.Spells
             if (m_targeted != null)
             {
                 int targetCount = 0;
-                if (!m_targeted.TryGetValue(idTarget.Value, out targetCount))
-                    targetCount = 0;
+                if (m_targeted!=null)
+                    if (!m_targeted.TryGetValue(idTarget.Value, out targetCount))
+                        targetCount = 0;
                 if (targetCount >= LevelTemplate.maxCastPerTarget) return false;
             }
 

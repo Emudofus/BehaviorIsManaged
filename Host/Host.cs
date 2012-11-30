@@ -90,8 +90,6 @@ namespace BiM.Host
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private const string ConfigPath = "./config.xml";
 
-        private static bool m_generationEnded;
-
         private static List<Assembly> m_hierarchy = new List<Assembly>()
         {   
             Assembly.Load("BiM.Core"),

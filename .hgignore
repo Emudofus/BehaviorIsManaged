@@ -1,0 +1,11 @@
+syntax: glob
+.git/
+.git*
+*.suo
+*.user
+*.vsp
+_ReSharper.*/
+bin/
+obj/
+*.rej
+*.orig
