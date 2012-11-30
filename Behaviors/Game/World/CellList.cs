@@ -89,5 +89,19 @@ namespace BiM.Behaviors.Game.World
         {
             return GetEnumerator();
         }
+
+        /// <summary>
+        /// Returns the number of cells
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int Count
+        {
+            get
+            {
+                return m_cells.Length;
+            }
+        }
+
     }
 }

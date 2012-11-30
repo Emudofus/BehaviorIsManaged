@@ -45,5 +45,14 @@ namespace BiM.Behaviors.Handlers.Characters
         {
             bot.Character.Update(message);
         }
+
+        [MessageHandler(typeof(GameMapNoMovementMessage))]
+        public static void HandleGameMapNoMovementMessage(Bot bot, GameMapNoMovementMessage message)
+        {
+            if (bot.Character.IsFighting())
+                bot.Character.Fighter.Update(message);
+            else
+                bot.Character.Update(message);
+        }
     }
 }

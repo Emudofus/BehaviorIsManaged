@@ -25,6 +25,7 @@ using BiM.Protocol.Data;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using Breed = BiM.Behaviors.Game.Breeds.Breed;
+using System.Drawing;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
@@ -114,7 +115,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// <param name="team">Fighter team</param>
         public void SetTeam(FightTeam team)
         {
-            if (Team != null)
+            if (Team != null && Team != team)
                 throw new Exception("Team already defined !");
 
             Team = team;
@@ -203,9 +204,9 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// Try to move to the targeted Cell (truncate the path if the player hasn't enough MP)
         /// </summary>
         /// <param name="cell">Targeted cell</param>
-        public bool Move(Cell cell)
+        public bool Move(Cell cell, ISimplePathFinder pathFinder=null, int minDistance = 0)
         {
-            return Move(cell, Stats.CurrentMP);
+            return Move(cell, Stats.CurrentMP, pathFinder, minDistance);
         }
 
         /// <summary>
@@ -214,13 +215,42 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// <param name="cell">Targeted cell</param>
         /// <param name="mp">MP to use</param>
         /// <returns>False if cannot move</returns>
-        public bool Move(Cell cell, int mp)
+        public bool Move(Cell cell, int mp, ISimplePathFinder pathFinder=null, int minDistance = 0)
         {
             if (!IsPlaying())
                 return false;
+            if (mp < 1)
+            {                
+                Character.SendMessage(String.Format("Can't move with {0} MP", mp), Color.Red);
+                return false;
+            }
 
-            var pathfinding = new Pathfinder(Map, Fight, false);
-            var path = pathfinding.FindPath(Cell, cell, false, Stats.CurrentMP > mp ? Stats.CurrentMP : mp);
+            if (pathFinder == null)
+                if (minDistance == 0)
+                    pathFinder = new Pathfinder(Map, Map);
+                else
+                    pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
+            Path path = null;
+            if (pathFinder is IAdvancedPathFinder)
+                path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance);
+            else
+                path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp);
+
+            // DEBUG
+            //Character.SendMessage(String.Format("Move {0} => {1} ({3} PM): {2}", Cell, cell, String.Join<Cell>(",", path.Cells), mp));
+            //Character.ResetCellsHighlight();
+            //Character.HighlightCells(path.Cells, Color.YellowGreen);
+            if (path.IsEmpty())
+            {
+                Character.SendMessage("Empty path skipped", Color.Red);
+                return false;
+            }
+            else
+                if (path.Start.Id != Cell.Id)
+                {
+                    Character.SendMessage(String.Format("Path starts with {0} instead of {1}", path.Start, Cell), Color.Red);
+                    return false;
+                }                
 
             if (NotifyStartMoving(path))
                 Character.Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));

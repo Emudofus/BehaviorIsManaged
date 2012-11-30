@@ -1,5 +1,5 @@
 #region License GNU GPL
-// Pathfinder.cs
+// PathFinder.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -48,7 +48,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
     /// <summary>
     /// This class use a derived A* algorithm to find a path between two points with the given informations.
     /// </summary>
-    public class Pathfinder
+    public class Pathfinder : ISimplePathFinder
     {
         private readonly Map m_map;
         private readonly IMapContext m_context;
@@ -246,7 +246,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 return CreateAndOptimisePath(closedList);
             else
             {
-                if (movementPoints > 0 && closedList.Count + 1 > movementPoints)
+                if (movementPoints > 0 && closedList.Count  > movementPoints + 1)
                     return new Path(m_map, closedList.Take(movementPoints + 1).Select(entry => entry.Cell));
 
                 return new Path(m_map, closedList.Select(entry => entry.Cell));

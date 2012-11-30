@@ -27,6 +27,7 @@ using BiM.Core.Reflection;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
+using System.Drawing;
 
 namespace BiM.Behaviors.Game.Spells
 {
@@ -115,7 +116,10 @@ namespace BiM.Behaviors.Game.Spells
         public void FightStart(GameFightStartMessage msg)
         {
             foreach (Spell spell in m_spells)
+            {
+                //Character.SendMessage(String.Format("Spell {0} : initialCooldown {1}, maxCastPerTurn {2}, maxCastPerTarget {3}, maxStack {4}, GlobalCoolDown {5}, minCastInterval {6}", spell, spell.LevelTemplate.initialCooldown, spell.LevelTemplate.maxCastPerTurn, spell.LevelTemplate.maxCastPerTarget, spell.LevelTemplate.maxStack, spell.LevelTemplate.globalCooldown, spell.LevelTemplate.minCastInterval), Color.Aquamarine); 
                 spell.StartFight();
+            }
         }
 
         /// <summary>
@@ -137,6 +141,7 @@ namespace BiM.Behaviors.Game.Spells
             if (spell == null)
                 throw new ArgumentException(String.Format("Spell Id {0} do not exists in the SpellsBook of {1}, with {2} entries", msg.spellId, Character.Name, m_spells.Count));
             spell.CastAt(msg.targetId);
+            //Character.SendMessage(string.Format("Spell {0} cast at actor Id {1}. Still available : {2}", spell, msg.targetId, spell.IsAvailable(msg.targetId)));
         }
 
         public IEnumerable<Spell> GetAvailableSpells(int? TargetId = null, Spells.Spell.SpellCategory? category = null)
@@ -145,22 +150,16 @@ namespace BiM.Behaviors.Game.Spells
                 if (spell.IsAvailable(TargetId, category))
                     yield return spell;
         }
+        
+        public IEnumerable<Spell> GetOrderListOfSimpleBoostSpells(PlayedCharacter caster, Spell.SpellCategory category, bool canBeUsedOnCaster)
+        {
+            return m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(caster.Id, category) && (!canBeUsedOnCaster || spell.LevelTemplate.minRange == 0)).OrderBy(spell => spell.Level).ThenBy(spell => spell.LevelTemplate.minPlayerLevel);
+        }
 
         public IEnumerable<Spell> GetOrderedAttackSpells(PlayedCharacter caster, Fighter target, Spell.SpellCategory? category = null)
         {
             Debug.Assert(category == null || ((category & Spell.SpellCategory.Damages) > 0), "category do not include Damage effects");
-            SortedList<int, Spell> sortedSpellList = new SortedList<int, Spell>();
-            int No = 0;
-            foreach (Spell spell in m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(target.Id, category)))
-            {
-                int averageDamage = (int)(spell.GetSpellDamages(caster, target).Damage);
-                averageDamage *= caster.Stats.CurrentAP / (int)spell.LevelTemplate.apCost; // if we can cast several time this spell, increase damage accordingly
-                if (averageDamage > 0)
-                    sortedSpellList.Add(
-                        averageDamage * 100 + No++,  // Infamous hack, to accept several spells having same average damage
-                        spell);
-            }
-            return sortedSpellList.Values.Reverse();
+            return m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(target.Id, category)).OrderByDescending(spell => (int)(spell.GetSpellDamages(caster, target).Damage) * (caster.Stats.CurrentAP / (int)spell.LevelTemplate.apCost));
         }
 
         #endregion Availability management

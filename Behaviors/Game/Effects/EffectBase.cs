@@ -120,7 +120,7 @@ namespace BiM.Behaviors.Game.Effects
             Hidden = effect.hidden;
             m_zoneMinSize = effect.zoneMinSize;
             m_zoneSize = effect.zoneSize;
-            ZoneShape = (SpellShapeEnum) effect.zoneShape;
+            ZoneShape = (SpellShapeEnum) effect.zoneShape;            
         }
 
         public virtual int ProtocoleId

@@ -25,85 +25,101 @@ using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using NLog;
-using BiM.Behaviors.Game.Actors.Fighters;
 
 namespace BiM.Behaviors.Handlers.Context
 {
-    public class MapMovementHandler
+  public class MapMovementHandler
+  {
+    [Configurable("EstimatedMovementLag", "Refer to the estimated time elapsed until the client start moving (in ms)")]
+    public static int EstimatedMovementLag = 160;
+
+
+    private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+    [MessageHandler(typeof(GameMapMovementConfirmMessage))]
+    public static void HandleGameMapMovementConfirmMessage(Bot bot, GameMapMovementConfirmMessage message)
     {
-        [Configurable("EstimatedMovementLag", "Refer to the estimated time elapsed until the client start moving (in ms)")]
-        public static int EstimatedMovementLag = 160;
-
-
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
-        [MessageHandler(typeof (GameMapMovementConfirmMessage))]
-        public static void HandleGameMapMovementConfirmMessage(Bot bot, GameMapMovementConfirmMessage message)
-        {
-            if (bot.Character.IsMoving())
-                bot.Character.NotifyStopMoving(false);
-        }
-
-        [MessageHandler(typeof (GameMapMovementCancelMessage))]
-        public static void HandleGameMapMovementCancelMessage(Bot bot, GameMapMovementCancelMessage message)
-        {
-            // always check, the client can send bad things :)
-            if (!bot.Character.IsMoving())
-                return;
-
-            TimedPathElement attemptElement = bot.Character.Movement.TimedPath.GetCurrentElement();
-
-            if (attemptElement.CurrentCell.Id != message.cellId)
-            {
-                TimedPathElement clientCell = bot.Character.Movement.TimedPath.Elements.First(entry => entry.CurrentCell.Id == message.cellId);
-
-                // the difference is the time elapsed until the client analyse the path and start moving (~160ms) it depends also on computer hardware
-                logger.Warn("Warning the client has canceled the movement but the given cell ({0}) is not the attempted one ({1})." +
-                            "Estimated difference : {2}ms", message.cellId, attemptElement.CurrentCell.Id, (attemptElement.EndTime - clientCell.EndTime).TotalMilliseconds);
-            }
-
-            bot.Character.NotifyStopMoving(true);
-        }
-
-        [MessageHandler(typeof (GameMapMovementMessage))]
-        public static void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
-        {
-            if (bot.Character.Context == null)
-            {
-                logger.Error("Context is null as processing movement");
-                return;
-            }
-
-            var actor = bot.Character.Context.GetActor(message.actorId);
-
-            if (actor == null)
-            {
-                logger.Error("Actor {0} not found (known : {1})", message.actorId, String.Join(",", bot.Character.Context.Actors)); // only a log for the moment until context are fully handled
-                return;
-            }
-
-            // just to update the position
-            if (message.keyMovements.Length == 1)
-            {
-                actor.UpdatePosition(message.keyMovements[0]);
-            }
-            else
-            {
-                Path path = Path.BuildFromServerCompressedPath(bot.Character.Map, message.keyMovements);
-
-                if (path.IsEmpty())
-                {
-                    logger.Warn("Try to start moving with an empty path");
-                    return;
-                }
-
-                var movement = new MovementBehavior(path, actor.GetAdaptedVelocity(path));
-                movement.Start(DateTime.Now + TimeSpan.FromMilliseconds(EstimatedMovementLag));
-
-                actor.NotifyStartMoving(movement);
-                
-                
-            }
-        }
+      if (bot.Character.IsMoving())
+        bot.Character.NotifyStopMoving(false, false);
     }
+
+    [MessageHandler(typeof(GameMapMovementCancelMessage))]
+    public static void HandleGameMapMovementCancelMessage(Bot bot, GameMapMovementCancelMessage message)
+    {
+      // always check, the client can send bad things :)
+      if (!bot.Character.IsMoving())
+        return;
+
+      TimedPathElement attemptElement = bot.Character.Movement.TimedPath.GetCurrentElement();
+
+      if (attemptElement.CurrentCell.Id != message.cellId)
+      {
+        TimedPathElement clientCell = bot.Character.Movement.TimedPath.Elements.First(entry => entry.CurrentCell.Id == message.cellId);
+
+        // the difference is the time elapsed until the client analyse the path and start moving (~160ms) it depends also on computer hardware
+        logger.Warn("Warning the client has canceled the movement but the given cell ({0}) is not the attempted one ({1})." +
+                    "Estimated difference : {2}ms", message.cellId, attemptElement.CurrentCell.Id, (attemptElement.EndTime - clientCell.EndTime).TotalMilliseconds);
+      }
+
+      bot.Character.NotifyStopMoving(true, false);
+      bot.Character.SetPos(message.cellId);
+    }
+
+    [MessageHandler(typeof(GameMapNoMovementMessage))]
+    public static void HandleGameMapNoMovementMessage(Bot bot, GameMapNoMovementMessage message)
+    {
+      // always check, the client can send bad things :)
+      if (!bot.Character.IsMoving())
+        return;
+
+      bot.Character.NotifyStopMoving(true, true);
+    }
+    [MessageHandler(typeof(GameMapMovementMessage))]
+    public static void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
+    {
+      if (bot.Character.Context == null)
+      {
+        logger.Error("Context is null as processing movement");
+        return;
+      }
+
+      ContextActor actor = null;
+      bool fightActor = false;
+      if (bot.Character.IsFighting())
+        actor = bot.Character.Fight.GetActor(message.actorId);
+      if (actor == null)
+        actor = bot.Character.Context.GetActor(message.actorId);
+      else
+        fightActor = true;
+      if (actor == null)
+      {
+        if (fightActor)
+          logger.Error("Actor {0} not found (known : {1})", message.actorId, String.Join(",", bot.Character.Fight.Actors)); // only a log for the moment until context are fully handled
+        else
+          logger.Error("Actor {0} not found (known : {1})", message.actorId, String.Join(",", bot.Character.Context.Actors)); // only a log for the moment until context are fully handled
+        return;
+      }
+
+      // just to update the position. If in fight, better update immediately to be sure that the next action take the mouvement into account
+      if (message.keyMovements.Length == 1)
+      {
+        actor.UpdatePosition(message.keyMovements[0]);
+      }
+      else
+      {
+        Path path = Path.BuildFromServerCompressedPath(bot.Character.Map, message.keyMovements);
+
+        if (path.IsEmpty())
+        {
+          logger.Warn("Try to start moving with an empty path");
+          return;
+        }
+
+        var movement = new MovementBehavior(path, actor.GetAdaptedVelocity(path));
+        movement.Start(DateTime.Now + TimeSpan.FromMilliseconds(EstimatedMovementLag));
+
+        actor.NotifyStartMoving(movement);
+      }
+    }
+  }
 }

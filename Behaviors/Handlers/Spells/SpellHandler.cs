@@ -21,8 +21,6 @@ namespace BiM.Behaviors.Handlers.Spells
 {
     public class SpellHandler
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
         [MessageHandler(typeof(SpellListMessage))]
         public static void HandleSpellListMessage(Bot bot, SpellListMessage message)
         {
@@ -33,6 +31,8 @@ namespace BiM.Behaviors.Handlers.Spells
         {
             bot.Character.SpellsBook.FightStart(message);
         }
+
+        /* ***WARNING*** messages can only be handled at a single place
         [MessageHandler(typeof(GameFightTurnEndMessage))]
         public void HandleGameFightTurnEndMessage(Bot bot, GameFightTurnEndMessage message)
         {
@@ -44,6 +44,6 @@ namespace BiM.Behaviors.Handlers.Spells
         {
             if (bot.Character.Id == message.sourceId)
                 bot.Character.SpellsBook.CastAt(message);                
-        }
+        }*/
     }
 }

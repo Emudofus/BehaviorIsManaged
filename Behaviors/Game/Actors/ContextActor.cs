@@ -63,38 +63,45 @@ namespace BiM.Behaviors.Game.Actors
             return true;
         }
 
-        public delegate void MoveStopHandler(ContextActor actor, MovementBehavior movement, bool canceled);
+        public delegate void MoveStopHandler(ContextActor actor, MovementBehavior movement, bool canceled, bool refused);
 
         public event MoveStopHandler StopMoving;
 
-        public virtual void NotifyStopMoving(bool canceled)
+        public virtual void NotifyStopMoving(bool canceled, bool refused=false)
         {
             if (Movement == null)
             {
                 logger.Warn("Try to stop moving while the entity is not actually moving");
                 return;
             }
-
-            if (canceled)
+            if (refused)
             {
                 Movement.Cancel();
 
-                var element = Movement.TimedPath.GetCurrentElement();
-                Cell = element.CurrentCell;
-                Direction = element.Direction;
+                var element = Movement.StartCell;
+                Cell = Movement.StartCell;               
             }
             else
-            {
-                Cell = Movement.EndCell;
-                Direction = Movement.EndDirection;
-            }
+                if (canceled)
+                {
+                    Movement.Cancel();
+
+                    var element = Movement.TimedPath.GetCurrentElement();
+                    Cell = element.CurrentCell;
+                    Direction = element.Direction;
+                }
+                else
+                {
+                    Cell = Movement.EndCell;
+                    Direction = Movement.EndDirection;
+                }
 
             var movement = Movement;
 
             Movement = null;
 
             var handler = StopMoving;
-            if (handler != null) handler(this, movement, canceled);
+            if (handler != null) handler(this, movement, canceled, refused);
         }
 
         public virtual VelocityConfiguration GetAdaptedVelocity(Path path)

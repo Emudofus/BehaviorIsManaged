@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// RegenHandler.cs
+// Spell.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -12,29 +12,19 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+// Author : FastFrench - antispam@laposte.net
 #endregion
-using BiM.Core.Messages;
-using BiM.Protocol.Messages;
+
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace BiM.Behaviors.Handlers.Regen
+namespace BiM.Behaviors.Game.World.Pathfinding
 {
-    public class RegenHandler
+    public interface ISimplePathFinder
     {
-        [MessageHandler(typeof(LifePointsRegenBeginMessage))]
-        public static void HandleLifePointsRegenBeginMessage(Bot bot, LifePointsRegenBeginMessage message)
-        {
-            bot.Character.RegenRate = message.regenRate;
-            bot.Character.RegenStartTime = DateTime.Now;            
-        }
-
-        [MessageHandler(typeof(LifePointsRegenEndMessage))]
-        public static void HandleLifePointsRegenEndMessage(Bot bot, LifePointsRegenEndMessage message)
-        {
-            bot.Character.RegenRate = 0;
-            bot.Character.RegenStartTime = null;
-            bot.Character.Update(message);
-        }
-
+        Path FindPath(Cell startCell, Cell endCell, bool outsideFight, int mp = -1);
     }
 }

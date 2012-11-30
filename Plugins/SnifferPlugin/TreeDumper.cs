@@ -39,7 +39,7 @@ namespace SnifferPlugin
         public ObjectDumpNode GetDumpTree()
         {
             Type type = Target.GetType();
-            var tree = new ObjectDumpNode(type.Name, Target);
+            var tree = new ObjectDumpNode(type.Name);
 
             foreach (var node in InternalDump(Target, tree))
             {
@@ -53,7 +53,7 @@ namespace SnifferPlugin
         {
             if (obj == null || obj is ValueType || obj is string)
             {
-                yield return new ObjectDumpNode(FormatValue(obj), obj, parent);
+                yield return new ObjectDumpNode(FormatValue(obj), parent);
                 yield break;
             }
 
@@ -66,11 +66,11 @@ namespace SnifferPlugin
                     count++;
                     if (item == null || item is ValueType || item is string)
                     {
-                        yield return new ObjectDumpNode(FormatValue(item), obj, parent);
+                        yield return new ObjectDumpNode(FormatValue(item), parent);
                     }
                     else
                     {
-                        var node = new ObjectDumpNode(item.GetType().Name, item, parent);
+                        var node = new ObjectDumpNode(item.GetType().Name, parent);
                         foreach (var child in InternalDump(item, node))
                         {
                             node.Childrens.Add(child);
@@ -82,7 +82,7 @@ namespace SnifferPlugin
 
                 if (count == 0)
                 {
-                    yield return new ObjectDumpNode("-Empty-", obj, parent);
+                    yield return new ObjectDumpNode("-Empty-", parent);
                     yield break;
                 }
             }
@@ -100,7 +100,7 @@ namespace SnifferPlugin
                     if (value is MulticastDelegate)
                         continue;
 
-                    var node = new ObjectDumpNode(property.Name, value, parent);
+                    var node = new ObjectDumpNode(property.Name, parent);
                     foreach (var child in InternalDump(value, node))
                     {
                         node.Childrens.Add(child);
@@ -118,7 +118,7 @@ namespace SnifferPlugin
                     if (value is MulticastDelegate)
                         continue;
 
-                    var node = new ObjectDumpNode(field.Name, value, parent);
+                    var node = new ObjectDumpNode(field.Name, parent);
                     foreach (var child in InternalDump(value, node))
                     {
                         node.Childrens.Add(child);

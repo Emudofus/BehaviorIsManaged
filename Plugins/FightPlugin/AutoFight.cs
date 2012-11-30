@@ -164,7 +164,7 @@ namespace FightPlugin
         private void StartAI()
         {
             var nearestMonster = GetNearestEnemy();
-            var shortcut = m_character.Character.SpellShortcuts.Get(1);
+            var shortcut = m_character.Character.SpellShortcuts.Shortcuts.FirstOrDefault(sc => sc.Slot == 1);
 
             if (shortcut == null)
             {
@@ -196,15 +196,20 @@ namespace FightPlugin
                     m_stopMovingDelegate = null;
                 }
 
-                m_stopMovingDelegate = (sender, behavior, canceled) => OnStopMoving(spell, nearestMonster);
+                m_stopMovingDelegate = (sender, behavior, canceled, refused) => OnStopMoving(spell, nearestMonster, canceled, refused);
                 Bot.Character.Fighter.StopMoving += m_stopMovingDelegate;
             }
 
 
         }
 
-        private void OnStopMoving(Spell spell, Fighter enemy)
+        private void OnStopMoving(Spell spell, Fighter enemy, bool canceled, bool refused)
         {
+            if (refused)
+                Bot.Character.SendMessage("Move refused");
+            else
+                if (canceled)
+                    Bot.Character.SendMessage("Move canceled");
             Bot.Character.Fighter.StopMoving -= m_stopMovingDelegate;
             m_stopMovingDelegate = null;
 

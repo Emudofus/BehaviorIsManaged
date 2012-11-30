@@ -24,6 +24,7 @@ using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
+using System.Drawing;
 
 namespace BiM.Behaviors.Game.Fights
 {
@@ -470,7 +471,7 @@ namespace BiM.Behaviors.Game.Fights
         }
 
         public void Update(GameFightTurnListMessage msg)
-        {
+        {            
             if (msg == null) throw new ArgumentNullException("msg");
             foreach (var deadsId in msg.deadsIds)
             {
@@ -496,7 +497,7 @@ namespace BiM.Behaviors.Game.Fights
                 }
                 else
                 {
-                    fighter.IsAlive = false;
+                    fighter.IsAlive = true;
                 }
             }
 
@@ -515,16 +516,19 @@ namespace BiM.Behaviors.Game.Fights
             var fighter = GetFighter(message.authorId);
             
             if (fighter == null)
-                throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot start turn", message.authorId));
+                throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot end sequence", message.authorId));
 
             if (SequenceEnded != null)
                 SequenceEnded(this, fighter);
 
-            if ((TimeLine.CurrentPlayer != null) && (message.authorId != fighter.Id))
-                throw new InvalidOperationException(string.Format("EndSequence authorId {0} is not current Player {1}", message.authorId, fighter.Id));
-
-            if (TimeLine.CurrentPlayer != null)
-                TimeLine.CurrentPlayer.NotifySequenceEnded();
+            //if ((TimeLine.CurrentPlayer != null) && (message.authorId != TimeLine.CurrentPlayer.Id))
+            //    throw new InvalidOperationException(string.Format("EndSequence authorId {0} is not current Player {1}", message.authorId, fighter.Id));
+            //if (CurrentPlayer is PlayedFighter)
+            //{
+            //    (CurrentPlayer as PlayedFighter).Character.SendMessage(String.Format("EndSequence : of fighter {0}, CurrentPlayer {1}, TimeLine.CurrentPlayer {2}", fighter, CurrentPlayer, TimeLine.CurrentPlayer), Color.Gray);
+            //}
+            if (CurrentPlayer != null && CurrentPlayer.Id == message.authorId)
+                CurrentPlayer.NotifySequenceEnded();
         }
     }
 }
