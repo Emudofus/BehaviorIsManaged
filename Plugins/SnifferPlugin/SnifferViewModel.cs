@@ -36,265 +36,291 @@ using Microsoft.Win32;
 
 namespace SnifferPlugin
 {
-  internal class SnifferViewModelRegister
-  {
-    [MessageHandler(typeof(BotAddedMessage))]
-    public static void HandleBotAddedMessage(object dummy, BotAddedMessage message)
+    internal class SnifferViewModelRegister
     {
-      message.Bot.AddFrame(new SnifferViewModel(message.Bot));
-    }
-  }
-
-  public class SnifferViewModel : Frame<SnifferViewModel>, IViewModel<SnifferView>
-  {
-    private readonly ObservableCollectionMT<ObjectDumpNode> m_messages;
-    private readonly ReadOnlyObservableCollectionMT<ObjectDumpNode> m_readOnlyMessages;
-    private CollectionViewSource m_collectionViewSource;
-    private string m_searchText;
-    private bool m_seeProperties;
-    private bool m_onTheFly;
-
-    public SnifferViewModel(Bot bot)
-      : base(bot)
-    {
-      m_messages = new ObservableCollectionMT<ObjectDumpNode>();
-      m_readOnlyMessages = new ReadOnlyObservableCollectionMT<ObjectDumpNode>(m_messages);
-    }
-
-    public ReadOnlyObservableCollection<ObjectDumpNode> Messages
-    {
-      get { return m_readOnlyMessages; }
-    }
-
-    public bool IsPaused
-    {
-      get;
-      set;
-    }
-
-    public bool SeeProperties
-    {
-      get { return m_seeProperties; }
-      set
-      {
-        m_seeProperties = value;
-        RefreshVisibility();
-      }
-    }
-
-    public bool OnTheFly
-    {
-      get { return m_onTheFly; }
-      set
-      {
-        m_onTheFly = value;
-      }
-    }
-
-    public string SearchText
-    {
-      get { return m_searchText; }
-      set
-      {
-        m_searchText = value;
-        if (m_collectionViewSource != null)
-          m_collectionViewSource.View.Refresh();
-      }
-    }
-
-    #region IViewModel<SnifferView> Members
-
-    public event PropertyChangedEventHandler PropertyChanged;
-    private void OnPropertyChanged(string propertyName)
-    {
-      if (PropertyChanged != null)
-        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    object IViewModel.View
-    {
-      get { return View; }
-      set { View = (SnifferView)value; }
-    }
-
-    public SnifferView View
-    {
-      get;
-      set;
-    }
-
-    #endregion
-
-    private void OnMesssageDispatched(MessageDispatcher dispatcher, Message message)
-    {
-      if (IsPaused)
-        return;
-
-      var dumper = new TreeDumper(message);
-      ObjectDumpNode tree = dumper.GetDumpTree();
-      NetworkMessage networkMessage = message as NetworkMessage;
-      if (networkMessage != null)
-      {
-        tree.TimeStamp = DateTime.Now;
-        tree.Id = networkMessage.MessageId;
-        tree.From = networkMessage.From;
-      }
-
-      foreach (ObjectDumpNode child in tree.Childrens)
-      {
-        if (m_seeProperties)
+        [MessageHandler(typeof(BotAddedMessage))]
+        public static void HandleBotAddedMessage(object dummy, BotAddedMessage message)
         {
-          child.IsVisible = true;
+            message.Bot.AddFrame(new SnifferViewModel(message.Bot));
         }
-        else if (child.IsProperty)
+    }
+
+    public class SnifferViewModel : Frame<SnifferViewModel>, IViewModel<SnifferView>
+    {
+        #region Recording On The Fly
+        public const string OnTheFlyFileName = "OnTheFly.csv";
+        private void FlushOnTheFly(string lastMessage)
         {
-          child.IsVisible = false;
+            File.AppendAllText(OnTheFlyFileName, lastMessage);
         }
-      }
+        #endregion
 
-      m_messages.Add(tree);
-    }
+        /// <summary>
+        /// This says how message to keep in memory. The older will be removed as new messages come over this quantity 
+        /// </summary>
+        public const int NbMessagesToKeep = 1000;
 
-    private void FilterMethod(object sender, FilterEventArgs e)
-    {
-      e.Accepted = true;
+        private readonly ObservableCollectionMT<ObjectDumpNode> m_messages;
+        private readonly ReadOnlyObservableCollectionMT<ObjectDumpNode> m_readOnlyMessages;
+        private CollectionViewSource m_collectionViewSource;
+        private string m_searchText;
+        private bool m_seeProperties;
+        private bool m_onTheFly;
 
-      if (string.IsNullOrEmpty(SearchText))
-        return;
-
-      var node = e.Item as ObjectDumpNode;
-
-      if (node == null)
-        return;
-
-      e.Accepted = node.Parent != null || node.Name.Contains(SearchText);
-    }
-
-    private void RefreshVisibility()
-    {
-      foreach (ObjectDumpNode node in m_messages)
-      {
-        foreach (ObjectDumpNode child in node.Childrens)
+        public SnifferViewModel(Bot bot)
+            : base(bot)
         {
-          if (m_seeProperties)
-          {
-            child.IsVisible = true;
-          }
-          else if (child.IsProperty)
-          {
-            child.IsVisible = false;
-          }
+            m_messages = new ObservableCollectionMT<ObjectDumpNode>();
+            m_readOnlyMessages = new ReadOnlyObservableCollectionMT<ObjectDumpNode>(m_messages);
         }
-      }
-    }
 
-
-    #region ExportCommand
-
-    private DelegateCommand m_exportCommand;
-
-    public DelegateCommand ExportCommand
-    {
-      get { return m_exportCommand ?? (m_exportCommand = new DelegateCommand(OnExport, CanExport)); }
-    }
-
-    private bool CanExport(object parameter)
-    {
-      return true;
-    }
-
-    private void OnExport(object parameter)
-    {
-      var dialog = new SaveFileDialog
-      {
-        FileName = string.Format("logs {0}", DateTime.Now.ToString("dd-MM-yy")),
-        DefaultExt = ".log",
-        Filter = "Log files (.log)|*.log|CSV files (.csv)|*.csv"
-      };
-
-      if (dialog.ShowDialog() == true)
-      {
-        var builder = new StringBuilder();
-        bool exportCSV = Path.GetExtension(dialog.FileName) == ".csv";
-        for (int i = 0; i < m_messages.Count; i++)
+        public ReadOnlyObservableCollection<ObjectDumpNode> Messages
         {
-          builder.Append(m_messages[i].ExportToString(exportCSV));
-          builder.AppendLine();
-          if (!exportCSV) builder.AppendLine();
+            get { return m_readOnlyMessages; }
         }
-        File.WriteAllText(dialog.FileName, builder.ToString());
-      }
+
+        public bool IsPaused
+        {
+            get;
+            set;
+        }
+
+        public bool SeeProperties
+        {
+            get { return m_seeProperties; }
+            set
+            {
+                m_seeProperties = value;
+                RefreshVisibility();
+            }
+        }
+
+        public bool OnTheFly
+        {
+            get { return m_onTheFly; }
+            set
+            {
+                m_onTheFly = value;
+            }
+        }
+
+        public string SearchText
+        {
+            get { return m_searchText; }
+            set
+            {
+                m_searchText = value;
+                if (m_collectionViewSource != null)
+                    m_collectionViewSource.View.Refresh();
+            }
+        }
+
+        #region IViewModel<SnifferView> Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        object IViewModel.View
+        {
+            get { return View; }
+            set { View = (SnifferView)value; }
+        }
+
+        public SnifferView View
+        {
+            get;
+            set;
+        }
+
+        #endregion
+
+        private void OnMesssageDispatched(MessageDispatcher dispatcher, Message message)
+        {
+            if (IsPaused)
+                return;
+
+            var dumper = new TreeDumper(message);
+            ObjectDumpNode tree = dumper.GetDumpTree();
+
+            NetworkMessage networkMessage = message as NetworkMessage;
+            if (networkMessage != null)
+            {
+                tree.TimeStamp = DateTime.Now;
+                tree.Id = networkMessage.MessageId;
+                tree.From = networkMessage.From;
+            }
+
+            foreach (ObjectDumpNode child in tree.Childrens)
+            {
+                if (m_seeProperties)
+                {
+                    child.IsVisible = true;
+                }
+                else if (child.IsProperty)
+                {
+                    child.IsVisible = false;
+                }
+            }
+
+            m_messages.Add(tree);
+
+            #region Cleaning : avoid memory overflow on a long run
+            if (NbMessagesToKeep > 0 && m_messages.Count > NbMessagesToKeep)
+                m_messages.RemoveAt(0);
+            #endregion Cleaning : avoid memory overflow on a long run
+
+            #region Record On the fly
+            if (OnTheFly)
+                FlushOnTheFly(tree.ExportToString(true));
+            #endregion Record On the fly
+
+        }
+
+
+        private void FilterMethod(object sender, FilterEventArgs e)
+        {
+            e.Accepted = true;
+
+            if (string.IsNullOrEmpty(SearchText))
+                return;
+
+            var node = e.Item as ObjectDumpNode;
+
+            if (node == null)
+                return;
+
+            e.Accepted = node.Parent != null || node.Name.Contains(SearchText);
+        }
+
+        private void RefreshVisibility()
+        {
+            foreach (ObjectDumpNode node in m_messages)
+            {
+                foreach (ObjectDumpNode child in node.Childrens)
+                {
+                    if (m_seeProperties)
+                    {
+                        child.IsVisible = true;
+                    }
+                    else if (child.IsProperty)
+                    {
+                        child.IsVisible = false;
+                    }
+                }
+            }
+        }
+
+
+        #region ExportCommand
+
+        private DelegateCommand m_exportCommand;
+
+        public DelegateCommand ExportCommand
+        {
+            get { return m_exportCommand ?? (m_exportCommand = new DelegateCommand(OnExport, CanExport)); }
+        }
+
+        private bool CanExport(object parameter)
+        {
+            return true;
+        }
+
+        private void OnExport(object parameter)
+        {
+            var dialog = new SaveFileDialog
+            {
+                FileName = string.Format("logs {0}", DateTime.Now.ToString("dd-MM-yy")),
+                DefaultExt = ".log",
+                Filter = "Log files (.log)|*.log|CSV files (.csv)|*.csv"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var builder = new StringBuilder();
+                bool exportCSV = Path.GetExtension(dialog.FileName) == ".csv";
+                for (int i = 0; i < m_messages.Count; i++)
+                {
+                    builder.Append(m_messages[i].ExportToString(exportCSV));
+                    builder.AppendLine();
+                    if (!exportCSV) builder.AppendLine();
+                }
+                File.WriteAllText(dialog.FileName, builder.ToString());
+            }
+        }
+
+        #endregion
+
+        #region ClearCommand
+
+        private DelegateCommand m_clearCommand;
+
+        public DelegateCommand ClearCommand
+        {
+            get { return m_clearCommand ?? (m_clearCommand = new DelegateCommand(OnClear, CanClear)); }
+        }
+
+        private bool CanClear(object parameter)
+        {
+            return true;
+        }
+
+        private void OnClear(object parameter)
+        {
+            m_messages.Clear();
+            RefreshVisibility();
+        }
+
+        #endregion
+
+
+        #region PauseResumeCommand
+
+        private DelegateCommand m_pauseResumeCommand;
+
+        public DelegateCommand PauseResumeCommand
+        {
+            get { return m_pauseResumeCommand ?? (m_pauseResumeCommand = new DelegateCommand(OnPauseResume, CanPauseResume)); }
+        }
+
+        private bool CanPauseResume(object parameter)
+        {
+            return true;
+        }
+
+        private void OnPauseResume(object parameter)
+        {
+            IsPaused = !IsPaused;
+        }
+
+        #endregion
+
+        public override void OnAttached()
+        {
+            base.OnAttached();
+
+            Bot.Dispatcher.MessageDispatched += OnMesssageDispatched;
+
+            BotViewModel viewModel = Bot.GetViewModel();
+            LayoutDocument layout = viewModel.AddDocument(this, () => new SnifferView());
+            layout.Title = "Sniffer";
+            layout.CanClose = false;
+
+            View.Dispatcher.Invoke(new Action(() => (m_collectionViewSource = View.Resources["Messages"] as CollectionViewSource).Filter += FilterMethod));
+        }
+
+
+        public override void OnDetached()
+        {
+            base.OnDetached();
+
+            Bot.Dispatcher.MessageDispatched -= OnMesssageDispatched;
+            BotViewModel viewModel = Bot.GetViewModel();
+            if (viewModel != null)
+                viewModel.RemoveDocument(View);
+        }
     }
-
-    #endregion
-
-    #region ClearCommand
-
-    private DelegateCommand m_clearCommand;
-
-    public DelegateCommand ClearCommand
-    {
-      get { return m_clearCommand ?? (m_clearCommand = new DelegateCommand(OnClear, CanClear)); }
-    }
-
-    private bool CanClear(object parameter)
-    {
-      return true;
-    }
-
-    private void OnClear(object parameter)
-    {
-      m_messages.Clear();
-      RefreshVisibility();
-    }
-
-    #endregion
-
-
-    #region PauseResumeCommand
-
-    private DelegateCommand m_pauseResumeCommand;
-
-    public DelegateCommand PauseResumeCommand
-    {
-      get { return m_pauseResumeCommand ?? (m_pauseResumeCommand = new DelegateCommand(OnPauseResume, CanPauseResume)); }
-    }
-
-    private bool CanPauseResume(object parameter)
-    {
-      return true;
-    }
-
-    private void OnPauseResume(object parameter)
-    {
-      IsPaused = !IsPaused;
-    }
-
-    #endregion
-
-    public override void OnAttached()
-    {
-      base.OnAttached();
-
-      Bot.Dispatcher.MessageDispatched += OnMesssageDispatched;
-
-      BotViewModel viewModel = Bot.GetViewModel();
-      LayoutDocument layout = viewModel.AddDocument(this, () => new SnifferView());
-      layout.Title = "Sniffer";
-      layout.CanClose = false;
-
-      View.Dispatcher.Invoke(new Action(() => (m_collectionViewSource = View.Resources["Messages"] as CollectionViewSource).Filter += FilterMethod));
-    }
-
-
-    public override void OnDetached()
-    {
-      base.OnDetached();
-
-      Bot.Dispatcher.MessageDispatched -= OnMesssageDispatched;
-      BotViewModel viewModel = Bot.GetViewModel();
-      if (viewModel != null)
-        viewModel.RemoveDocument(View);
-    }
-  }
 }

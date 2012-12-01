@@ -300,9 +300,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                     pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
             Path path = null;
             if (pathFinder is IAdvancedPathFinder)
-                path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, false, -1, minDistance);
+                path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, true, -1, minDistance);
             else
-                path = pathFinder.FindPath(Cell, cell, false, -1);
+                path = pathFinder.FindPath(Cell, cell, true, -1);
 
             return Move(path, cell);
         }
