@@ -22,6 +22,7 @@ using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Interactives;
 using BiM.Behaviors.Game.World.Areas;
+using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Collections;
 using BiM.Core.Config;
@@ -74,7 +75,7 @@ namespace BiM.Behaviors.Game.World
         /// <summary>
         /// Create a Map instance only used to store datas (cells, properties ...)
         /// </summary>
-        public static Map CreateDataMapInstance(DlmMap map)
+        public static Map CreateDataMapInstance(MapData map)
         {
             return new Map(map);
         }
@@ -98,7 +99,7 @@ namespace BiM.Behaviors.Game.World
             m_readOnlyInteractives = new ReadOnlyObservableCollectionMT<InteractiveObject>(m_interactives);
         }
 
-        private Map(DlmMap map)
+        private Map(MapData map)
         {
             m_position = DataProvider.Instance.GetOrDefault<MapPosition>(map.Id);
             IEnumerable<Cell> cells = map.Cells.Select(entry => new Cell(this, entry));
@@ -432,7 +433,7 @@ namespace BiM.Behaviors.Game.World
         {
             get
             {
-                return m_position != null ? m_position.posX : 255;
+                return m_position != null ? m_position.posX : (Id & 0x3FE00) >> 9;
             }
         }
 
@@ -440,7 +441,7 @@ namespace BiM.Behaviors.Game.World
         {
             get
             {
-                return m_position != null ? m_position.posY : 255;
+                return m_position != null ? m_position.posY : Id & 0x1FF;
             }
         }
 

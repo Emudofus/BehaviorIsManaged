@@ -26,6 +26,7 @@ using BiM.Behaviors;
 using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Items.Icons;
 using BiM.Behaviors.Game.World;
+using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.MapTraveling.Storage;
 using BiM.Behaviors.Messages;
 using BiM.Core.Config;
@@ -129,12 +130,6 @@ namespace BiM.Host
             get;
             private set;
         }
-        private static IEnumerable<Map> EnumerateMaps()
-        {
-            var maps = DataProvider.Instance.EnumerateAll<DlmMap>(Map.GenericDecryptionKey);
-
-            return maps.Select(Map.CreateDataMapInstance);
-        }
 
         public static void Initialize()
         {
@@ -174,29 +169,22 @@ namespace BiM.Host
             var itemIconSource = new ItemIconSource(Path.Combine(GetDofusPath(), DofusItemIconPath));
             DataProvider.Instance.AddSource(itemIconSource);
 
-            /*var memory = GC.GetTotalMemory(true);
-            var maps2 = EnumerateMaps().ToArray();
-            GC.Collect();
-            logger.Debug("maps={0}MB", ( GC.GetTotalMemory(true) - memory ) / ( 1024 * 1024 ));
+            var mapdataSource = new MapDataSource();
+            var progression = mapdataSource.Initialize();
 
-            if (!File.Exists(SubMapFile) || new FileInfo(SubMapFile).Length == 0)
+            if (progression != null)
             {
-                var generator = new SubMapsFileGenerator(SubMapFile);
-                generator.BeginGeneration();
-                generator.GenerationEnded += obj => m_generationEnded = true;
-
-                int counter = 0;
-                while (!m_generationEnded)
+                logger.Debug("Creating {0}...", MapDataSource.MapsDataFile);
+                while (!progression.IsEnded)
                 {
-                    Thread.Sleep(100);
-                    counter++;
-                    if (counter % 5 == 0)
-                    {
-                        logger.Debug("{0}/{1} Mem:{2}MB", generator.GenerationCounter, generator.TotalMaps, GC.GetTotalMemory(false) / (1024*1024));
-                        GC.Collect();
-                    }
+                    Thread.Sleep(500);
+                    logger.Debug("{0}/{1} Mem:{2}MB", progression.Value, progression.Total, GC.GetTotalMemory(false) / ( 1024 * 1024 ));
                 }
-            }*/
+
+                GC.Collect();
+            }
+
+            DataProvider.Instance.AddSource(mapdataSource);
 
             MITM = new MITM.MITM(new MITMConfiguration
                                      {

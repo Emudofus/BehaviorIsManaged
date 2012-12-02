@@ -85,6 +85,8 @@ namespace BiM.Behaviors.Game.Shortcuts
             GeneralShortcut shortcut = Get(message.shortcut.slot);
             if (shortcut != null)
                 shortcut.Update(message.shortcut);
+            else
+                Add(message.shortcut);
         }
     }
 }

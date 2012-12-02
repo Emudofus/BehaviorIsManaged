@@ -58,6 +58,8 @@ namespace BiM.Behaviors.Game.Shortcuts
             var shortcut = Get(message.shortcut.slot);
             if (shortcut != null)
                 shortcut.Update(message.shortcut);
+            else if (message.shortcut is ShortcutSpell)
+                Add(message.shortcut as ShortcutSpell);
         }
     }
 }

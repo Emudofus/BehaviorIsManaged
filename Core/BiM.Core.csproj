@@ -129,6 +129,7 @@
     <Compile Include="Reflection\Singleton.cs" />
     <Compile Include="Threading\SelfRunningTaskQueue.cs" />
     <Compile Include="Threading\SimplerTimer.cs" />
+    <Compile Include="UI\ProgressionCounter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Librairies\NLog\NLog.netfx40.csproj">

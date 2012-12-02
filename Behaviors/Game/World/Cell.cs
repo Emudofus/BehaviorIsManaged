@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using BiM.Behaviors.Game.World.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Tools.Dlm;
 
@@ -43,6 +44,17 @@ namespace BiM.Behaviors.Game.World
         private Point? m_point;
 
         public Cell(Map map, DlmCellData cell)
+        {
+            Map = map;
+            Id = cell.Id;
+            Floor = cell.Floor;
+            LosMov = cell.LosMov;
+            MapChangeData = cell.MapChangeData;
+            MoveZone = cell.MoveZone;
+            Speed = cell.Speed;
+        }
+
+        public Cell(Map map, CellData cell)
         {
             Map = map;
             Id = cell.Id;
