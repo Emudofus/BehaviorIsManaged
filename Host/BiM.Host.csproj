@@ -70,6 +70,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Db4objects.Db4o">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\db4o\db4o-8.0\bin\net-4.0\Db4objects.Db4o.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\Librairies\ServiceStack.Redis\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -149,6 +155,10 @@
       <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
       <Name>NLog.netfx40</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Librairies\ServiceStack.Redis\ServiceStack.Redis.csproj">
+      <Project>{AF99F19B-4C04-4F58-81EF-B092F1FCC540}</Project>
+      <Name>ServiceStack.Redis</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Librairies\WPFToolkit.Extended\WPFToolkit.Extended.csproj">
       <Project>{72E591D6-8F83-4D8C-8F67-9C325E623234}</Project>
       <Name>WPFToolkit.Extended</Name>
@@ -205,4 +215,7 @@
     <NotifyPropertyWeaverMsBuildTask.WeavingTask />
   </Target>
   <UsingTask TaskName="NotifyPropertyWeaverMsBuildTask.WeavingTask" AssemblyFile="$([MSBuild]::Unescape($(SolutionDir)))Librairies\NotifyPropertyWeaverMsBuildTask.dll" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(SolutionDir)Librairies\Redis\*.*" "$(TargetDir)Redis\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

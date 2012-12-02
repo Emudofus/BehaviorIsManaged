@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// ChatMessage.cs
+// BotChatMessageClient.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,42 +13,38 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System.ComponentModel;
-using BiM.Core.Messages;
+using System;
 using BiM.Protocol.Enums;
+using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Game.Chat
 {
-    public abstract class ChatMessage : Message, INotifyPropertyChanged
+    public class BotChatMessageClient : BotChatMessage
     {
-        // note : I have to encapsulate this protocol part because ChatAbstractServerMessage and ChatAbstractClientMessage
-        // are not bound, and this is not good
+        public BotChatMessageClient()
+        {
+            
+        }
 
-        public string Content
+        public BotChatMessageClient(ChatClientPrivateMessage message)
+        {
+            if (message == null) throw new ArgumentNullException("message");
+            Content = message.content;
+            ReceiverName = message.receiver;
+            Channel = ChatActivableChannelsEnum.PSEUDO_CHANNEL_PRIVATE;
+        }
+
+        public BotChatMessageClient(ChatClientMultiMessage message)
+        {
+            if (message == null) throw new ArgumentNullException("message");
+            Content = message.content;
+            Channel = (ChatActivableChannelsEnum) message.channel;
+        }
+
+        public string ReceiverName
         {
             get;
             set;
         }
-
-        public ChatActivableChannelsEnum Channel
-        {
-            get;
-            set;
-        }
-
-        // todo
-        public object Items
-        {
-            get;
-            set;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {
-          if (PropertyChanged != null)
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
     }
 }

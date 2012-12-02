@@ -24,14 +24,14 @@ using BiM.Protocol.Messages;
 
 namespace BiM.Behaviors.Game.Chat
 {
-    public class ChatMessageServer : ChatMessage
+    public class BotChatMessageServer : BotChatMessage
     {
-        public ChatMessageServer()
+        public BotChatMessageServer()
         {
             
         }
 
-        public ChatMessageServer(ChatServerMessage message)
+        public BotChatMessageServer(ChatServerMessage message)
         {
             if (message == null) throw new ArgumentNullException("message");
             Content = message.content;
@@ -43,7 +43,7 @@ namespace BiM.Behaviors.Game.Chat
             SenderAccountId = message.senderAccountId;
         }
 
-        public ChatMessageServer(ChatServerCopyMessage message)
+        public BotChatMessageServer(ChatServerCopyMessage message)
         {
             if (message == null) throw new ArgumentNullException("message");
             Content = message.content;
@@ -57,7 +57,7 @@ namespace BiM.Behaviors.Game.Chat
             Copy = true;
         }
 
-        public ChatMessageServer(ChatAdminServerMessage message)
+        public BotChatMessageServer(ChatAdminServerMessage message)
             : this((ChatServerMessage)message)
         {
             if (message == null) throw new ArgumentNullException("message");

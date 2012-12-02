@@ -24,31 +24,31 @@ namespace BiM.Behaviors.Handlers.Chat
         [MessageHandler(typeof (ChatClientMultiMessage))]
         public static void HandleChatClientMultiMessage(Bot bot, ChatClientMultiMessage message)
         {
-            bot.SendLocal(new ChatMessageClient(message));
+            bot.SendLocal(new BotChatMessageClient(message));
         }
 
         [MessageHandler(typeof(ChatClientPrivateMessage))]
         public static void HandleChatClientPrivateMessage(Bot bot, ChatClientPrivateMessage message)
         {
-            bot.SendLocal(new ChatMessageClient(message));
+            bot.SendLocal(new BotChatMessageClient(message));
         }
 
         [MessageHandler(typeof(ChatServerMessage))]
         public static void HandleChatServerMessage(Bot bot, ChatServerMessage message)
         {
-            bot.SendLocal(new ChatMessageServer(message));
+            bot.SendLocal(new BotChatMessageServer(message));
         }
 
         [MessageHandler(typeof(ChatServerCopyMessage))]
         public static void HandleChatServerCopyMessage(Bot bot, ChatServerCopyMessage message)
         {
-            bot.SendLocal(new ChatMessageServer(message));
+            bot.SendLocal(new BotChatMessageServer(message));
         }
 
         [MessageHandler(typeof(ChatAdminServerMessage))]
         public static void HandleChatAdminServerMessage(Bot bot, ChatAdminServerMessage message)
         {
-            bot.SendLocal(new ChatMessageServer(message));
+            bot.SendLocal(new BotChatMessageServer(message));
         }
     }
 }

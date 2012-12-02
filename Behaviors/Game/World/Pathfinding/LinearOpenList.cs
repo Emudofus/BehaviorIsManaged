@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // LinearOpenList.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,22 +13,25 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
+
 using System;
 using System.Collections.Generic;
-using BiM.Core.Collections;
 
 namespace BiM.Behaviors.Game.World.Pathfinding
 {
     public class LinearOpenList : IOpenList
     {
+        private readonly List<Cell> m_cells = new List<Cell>();
         private readonly IComparer<Cell> m_comparer;
-        List<Cell> m_cells = new List<Cell>(); 
 
         public LinearOpenList(IComparer<Cell> comparer)
         {
             m_comparer = comparer;
         }
+
+        #region IOpenList Members
 
         public void Push(Cell cell)
         {
@@ -56,5 +60,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         {
             get { return m_cells.Count; }
         }
+
+        #endregion
     }
 }

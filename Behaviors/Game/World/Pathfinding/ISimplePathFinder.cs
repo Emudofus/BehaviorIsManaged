@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // Spell.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -14,12 +15,8 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 // Author : FastFrench - antispam@laposte.net
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+#endregion
 
 namespace BiM.Behaviors.Game.World.Pathfinding
 {

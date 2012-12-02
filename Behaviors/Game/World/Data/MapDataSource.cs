@@ -28,6 +28,7 @@ using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.UI;
 using BiM.Protocol.Tools.Dlm;
+using Db4objects.Db4o;
 using NLog;
 using ProtoBuf;
 

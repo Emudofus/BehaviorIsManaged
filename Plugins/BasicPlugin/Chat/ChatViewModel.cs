@@ -363,8 +363,8 @@ namespace BasicPlugin.Chat
 
         #region Chat Handlers
 
-        [MessageHandler(typeof (ChatMessageServer))]
-        public void HandleChatMessageServer(Bot bot, ChatMessageServer message)
+        [MessageHandler(typeof (BotChatMessageServer))]
+        public void HandleChatMessageServer(Bot bot, BotChatMessageServer message)
         {
             // server sends a copy from private messages
             if (message.Copy)
@@ -382,8 +382,8 @@ namespace BasicPlugin.Chat
             }
         }
 
-        [MessageHandler(typeof (ChatMessageClient))]
-        public void HandleChatMessageClient(Bot bot, ChatMessageClient message)
+        [MessageHandler(typeof (BotChatMessageClient))]
+        public void HandleChatMessageClient(Bot bot, BotChatMessageClient message)
         {
             if (message.Channel == ChatActivableChannelsEnum.PSEUDO_CHANNEL_PRIVATE)
             {

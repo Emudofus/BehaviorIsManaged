@@ -15,6 +15,7 @@
 #endregion
 using System.Diagnostics;
 using System.Linq;
+using BiM.Core.Network;
 using WindowManager.Api32;
 
 namespace WindowManager

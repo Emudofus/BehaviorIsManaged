@@ -62,6 +62,9 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Db4objects.Db4o">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\db4o\db4o-8.0\bin\net-4.0\Db4objects.Db4o.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="protobuf-net">
@@ -120,9 +123,9 @@
     <Compile Include="Game\Actors\RolePlay\TaxCollector.cs" />
     <Compile Include="Game\Alignement\AlignmentInformations.cs" />
     <Compile Include="Game\Breeds\Breed.cs" />
-    <Compile Include="Game\Chat\ChatMessage.cs" />
-    <Compile Include="Game\Chat\ChatMessageClient.cs" />
-    <Compile Include="Game\Chat\ChatMessageServer.cs" />
+    <Compile Include="Game\Chat\BotChatMessage.cs" />
+    <Compile Include="Game\Chat\BotChatMessageClient.cs" />
+    <Compile Include="Game\Chat\BotChatMessageServer.cs" />
     <Compile Include="Game\Contacts\ContactsBook.cs" />
     <Compile Include="Game\Effects\EffectBase.cs" />
     <Compile Include="Game\Effects\EffectCreature.cs" />

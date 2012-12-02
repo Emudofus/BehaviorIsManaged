@@ -30,6 +30,7 @@ using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.MapTraveling.Storage;
 using BiM.Behaviors.Messages;
 using BiM.Core.Config;
+using BiM.Core.Database;
 using BiM.Core.I18n;
 using BiM.Core.Machine;
 using BiM.Core.Messages;
@@ -39,7 +40,12 @@ using BiM.Protocol.Data;
 using BiM.Protocol.Tools;
 using BiM.Protocol.Tools.D2p;
 using BiM.Protocol.Tools.Dlm;
+using Db4objects.Db4o;
+using Db4objects.Db4o.IO;
+using Db4objects.Db4o.Internal;
+using Db4objects.Db4o.Internal.Config;
 using NLog;
+using ServiceStack.Redis;
 
 namespace BiM.Host
 {
@@ -83,8 +89,8 @@ namespace BiM.Host
         [Configurable("RealAuthPort")]
         public static int RealAuthPort = 5555;
 
-        [Configurable("SubMapFile")]
-        public static string SubMapFile = "./submaps.dat";
+        [Configurable("RedisServerExe")]
+        public static string RedisServerExe = "./Redis/redis-server.exe";
 
         public static event UnhandledExceptionEventHandler UnhandledException;
 
@@ -168,6 +174,9 @@ namespace BiM.Host
 
             var itemIconSource = new ItemIconSource(Path.Combine(GetDofusPath(), DofusItemIconPath));
             DataProvider.Instance.AddSource(itemIconSource);
+
+            var serverHost = new RedisServerHost(RedisServerExe);
+            serverHost.StartOrFindProcess();
 
             var mapdataSource = new MapDataSource();
             var progression = mapdataSource.Initialize();
