@@ -18,26 +18,42 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BiM.Behaviors;
+using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Config;
 using BiM.Core.Messages;
+using BiM.Core.Network;
 using BiM.Protocol.Messages;
 
 namespace SimplePlugin.Handlers
 {
-    public class PathfindersComparer
+    class PathfindersComparerRegister
     {
-        [Configurable("AllowComparer")]
-        public static bool AllowComparer = false;
-
-        [MessageHandler(typeof (GameMapMovementRequestMessage))]
-        public static void HandleGameMapMovementRequestMessage(Bot bot, GameMapMovementRequestMessage message)
+        [MessageHandler(typeof(ChatClientMultiMessage))]
+        public static void HandleChatClientMultiMessage(Bot bot, ChatClientMultiMessage message)
         {
-            if (!AllowComparer)
-                return;
+            if (message.content.StartsWith(".compare pathfinder"))
+            {
+                if (bot.HasFrame<PathfindersComparer>())
+                    bot.RemoveFrame<PathfindersComparer>();
+                else
+                    bot.AddFrame(new PathfindersComparer(bot));
+            }
+        }
+    }
 
+    public class PathfindersComparer : Frame<PathfindersComparer>
+    {
+        public PathfindersComparer(Bot bot)
+            : base(bot)
+        {
+        }
+
+        [MessageHandler(typeof (GameMapMovementRequestMessage), FromFilter = ListenerEntry.Client)]
+        public void HandleGameMapMovementRequestMessage(Bot bot, GameMapMovementRequestMessage message)
+        {
             bot.SendToClient(new DebugClearHighlightCellsMessage());
 
             var clientPath = Path.BuildFromClientCompressedPath(bot.Character.Map, message.keyMovements);
@@ -49,28 +65,24 @@ namespace SimplePlugin.Handlers
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client
             bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), botPath.Cells.Select(entry => entry.Id).ToArray()));
             bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
+
+            message.keyMovements = botPath.GetClientPathKeys();
         }
 
         [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
-        public static void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
+        public void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
         {
             //bot.Character.StartMoving += OnStartMoving;
         }
 
         [MessageHandler(typeof (GameMapMovementCancelMessage))]
-        public static void HandleGameMapMovementCancelMessage(Bot bot, GameMapMovementCancelMessage message)
+        public void HandleGameMapMovementCancelMessage(Bot bot, GameMapMovementCancelMessage message)
         {
-            if (!AllowComparer)
-                return;
-
             //bot.SendToClient(new DebugHighlightCellsMessage(Color.Violet.ToArgb(), new short[] { message.cellId }));
         }
 
-        private static void OnStartMoving(ContextActor actor, MovementBehavior movement)
+        private void OnStartMoving(ContextActor actor, MovementBehavior movement)
         {
-            if (!AllowComparer)
-                return;
-
             var bot = BotManager.Instance.GetCurrentBot();
 
             Task.Factory.StartNew(

@@ -167,9 +167,11 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                         bool alignedWithStart = newLocation.X + newLocation.Y == startCell.X + startCell.Y ||
                             newLocation.X - newLocation.Y == startCell.X - startCell.Y;
 
-                        if (!alignedWithEnd || !alignedWithStart)
+                        if (newLocation.X + newLocation.Y != endCell.X + endCell.Y && newLocation.X - newLocation.Y != endCell.X - endCell.Y ||
+                            newLocation.X + newLocation.Y != startCell.X + startCell.Y && newLocation.X - newLocation.Y != startCell.X - startCell.Y)
                         {
-                            cost += newLocation.ManhattanDistanceTo(endCell) + newLocation.ManhattanDistanceTo(startCell);
+                            cost += newLocation.ManhattanDistanceTo(endCell);
+                            cost += newLocation.ManhattanDistanceTo(startCell);
                         }
 
                         // tests diagonales now

@@ -22,6 +22,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Game.World.Data;
 using BiM.Protocol.Tools.Dlm;
 using NLog;
 
@@ -137,7 +138,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
         private IEnumerable<Map> EnumerateMaps()
         {
-            var maps = DataProvider.Instance.EnumerateAll<DlmMap>(Map.GenericDecryptionKey);
+            var maps = DataProvider.Instance.EnumerateAll<MapData>();
 
             return maps.Select(Map.CreateDataMapInstance);
         }

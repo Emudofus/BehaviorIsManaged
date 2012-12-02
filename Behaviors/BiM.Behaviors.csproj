@@ -64,6 +64,9 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="protobuf-net">
+      <HintPath>..\Librairies\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -211,10 +214,13 @@
     <Compile Include="Game\World\Cell.cs" />
     <Compile Include="Game\World\CellList.cs" />
     <Compile Include="Game\Actors\RolePlay\GroupMonster.cs" />
+    <Compile Include="Game\World\Data\CellData.cs" />
+    <Compile Include="Game\World\Data\MapDataSource.cs" />
     <Compile Include="Game\World\IMap.cs" />
     <Compile Include="Game\World\LOSMap.cs" />
     <Compile Include="Game\World\Map.cs" />
     <Compile Include="Game\World\MapContext.cs" />
+    <Compile Include="Game\World\Data\MapData.cs" />
     <Compile Include="Game\World\MapNeighbour.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\CellInfo.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\IWorldMapProvider.cs" />
