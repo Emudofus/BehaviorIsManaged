@@ -38,7 +38,7 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(GameFightStartingMessage))]
         public static void HandleGameFightStartingMessage(Bot bot, GameFightStartingMessage message)
         {
-            // do nothing
+            bot.Character.SpellsBook.FightStart(message);
         }
 
         [MessageHandler(typeof (GameFightJoinMessage))]
@@ -157,7 +157,7 @@ namespace BiM.Behaviors.Handlers.Context
                 logger.Error("Fight is not properly initialized.");
                 return; // Can't handle the message
             }
-            bot.Character.Fight.StartFight();
+            bot.Character.Fight.StartFight();            
         }
 
         [MessageHandler(typeof(GameFightEndMessage))]
@@ -237,27 +237,6 @@ namespace BiM.Behaviors.Handlers.Context
             }
             bot.Character.Fight.EndTurn();
             bot.Character.SpellsBook.EndTurn();
-        }
-
-        [MessageHandler(typeof(GameActionFightSpellCastMessage))]
-        public void HandleGameActionFightSpellCastMessage(Bot bot, GameActionFightSpellCastMessage message)
-        {
-            if (bot == null || bot.Character == null || bot.Character.Fight == null)
-            {
-                logger.Error("Fight is not properly initialized.");
-                return; // Can't handle the message
-            }
-            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
-
-            if (fighter == null)
-                logger.Error("Fighter {0} cast a spell but doesn't exist", message.sourceId);
-            else
-            {
-                fighter.NotifySpellCasted(new SpellCast(bot.Character.Fight, message));
-                if (bot.Character.Fighter != null && bot.Character.Fighter.Id == message.sourceId)
-                    bot.Character.SpellsBook.CastAt(message);                
-
-            }
         }
 
         [MessageHandler(typeof(GameActionFightDispellableEffectMessage))]
@@ -358,12 +337,7 @@ namespace BiM.Behaviors.Handlers.Context
             }            
         }
         
-        [MessageHandler(typeof(GameActionFightSpellCooldownVariationMessage))]
-        public static void HandleGameActionFightSpellCooldownVariationMessage(Bot bot, GameActionFightSpellCooldownVariationMessage message)
-        {
-
-        }
-
+        
         [MessageHandler(typeof(GameActionFightTackledMessage))]
         public static void HandleGameActionFightTackledMessage(Bot bot, GameActionFightTackledMessage message)
         {            
@@ -384,22 +358,6 @@ namespace BiM.Behaviors.Handlers.Context
                 fighter.Update(message);
             }            
         }
-        [MessageHandler(typeof(GameActionFightNoSpellCastMessage))]
-        public static void HandleGameActionFightNoSpellCastMessage(Bot bot, GameActionFightNoSpellCastMessage message)
-        {
-            if (bot == null || bot.Character == null || bot.Character.Fight == null)
-            {
-                logger.Error("Fight is not properly initialized.");
-                return; // Can't handle the message
-            }
-            PlayedFighter fighter = bot.Character.Fighter;
-            
-            if (fighter != null)
-            {
-                fighter.Update(message);
-            }
-        }
-      
         #endregion stats update
 
     }

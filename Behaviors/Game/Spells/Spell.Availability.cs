@@ -27,27 +27,27 @@ namespace BiM.Behaviors.Game.Spells
     {
         #region Stuff to control availability of the spell
 
-        private uint m_nbCastAllowed;
-        private uint m_nbTurnToWait;
-        private Dictionary<int, int> m_targeted;
+        private uint _nbCastAllowed;
+        private uint _nbTurnToWait;
+        private Dictionary<int, int> _targeted;
 
         public void StartFight()
         {           
-            m_nbTurnToWait = LevelTemplate.initialCooldown;
-            if (m_nbTurnToWait == 0)
-                m_nbCastAllowed = LevelTemplate.maxCastPerTurn;
+            _nbTurnToWait = LevelTemplate.initialCooldown;
+            if (_nbTurnToWait == 0)
+                _nbCastAllowed = LevelTemplate.maxCastPerTurn;
             else
-                m_nbCastAllowed = 0;
-            m_targeted = null;
+                _nbCastAllowed = 0;
+            _targeted = null;
         }
 
         public void EndTurn()
         {
-            if (m_nbTurnToWait > 0)
-                m_nbTurnToWait--;
-            if (m_nbTurnToWait == 0)
-                m_nbCastAllowed = LevelTemplate.maxCastPerTurn;
-            m_targeted = null; // Reset targeted counts
+            if (_nbTurnToWait > 0)
+                _nbTurnToWait--;
+            if (_nbTurnToWait == 0)
+                _nbCastAllowed = LevelTemplate.maxCastPerTurn;
+            _targeted = null; // Reset targeted counts
         }
 
         public void CastAt(int idTarget)
@@ -56,44 +56,47 @@ namespace BiM.Behaviors.Game.Spells
             if (LevelTemplate.maxCastPerTarget > 0)
             {
                 int targetCount = 1;
-                if (m_targeted == null)
-                    m_targeted = new Dictionary<int, int>();
-                if (!m_targeted.TryGetValue(idTarget, out targetCount))
+                if (_targeted == null)
+                    _targeted = new Dictionary<int, int>();
+                if (!_targeted.TryGetValue(idTarget, out targetCount))
                     targetCount = 1;
                 else
                     targetCount++;
-                m_targeted[idTarget] = targetCount;
+                _targeted[idTarget] = targetCount;
                 Debug.Assert(targetCount <= LevelTemplate.maxCastPerTarget);
             }
-            Debug.Assert(m_nbCastAllowed > 0 || LevelTemplate.maxCastPerTurn <= 0);
-            m_nbTurnToWait = (uint) LevelTemplate.minCastInterval;
+            Debug.Assert(_nbCastAllowed > 0 || LevelTemplate.maxCastPerTurn <= 0);
+            _nbTurnToWait = (uint) LevelTemplate.minCastInterval;
 
-            if (m_nbCastAllowed > 0)
-                m_nbCastAllowed--;
+            if (_nbCastAllowed > 0)
+                _nbCastAllowed--;
         }
 
         public bool IsAvailable(int? idTarget, Spells.Spell.SpellCategory? category=null)
         {
-            if (m_nbTurnToWait > 0) return false;
+            if (_nbTurnToWait > 0) 
+                return false;
 
             // Limit on usage per turn not reached
-            if (LevelTemplate.maxCastPerTurn > 0 && m_nbCastAllowed == 0) return false;
+            if (LevelTemplate.maxCastPerTurn > 0 && _nbCastAllowed == 0) 
+                return false;
 
             // No restriction per target => available
-            if (LevelTemplate.maxCastPerTarget <= 0 || m_nbCastAllowed > 0) return true;
+            if (LevelTemplate.maxCastPerTarget <= 0 || _nbCastAllowed > 0) return true;
 
-            if (!HasCategory(category)) return false;
+            if (!HasCategory(category)) 
+                return false;
 
             // No target identified
             if (idTarget == null) return true;
 
-            if (m_targeted != null)
+            if (_targeted != null)
             {
                 int targetCount = 0;
-                if (m_targeted!=null)
-                    if (!m_targeted.TryGetValue(idTarget.Value, out targetCount))
-                        targetCount = 0;
-                if (targetCount >= LevelTemplate.maxCastPerTarget) return false;
+                if (!_targeted.TryGetValue(idTarget.Value, out targetCount))
+                    targetCount = 0;
+                if (targetCount >= LevelTemplate.maxCastPerTarget) 
+                    return false;
             }
 
             return true;

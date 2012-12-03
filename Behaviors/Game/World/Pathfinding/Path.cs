@@ -33,7 +33,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// </summary>
         /// <param name="map">Current map</param>
         /// <param name="path">Complete path</param>
-        public Path(Map map, IEnumerable<Cell> path)
+        public Path(IMapContext map, IEnumerable<Cell> path)
         {
             Map = map;
             m_cellsPath = path.ToArray();
@@ -44,14 +44,14 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// </summary>
         /// <param name="map">Current map</param>
         /// <param name="compressedPath">Compressed Path</param>
-        private Path(Map map, IEnumerable<PathElement> compressedPath)
+        private Path(IMapContext map, IEnumerable<PathElement> compressedPath)
         {
             Map = map;
             m_compressedPath = compressedPath.ToArray();
             m_cellsPath = BuildCompletePath();
         }
 
-        public Map Map
+        public IMapContext Map
         {
             get;
             private set;
@@ -179,7 +179,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 while ((nextPoint = nextPoint.GetNearestCellInDirection(m_compressedPath[i].Direction)) != null &&
                        nextPoint.Id != m_compressedPath[i + 1].Cell.Id)
                 {
-                    if (l > Map.Height*2 + Map.Width)
+                    if (l > World.Map.Height * 2 + World.Map.Width)
                         throw new Exception("Path too long. Maybe an orientation problem ?");
 
                     completePath.Add(Map.Cells[nextPoint.Id]);
@@ -218,7 +218,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <param name="map"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static Path BuildFromClientCompressedPath(Map map, IEnumerable<short> keys)
+        public static Path BuildFromClientCompressedPath(IMapContext map, IEnumerable<short> keys)
         {
             IEnumerable<PathElement> path = (from key in keys
                                              let cellId = key & 4095
@@ -234,7 +234,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <param name="map"></param>
         /// <param name="startCell"></param>
         /// <returns></returns>
-        public static Path GetEmptyPath(Map map, Cell startCell)
+        public static Path GetEmptyPath(IMapContext map, Cell startCell)
         {
             return new Path(map, new[] {startCell});
         }
