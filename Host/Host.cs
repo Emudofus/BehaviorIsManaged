@@ -40,10 +40,6 @@ using BiM.Protocol.Data;
 using BiM.Protocol.Tools;
 using BiM.Protocol.Tools.D2p;
 using BiM.Protocol.Tools.Dlm;
-using Db4objects.Db4o;
-using Db4objects.Db4o.IO;
-using Db4objects.Db4o.Internal;
-using Db4objects.Db4o.Internal.Config;
 using NLog;
 using ServiceStack.Redis;
 

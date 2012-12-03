@@ -223,7 +223,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
                         var cellChangement =  Map.MapCellChangement[neighbour];
                         var predicate = new Func<ICell, GeneratedSubMap, bool>((cell, neighbourSupmap) =>
                         {
-                            ICell dest;
+                            //ICell dest;
                             return (cell.MapChangeData & mapChangeData) != 0 &&
                                    neighbourSupmap.ChangeCells.Any(x => x.Id == cell.Id + cellChangement);
                         });

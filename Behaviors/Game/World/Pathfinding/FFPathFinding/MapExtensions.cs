@@ -53,7 +53,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             return -1;
         }
 
-        public static ICell GetTransitionCell(this IMap map, WorldMap.Direction direction)
+        public static ICell GetTransitionCell(this IMap map, MapNeighbour mapNeighbour)
         {
             int MapChangeMask = GetMapChangeMask(mapNeighbour);
            

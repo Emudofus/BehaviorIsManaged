@@ -156,7 +156,7 @@ namespace BiM.Behaviors.Game.World
         private string m_name;
         private int? m_x;
         private int? m_y;
-        private int? m_worldId;
+        //private int? m_worldId;
 
         public override CellList Cells
         {
@@ -534,7 +534,7 @@ namespace BiM.Behaviors.Game.World
 
         public override string ToString()
         {
-            return String.Format("#{0} [{1},{2}] {3}", Id, PosX, PosY, Name);
+            return String.Format("#{0} [{1},{2}] {3}", Id, X, Y, Name);
         }
     }
 }
