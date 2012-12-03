@@ -1,6 +1,5 @@
 ﻿#region License GNU GPL
-
-// SubMap.cs
+// CellDataList.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,58 +12,50 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-
 #endregion
 
+using System.Collections;
 using System.Collections.Generic;
-using BiM.Behaviors.Game.World.Data;
+using System.Linq;
+using ProtoBuf;
 
-namespace BiM.Behaviors.Game.World.MapTraveling
+namespace BiM.Behaviors.Game.World.Data
 {
-    public class SubMap : SubMap<Cell, Map>
+    [ProtoContract(IgnoreListHandling = true)]
+    public class CellDataList : ICellList<CellData>
     {
-        public SubMap(Map map, Cell[] cells, byte submapId)
-            : base(map, cells, submapId)
+        public CellDataList()
         {
-        }
-    }
-
-    public class SubMap<TCell, TMap> : SerializableSubMap
-        where TCell : ICell 
-        where TMap : IMap
-    {
-        public SubMap(TMap map, TCell[] cells, byte submapId)
-        {
-            Map = map;
-            Cells = cells;
-            SubMapId = submapId;
+            
         }
 
-        public TMap Map
+        public CellDataList(CellData[] array)
         {
-            get;
-            private set;
+            UnderlyingList = array;
         }
-
-        public override int MapId
-        {
-            get { return Map.Id; }
-        }
-
-        public override int X
-        {
-            get { return Map.X; }
-        }
-
-        public override int Y
-        {
-            get { return Map.Y; }
-        }
-
-        public TCell[] Cells
+        [ProtoMember(1)]
+        public CellData[] UnderlyingList
         {
             get;
             set;
+        }
+
+        public IEnumerator<CellData> GetEnumerator()
+        {
+            return UnderlyingList.AsEnumerable().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public CellData this[int id]
+        {
+            get
+            {
+                return UnderlyingList[id]; 
+            }
         }
     }
 }

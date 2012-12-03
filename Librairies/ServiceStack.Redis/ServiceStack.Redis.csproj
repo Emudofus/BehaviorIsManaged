@@ -124,9 +124,7 @@
     <Reference Include="ServiceStack.Common">
       <HintPath>.\ServiceStack.Common.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Interfaces">
-      <HintPath>.\ServiceStack.Interfaces.dll</HintPath>
-    </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=3.9.28.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="ServiceStack.Text">
       <HintPath>.\ServiceStack.Text.dll</HintPath>
     </Reference>

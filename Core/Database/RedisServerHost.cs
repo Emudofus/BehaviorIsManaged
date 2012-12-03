@@ -20,11 +20,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using BiM.Core.Network;
+using BiM.Core.Reflection;
 using ServiceStack.Redis;
 
 namespace BiM.Core.Database
 {
-    public class RedisServerHost
+    public class RedisServerHost : Singleton<RedisServerHost>
     {
         public RedisServerHost()
         {
@@ -39,7 +40,7 @@ namespace BiM.Core.Database
         public string ExecutablePath
         {
             get;
-            private set;
+            set;
         }
 
         public Process ServerProcess

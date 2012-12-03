@@ -216,6 +216,6 @@
   </Target>
   <UsingTask TaskName="NotifyPropertyWeaverMsBuildTask.WeavingTask" AssemblyFile="$([MSBuild]::Unescape($(SolutionDir)))Librairies\NotifyPropertyWeaverMsBuildTask.dll" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)Librairies\Redis\*.*" "$(TargetDir)Redis\"</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(SolutionDir)Librairies\Redis\*.*" "$(TargetDir)Redis\" /Y /C</PostBuildEvent>
   </PropertyGroup>
 </Project>

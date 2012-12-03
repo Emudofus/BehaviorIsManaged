@@ -27,8 +27,8 @@ using BiM.Behaviors.Messages;
 using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.UI;
+using BiM.Protocol.Data;
 using BiM.Protocol.Tools.Dlm;
-using Db4objects.Db4o;
 using NLog;
 using ProtoBuf;
 
@@ -38,17 +38,20 @@ namespace BiM.Behaviors.Game.World.Data
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private const int HeaderSize = 12;
+        private const int HeaderSize = 14;
+        public const ushort CurrentMapsFileVersion = 2;
 
         [Configurable("MapsDataFile")]
         public static readonly string MapsDataFile = "./maps.dat";
+
 
         private readonly ConcurrentDictionary<int, int> m_offsetsTable = new ConcurrentDictionary<int, int>();
         private ProgressionCounter m_progression;
         private BinaryWriter m_writer;
 
-        private int m_tableOffset;
-        private int m_length;
+        private ushort m_fileVersion;
+        private uint m_tableOffset;
+        private uint m_length;
 
         #region IDataSource Members
 
@@ -107,8 +110,17 @@ namespace BiM.Behaviors.Game.World.Data
                 throw new Exception(string.Format("File {0} corrupted, delete it manually", MapsDataFile));
             }
 
-            m_tableOffset = reader.ReadInt32();
-            m_length = reader.ReadInt32();
+            m_fileVersion = reader.ReadUInt16();
+
+            if (m_fileVersion != CurrentMapsFileVersion)
+            {
+                logger.Info("Maps.dat outdated (file version :{0}, expected version {1})", m_fileVersion, CurrentMapsFileVersion);
+                reader.Dispose();
+                return BeginFileCreation();
+            }
+
+            m_tableOffset = reader.ReadUInt32();
+            m_length = reader.ReadUInt32();
 
             reader.BaseStream.Seek(m_tableOffset, SeekOrigin.Begin);
 
@@ -116,6 +128,8 @@ namespace BiM.Behaviors.Game.World.Data
             {
                 m_offsetsTable.TryAdd(reader.ReadInt32(), reader.ReadInt32());
             }
+
+            reader.Dispose();
 
             return null;
         }
@@ -125,6 +139,7 @@ namespace BiM.Behaviors.Game.World.Data
             m_writer = new BinaryWriter(File.Create(MapsDataFile));
 
             m_writer.Write("MAPS".ToCharArray());
+            m_writer.Write(CurrentMapsFileVersion); // version
             m_writer.Write(0); // table offset
             m_writer.Write(0); // total length
 
@@ -135,8 +150,9 @@ namespace BiM.Behaviors.Game.World.Data
                 {
                     foreach (DlmMap map in maps)
                     {
+                        var position = DataProvider.Instance.GetOrDefault<MapPosition>(map.Id);
                         m_offsetsTable.TryAdd(map.Id, (int) m_writer.BaseStream.Position);
-                        Serializer.SerializeWithLengthPrefix(m_writer.BaseStream, new MapData(map), PrefixStyle.Fixed32);
+                        Serializer.SerializeWithLengthPrefix(m_writer.BaseStream, new MapData(map, position), PrefixStyle.Fixed32);
 
                         m_progression.UpdateValue(counter++);
                     }
@@ -147,8 +163,8 @@ namespace BiM.Behaviors.Game.World.Data
 
         private void EndFileCreation()
         {
-            m_tableOffset = (int) m_writer.BaseStream.Position;
-            m_length = (int) (m_writer.BaseStream.Position - HeaderSize); // substracts the header
+            m_tableOffset = (uint) m_writer.BaseStream.Position;
+            m_length = (uint) (m_writer.BaseStream.Position - HeaderSize); // substracts the header
 
             foreach (var entry in m_offsetsTable)
             {
@@ -156,7 +172,7 @@ namespace BiM.Behaviors.Game.World.Data
                 m_writer.Write(entry.Value);
             }
 
-            m_writer.Seek(4, SeekOrigin.Begin);
+            m_writer.Seek(6, SeekOrigin.Begin);
             m_writer.Write(m_tableOffset);
             m_writer.Write(m_length);
 

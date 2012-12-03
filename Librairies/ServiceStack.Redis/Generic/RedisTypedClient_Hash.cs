@@ -73,10 +73,16 @@ namespace ServiceStack.Redis.Generic
 			return client.GetHashValues(hash.Id).ConvertEachTo<T>();
 		}
 
+        public List<T> GetValuesFromHash<TKey>(IRedisHash<TKey, T> hash, params TKey[] keys)
+        {
+            return client.GetValuesFromHash(hash.Id, keys.Select(x => x.SerializeToString()).ToArray()).ConvertEachTo<T>();
+        }
+
 		public Dictionary<TKey, T> GetAllEntriesFromHash<TKey>(IRedisHash<TKey, T> hash)
 		{
 			return ConvertEachTo<TKey, T>(client.GetAllEntriesFromHash(hash.Id));
 		}
+
 
 		public static Dictionary<TKey, TValue> ConvertEachTo<TKey, TValue>(IDictionary<string, string> map)
 		{

@@ -45,7 +45,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
 
         public long GlobalId
         {
-            get { return SubMapId << 32 | MapId; }
+            get { return (long)MapId << 8 | SubMapId; }
         }
 
         public virtual int MapId

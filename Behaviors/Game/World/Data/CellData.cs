@@ -20,7 +20,7 @@ using ProtoBuf;
 namespace BiM.Behaviors.Game.World.Data
 {
     [ProtoContract]
-    public class CellData
+    public class CellData : ICell
     {
         public CellData()
         {
@@ -75,6 +75,55 @@ namespace BiM.Behaviors.Game.World.Data
         {
             get;
             set;
+        }
+
+
+        public bool Walkable
+        {
+            get
+            {
+                return ( LosMov & 1 ) == 1;
+            }
+        }
+
+        public bool LineOfSight
+        {
+            get
+            {
+                return ( LosMov & 2 ) == 2;
+            }
+        }
+
+        public bool NonWalkableDuringFight
+        {
+            get
+            {
+                return ( LosMov & 4 ) == 4;
+            }
+        }
+
+        public bool FarmCell
+        {
+            get
+            {
+                return ( LosMov & 32 ) == 32;
+            }
+        }
+
+        public bool Visible
+        {
+            get
+            {
+                return ( LosMov & 64 ) == 64;
+            }
+        }
+
+        public bool NonWalkableDuringRP
+        {
+            get
+            {
+                return ( LosMov & 128 ) == 128;
+            }
         }
     }
 }

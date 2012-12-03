@@ -18,23 +18,36 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using BiM.Behaviors.Game.World.Data;
+using BiM.Behaviors.Game.World.MapTraveling.Storage;
+using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 
 namespace BiM.Behaviors.Game.World.MapTraveling
 {
+    public class SubMapBuilder : SubMapBuilder<Cell, Map>
+    {
+        public SubMapBuilder(Map map)
+            : base(map)
+        {
+        }
+    }
+
     /// <summary>
     /// Generate the submaps composing a Map
     /// </summary>
-    public class SubMapBuilder : IDisposable
+    public class SubMapBuilder<TCell, TMap> : IDisposable
+        where TCell : ICell
+        where TMap : IMap
     {
         private class BoundCell
         {
-            public BoundCell(Cell cell, BoundCell[] neighbors)
+            public BoundCell(TCell cell, BoundCell[] neighbors)
             {
                 Cell = cell;
                 Neighbors = neighbors;
             }
 
-            public Cell Cell
+            public TCell Cell
             {
                 get;
                 set;
@@ -47,130 +60,110 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             }
         }
 
-        private List<int> m_treatedCells;
-        private Dictionary<int, BoundCell> m_availableCells = new Dictionary<int, BoundCell>();
-        private bool m_initialized;
+        private List<short> m_treatedCells;
 
-        public SubMapBuilder(Map map)
+        public SubMapBuilder(TMap map)
         {
             Map = map;
         }
 
-        public Map Map
+        public TMap Map
         {
             get;
             set;
         }
 
-        private void Initialize()
+        private IEnumerable<TCell> GetAdjacentCells(ICell cell, Predicate<short?> predicate1, Predicate<TCell> predicate2)
         {
-            var availableCells = Map.Cells.Where(x => x.Walkable).ToArray();
-
-            foreach (var cell in availableCells)
-            {
-                m_availableCells.Add(cell.Id, new BoundCell(cell, new BoundCell[0]));
-            }
-
-            foreach (var cell in availableCells)
-            {
-                var boundCell = m_availableCells[cell.Id];
-
-                var adjacents = cell.GetAdjacentCells((adjacent) => IsCellWalkable(adjacent, boundCell.Cell)).ToArray();
-                boundCell.Neighbors = new BoundCell[adjacents.Length];
-
-                for (int i = 0; i < adjacents.Length; i++)
-                {
-                    boundCell.Neighbors[i] = m_availableCells[adjacents[i].Id];
-                }
-            }
-
-            m_initialized = true;
+            Point pos = Cell.GetPointFromCell(cell.Id);
+            short? cellId;
+            TCell adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y + 0) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X + 0, pos.Y + 1) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y + 0) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X + 0, pos.Y - 1) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y + 1) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y + 1) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y - 1) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
+            if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y - 1) ) != null &&
+                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                yield return adjacent;
         }
 
         /// <summary>
         /// Generate the submaps composing the given Map
         /// </summary>
         /// <returns>The submap composing the given Map</returns>
-        public SubMap[] Build()
+        public SubMap<TCell, TMap>[] Build()
         {
-            if (!m_initialized)
-                Initialize();
+            var availableCells = Map.Cells.Where(x => x.Walkable).ToArray();
 
-            var results = new List<SubMap>();
-            m_treatedCells = new List<int>();
+            var results = new List<SubMap<TCell, TMap>>();
+            m_treatedCells = new List<short>();
 
-            if (m_availableCells.Count == 0)
-                return new SubMap[0];
+            if (availableCells.Length == 0)
+                return new SubMap<TCell, TMap>[0];
 
-            while (m_treatedCells.Count < m_availableCells.Count)
+            byte submapid = 0;
+            while (m_treatedCells.Count < availableCells.Length)
             {
-                var cell = m_availableCells.First(x => !m_treatedCells.Contains(x.Value.Cell.Id));
+                var cell = availableCells.First(x => !m_treatedCells.Contains(x.Id));
 
-                var subMap = GetConnectedCells(cell.Value).ToArray();
-                /*var borders = GetSubMapBorderLines(subMap);
-                var vertices = GetSubMapVertices(borders);*/
+                var subMap = GetConnectedCells((TCell)cell).ToArray();
 
-                results.Add(new SubMap(Map, subMap.Select(x => x.Cell).ToArray()));
+                results.Add(new SubMap<TCell, TMap>(Map, subMap.ToArray(), ++submapid));
             }
 
             return results.ToArray();
         }
 
-        // useless
-        /*
-        private BoundCell[][] GetSubMapBorderLines(BoundCell[] cells)
+        /// <summary>
+        /// Generate the submaps composing the given Map
+        /// </summary>
+        /// <returns>The submap composing the given Map</returns>
+        public GeneratedSubMap[] BuildLight()
         {
-            var borderCells = cells.Where(x => x.Neighbors.Length < 4).ToArray();
+            var availableCells = Map.Cells.Where(x => x.Walkable).ToArray();
 
-            if (borderCells.Length < 2)
-                return new BoundCell[][] { borderCells };
+            var results = new List<GeneratedSubMap>();
+            m_treatedCells = new List<short>();
 
-            var sortedCells = new List<BoundCell>() { borderCells[0], borderCells[0].Neighbors.First(x => x.Neighbors.Length < 4)};
-            while(borderCells.Length != sortedCells.Count)
+            if (availableCells.Length == 0)
+                return new GeneratedSubMap[0];
+            
+            byte submapid = 0;
+            while (m_treatedCells.Count < availableCells.Length)
             {
-                var last = sortedCells.Last();
-                var secondLast = sortedCells[sortedCells.Count - 2];
-                var next = last.Neighbors.Single(x => x.Neighbors.Length < 4 && x != secondLast && borderCells.Contains(x));
+                var cell = availableCells.First(x => !m_treatedCells.Contains(x.Id));
 
-                sortedCells.Add(next);
+                var subMap = GetConnectedCells((TCell)cell).ToArray();
+                var borderCells = subMap.Where(x => x.MapChangeData > 0).Select(x => (ICell)x).ToArray();
+
+                // todo : many submaps have 1 border cell -> bug ?
+                if (borderCells.Length <= 1)
+                    continue;
+
+                results.Add(new GeneratedSubMap(new SerializableSubMap(Map.Id, ++submapid, Map.X, Map.Y, new List<SubMapNeighbour>()), borderCells));
             }
 
-            var lines = new List<BoundCell[]>();
-            var currentLine = new List<BoundCell> { sortedCells[0], sortedCells[1] };
-
-            foreach (var cell in sortedCells.Skip(1))
-            {
-                var last = currentLine[currentLine.Count - 1];
-                var secondLast = currentLine[currentLine.Count - 2];
-
-                // aligned
-                if (AreAligned(last.Cell.Point, secondLast.Cell.Point, cell.Cell.Point))
-                {
-                    currentLine.Add(cell);
-                }
-                else
-                {
-                    lines.Add(currentLine.ToArray());
-                    currentLine = new List<BoundCell>() { last, cell };
-                }
-            }
-
-            lines.Add(currentLine.ToArray());
-
-            return lines.ToArray();
+            return results.ToArray();
         }
 
-        private BoundCell[] GetSubMapVertices(BoundCell[][] lines)
-        {
-            return lines.SelectMany(x => new BoundCell[] { x[0], x[x.Length - 1] }).Distinct().ToArray();
-        }
-        
-        private bool AreAligned(Point a, Point b, Point c)
-        {
-            return ( b.X - a.X ) * ( c.Y - a.Y ) == ( c.X - a.X ) * ( b.Y - a.Y );
-        }
-        */
-        private bool IsCellWalkable(Cell cell, Cell previousCell)
+        private bool IsCellWalkable(TCell cell, TCell previousCell)
         {
             if (!cell.Walkable)
                 return false;
@@ -193,15 +186,15 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             return true;
         }
 
-        private IEnumerable<BoundCell> GetConnectedCells(BoundCell cell)
+        private IEnumerable<TCell> GetConnectedCells(TCell cell)
         {
-            if (m_treatedCells.Contains(cell.Cell.Id))
+            if (m_treatedCells.Contains(cell.Id))
                 yield break;
 
-            m_treatedCells.Add(cell.Cell.Id);
+            m_treatedCells.Add(cell.Id);
             yield return cell;
 
-            foreach (var adjacent in cell.Neighbors)
+            foreach (var adjacent in GetAdjacentCells(cell, x => !m_treatedCells.Contains(x.Value), x => IsCellWalkable(x, cell)))
             {
                 foreach (var connectedCell in GetConnectedCells(adjacent))
                 {
@@ -212,8 +205,6 @@ namespace BiM.Behaviors.Game.World.MapTraveling
 
         public void Dispose()
         {
-            m_availableCells.Clear();
-            m_availableCells = null;
             m_treatedCells.Clear();
             m_treatedCells = null;
         }

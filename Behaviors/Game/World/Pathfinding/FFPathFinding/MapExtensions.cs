@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BiM.Behaviors.Game.World.Data;
 
 namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 {
@@ -51,7 +52,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             return -1;
         }
 
-        public static Cell GetTransitionCell(this IMap map, WorldMap.Direction direction)
+        public static ICell GetTransitionCell(this IMap map, WorldMap.Direction direction)
         {
             int MapChangeMask = GetMapChangeMask(direction);
            

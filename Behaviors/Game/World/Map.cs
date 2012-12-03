@@ -37,7 +37,7 @@ using SubArea = BiM.Behaviors.Game.World.Areas.SubArea;
 
 namespace BiM.Behaviors.Game.World
 {
-    public partial class Map : MapContext<RolePlayActor>
+    public partial class Map : MapContext<RolePlayActor>, IMap
     {
         public const int ElevationTolerance = 11;
         public const uint Width = 14;
@@ -70,6 +70,14 @@ namespace BiM.Behaviors.Game.World
             {MapNeighbour.Left, 16},
             {MapNeighbour.Top, 64},
             {MapNeighbour.Bottom, 4},
+        };
+
+        public static readonly Dictionary<MapNeighbour, int> MapCellChangement = new Dictionary<MapNeighbour, int>
+        {
+            {MapNeighbour.Right, -13},
+            {MapNeighbour.Left, 13},
+            {MapNeighbour.Top, 532},
+            {MapNeighbour.Bottom, -532},
         };
 
         /// <summary>
@@ -139,8 +147,16 @@ namespace BiM.Behaviors.Game.World
 
         private CellList m_cells;
         private string m_name;
+        private int? m_x;
+        private int? m_y;
+        private int? m_worldId;
 
         public override CellList Cells
+        {
+            get { return m_cells; }
+        }
+
+        ICellList<ICell> IMap.Cells
         {
             get { return m_cells; }
         }
@@ -429,19 +445,41 @@ namespace BiM.Behaviors.Game.World
 
         #region Position
 
-        public int PosX
+        public int X
         {
             get
             {
-                return m_position != null ? m_position.posX : (Id & 0x3FE00) >> 9;
+                if (m_position != null)
+                    return m_position.posX;
+
+                if (m_x != null)
+                    return m_x.Value;
+                m_x = ( Id & 0x3FE00 ) >> 9; // 9 higher bits
+                if (( m_x & 0x100 ) == 0x100) // 9th bit is the sign. 1 means it's minus
+                {
+                    m_x = -( X & 0xFF ); // just take the 8 first bits and take the opposite number
+                }
+
+                return m_x.Value;
             }
         }
 
-        public int PosY
+        public int Y
         {
             get
             {
-                return m_position != null ? m_position.posY : Id & 0x1FF;
+                if (m_position != null)
+                    return m_position.posY;
+
+                if (m_y != null)
+                    return m_y.Value;
+                m_y = Id & 0x01FF; // 9 lower bits
+                if (( m_y & 0x100 ) == 0x100) // 9th bit is the sign. 1 means it's minus
+                {
+                    m_y = -( X & 0xFF ); // just take the 8 first bits and take the opposite number
+                }
+
+                return m_y.Value;
             }
         }
 
@@ -473,7 +511,7 @@ namespace BiM.Behaviors.Game.World
         {
             get
             {
-                return m_position != null ? m_position.worldMap : -1;
+                return m_position != null ? m_position.worldMap : Id & 0x3FFC0000 >> 18;
             }
         }
 

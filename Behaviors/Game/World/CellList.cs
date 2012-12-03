@@ -23,7 +23,7 @@ using System.Linq;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class CellList : IEnumerable<Cell>
+    public class CellList : ICellList<Cell>
     {
         private readonly Cell[] m_cells;
         private readonly Dictionary<Point, Cell> m_cellsByPoint = new Dictionary<Point, Cell>();
@@ -32,12 +32,6 @@ namespace BiM.Behaviors.Game.World
         {
             m_cells = cells;
             m_cellsByPoint = cells.ToDictionary(entry => entry.Point);
-        }
-
-        public Map Map
-        {
-            get;
-            private set;
         }
 
         /// <summary>

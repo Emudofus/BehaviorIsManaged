@@ -25,7 +25,7 @@ using BiM.Protocol.Tools.Dlm;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class Cell
+    public class Cell : ICell
     {
         public const int StructSize = 2 + 2 + 1 + 1 + 1 + 1;
 
@@ -128,12 +128,29 @@ namespace BiM.Behaviors.Game.World
 
         #region Point-Cell
 
-        public static short GetCellFromPoint(Point point)
+        public static short? GetCellFromPoint(Point point)
+        {
+            return GetCellFromPoint(point.X, point.Y);
+        }
+
+        public static short? GetCellFromPoint(int x, int y)
         {
             if (!m_initialized)
                 InitializeStaticGrid();
 
-            return (short)((point.X - point.Y) * Map.Width + point.Y + (point.X - point.Y) / 2);
+            int lowPart = ( y + ( x - y ) / 2 );
+            int highPart = x - y;
+            if (lowPart < 0 || highPart >= Map.Width)
+                return null;
+
+            if (highPart < 0 || highPart > 39)
+                return null;
+
+            int result = (int) (highPart * Map.Width + lowPart);
+            if (result >= Map.MapSize || result < 0)
+                return null;
+
+            return (short)( ( x - y ) * Map.Width + y + ( x - y ) / 2 );
         }
 
         public static Point GetPointFromCell(short id)
