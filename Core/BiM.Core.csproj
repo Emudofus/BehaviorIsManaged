@@ -74,6 +74,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -134,6 +135,7 @@
     <Compile Include="Reflection\Singleton.cs" />
     <Compile Include="Threading\SelfRunningTaskQueue.cs" />
     <Compile Include="Threading\SimplerTimer.cs" />
+    <Compile Include="UI\HSVColorConverter.cs" />
     <Compile Include="UI\ProgressionCounter.cs" />
   </ItemGroup>
   <ItemGroup>

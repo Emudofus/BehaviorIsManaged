@@ -25,9 +25,10 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Transitions
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public MovementTransition(MapNeighbour neighbour)
+        public MovementTransition(MapNeighbour neighbour, short[] cells)
         {
             MapNeighbour = neighbour;
+            Cells = cells;
         }
 
         public MapNeighbour MapNeighbour
@@ -44,7 +45,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Transitions
 
         public override bool BeginTransition(SubMap @from, SerializableSubMap to, PlayedCharacter character)
         {
-            if (!character.ChangeMap(MapNeighbour))
+            if (!character.ChangeMap(MapNeighbour, cell => Cells == null || Cells.Length == 0 || Array.IndexOf(Cells, cell.CellId) != -1))
             {
                 logger.Error("Cannot proceed transition : cannot reach {0} map from {1} (submap:{2} to {3})",
                              MapNeighbour, character.Map.Id, @from.GlobalId, to.GlobalId);

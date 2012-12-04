@@ -26,6 +26,7 @@ using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.MapTraveling;
 using BiM.Behaviors.Game.World.MapTraveling.Transitions;
 using BiM.Core.Messages;
+using BiM.Core.UI;
 using BiM.Protocol.Messages;
 
 namespace SimplePlugin.Handlers
@@ -46,12 +47,21 @@ namespace SimplePlugin.Handlers
 
                 foreach (var subMap in submaps)
                 {
+                    var random = new Random();
+                    int hue = random.Next(0, 361);
                     bot.Character.SendMessage(string.Format("[{0} mapid:{1} submap:{2}]", subMap.GlobalId, subMap.MapId, subMap.SubMapId));
 
-                    foreach (var neighbour in subMap.Neighbours)
+                    double step = 1d / subMap.Neighbours.Count;
+                    for (int i = 0; i < subMap.Neighbours.Count; i++)
                     {
-                        bot.Character.SendMessage(string.Format("[{0}] to [{1}] ({2})",  
-                            subMap.GlobalId, neighbour.GlobalId, neighbour.Transition is MovementTransition ? (neighbour.Transition as MovementTransition).MapNeighbour : MapNeighbour.None));
+                        var neighbour = subMap.Neighbours[i];
+                        var color = HSVColorConverter.ColorFromHSV(hue, step * (i + 1), 1);
+
+                        bot.Character.SendMessage(string.Format("[{0}] to [{1}] ({2})",
+                                                                subMap.GlobalId, neighbour.GlobalId,
+                                                                neighbour.Transition is MovementTransition ? (neighbour.Transition as MovementTransition).MapNeighbour : MapNeighbour.None));
+                        if (neighbour.Transition is MovementTransition)
+                            bot.Character.HighlightCells((neighbour.Transition as MovementTransition).Cells, color);
                     }
                 }
 

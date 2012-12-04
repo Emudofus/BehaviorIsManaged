@@ -375,6 +375,34 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
         }
 
+        public bool ChangeMap(MapNeighbour neighbour, Predicate<CellInfo> cellSelector)
+        {
+            try
+            {
+                m_nextMap = null;
+                PathFinder pathFinder = new PathFinder(Map, false);
+
+                // Select a random cell in the set of all reachable cells that allow map change in the right direction. 
+                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => ( cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour] ) != 0 && cellSelector(cell)).GetRandom();
+                if (destCell == null) return false;
+                neighbour = Map.GetDirectionOfTransitionCell(destCell);
+                if (neighbour == MapNeighbour.None) return false;
+                if (Move(destCell, pathFinder, 0, true))
+                {
+                    m_nextMap = GetNeighbourId(neighbour);
+                    return true;
+                }
+                return false;
+            }
+            finally
+            {
+                if (m_nextMap == null)
+                    SendMessage(String.Format("Can't find any linked map from {0}", this), Color.Red);
+                else
+                    SendMessage(String.Format("Moving at the {2} of map {0} to map {1}", this, m_nextMap, neighbour), Color.Pink);
+            }
+        }
+
         // Do not call NotifyStopMoving(false), wait for confirmation message
         public override void OnTimedPathExpired()
         {            
