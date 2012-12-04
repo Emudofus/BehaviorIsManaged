@@ -16,12 +16,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using BiM.Behaviors;
+using BiM.Behaviors.Data;
 using BiM.Behaviors.Game.Chat;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.MapTraveling;
+using BiM.Behaviors.Game.World.MapTraveling.Transitions;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 
@@ -36,15 +39,20 @@ namespace SimplePlugin.Handlers
             {
                 bot.Character.ResetCellsHighlight();
 
-                var builder = new SubMapBuilder(bot.Character.Map);
-                var subMaps = builder.Build();
+                var sw = Stopwatch.StartNew();
+                var submaps = DataProvider.Instance.Get<SerializableSubMap[]>(bot.Character.Map.Id);
+                sw.Stop();
+                bot.Character.SendMessage(string.Format("{0}ms", sw.ElapsedMilliseconds));
 
-                foreach (var subMap in subMaps)
+                foreach (var subMap in submaps)
                 {
-                    var random = new Random();
-                    var color = Color.FromArgb(random.Next(0, 256), random.Next(0, 256), random.Next(0, 256));
+                    bot.Character.SendMessage(string.Format("[{0} mapid:{1} submap:{2}]", subMap.GlobalId, subMap.MapId, subMap.SubMapId));
 
-                    bot.Character.HighlightCells(subMap.Cells, color);
+                    foreach (var neighbour in subMap.Neighbours)
+                    {
+                        bot.Character.SendMessage(string.Format("[{0}] to [{1}] ({2})",  
+                            subMap.GlobalId, neighbour.GlobalId, neighbour.Transition is MovementTransition ? (neighbour.Transition as MovementTransition).MapNeighbour : MapNeighbour.None));
+                    }
                 }
 
                 message.BlockNetworkSend();

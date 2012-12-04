@@ -30,6 +30,7 @@ namespace BiM.Behaviors.Game.Fights
 {
     public class Fight : MapContext<Fighter>
     {
+
         public delegate void StateChangedHandler(Fight fight, FightPhase phase);
         public event StateChangedHandler StateChanged;
 

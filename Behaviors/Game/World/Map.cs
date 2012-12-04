@@ -39,11 +39,6 @@ namespace BiM.Behaviors.Game.World
 {
     public partial class Map : MapContext<RolePlayActor>, IMap
     {
-        public const int ElevationTolerance = 11;
-        public const uint Width = 14;
-        public const uint Height = 20;
-
-        public const uint MapSize = Width*Height*2;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         [Configurable("MapDecryptionKey", "The decryption key used by default")]
@@ -66,11 +61,14 @@ namespace BiM.Behaviors.Game.World
 
         public static readonly Dictionary<MapNeighbour, int> MapChangeDatas = new Dictionary<MapNeighbour, int>
         {
+            {MapNeighbour.None, 0},
             {MapNeighbour.Right, 1},
+            {MapNeighbour.Bottom, 4},
             {MapNeighbour.Left, 16},
             {MapNeighbour.Top, 64},
-            {MapNeighbour.Bottom, 4},
+            {MapNeighbour.Any, 1|4|16|64},
         };
+
 
         public static readonly Dictionary<MapNeighbour, int> MapCellChangement = new Dictionary<MapNeighbour, int>
         {
@@ -79,6 +77,15 @@ namespace BiM.Behaviors.Game.World
             {MapNeighbour.Top, 532},
             {MapNeighbour.Bottom, -532},
         };
+
+        public MapNeighbour GetDirectionOfTransitionCell(Cell cell)
+        {            
+            foreach (MapNeighbour neighbourFound in Enum.GetValues(typeof(MapNeighbour)))
+                if (neighbourFound != MapNeighbour.Any && ((Map.MapChangeDatas[neighbourFound] & cell.MapChangeData) > 0))
+                    return neighbourFound;
+            return MapNeighbour.None;
+        }
+
 
         /// <summary>
         /// Create a Map instance only used to store datas (cells, properties ...)
@@ -149,7 +156,7 @@ namespace BiM.Behaviors.Game.World
         private string m_name;
         private int? m_x;
         private int? m_y;
-        private int? m_worldId;
+        //private int? m_worldId;
 
         public override CellList Cells
         {
@@ -524,5 +531,10 @@ namespace BiM.Behaviors.Game.World
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return String.Format("#{0} [{1},{2}] {3}", Id, X, Y, Name);
+        }
     }
 }

@@ -23,10 +23,10 @@ using System.Text;
 
 namespace BiM.Behaviors.Game.World.Pathfinding
 {
-    interface IAdvancedPathFinder : ISimplePathFinder
+    public interface IAdvancedPathFinder : ISimplePathFinder
     {
-        Path FindPath(IEnumerable<Cell> startCells, IEnumerable<Cell> endCells, bool outsideFight, int mp = -1, int minDistance = 0);
-        Path FindPath(Cell startCell, IEnumerable<Cell> endCells, bool outsideFight, int mp = -1, int minDistance = 0);
-        Path FindPath(Cell startCell, Cell endCell, bool outsideFight, int mp = -1, int MinDistance = 0);
+        Path FindPath(IEnumerable<Cell> startCells, IEnumerable<Cell> endCells, bool outsideFight, int mp = -1, int minDistance = 0, bool cautiousMode = false);
+        Path FindPath(Cell startCell, IEnumerable<Cell> endCells, bool outsideFight, int mp = -1, int minDistance = 0, bool cautiousMode = false);
+        Path FindPath(Cell startCell, Cell endCell, bool outsideFight, int mp = -1, int MinDistance = 0, bool cautiousMode = false);
     }
 }

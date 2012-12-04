@@ -16,21 +16,70 @@
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using NLog;
+using BiM.Behaviors.Game.Fights;
+using BiM.Behaviors.Game.Actors.Fighters;
 
 namespace BiM.Behaviors.Handlers.Spells
 {
     public class SpellHandler
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         [MessageHandler(typeof(SpellListMessage))]
         public static void HandleSpellListMessage(Bot bot, SpellListMessage message)
         {
             bot.Character.Update(message);
         }
+        /* ***WARNING*** messages can only be handled at a single place 
         [MessageHandler(typeof(GameFightStartMessage))]
         public static void HandleGameFightStartMessage(Bot bot, GameFightStartMessage message)
         {
             bot.Character.SpellsBook.FightStart(message);
+        } */
+
+        [MessageHandler(typeof(GameActionFightSpellCastMessage))]
+        public void HandleGameActionFightSpellCastMessage(Bot bot, GameActionFightSpellCastMessage message)
+        {
+            if (bot == null || bot.Character == null || bot.Character.Fight == null)
+            {
+                logger.Error("Fight is not properly initialized.");
+                return; // Can't handle the message
+            }
+            var fighter = bot.Character.Fight.GetFighter(message.sourceId);
+
+            if (fighter == null)
+                logger.Error("Fighter {0} cast a spell but doesn't exist", message.sourceId);
+            else
+            {
+                fighter.NotifySpellCasted(new SpellCast(bot.Character.Fight, message));
+                if (bot.Character.Fighter != null && bot.Character.Fighter.Id == message.sourceId)
+                    bot.Character.SpellsBook.CastAt(message);
+
+            }
         }
+
+        [MessageHandler(typeof(GameActionFightSpellCooldownVariationMessage))]
+        public static void HandleGameActionFightSpellCooldownVariationMessage(Bot bot, GameActionFightSpellCooldownVariationMessage message)
+        {
+
+        }
+
+        [MessageHandler(typeof(GameActionFightNoSpellCastMessage))]
+        public static void HandleGameActionFightNoSpellCastMessage(Bot bot, GameActionFightNoSpellCastMessage message)
+        {
+            if (bot == null || bot.Character == null || bot.Character.Fight == null)
+            {
+                logger.Error("Fight is not properly initialized.");
+                return; // Can't handle the message
+            }
+            PlayedFighter fighter = bot.Character.Fighter;
+
+            if (fighter != null)
+            {
+                fighter.Update(message);
+            }
+        }
+
 
         /* ***WARNING*** messages can only be handled at a single place
         [MessageHandler(typeof(GameFightTurnEndMessage))]

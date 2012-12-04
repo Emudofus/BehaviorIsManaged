@@ -28,16 +28,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             Direction = direction;
         }
 
-        public Cell Cell
-        {
-            get;
-            set;
-        }
-
-        public DirectionsEnum Direction
-        {
-            get;
-            set;
-        }
+        public Cell Cell { get; set; }
+        public DirectionsEnum Direction { get; set; }
     }
 }

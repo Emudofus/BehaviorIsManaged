@@ -26,7 +26,7 @@ namespace SimplePlugin.Handlers
 {
     public static class PacketsLogger
     {
-        [Configurable("AllowLogging")]
+        [Configurable("AllowLogging", "If true, all messsages for this char will be dumped in a file")]
         public static bool AllowLogging = false;
 
         private static ObjectDumper m_dumper = new ObjectDumper(2, true, false, BindingFlags.Public | BindingFlags.Instance |

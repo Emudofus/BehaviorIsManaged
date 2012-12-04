@@ -113,8 +113,8 @@ namespace BiM.Behaviors.Game.Spells
         /// <summary>
         /// Notifies the start of a new fight turn to each spell 
         /// </summary>
-        public void FightStart(GameFightStartMessage msg)
-        {
+        public void FightStart(GameFightStartingMessage msg)
+        {            
             foreach (Spell spell in m_spells)
             {
                 //Character.SendMessage(String.Format("Spell {0} : initialCooldown {1}, maxCastPerTurn {2}, maxCastPerTarget {3}, maxStack {4}, GlobalCoolDown {5}, minCastInterval {6}", spell, spell.LevelTemplate.initialCooldown, spell.LevelTemplate.maxCastPerTurn, spell.LevelTemplate.maxCastPerTarget, spell.LevelTemplate.maxStack, spell.LevelTemplate.globalCooldown, spell.LevelTemplate.minCastInterval), Color.Aquamarine); 

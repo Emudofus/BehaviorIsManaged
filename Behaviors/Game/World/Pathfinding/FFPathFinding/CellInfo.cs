@@ -132,6 +132,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
     public string label { get; set; }
     public bool isInPath1 { get; set; }
     public bool isInPath2 { get; set; }
+    public bool isCloseToEnemy { get; set; }
     public bool isWalkable { get; set; }
     public bool isCombatWalkable { get; set; }
     public bool allowLOS { get; set; }
@@ -218,6 +219,11 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
           return "???";
       }
 
+    }
+    public override string ToString()
+    {
+        if (cell != null) return cell.ToString();
+        return "<null>";
     }
   }
 }

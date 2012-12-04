@@ -44,16 +44,16 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             }
         }
 
-        public WorldPoint(int mapId, WorldMap.Direction direction)
+        public WorldPoint(int mapId, MapNeighbour MapNeighbour)
             : this(mapId)
             {
-                Move(direction);
+                Move(MapNeighbour);
             }
 
         public WorldPoint(WorldPoint point) { X = point.X; Y = point.Y; WorldId = point.WorldId; }
-        public WorldPoint(WorldPoint point, WorldMap.Direction direction) : this(point)
+        public WorldPoint(WorldPoint point, MapNeighbour MapNeighbour) : this(point)
         {
-            Move(direction);
+            Move(MapNeighbour);
         }
         
         public WorldPoint(int x, int y, int worldId) { X = x; Y = y; WorldId = worldId; }
@@ -97,29 +97,29 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             }
         }
 
-        public void Move(WorldMap.Direction direction)
+        public void Move(MapNeighbour MapNeighbour)
         {
-            switch (direction)
+            switch (MapNeighbour)
             {
-                case WorldMap.Direction.Bottom:
+                case MapNeighbour.Bottom:
                         Y += 1;
                         break;
-                case WorldMap.Direction.Top:
+                case MapNeighbour.Top:
                         Y -= 1;
                         break;
-                case WorldMap.Direction.Left:
+                case MapNeighbour.Left:
                         X -= 1;
                         break;
-                case WorldMap.Direction.Right:
+                case MapNeighbour.Right:
                         X += 1;
                         break;
             }
 
         }
 
-        public WorldPoint GetNeighbourPosition(WorldMap.Direction Direction)
+        public WorldPoint GetNeighbourPosition(MapNeighbour MapNeighbour)
         {
-            return new WorldPoint(this, Direction);
+            return new WorldPoint(this, MapNeighbour);
         }
     }
 }

@@ -40,10 +40,6 @@ using BiM.Protocol.Data;
 using BiM.Protocol.Tools;
 using BiM.Protocol.Tools.D2p;
 using BiM.Protocol.Tools.Dlm;
-using Db4objects.Db4o;
-using Db4objects.Db4o.IO;
-using Db4objects.Db4o.Internal;
-using Db4objects.Db4o.Internal.Config;
 using NLog;
 using ServiceStack.Redis;
 
@@ -199,7 +195,8 @@ namespace BiM.Host
 
             var submapSource = new SubMapDataSource();
             // don't try this if you dont want to burn :)
-            // progression = submapSource.Initialize();
+            logger.Info("Loading submaps ...");
+            progression = submapSource.Initialize();
 
             if (progression != null)
             {
@@ -215,6 +212,8 @@ namespace BiM.Host
 
                 GC.Collect();
             }
+
+            DataProvider.Instance.AddSource(submapSource);
 
             MITM = new MITM.MITM(new MITMConfiguration
                                      {

@@ -140,7 +140,7 @@ namespace BiM.Behaviors.Game.World
 
             int lowPart = ( y + ( x - y ) / 2 );
             int highPart = x - y;
-            if (lowPart < 0 || highPart >= Map.Width)
+            if (lowPart < 0 || lowPart >= Map.Width)
                 return null;
 
             if (highPart < 0 || highPart > 39)
@@ -150,7 +150,7 @@ namespace BiM.Behaviors.Game.World
             if (result >= Map.MapSize || result < 0)
                 return null;
 
-            return (short)( ( x - y ) * Map.Width + y + ( x - y ) / 2 );
+            return (short)result;
         }
 
         public static Point GetPointFromCell(short id)

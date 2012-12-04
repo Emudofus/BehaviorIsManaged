@@ -67,6 +67,11 @@ namespace BiM.Behaviors.Game.Actors
 
         public event MoveStopHandler StopMoving;
 
+        public virtual void OnTimedPathExpired()
+        {
+            NotifyStopMoving(false);
+        }
+
         public virtual void NotifyStopMoving(bool canceled, bool refused=false)
         {
             if (Movement == null)
@@ -171,7 +176,7 @@ namespace BiM.Behaviors.Game.Actors
             base.Tick(dt);
 
             if (Movement != null && Movement.IsEnded())
-                NotifyStopMoving(false);
+                OnTimedPathExpired();
         }
 
         public bool IsMoving()

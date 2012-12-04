@@ -90,7 +90,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             if (( cellId = Cell.GetCellFromPoint(pos.X + 0, pos.Y - 1) ) != null &&
                 predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
                 yield return adjacent;
-            if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y + 1) ) != null &&
+            /*if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y + 1) ) != null &&
                 predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
                 yield return adjacent;
             if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y + 1) ) != null &&
@@ -101,7 +101,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
                 yield return adjacent;
             if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y - 1) ) != null &&
                 predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
-                yield return adjacent;
+                yield return adjacent;*/
         }
 
         /// <summary>
@@ -153,8 +153,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
                 var subMap = GetConnectedCells((TCell)cell).ToArray();
                 var borderCells = subMap.Where(x => x.MapChangeData > 0).Select(x => (ICell)x).ToArray();
 
-                // todo : many submaps have 1 border cell -> bug ?
-                if (borderCells.Length <= 1)
+                if (borderCells.Length <= 0)
                     continue;
 
                 results.Add(new GeneratedSubMap(new SerializableSubMap(Map.Id, ++submapid, Map.X, Map.Y, new List<SubMapNeighbour>()), borderCells));

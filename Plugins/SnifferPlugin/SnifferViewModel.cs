@@ -146,11 +146,10 @@ namespace SnifferPlugin
             var dumper = new TreeDumper(message);
             ObjectDumpNode tree = dumper.GetDumpTree();
 
-            tree.TimeStamp = DateTime.Now;
-
-            var networkMessage = message as NetworkMessage;
+            NetworkMessage networkMessage = message as NetworkMessage;
             if (networkMessage != null)
             {
+                tree.TimeStamp = DateTime.Now;
                 tree.Id = networkMessage.MessageId;
                 tree.From = networkMessage.From;
             }
