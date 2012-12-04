@@ -208,12 +208,13 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
                     foreach (GeneratedSubMap submap in cacheEntry.Value)
                     {
-                    for (MapNeighbour neighbour = MapNeighbour.Right; neighbour <= MapNeighbour.Bottom; neighbour++)
+                    for (var neighbour = MapNeighbour.Right; neighbour <= MapNeighbour.Bottom; neighbour++)
                         {
-                            if (neighbours[i - 1] == null)
+                            int i = (int)neighbour - 1;
+
+                            if (neighbours[i] == null)
                                 continue;
 
-                            var neighbour = (MapNeighbour) i;
                             MapNeighbour opposite = GetOppositeDirection(neighbour);
                             GeneratedSubMap[] submaps;
                             int mapChangeData = Map.MapChangeDatas[neighbour];
@@ -226,7 +227,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
                                            neighbourSupmap.ChangeCells.Any(x => x.Id == cell.Id + cellChangement);
                                 });
 
-                            if (neighbours[i - 1] != null && m_submaps.TryGetValue(neighbours[i - 1], out submaps))
+                            if (neighbours[i] != null && m_submaps.TryGetValue(neighbours[i], out submaps))
                             {
                                 lock (submaps)
                                     foreach (GeneratedSubMap neighbourSubmap in submaps)
