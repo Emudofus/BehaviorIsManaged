@@ -32,8 +32,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         }
         private DirectionsEnum GetOrientation(short cellStart, short cellDest)
         {
-            int dx = cells[cellDest].x - cells[cellStart].x;
-            int dy = cells[cellDest].y - cells[cellStart].y;
+            int dx = cells[cellDest].X - cells[cellStart].X;
+            int dy = cells[cellDest].Y - cells[cellStart].Y;
             if (dx == 0)
                 if (dy == 0) { Debug.Assert(false); return DirectionsEnum.DIRECTION_EAST; } // 0,0 - no mouvement :p
                 else

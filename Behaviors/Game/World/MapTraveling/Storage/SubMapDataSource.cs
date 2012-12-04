@@ -20,7 +20,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,7 +61,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
             if (keys.Length != 1 || !(keys[0] is IConvertible))
                 throw new ArgumentException("SubMapDataSource needs a int/long key, use ReadObject(int/long)");
 
-            if (!DoesHandleType(typeof (T)))
+            if (!DoesHandleType(typeof(T)))
                 throw new ArgumentException("typeof(T)");
 
             if (typeof(T) == typeof(SerializableSubMap[]))
@@ -136,7 +135,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
         public bool DoesHandleType(Type type)
         {
-            return type == typeof (SerializableSubMap[]) || type == typeof(SerializableSubMap);
+            return type == typeof(SerializableSubMap[]) || type == typeof(SerializableSubMap);
         }
 
         #endregion
@@ -194,7 +193,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
                     lock (progression)
                     {
                         if (counter % 100 == 0)
-                            progression.UpdateValue(total == 0 ? 100d : ( counter / total ) * 100d);
+                            progression.UpdateValue(total == 0 ? 100d : (counter / total) * 100d);
                     }
                 }
             });
@@ -213,14 +212,14 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
                 foreach (var submap in cacheEntry.Value)
                 {
-                    for (int i = 1; i < 5; i++)
+                    for (MapNeighbour neighbour = MapNeighbour.Right; neighbour <= MapNeighbour.Bottom; neighbour++)
                     {
-                        var neighbour = (MapNeighbour)i;
+                        int i = (int)neighbour;
                         var opposite = GetOppositeDirection(neighbour);
                         GeneratedSubMap[] submaps;
                         var mapChangeData = Map.MapChangeDatas[neighbour];
                         var oppositeMapChangeData = Map.MapChangeDatas[neighbour];
-                        var cellChangement =  Map.MapCellChangement[neighbour];
+                        var cellChangement = Map.MapCellChangement[neighbour];
                         var predicate = new Func<ICell, GeneratedSubMap, bool>((cell, neighbourSupmap) =>
                         {
                             //ICell dest;
@@ -286,15 +285,15 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
             switch (neighbour)
             {
                 case MapNeighbour.Top:
-                  return MapNeighbour.Bottom;
+                    return MapNeighbour.Bottom;
                 case MapNeighbour.Bottom:
-                  return MapNeighbour.Top;
+                    return MapNeighbour.Top;
                 case MapNeighbour.Right:
-                  return MapNeighbour.Left;
+                    return MapNeighbour.Left;
                 case MapNeighbour.Left:
-                  return MapNeighbour.Right;
+                    return MapNeighbour.Right;
                 default:
-                  throw new Exception(string.Format("Invalid MapNeighbour {0}", neighbour));
+                    throw new Exception(string.Format("Invalid MapNeighbour {0}", neighbour));
             }
         }
 
@@ -342,7 +341,9 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
             // most of the cases
             if (mapsFromPos != null && clientMap != null &&
-                (mapsFromPos.Count == 1 || mapsFromPos.Count(x => x.SubAreaId == clientMap.SubAreaId) == 1 && mapsFromPos[0].Id == clientMap.Id))
+                (
+                  (mapsFromPos.Count == 1 || mapsFromPos.Count(x => x.SubAreaId == clientMap.SubAreaId) == 1) &&
+                  mapsFromPos.Any(mapFromPos => mapFromPos.Id == clientMap.Id)))
                 return clientMap;
 
             // to guess the correct map we count the number of walkable cells to avoid "display only" maps
@@ -350,7 +351,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
             MapData relativeMap = null;
             if (clientMap != null)
-                m_loadedMaps.TryGetValue((int) clientMap.RelativeId, out relativeMap);
+                m_loadedMaps.TryGetValue((int)clientMap.RelativeId, out relativeMap);
 
             int relativeMapCells = relativeMap != null ? relativeMap.Cells.Count(x => x.Walkable) : 0;
 
