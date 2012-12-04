@@ -233,6 +233,7 @@
     <Compile Include="Game\World\Pathfinding\FFPathFinding\MapExtensions.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\MapMovement.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\PathFinder.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\SubMapProcessor.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldMap.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPathFinder.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPoint.cs" />

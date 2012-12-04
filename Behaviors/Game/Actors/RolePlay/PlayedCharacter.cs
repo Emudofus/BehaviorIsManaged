@@ -355,7 +355,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 PathFinder pathFinder = new PathFinder(Map, false);
 
                 // Select a random cell in the set of all reachable cells that allow map change in the right direction. 
-                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom();
+                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom();
                 if (destCell == null) return false;
                 neighbour = Map.GetDirectionOfTransitionCell(destCell);
                 if (neighbour == MapNeighbour.None) return false;

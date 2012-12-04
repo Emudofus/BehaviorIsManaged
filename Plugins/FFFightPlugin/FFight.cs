@@ -551,7 +551,7 @@ namespace FightPlugin
         {
             return _pathFinder.FindConnectedCells(
                 _character.Cell, true, cautious,
-                cell => cell.distanceSteps <= _character.Stats.CurrentMP);
+                cell => cell.DistanceSteps <= _character.Stats.CurrentMP);
             
             /*Lozenge shape = new Lozenge(0, (byte)_character.Stats.CurrentMP);
 
@@ -577,8 +577,8 @@ namespace FightPlugin
             if (_character.Stats.CurrentMP < 1) return;
             Cell dest = _pathFinder.FindConnectedCells(
                 _character.Cell, true, cautious,
-                cell => cell.distanceSteps <= _character.Stats.CurrentMP && enemyCells.Min(ennCell => cell.cell.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies,
-                cell => enemyCells.Min(ennCell => (int)cell.cell.ManhattanDistanceTo(ennCell))).FirstOrDefault();
+                cell => cell.DistanceSteps <= _character.Stats.CurrentMP && enemyCells.Min(ennCell => cell.Cell.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies,
+                cell => enemyCells.Min(ennCell => (int)cell.Cell.ManhattanDistanceTo(ennCell))).FirstOrDefault();
 
             Debug.Assert((enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies), "This move do not take the character away from monsters !");
             if (dest == null)

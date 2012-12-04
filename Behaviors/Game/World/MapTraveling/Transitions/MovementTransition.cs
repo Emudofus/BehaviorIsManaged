@@ -36,6 +36,12 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Transitions
             set;
         }
 
+        public short[] Cells
+        {
+            get;
+            set;
+        }
+
         public override bool BeginTransition(SubMap @from, SerializableSubMap to, PlayedCharacter character)
         {
             if (!character.ChangeMap(MapNeighbour))

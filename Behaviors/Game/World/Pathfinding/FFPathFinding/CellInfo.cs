@@ -18,212 +18,212 @@
 
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Collections.Generic;
 
 namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 {
-  public class CellInfo
-  {
-    public const int MAP_SIZE = 14;
-    public const int NB_CELL = 560;
-    public const short CELL_ERROR = -1;
-    public const int DEFAULT_DISTANCE = 999;
-    public static readonly Color DefaultColor = Color.Green;
-    public static readonly Color PathColor = Color.LightGreen;
-    public static readonly Color ForestColor = Color.Brown;
-    public int weight { get; set; }
-    public const int maxWeight = 50;
-    public const int defaultWeight = 5;
-    private int _distanceSteps = DEFAULT_DISTANCE;
-    public int distanceSteps { get { return _distanceSteps; } set { Debug.Assert(value >= 0); _distanceSteps = value; } }
-    public byte subMapId { get; set; } // 0 = undefined
-    public Cell cell {get; set; }
-    public bool isDiagonal { get; set; } // Used to put an higher price on diagonals in PathFinding algorithm 
-
-    public CellInfo()
+    public class CellInfo
     {
-      x = -1;
-      y = -1;
-      cellId = -1;
-      color = Color.Empty;
-      isInPath1 = false;
-      isInPath2 = false;
-      isWalkable = false;
-      isCombatWalkable = false;
-      allowLOS = false;
-      speed = 1;
-      distanceSteps = DEFAULT_DISTANCE;
-      subMapId = 0;
-    }
+        public const int MAP_SIZE = 14;
+        public const int NB_CELL = 560;
+        public const short CELL_ERROR = -1;
+        public const int DEFAULT_DISTANCE = 999;
+        //public static readonly Color DefaultColor = Color.Green;
+        //public static readonly Color PathColor = Color.LightGreen;
+        //public static readonly Color ForestColor = Color.Brown;
+        public int Weight { get; set; }
+        public const int MaxWeight = 50;
+        public const int DefaultWeight = 5;
+        private int _distanceSteps = DEFAULT_DISTANCE;
+        public int DistanceSteps { get { return _distanceSteps; } set { Debug.Assert(value >= 0); _distanceSteps = value; } }
+        public byte SubMapId { get; set; } // 0 = undefined
+        public Cell Cell { get; set; }
+        public bool IsDiagonal { get; set; } // Used to put an higher price on diagonals in PathFinding algorithm 
 
-    public CellInfo(Cell _cell)
-    {
-        cell = _cell;
-        x = _cell.X;
-        y = _cell.Y;
-        _cellid = _cell.Id;
-        color = DefaultColor;
-        isInPath1 = false;
-        isInPath2 = false;
-        isWalkable = _cell.Walkable;
-        isCombatWalkable = !_cell.NonWalkableDuringFight && isWalkable;
-        allowLOS = _cell.LineOfSight;
-        speed = _cell.Speed;
-        distanceSteps = DEFAULT_DISTANCE;
-        subMapId = 0;
-    }
-    public CellInfo(short cellId, bool isWalkable = true, bool isCombatWalkable = true, bool allowLOS = true, bool drawable = true, int speed = 1)
-    {
-      this.x = x;
-      this.y = y;
-      this.cellId = cellId;
-      this.color = DefaultColor;
-      this.isInPath1 = false;
-      this.isInPath2 = false;
-      this.isWalkable = isWalkable;
-      this.isCombatWalkable = isCombatWalkable;
-      this.allowLOS = allowLOS;
-      this.speed = speed;
-    }
-
-
-    static public short CellIdFromPos(int x, int y)
-    {
-      int LowPart = (y + (x - y) / 2);
-      int HighPart = x - y;
-      if (LowPart < 0 || LowPart >= MAP_SIZE) return CELL_ERROR;
-      if (HighPart < 0 || HighPart > 39) return CELL_ERROR;
-      int result = HighPart * MAP_SIZE + LowPart;
-      if (result >= NB_CELL || result < 0) return CELL_ERROR;
-      return (short)( (x - y) * MAP_SIZE + y + (x - y) / 2);
-    }
-
-    public short getNeighbourCell(int dx, int dy)
-    {
-      return CellIdFromPos(x + dx, y + dy);
-    }
-
-    public int x { get; set; }
-    public int y { get; set; }
-
-    private short _cellid;
-    public short cellId
-    {
-      get
-      {
-        return _cellid;
-      }
-      set
-      {
-        _cellid = value;
-        //(cellId Mod 14) + cellId / 28
-        if (value < 0) return;
-
-        //x = (value % 14) + (int)((double)value  / 14.0); // Faux
-        y = (value % 14) - (value - value % 28) / 28; // OK
-        x = (short)(0.5 + value / 14.5 + y * 13.5 / 14.5); // OK.... even if I don't know why
-
-        //Debug.Assert(_cellid == CellIdFromPos(x, y));
-        //if (_cellid != CellIdFromPos(x, y))
-        //  Debug.Print("CellId:{0} => [{1},{2}] => {3}", _cellid, x, y, CellIdFromPos(x, y));
-      }
-    }
-    public string label { get; set; }
-    public bool isInPath1 { get; set; }
-    public bool isInPath2 { get; set; }
-    public bool isCloseToEnemy { get; set; }
-    public bool isWalkable { get; set; }
-    public bool isCombatWalkable { get; set; }
-    public bool allowLOS { get; set; }
-    public Color color { get; set; }
-    public uint mapLink { get; set; }
-    public int gfxCount { get; set; }
-    public uint firstGfx { get; set; }
-    private int _speed;
-
-    public int speed
-    {
-      get
-      {
-        return _speed;
-      }
-      set
-      {
-        _speed = value;
-        if (value == 0)
+        public CellInfo()
         {
-          weight = defaultWeight;
-          color = DefaultColor;
+            X = -1;
+            Y = -1;
+            CellId = -1;
+            //color = Color.Empty;
+            IsInPath = false;
+            //isInPath2 = false;
+            IsWalkable = false;
+            IsCombatWalkable = false;
+            AllowLOS = false;
+            Speed = 1;
+            DistanceSteps = DEFAULT_DISTANCE;
+            SubMapId = 0;
         }
-        else
+
+        public CellInfo(Cell _cell)
         {
-          if (speed < 0)
-          {
-            weight = defaultWeight * (1 - speed);
-            color = ForestColor;
-            if (weight > maxWeight)
-              weight = maxWeight;
-          }
-          else
-            if (speed > 0)
+            Cell = _cell;
+            X = _cell.X;
+            Y = _cell.Y;
+            _cellid = _cell.Id;
+            //color = DefaultColor;
+            IsInPath = false;
+            //isInPath2 = false;
+            IsWalkable = _cell.Walkable;
+            IsCombatWalkable = !_cell.NonWalkableDuringFight && IsWalkable;
+            AllowLOS = _cell.LineOfSight;
+            Speed = _cell.Speed;
+            DistanceSteps = DEFAULT_DISTANCE;
+            SubMapId = 0;
+            MapLink = _cell.MapChangeData;
+        }
+        //public CellInfo(short cellId, bool isWalkable = true, bool isCombatWalkable = true, bool allowLOS = true, bool drawable = true, int speed = 1)
+        //{
+        //  this.X = X;
+        //  this.Y = Y;
+        //  this.CellId = cellId;
+        //  //this.color = DefaultColor;
+        //  this.isInPath1 = false;
+        //  //this.isInPath2 = false;
+        //  this.isWalkable = isWalkable;
+        //  this.isCombatWalkable = isCombatWalkable;
+        //  this.allowLOS = allowLOS;
+        //  this.speed = speed;
+        //}
+
+
+        static public short CellIdFromPos(int x, int y)
+        {
+            int LowPart = (y + (x - y) / 2);
+            int HighPart = x - y;
+            if (LowPart < 0 || LowPart >= MAP_SIZE) return CELL_ERROR;
+            if (HighPart < 0 || HighPart > 39) return CELL_ERROR;
+            int result = HighPart * MAP_SIZE + LowPart;
+            if (result >= NB_CELL || result < 0) return CELL_ERROR;
+            return (short)((x - y) * MAP_SIZE + y + (x - y) / 2);
+        }
+
+        public short GetNeighbourCell(int dx, int dy)
+        {
+            return CellIdFromPos(X + dx, Y + dy);
+        }
+
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        private short _cellid;
+        public short CellId
+        {
+            get
             {
-              color = PathColor;
-              weight = defaultWeight / (1 + speed);
-              if (weight < 1) weight = 1;
+                return _cellid;
+            }
+            set
+            {
+                _cellid = value;
+                //(cellId Mod 14) + cellId / 28
+                if (value < 0) return;
+
+                //x = (value % 14) + (int)((double)value  / 14.0); // Faux
+                Y = (value % 14) - (value - value % 28) / 28; // OK
+                X = (short)(0.5 + value / 14.5 + Y * 13.5 / 14.5); // OK.... even if I don't know why
+
+                //Debug.Assert(_cellid == CellIdFromPos(x, y));
+                //if (_cellid != CellIdFromPos(x, y))
+                //  Debug.Print("CellId:{0} => [{1},{2}] => {3}", _cellid, x, y, CellIdFromPos(x, y));
             }
         }
-      }
-    }
+        //public string label { get; set; }
+        public bool IsInPath { get; set; }
+        //public bool isInPath2 { get; set; }
+        public bool IsCloseToEnemy { get; set; }
+        public bool IsWalkable { get; set; }
+        public bool IsCombatWalkable { get; set; }
+        public bool AllowLOS { get; set; }
+        //public Color color { get; set; }
+        public byte MapLink { get; set; }
+        //public int gfxCount { get; set; }
+        //public uint firstGfx { get; set; }
+        private int _speed;
 
-    public enum FieldNames { Nothing, Label, isInPath, isWalkable, isCombatWalkable, allowLOS, color, speed, coordinates, PathFindingInformations, mapLink, cellID, gfxCount, firstGfx };
+        public int Speed
+        {
+            get
+            {
+                return _speed;
+            }
+            set
+            {
+                _speed = value;
+                if (value == 0)
+                {
+                    Weight = DefaultWeight;
+                    //color = DefaultColor;
+                }
+                else
+                {
+                    if (Speed < 0)
+                    {
+                        Weight = DefaultWeight * (1 - Speed);
+                        //color = ForestColor;
+                        if (Weight > MaxWeight)
+                            Weight = MaxWeight;
+                    }
+                    else
+                        if (Speed > 0)
+                        {
+                            //color = PathColor;
+                            Weight = DefaultWeight / (1 + Speed);
+                            if (Weight < 1) Weight = 1;
+                        }
+                }
+            }
+        }
 
-    static public Array FillCombo()
-    {
-      return Enum.GetValues(typeof(FieldNames));      
-    }
 
-    public string getValue(FieldNames whichElement)
-    {
-      switch (whichElement)
-      {
-        case FieldNames.Nothing:
-          return "";
-        case FieldNames.Label:
-          return label;
-        case FieldNames.isInPath:
-          return isInPath1.ToString();
-        case FieldNames.isWalkable:
-          return isWalkable.ToString();
-        case FieldNames.isCombatWalkable:
-          return isCombatWalkable.ToString();
-        case FieldNames.allowLOS:
-          return allowLOS.ToString();
-        case FieldNames.color:
-          return color.ToString();
-        case FieldNames.speed:
-          return speed.ToString();
-        case FieldNames.coordinates:
-          return String.Format("{0},{1}", x, y);
-        case FieldNames.PathFindingInformations:
-          return distanceSteps.ToString();
-        case FieldNames.mapLink:
-          return mapLink.ToString();
-        case FieldNames.cellID:
-          return this.cellId.ToString();
-        case FieldNames.firstGfx:
-          return this.firstGfx.ToString();
-        case FieldNames.gfxCount:
-          return this.gfxCount.ToString();
-        default:
-          return "???";
-      }
+        public enum FieldNames { Nothing, Label, isInPath, isWalkable, isCombatWalkable, allowLOS, /*color, */speed, coordinates, PathFindingInformations, mapLink, cellID/*, gfxCount, firstGfx */};
 
+        static public Array FillCombo()
+        {
+            return Enum.GetValues(typeof(FieldNames));
+        }
+
+        public string getValue(FieldNames whichElement)
+        {
+            switch (whichElement)
+            {
+                case FieldNames.Nothing:
+                    return "";
+                //case FieldNames.Label:
+                //  return label;
+                case FieldNames.isInPath:
+                    return IsInPath.ToString();
+                case FieldNames.isWalkable:
+                    return IsWalkable.ToString();
+                case FieldNames.isCombatWalkable:
+                    return IsCombatWalkable.ToString();
+                case FieldNames.allowLOS:
+                    return AllowLOS.ToString();
+                //case FieldNames.color:
+                //  return color.ToString();
+                case FieldNames.speed:
+                    return Speed.ToString();
+                case FieldNames.coordinates:
+                    return String.Format("{0},{1}", X, Y);
+                case FieldNames.PathFindingInformations:
+                    return DistanceSteps.ToString();
+                case FieldNames.mapLink:
+                    return MapLink.ToString();
+                case FieldNames.cellID:
+                    return this.CellId.ToString();
+                //case FieldNames.firstGfx:
+                //  return this.firstGfx.ToString();
+                //case FieldNames.gfxCount:
+                //  return this.gfxCount.ToString();
+                default:
+                    return "???";
+            }
+
+        }
+        public override string ToString()
+        {
+            if (Cell != null) return Cell.ToString();
+            return "<null>";
+        }
     }
-    public override string ToString()
-    {
-        if (cell != null) return cell.ToString();
-        return "<null>";
-    }
-  }
 }

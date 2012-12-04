@@ -138,7 +138,7 @@ namespace BiM.Behaviors.Game.World
             if (!m_initialized)
                 InitializeStaticGrid();
 
-            int lowPart = ( y + ( x - y ) / 2 );
+            int lowPart = (y + (x - y) / 2);
             int highPart = x - y;
             if (lowPart < 0 || lowPart >= Map.Width)
                 return null;
@@ -146,7 +146,7 @@ namespace BiM.Behaviors.Game.World
             if (highPart < 0 || highPart > 39)
                 return null;
 
-            int result = (int) (highPart * Map.Width + lowPart);
+            int result = (int)(highPart * Map.Width + lowPart);
             if (result >= Map.MapSize || result < 0)
                 return null;
 

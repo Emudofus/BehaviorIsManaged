@@ -57,7 +57,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
             if (keys.Length != 1 || !(keys[0] is IConvertible))
                 throw new ArgumentException("SubMapDataSource needs a int/long key, use ReadObject(int/long)");
 
-            if (!DoesHandleType(typeof (T)))
+            if (!DoesHandleType(typeof(T)))
                 throw new ArgumentException("typeof(T)");
 
             if (typeof (T) == typeof (SerializableSubMap[]))
@@ -208,7 +208,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
                     foreach (GeneratedSubMap submap in cacheEntry.Value)
                     {
-                        for (int i = 1; i < 5; i++)
+                    for (MapNeighbour neighbour = MapNeighbour.Right; neighbour <= MapNeighbour.Bottom; neighbour++)
                         {
                             if (neighbours[i - 1] == null)
                                 continue;
@@ -352,7 +352,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Storage
 
             MapData relativeMap = null;
             if (clientMap != null)
-                m_loadedMaps.TryGetValue((int) clientMap.RelativeId, out relativeMap);
+                m_loadedMaps.TryGetValue((int)clientMap.RelativeId, out relativeMap);
 
             int relativeMapCells = relativeMap != null ? relativeMap.Cells.Count(x => x.Walkable) : 0;
 
