@@ -1,4 +1,5 @@
 #region License GNU GPL
+
 // Path.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,7 +13,9 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +33,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// </summary>
         /// <param name="map">Current map</param>
         /// <param name="path">Complete path</param>
-        public Path(Map map, IEnumerable<Cell> path)
+        public Path(IMapContext map, IEnumerable<Cell> path)
         {
             Map = map;
             m_cellsPath = path.ToArray();
@@ -41,14 +44,14 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// </summary>
         /// <param name="map">Current map</param>
         /// <param name="compressedPath">Compressed Path</param>
-        private Path(Map map, IEnumerable<PathElement> compressedPath)
+        private Path(IMapContext map, IEnumerable<PathElement> compressedPath)
         {
             Map = map;
             m_compressedPath = compressedPath.ToArray();
             m_cellsPath = BuildCompletePath();
         }
 
-        public Map Map
+        public IMapContext Map
         {
             get;
             private set;
@@ -71,7 +74,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
         public int MPCost
         {
-            get { return (int)Start.ManhattanDistanceTo(End); }
+            get { return (int) Start.ManhattanDistanceTo(End); }
         }
 
         public bool IsEmpty()
@@ -106,7 +109,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <returns></returns>
         public short[] GetServerPathKeys()
         {
-            var compressedPath = GetCompressedPath();
+            PathElement[] compressedPath = GetCompressedPath();
 
             return compressedPath.Select(entry => entry.Cell.Id).ToArray();
         }
@@ -117,9 +120,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <returns></returns>
         public short[] GetClientPathKeys()
         {
-            var compressedPath = GetCompressedPath();
+            PathElement[] compressedPath = GetCompressedPath();
 
-            return compressedPath.Select(entry => (short)((ushort)entry.Cell.Id | ((ushort)entry.Direction << 12))).ToArray();
+            return compressedPath.Select(entry => (short) ((ushort) entry.Cell.Id | ((ushort) entry.Direction << 12))).ToArray();
         }
 
         public void CutPath(int index)
@@ -137,7 +140,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
             // only one cell
             if (m_cellsPath.Length <= 1)
-                return new[] { new PathElement(m_cellsPath[0], DirectionsEnum.DIRECTION_EAST) };
+                return new[] {new PathElement(m_cellsPath[0], DirectionsEnum.DIRECTION_EAST)};
 
             // build the path
             var path = new List<PathElement>();
@@ -172,11 +175,11 @@ namespace BiM.Behaviors.Game.World.Pathfinding
                 completePath.Add(m_compressedPath[i].Cell);
 
                 int l = 0;
-                var nextPoint = m_compressedPath[i].Cell;
-                while (( nextPoint = nextPoint.GetNearestCellInDirection(m_compressedPath[i].Direction) ) != null &&
-                      nextPoint.Id != m_compressedPath[i + 1].Cell.Id)
+                Cell nextPoint = m_compressedPath[i].Cell;
+                while ((nextPoint = nextPoint.GetNearestCellInDirection(m_compressedPath[i].Direction)) != null &&
+                       nextPoint.Id != m_compressedPath[i + 1].Cell.Id)
                 {
-                    if (l > Map.Height * 2 + Map.Width)
+                    if (l > World.Map.Height * 2 + World.Map.Width)
                         throw new Exception("Path too long. Maybe an orientation problem ?");
 
                     completePath.Add(Map.Cells[nextPoint.Id]);
@@ -196,7 +199,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <returns></returns>
         public static Path BuildFromServerCompressedPath(Map map, IEnumerable<short> keys)
         {
-            var cells = keys.Select(entry => map.Cells[entry]).ToArray();
+            Cell[] cells = keys.Select(entry => map.Cells[entry]).ToArray();
             var compressedPath = new List<PathElement>();
 
             for (int i = 0; i < cells.Length - 1; i++)
@@ -208,19 +211,19 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
             return new Path(map, compressedPath);
         }
-         
+
         /// <summary>
         /// Build a Path instance from the keys sent by the client
         /// </summary>
         /// <param name="map"></param>
         /// <param name="keys"></param>
         /// <returns></returns>
-        public static Path BuildFromClientCompressedPath(Map map, IEnumerable<short> keys)
+        public static Path BuildFromClientCompressedPath(IMapContext map, IEnumerable<short> keys)
         {
-            var path = ( from key in keys
-                         let cellId = key & 4095
-                         let direction = (DirectionsEnum)( ( key >> 12 ) & 7 )
-                         select new PathElement(map.Cells[cellId], direction) );
+            IEnumerable<PathElement> path = (from key in keys
+                                             let cellId = key & 4095
+                                             let direction = (DirectionsEnum) ((key >> 12) & 7)
+                                             select new PathElement(map.Cells[cellId], direction));
 
             return new Path(map, path);
         }
@@ -231,9 +234,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <param name="map"></param>
         /// <param name="startCell"></param>
         /// <returns></returns>
-        public static Path GetEmptyPath(Map map, Cell startCell)
+        public static Path GetEmptyPath(IMapContext map, Cell startCell)
         {
-            return new Path(map, new [] { startCell });
+            return new Path(map, new[] {startCell});
         }
     }
 }

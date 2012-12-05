@@ -38,7 +38,7 @@
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisLogFile>bin\Debug\BehaviorIsManaged.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
@@ -67,6 +67,7 @@
     <Reference Include="protobuf-net">
       <HintPath>..\Librairies\protobuf-net.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Interfaces, Version=3.9.28.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -120,9 +121,9 @@
     <Compile Include="Game\Actors\RolePlay\TaxCollector.cs" />
     <Compile Include="Game\Alignement\AlignmentInformations.cs" />
     <Compile Include="Game\Breeds\Breed.cs" />
-    <Compile Include="Game\Chat\ChatMessage.cs" />
-    <Compile Include="Game\Chat\ChatMessageClient.cs" />
-    <Compile Include="Game\Chat\ChatMessageServer.cs" />
+    <Compile Include="Game\Chat\BotChatMessage.cs" />
+    <Compile Include="Game\Chat\BotChatMessageClient.cs" />
+    <Compile Include="Game\Chat\BotChatMessageServer.cs" />
     <Compile Include="Game\Contacts\ContactsBook.cs" />
     <Compile Include="Game\Effects\EffectBase.cs" />
     <Compile Include="Game\Effects\EffectCreature.cs" />
@@ -215,23 +216,28 @@
     <Compile Include="Game\World\CellList.cs" />
     <Compile Include="Game\Actors\RolePlay\GroupMonster.cs" />
     <Compile Include="Game\World\Data\CellData.cs" />
-    <Compile Include="Game\World\Data\MapDataSource.cs" />
+    <Compile Include="Game\World\Data\CellDataList.cs" />
+    <Compile Include="Game\World\ICell.cs" />
     <Compile Include="Game\World\IMap.cs" />
+    <Compile Include="Game\World\Data\MapDataSource.cs" />
+    <Compile Include="Game\World\ICellList.cs" />
     <Compile Include="Game\World\LOSMap.cs" />
     <Compile Include="Game\World\Map.cs" />
     <Compile Include="Game\World\MapContext.cs" />
     <Compile Include="Game\World\Data\MapData.cs" />
     <Compile Include="Game\World\MapNeighbour.cs" />
+    <Compile Include="Game\World\MapTraveling\Storage\GeneratedSubMap.cs" />
+    <Compile Include="Game\World\MapTraveling\Transitions\MovementTransition.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\CellInfo.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\IWorldMapProvider.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\MapExtensions.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\MapMovement.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\PathFinder.cs" />
+    <Compile Include="Game\World\Pathfinding\FFPathFinding\SubMapProcessor.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldMap.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPathFinder.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPoint.cs" />
     <Compile Include="Game\World\MapTraveling\SerializableSubMap.cs" />
-    <Compile Include="Game\World\MapTraveling\Storage\SubMapsFileGenerator.cs" />
     <Compile Include="Game\World\MapTraveling\SubMapNeighbour.cs" />
     <Compile Include="Game\World\MapTraveling\Storage\SubMapDataSource.cs" />
     <Compile Include="Game\World\MapTraveling\Transitions\SubMapTransition.cs" />
@@ -282,6 +288,10 @@
     <ProjectReference Include="..\Librairies\NLog\NLog.netfx40.csproj">
       <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
       <Name>NLog.netfx40</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Librairies\ServiceStack.Redis\ServiceStack.Redis.csproj">
+      <Project>{AF99F19B-4C04-4F58-81EF-B092F1FCC540}</Project>
+      <Name>ServiceStack.Redis</Name>
     </ProjectReference>
     <ProjectReference Include="..\Protocol\BiM.Protocol.csproj">
       <Project>{667DCC70-280C-4716-A911-C38DE5C2F0EC}</Project>

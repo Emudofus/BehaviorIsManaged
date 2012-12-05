@@ -67,6 +67,11 @@ namespace BiM.Behaviors.Game.Actors
 
         public event MoveStopHandler StopMoving;
 
+        public virtual void OnTimedPathExpired()
+        {
+            NotifyStopMoving(false);
+        }
+
         public virtual void NotifyStopMoving(bool canceled, bool refused=false)
         {
             if (Movement == null)
@@ -119,14 +124,14 @@ namespace BiM.Behaviors.Game.Actors
             Cell = cell;
         }
 
-        public delegate void SpeakHandler(ContextActor actor, ChatMessage message);
+        public delegate void SpeakHandler(ContextActor actor, BotChatMessage message);
         /// <summary>
         /// 
         /// </summary>
         /// <remarks>I consider that any actor can speak</remarks>
         public event SpeakHandler Speak;
 
-        public virtual void NotifySpeak(ChatMessage message)
+        public virtual void NotifySpeak(BotChatMessage message)
         {
             SpeakHandler handler = Speak;
             if (handler != null) handler(this, message);
@@ -171,7 +176,7 @@ namespace BiM.Behaviors.Game.Actors
             base.Tick(dt);
 
             if (Movement != null && Movement.IsEnded())
-                NotifyStopMoving(false);
+                OnTimedPathExpired();
         }
 
         public bool IsMoving()

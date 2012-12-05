@@ -19,13 +19,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using BiM.Behaviors.Game.World.Data;
 
 namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 {
   public class WorldMap
   {
-    public enum Direction { Left, Right, Top, Bottom };
-    static public IEnumerable<Direction> EnumDirections { get { return (IEnumerable<Direction>)System.Enum.GetValues(typeof(Direction)); } }
+    static public IEnumerable<MapNeighbour> EnumDirections { get { return (IEnumerable<MapNeighbour>)System.Enum.GetValues(typeof(MapNeighbour)); } }
     
     static private WorldMap _instance;
     static public WorldMap Instance { get { if (_instance == null) _instance = new WorldMap(_mapDataManager); return _instance; } }
@@ -100,7 +100,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
       // Fill converted int[][] to feed the PathFinder
       List<int[]> mainList = new List<int[]>();
       List<int> connectionList; 
-      List<int> ConvertedConnectionList; 
+      List<int> ConvertedConnectionList;
+      Dictionary<int, List<int>> newDico = new Dictionary<int, List<int>>(dico.Count);
       foreach (var map in dico)
       {
           int mapID = map.Key;
@@ -108,8 +109,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
           ConvertedConnectionList = new List<int>();
           foreach (int mapId in connectionList)
               ConvertedConnectionList.Add(MapIdToInternal[mapId]);
+          newDico[mapID] = ConvertedConnectionList;
       }
-      return dico;
+      return newDico;
     }
   }
 }

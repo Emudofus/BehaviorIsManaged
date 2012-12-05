@@ -37,6 +37,8 @@ using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
 using Job = BiM.Behaviors.Game.Jobs.Job;
+using System.Diagnostics;
+using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
 {
@@ -253,10 +255,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             return Map != null && !IsFighting();
         }
 
-        public bool Move(short cellId, ISimplePathFinder pathFinder = null, int minDistance = 0)
+        public bool Move(short cellId, ISimplePathFinder pathFinder = null, int minDistance = 0, bool cautious = false)
         {
             if (CanMove())
-                return Move(Map.Cells[cellId], pathFinder, minDistance);
+                return Move(Map.Cells[cellId], pathFinder, minDistance, cautious);
 
             return false;
         }
@@ -270,7 +272,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             //SendMessage(String.Format("Move {0} => {1} : {2}", Cell, dest, String.Join<Cell>(",", path.Cells)));
             //ResetCellsHighlight();
             //HighlightCells(path.Cells, Color.YellowGreen);
-            if (path.Cells.Length == 0)
+            if (path.IsEmpty())
             {
                 SendMessage("Empty path skipped", Color.Gray);
                 return false;
@@ -287,20 +289,17 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         }
 
-        public bool Move(Cell cell, ISimplePathFinder pathFinder = null, int minDistance = 0)
+        public bool Move(Cell cell, ISimplePathFinder pathFinder = null, int minDistance = 0, bool cautious = false)
         {
             if (cell == null) throw new ArgumentNullException("cell");
 
             if (!CanMove())
                 return false;
             if (pathFinder==null)
-                if (minDistance == 0)
-                    pathFinder = new Pathfinder(Map, Map);
-                else
                     pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
             Path path = null;
             if (pathFinder is IAdvancedPathFinder)
-                path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, true, -1, minDistance);
+                path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, true, -1, minDistance, cautious);
             else
                 path = pathFinder.FindPath(Cell, cell, true, -1);
 
@@ -338,7 +337,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             if (m_nextMap != null)
             {
-                if (!canceled)
+                if (!canceled && !refused)
                 {
                     var id = m_nextMap.Value;
                     Bot.AddMessage(() => Bot.SendToServer(new ChangeMapMessage(id)));
@@ -348,18 +347,76 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
         }
 
-        public bool ChangeMap(MapNeighbour neighbour, ISimplePathFinder pathfinder=null)
+        public bool ChangeMap(MapNeighbour neighbour = MapNeighbour.Any)
         {
-            var neighbourId = GetNeighbourId(neighbour);
-            if (neighbourId < 0)
+            try
+            {
+                m_nextMap = null;
+                PathFinder pathFinder = new PathFinder(Map, false);
+
+                // Select a random cell in the set of all reachable cells that allow map change in the right direction. 
+                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom();
+                if (destCell == null) return false;
+                neighbour = Map.GetDirectionOfTransitionCell(destCell);
+                if (neighbour == MapNeighbour.None) return false;
+                if (Move(destCell, pathFinder, 0, true))
+                {
+                    m_nextMap = GetNeighbourId(neighbour);
+                    return true;
+                }
                 return false;
+            }
+            finally
+            {
+                if (m_nextMap == null)
+                    SendMessage(String.Format("Can't find any linked map from {0}", this), Color.Red);
+                else
+                    SendMessage(String.Format("Moving at the {2} of map {0} to map {1}", this, m_nextMap, neighbour), Color.Pink);
+            }
+        }
+
+        public bool ChangeMap(MapNeighbour neighbour, Predicate<CellInfo> cellSelector)
+        {
+            try
+            {
+                m_nextMap = null;
+                PathFinder pathFinder = new PathFinder(Map, false);
+
+                // Select a random cell in the set of all reachable cells that allow map change in the right direction. 
+                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => ( cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour] ) != 0 && cellSelector(cell)).GetRandom();
+                if (destCell == null) return false;
+                neighbour = Map.GetDirectionOfTransitionCell(destCell);
+                if (neighbour == MapNeighbour.None) return false;
+                if (Move(destCell, pathFinder, 0, true))
+                {
+                    m_nextMap = GetNeighbourId(neighbour);
+                    return true;
+                }
+                return false;
+            }
+            finally
+            {
+                if (m_nextMap == null)
+                    SendMessage(String.Format("Can't find any linked map from {0}", this), Color.Red);
+                else
+                    SendMessage(String.Format("Moving at the {2} of map {0} to map {1}", this, m_nextMap, neighbour), Color.Pink);
+            }
+        }
+
+        // Do not call NotifyStopMoving(false), wait for confirmation message
+        public override void OnTimedPathExpired()
+        {            
+        }
+
+        /*
+        public bool ChangeMap(MapNeighbour? neighbour, ISimplePathFinder pathfinder=null)
+        {
 
             var mapChangeData = Map.MapChangeDatas[neighbour];
             Path path = null;
-            bool found = false;
                 
             if (pathfinder != null && pathfinder is IAdvancedPathFinder)
-                path = (pathfinder as IAdvancedPathFinder).FindPath(Cell, Map.Cells.Where(x => x != Cell && (x.MapChangeData & mapChangeData) != 0 && Map.IsCellWalkable(x)), true);                
+                path = (pathfinder as IAdvancedPathFinder).FindPath(Cell, Map.Cells.Where(cell => cell != Cell && (cell.MapChangeData & mapChangeData) != 0 && Map.IsCellWalkable(cell)), true);                
             else
             {
                 var cells = Map.Cells.Where(x => x != Cell && (x.MapChangeData & mapChangeData) != 0 && Map.IsCellWalkable(x)).
@@ -367,16 +424,24 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
                 if (pathfinder == null)
                     pathfinder = new Pathfinder(Map, Map, true, true);
-                var enumerator = cells.GetEnumerator();
-                while ((path == null || path.IsEmpty()) && (found = enumerator.MoveNext()))
-                {
-                    path = pathfinder.FindPath(Cell, enumerator.Current, true);
-                }
-
+                foreach (Cell cell in cells)
+                    if ((path = pathfinder.FindPath(Cell, cell, true)) != null && !path.IsEmpty()) break;
             
             }
-            if (path != null)
+            if (path != null && !path.IsEmpty() )
             {
+                int? neighbourId = null;
+                if (neighbour == null)
+                {
+                    foreach (MapNeighbour neighbourFound in Enum.GetValues(typeof(MapNeighbour)))
+                        if ((Map.MapChangeDatas[neighbourFound] & path.End.MapChangeData) > 0)
+                            neighbour = neighbourFound;
+                }
+                Debug.Assert(neighbour.HasValue);
+                if (!neighbour.HasValue) return false;
+
+                neighbourId = GetNeighbourId(neighbour.Value);
+            
                 if (Move(path, path.End))
                 {
                     m_nextMap = neighbourId;
@@ -386,7 +451,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
 
             return false;
-        }
+        }*/
 
         private int GetNeighbourId(MapNeighbour neighbour)
         {
@@ -633,9 +698,19 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Bot.SendToClient(new DebugHighlightCellsMessage(color.ToArgb(), new[] { cell.Id }));
         }
 
+        public void HighlightCell(short cell, Color color)
+        {
+            Bot.SendToClient(new DebugHighlightCellsMessage(color.ToArgb(), new[] { cell }));
+        }
+
         public void HighlightCells(IEnumerable<Cell> cells, Color color)
         {
             Bot.SendToClient(new DebugHighlightCellsMessage(color.ToArgb(), cells.Select(entry => entry.Id).ToArray()));
+        }
+
+        public void HighlightCells(IEnumerable<short> cells, Color color)
+        {
+            Bot.SendToClient(new DebugHighlightCellsMessage(color.ToArgb(), cells.ToArray()));
         }
 
         public void ResetCellsHighlight()
@@ -779,11 +854,6 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             if (msg == null) throw new ArgumentNullException("msg");
             SpellsBook.Update(msg);
-        }
-        public void Update(GameFightStartMessage msg)
-        {
-            if (msg == null) throw new ArgumentNullException("msg");
-            SpellsBook.FightStart(msg);
         }
         
         public void Update(GameRolePlayCharacterInformations msg)

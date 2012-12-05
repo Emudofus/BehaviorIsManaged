@@ -235,6 +235,21 @@ namespace BiM.Behaviors.Game.Actors.Fighters
                 path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance);
             else
                 path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp);
+            
+            return Move(path);
+
+        }
+
+        public bool Move(Path path)
+        {
+            if (!IsPlaying())
+                return false;
+
+            if (Stats.CurrentMP < 1)
+            {
+                Character.SendMessage(String.Format("Can't move with {0} MP", Stats.CurrentMP), Color.Red);
+                return false;
+            }
 
             // DEBUG
             //Character.SendMessage(String.Format("Move {0} => {1} ({3} PM): {2}", Cell, cell, String.Join<Cell>(",", path.Cells), mp));
@@ -250,12 +265,17 @@ namespace BiM.Behaviors.Game.Actors.Fighters
                 {
                     Character.SendMessage(String.Format("Path starts with {0} instead of {1}", path.Start, Cell), Color.Red);
                     return false;
-                }                
+                }
 
             if (NotifyStartMoving(path))
                 Character.Bot.SendToServer(new GameMapMovementRequestMessage(path.GetClientPathKeys(), Map.Id));
 
             return true;
+        }
+
+        // Do not call NotifyStopMoving(false), wait for confirmation message
+        public override void OnTimedPathExpired()
+        {            
         }
 
         /// <summary>

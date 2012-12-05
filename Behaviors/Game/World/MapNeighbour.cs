@@ -22,5 +22,6 @@ namespace BiM.Behaviors.Game.World
         Top = 2,
         Left = 3,
         Bottom = 4,
-    }
+        Any = 5,
+    }    
 }

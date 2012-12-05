@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BiM.Behaviors.Game.World.Data;
 
 namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 {

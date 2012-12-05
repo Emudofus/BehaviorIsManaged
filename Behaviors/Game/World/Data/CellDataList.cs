@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// ChatMessageClient.cs
+// CellDataList.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,38 +13,49 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System;
-using BiM.Protocol.Enums;
-using BiM.Protocol.Messages;
 
-namespace BiM.Behaviors.Game.Chat
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using ProtoBuf;
+
+namespace BiM.Behaviors.Game.World.Data
 {
-    public class ChatMessageClient : ChatMessage
+    [ProtoContract(IgnoreListHandling = true)]
+    public class CellDataList : ICellList<CellData>
     {
-        public ChatMessageClient()
+        public CellDataList()
         {
             
         }
 
-        public ChatMessageClient(ChatClientPrivateMessage message)
+        public CellDataList(CellData[] array)
         {
-            if (message == null) throw new ArgumentNullException("message");
-            Content = message.content;
-            ReceiverName = message.receiver;
-            Channel = ChatActivableChannelsEnum.PSEUDO_CHANNEL_PRIVATE;
+            UnderlyingList = array;
         }
-
-        public ChatMessageClient(ChatClientMultiMessage message)
-        {
-            if (message == null) throw new ArgumentNullException("message");
-            Content = message.content;
-            Channel = (ChatActivableChannelsEnum) message.channel;
-        }
-
-        public string ReceiverName
+        [ProtoMember(1)]
+        public CellData[] UnderlyingList
         {
             get;
             set;
+        }
+
+        public IEnumerator<CellData> GetEnumerator()
+        {
+            return UnderlyingList.AsEnumerable().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public CellData this[int id]
+        {
+            get
+            {
+                return UnderlyingList[id]; 
+            }
         }
     }
 }

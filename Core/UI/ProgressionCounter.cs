@@ -14,6 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 
@@ -27,6 +28,9 @@ namespace BiM.Core.UI
         public delegate void ProgressionUpdatedHandler(ProgressionCounter counter);
         public event ProgressionUpdatedHandler Updated;
 
+
+        public double EpsilonComparaison = 0.1;
+
         public ProgressionCounter(int total)
         {
             Total = total;   
@@ -35,19 +39,19 @@ namespace BiM.Core.UI
         public int Total
         {
             get;
-            private set;
+            set;
         }
 
-        public int Value
+        public double Value
         {
             get;
-            private set;
+            set;
         }
 
         public string Text
         {
             get;
-            private set;
+            set;
         }
 
         public bool IsEnded
@@ -56,11 +60,26 @@ namespace BiM.Core.UI
             private set;
         }
 
-        public void UpdateValue(int value, string text = null)
+
+        public void UpdateValue(double value)
         {
-            Value = value;
-            Text = text; 
-            
+            if (Math.Abs(Value - value) > EpsilonComparaison)
+            {
+                Value = value;
+
+                var handler = Updated;
+                if (handler != null) handler(this);
+            }
+        }
+        public void UpdateValue(double value, string text)
+        {
+            if (Math.Abs(Value - value) > EpsilonComparaison)
+            {
+                Value = value;
+
+            }
+
+            Text = text;
             var handler = Updated;
             if (handler != null) handler(this);
         }
@@ -74,5 +93,11 @@ namespace BiM.Core.UI
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }

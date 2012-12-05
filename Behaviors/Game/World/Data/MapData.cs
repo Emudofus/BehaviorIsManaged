@@ -19,20 +19,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BiM.Protocol.Data;
 using BiM.Protocol.Tools.Dlm;
 using ProtoBuf;
 
 namespace BiM.Behaviors.Game.World.Data
 {
     [ProtoContract]
-    public class MapData
+    public class MapData : IMap
     {
         public MapData()
         {
             
         }
 
-        public MapData(DlmMap map)
+        public MapData(DlmMap map, MapPosition position = null)
         {
             Id= map.Id;
             Version = map.Version;
@@ -45,7 +46,29 @@ namespace BiM.Behaviors.Game.World.Data
             LeftNeighbourId = map.LeftNeighbourId;
             RightNeighbourId = map.RightNeighbourId;
             TopNeighbourId = map.TopNeighbourId;
-            Cells = map.Cells.Select(x => new CellData(x)).ToArray();
+            Cells = new CellDataList(map.Cells.Select(x => new CellData(x)).ToArray());
+            if (position != null)
+            {
+                X = position.posX;
+                Y = position.posY;
+                WorldMap = position.worldMap;
+                Outdoor = position.outdoor;
+            }
+            else
+            {
+                X = ( Id & 0x3FE00 ) >> 9; // 9 higher bits
+                Y = Id & 0x01FF; // 9 lower bits
+                WorldMap = Id & 0x3FFC0000 >> 18;
+
+                if ((X & 0x100) == 0x100) // 9th bit is the sign. 1 means it's minus
+                {
+                    X = -( X & 0xFF ); // just take the 8 first bits and take the opposite number
+                }
+                if (( Y & 0x100 ) == 0x100) // 9th bit is the sign. 1 means it's minus
+                {
+                    Y = -( Y & 0xFF ); // just take the 8 first bits and take the opposite number
+                }
+            }
         }
 
         [ProtoMember(1)]
@@ -133,7 +156,40 @@ namespace BiM.Behaviors.Game.World.Data
         }
 
         [ProtoMember(14)]
-        public CellData[] Cells
+        public CellDataList Cells
+        {
+            get;
+            set;
+        }
+
+        ICellList<ICell> IMap.Cells
+        {
+            get { return Cells; }
+        }
+
+        [ProtoMember(15)]
+        public int X
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(16)]
+        public int Y
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(17)]
+        public int WorldMap
+        {
+            get;
+            set;
+        }
+
+        [ProtoMember(18)]
+        public bool Outdoor
         {
             get;
             set;

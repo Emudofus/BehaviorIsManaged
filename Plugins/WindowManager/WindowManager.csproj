@@ -74,7 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api32\IPHlpApi32Wrapper.cs" />
     <Compile Include="Api32\User32Wrapper.cs" />
     <Compile Include="KeySenderTest.cs" />
     <Compile Include="Plugin.cs" />

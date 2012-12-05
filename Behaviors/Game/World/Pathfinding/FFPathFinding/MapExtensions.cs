@@ -20,57 +20,60 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BiM.Behaviors.Game.World.Data;
 
 namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 {
     public static class MapExtensions
     {
        
-        public static int GetNeighbourMapId(this IMap map, WorldMap.Direction direction, bool GetStoredVersion)
+        public static int GetNeighbourMapId(this IMap map, MapNeighbour mapNeighbour, bool GetStoredVersion)
         {
             if (GetStoredVersion)
-                switch (direction)
+                switch (mapNeighbour)
                 {
-                    case WorldMap.Direction.Bottom:
+                        
+                    case MapNeighbour.Bottom:
                         return map.BottomNeighbourId;
-                    case WorldMap.Direction.Top:
+                    case MapNeighbour.Top:
                         return map.TopNeighbourId;
-                    case WorldMap.Direction.Left:
+                    case MapNeighbour.Left:
                         return map.LeftNeighbourId;
-                    case WorldMap.Direction.Right:
+                    case MapNeighbour.Right:
                         return map.RightNeighbourId;
-                    default: throw new ArgumentOutOfRangeException("direction");
+                    default: throw new ArgumentOutOfRangeException("MapNeighbour");
                 }
 
-            int MapChangeMask = GetMapChangeMask(direction);
+            int MapChangeMask = GetMapChangeMask(mapNeighbour);
 
             // Check if at least one cell allow a transition to the supposed-to-be neighbour
             bool ChangeMapFound = map.Cells.Any(cell => (cell.MapChangeData & MapChangeMask) != 0);
             if (ChangeMapFound)
-                return new WorldPoint(map.Id, direction).MapID;
+                return new WorldPoint(map.Id, mapNeighbour).MapID;
             return -1;
         }
 
-        public static Cell GetTransitionCell(this IMap map, WorldMap.Direction direction)
+        public static ICell GetTransitionCell(this IMap map, MapNeighbour mapNeighbour)
         {
-            int MapChangeMask = GetMapChangeMask(direction);
+            int MapChangeMask = GetMapChangeMask(mapNeighbour);
            
             // Check if at least one cell allow a transition to the supposed-to-be neighbour
             return map.Cells.FirstOrDefault(cell => (cell.MapChangeData & MapChangeMask) != 0);
         }
 
-        private static int GetMapChangeMask(WorldMap.Direction? direction)
+        private static int GetMapChangeMask(MapNeighbour? mapNeighbour)
         {
-            switch (direction)
+            switch (mapNeighbour)
             {
-                case WorldMap.Direction.Bottom:
+                case MapNeighbour.Bottom:
                     return 4;
-                case WorldMap.Direction.Top:
+                case MapNeighbour.Top:
                     return 64;
-                case WorldMap.Direction.Left:
+                case MapNeighbour.Left:
                     return 16;
-                case WorldMap.Direction.Right:
+                case MapNeighbour.Right:
                     return 1;
+                case null:
                 default:
                     return 1 | 4 | 16 | 64;
             }
@@ -88,26 +91,51 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         {
             return GetRandom(inputSet.ToArray());
         }
+
+        /// <summary>
+        /// Select a random item within the elements of an array
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="inputSet"></param>
+        /// <returns></returns>
         static public T GetRandom<T>(this T[] inputSet)
         {
             if (inputSet.Length == 0) return default(T);
             return inputSet[rnd.Next(inputSet.Length)];
         }
 
-        // Select a random transition for another map. If set, limit the search in a given direction. 
-        static public Cell GetRandomTransitionCell(this Map map, WorldMap.Direction? direction)
+        // Select a random transition for another map. If set, limit the search in a given MapNeighbour. 
+        static public Cell GetClosestTransitionCell(this Map map, MapNeighbour MapNeighbour, Cell startingCell)
         {
-            int MapChangeMask = GetMapChangeMask(direction);
+            int MapChangeMask = GetMapChangeMask(MapNeighbour);
+
+            return map.Cells.Where(cell => (cell.MapChangeData & MapChangeMask) != 0).OrderBy(cell => cell.DistanceTo(startingCell)).FirstOrDefault();
+        }
+
+
+        // Select a random transition for another map. If set, limit the search in a given MapNeighbour. 
+        static public Cell GetRandomTransitionCell(this Map map, MapNeighbour? MapNeighbour)
+        {
+            int MapChangeMask = GetMapChangeMask(MapNeighbour);
             return map.Cells.Where(cell => (cell.MapChangeData & MapChangeMask) != 0).GetRandom();
         }
 
-        // Returns all cells that allow a transition to the map in the given direction
-        // If direction = null, then any direction applies
-        static public IEnumerable<Cell> GetTransitionCells(this Map map, WorldMap.Direction? direction)
+        // Returns all cells that allow a transition to the map in the given MapNeighbour
+        // If MapNeighbour = null, then any MapNeighbour applies
+        static public IEnumerable<Cell> GetTransitionCells(this Map map, MapNeighbour? MapNeighbour)
         {
-            int MapChangeMask = GetMapChangeMask(direction);
+            int MapChangeMask = GetMapChangeMask(MapNeighbour);
             return map.Cells.Where(cell => (cell.MapChangeData & MapChangeMask) != 0);
         }
+
+        // Returns all cells that allow a transition to the map in the given MapNeighbour
+        // If MapNeighbour = null, then any MapNeighbour applies
+        static public IEnumerable<Cell> GetTransitionCells(IEnumerable<Cell> inputCells, MapNeighbour? MapNeighbour)
+        {
+            int MapChangeMask = GetMapChangeMask(MapNeighbour);
+            return inputCells.Where(cell => (cell.MapChangeData & MapChangeMask) != 0);
+        }
+
     }
 }
 

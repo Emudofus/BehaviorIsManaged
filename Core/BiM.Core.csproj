@@ -69,8 +69,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\Librairies\ServiceStack.Redis\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -91,6 +95,7 @@
     <Compile Include="Config\ConfigurableAttribute.cs" />
     <Compile Include="Config\ConfigVariable.cs" />
     <Compile Include="Cryptography\Cryptography.cs" />
+    <Compile Include="Database\RedisServerHost.cs" />
     <Compile Include="IO\FastBigEndianReader.cs" />
     <Compile Include="IO\FastLittleEndianReader.cs" />
     <Compile Include="Machine\OSInfo.cs" />
@@ -115,6 +120,7 @@
     <Compile Include="Network\BufferManager.cs" />
     <Compile Include="Network\Client.cs" />
     <Compile Include="Network\IClient.cs" />
+    <Compile Include="Network\IPHlpApi32Wrapper.cs" />
     <Compile Include="Network\ServerConnection.cs" />
     <Compile Include="Network\IMessageBuilder.cs" />
     <Compile Include="Network\ListenerEntry.cs" />
@@ -129,12 +135,17 @@
     <Compile Include="Reflection\Singleton.cs" />
     <Compile Include="Threading\SelfRunningTaskQueue.cs" />
     <Compile Include="Threading\SimplerTimer.cs" />
+    <Compile Include="UI\HSVColorConverter.cs" />
     <Compile Include="UI\ProgressionCounter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Librairies\NLog\NLog.netfx40.csproj">
       <Project>{A0BFF0DB-ED9A-4639-AE86-8E709A1EFC66}</Project>
       <Name>NLog.netfx40</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Librairies\ServiceStack.Redis\ServiceStack.Redis.csproj">
+      <Project>{AF99F19B-4C04-4F58-81EF-B092F1FCC540}</Project>
+      <Name>ServiceStack.Redis</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -1,147 +1,107 @@
-﻿#region License GNU GPL
-// IMap.cs
-// 
-// Copyright (C) 2012 - BehaviorIsManaged
-// 
-// This program is free software; you can redistribute it and/or modify it 
-// under the terms of the GNU General Public License as published by the Free Software Foundation;
-// either version 2 of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-// See the GNU General Public License for more details. 
-// You should have received a copy of the GNU General Public License along with this program; 
-// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#endregion
+using ProtoBuf;
 
-using System.Drawing;
-using BiM.Protocol.Tools.Dlm;
-
-namespace BiM.Behaviors.Game.World
+namespace BiM.Behaviors.Game.World.Data
 {
     public interface IMap
     {
-        CellList Cells
-        {
-            get;
-        }
-
+        [ProtoMember(1)]
         int Id
         {
             get;
         }
 
+        [ProtoMember(2)]
         byte Version
         {
             get;
         }
 
+        [ProtoMember(3)]
         bool Encrypted
         {
             get;
         }
 
+        [ProtoMember(4)]
         byte EncryptionVersion
         {
             get;
         }
 
+        [ProtoMember(5)]
         uint RelativeId
         {
             get;
         }
 
+        [ProtoMember(6)]
         byte MapType
         {
             get;
         }
 
+        [ProtoMember(7)]
         int SubAreaId
         {
             get;
         }
 
+        [ProtoMember(8)]
         int BottomNeighbourId
         {
             get;
         }
 
-        int LeftNeighbourId
-        {
-            get;
-        }
-
-        int RightNeighbourId
-        {
-            get;
-        }
-
-        int ShadowBonusOnEntities
-        {
-            get;
-        }
-
-        Color BackgroundColor
-        {
-            get;
-        }
-
-        ushort ZoomScale
-        {
-            get;
-        }
-
-        short ZoomOffsetX
-        {
-            get;
-        }
-
-        short ZoomOffsetY
-        {
-            get;
-        }
-
-        bool UseLowPassFilter
-        {
-            get;
-        }
-
-        bool UseReverb
-        {
-            get;
-        }
-
-        int PresetId
-        {
-            get;
-        }
-
-        DlmFixture[] BackgroudFixtures
-        {
-            get;
-        }
-
+        [ProtoMember(9)]
         int TopNeighbourId
         {
             get;
         }
 
-        DlmFixture[] ForegroundFixtures
+        [ProtoMember(10)]
+        int LeftNeighbourId
         {
             get;
         }
 
-        int GroundCRC
+        [ProtoMember(11)]
+        int RightNeighbourId
         {
             get;
         }
 
-        DlmLayer[] Layers
-        {
-            get;
-        }
-
+        [ProtoMember(12)]
         bool UsingNewMovementSystem
+        {
+            get;
+        }
+
+        [ProtoMember(14)]
+        ICellList<ICell> Cells
+        {
+            get;
+        }
+
+        [ProtoMember(15)]
+        int X
+        {
+            get;
+        }
+
+        [ProtoMember(16)]
+        int Y
+        {
+            get;
+        }
+
+        [ProtoMember(17)]
+        int WorldMap
+        {
+            get;
+        }
+
+        [ProtoMember(18)]
+        bool Outdoor
         {
             get;
         }

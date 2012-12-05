@@ -31,6 +31,8 @@ using BiM.Core.Messages;
 using BiM.Core.Threading;
 using BiM.Protocol.Messages;
 using NLog;
+using System.Diagnostics;
+using BiM.Behaviors.Game.World.Pathfinding;
 
 namespace FightPlugin
 {
@@ -145,7 +147,7 @@ namespace FightPlugin
             }
 
             var monster = Bot.Character.Map.Actors.OfType<GroupMonster>()
-                .Where(x => x.Level < Math.Min(Bot.Character.Level * 2 + 1, Bot.Character.Level + 10))
+                .Where(x => x.Level < Math.Min(Bot.Character.Level * 2 + 1, Bot.Character.Level + 10) && x.Level > Bot.Character.Level / 2)
                 .OrderBy(x => Math.Abs(x.Level - Bot.Character.Level)).FirstOrDefault(); // As close as possible from character's level
 
             if (monster != null)
@@ -153,8 +155,10 @@ namespace FightPlugin
                 //Bot.Character.SendMessage(String.Format("Trying to start a fight with group lv {0}, cell {1}, leader {2} lv {3}", monster.Level, monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
                 Bot.Character.TryStartFightWith(monster, _pathFinder);
                 //Move(Bot.Character.Cell, monster.Cell, false, -1);
-
             }
+            else
+                if (!Bot.Character.IsMoving())
+                    Bot.Character.ChangeMap();
         }
 
         private void OnFightJoined(PlayedCharacter character, Fight fight)
@@ -200,20 +204,19 @@ namespace FightPlugin
             _pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(character.Map, false);
         }
 
+        bool DoNotMoveAgain;
         private void OnTurnStarted(Fighter fighter)
         {
-            var bot = BotManager.Instance.GetCurrentBot();
             _losMap.UpdateTargetCell(null, false, true, true);
+            DoNotMoveAgain = false;
             Bot.CallDelayed(500, StartAI);
         }
 
 
-        /* Problème constaté : 
-         * 1/ StartTurn => CellId OK
-         * 2/ Movement : GameMapMovementRequestMessage => SequenceStartMessage => GameMapMovementMessage => GameActionFightPointsVariationMessage => SequenceEndMessage
-         * 3 StartAI MP = 0, AP = 6 : CellId inchangé */
+
         private void StartAI()
         {
+            if (_character == null) return;
             /*if (_stopMovingDelegate != null)
             {
                 _character.StopMoving -= _stopMovingDelegate;
@@ -234,6 +237,7 @@ namespace FightPlugin
             }
 
             int maxDistanceWished = -1;
+            uint minDistance = 1;
             bool inLine = false;
             bool inDiagonal = false;
             bool needLOSCheck = false;
@@ -243,78 +247,76 @@ namespace FightPlugin
             {
                 bool inRange = _character.IsInSpellRange(_currentTarget.Cell, spell.LevelTemplate);
                 bool LoSisOK = !spell.LevelTemplate.castTestLos || _character.Fight.CanBeSeen(_character.Cell, _currentTarget.Cell, false);
-                if (inRange)
+                if (!inRange || !LoSisOK)
                 {
-                    if (spell.LevelTemplate.castTestLos && !_character.Fight.CanBeSeen(_character.Cell, _currentTarget.Cell, false))
+                    if (ComeAtSpellRangeWithNoRisk(_currentTarget, spell.LevelTemplate.minRange, _character.GetRealSpellRange(spell.LevelTemplate), spell.LevelTemplate.castInLine, spell.LevelTemplate.castInDiagonal, spell.LevelTemplate.castTestLos))
                     {
-                        maxDistanceWished = _character.GetRealSpellRange(spell.LevelTemplate);
-                        inLine = spell.LevelTemplate.castInLine;
-                        inDiagonal = spell.LevelTemplate.castInDiagonal;
-                        needLOSCheck = true;
+                        Bot.Character.SendMessage(String.Format("StartAI - moving at range to cast Spell {0} (cat {2}) on {1}", spell, _currentTarget, spell.Categories), Color.Pink);
+                        return;
                     }
                     else
-                        if (!_character.CastSpell(spell, _currentTarget.Cell))
-                            _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1} on {2}", _character.Name, spell, _currentTarget));
-                        else
-                        {
-                            LastActionDesc = "Spell " + spell + " casted";
-                            //Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} on {1}]", spell, _currentTarget), Color.Pink);
-
-                            //_spellCastedDelegate = (sender, spellCast) => StartAI();
-                            return; // EndSenquence will call StartAI again
+                        if (maxDistanceWished == -1)
+                        { // Keep the best one only
+                            maxDistanceWished = _character.GetRealSpellRange(spell.LevelTemplate);
+                            inLine = spell.LevelTemplate.castInLine;
+                            inDiagonal = spell.LevelTemplate.castInDiagonal;
+                            needLOSCheck = spell.LevelTemplate.castTestLos;
+                            minDistance = spell.LevelTemplate.minRange;
                         }
                 }
                 else
-                    // Available but not in range
-                    if (_character.GetRealSpellRange(spell.LevelTemplate) > maxDistanceWished)
-                    {
-                        maxDistanceWished = _character.GetRealSpellRange(spell.LevelTemplate);
-                        inLine = spell.LevelTemplate.castInLine;
-                        inDiagonal = spell.LevelTemplate.castInDiagonal;
-                        needLOSCheck = spell.LevelTemplate.castTestLos;
-                    }
-            }
-
-            // Can't move => try to cast some boost, heal or invoc, or just pass
-            if (_character.Stats.CurrentMP <= 0)
-            {
-                foreach (var spell in _character.GetOrderListOfSimpleBoostSpells())
-                {
-                    if (!_character.CastSpell(spell, _character.Cell))
-                        _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1} on himself", _character.Name, spell));
+                    if (!_character.CastSpell(spell, _currentTarget.Cell))
+                        _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1} on {2}", _character.Name, spell, _currentTarget));
                     else
                     {
                         LastActionDesc = "Spell " + spell + " casted";
-                        //Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} on himself]", spell), Color.Pink);
+                        Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} (cat {2}) on {1}", spell, _currentTarget, spell.Categories), Color.Pink);
 
                         //_spellCastedDelegate = (sender, spellCast) => StartAI();
                         return; // EndSenquence will call StartAI again
                     }
-                }
-                //Bot.Character.SendMessage("Nothing to do => Pass turn", Color.Pink);
+            }
 
-                PassTurn();
+            // Can't cast an attack => try to cast some boost, heal or invoc, or just pass
+            foreach (var spell in _character.GetOrderListOfSimpleBoostSpells())
+            {
+                if (!_character.CastSpell(spell, _character.Cell))
+                    _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1} on himself", _character.Name, spell));
+                else
+                {
+                    LastActionDesc = "Spell " + spell + " casted";
+                    Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} (cat {2}) on himself, cell {3} (monster cell : {1})]", spell, _currentTarget.Cell, spell.Categories, _character.Cell), Color.Pink);
+                    //Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} on himself]", spell), Color.Pink);
+
+                    //_spellCastedDelegate = (sender, spellCast) => StartAI();
+                    return; // EndSenquence will call StartAI again
+                }
+            }
+
+            if (_character.Stats.CurrentMP <= 0)
+            {
+                Bot.CallDelayed(250, PassTurn);
                 return;
             }
+
             // No other spells can be cast (out of AP) => move away and pass the turn
             if (maxDistanceWished == -1)
             {
-                MoveFar();
-                //Bot.CallDelayed(250, _character.PassTurn);
+                Bot.Character.SendMessage(String.Format("StartAI No spell castable, moving away {0}pm", _character.Stats.CurrentMP), Color.Pink);
+                MoveFar(false);
                 return;
             }
 
-            // If no spell is at range, then try to come closer and try again
-            MoveNear(_currentTarget, (int)(_character.Cell.ManhattanDistanceTo(_currentTarget.Cell) - maxDistanceWished), maxDistanceWished, inLine, inDiagonal, needLOSCheck);
-
-
+            // If no spell is at range, then try to come closer and try again. No need to be cautious here : we can't cast anything else
+            MoveNear(_currentTarget, Math.Max(1, minDistance), maxDistanceWished, inLine, inDiagonal, needLOSCheck, false);
         }
+
         //private bool _isLastAction;
         private void PassTurn()
         {
             //Bot.Character.SendMessage("PassTurn", Color.Pink);
-
-            _character.PassTurn();
+            if (_character != null)
+                _character.PassTurn();
         }
 
         string LastActionDesc;
@@ -330,7 +332,7 @@ namespace FightPlugin
 
         private void OnAcknowledgement(bool failed)
         {
-            //Bot.Character.SendMessage(String.Format("OnAcknowledgement AP:{0}, MP:{1}, LastAction {3} failed ? {2}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, failed, LastActionDesc), Color.Pink);
+            Bot.Character.SendMessage(String.Format("OnAcknowledgement AP:{0}, MP:{1}, LastAction {3} failed ? {2}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, failed, LastActionDesc), Color.Pink);
             LastActionDesc = "OnSequenceEnd";
             if (!failed)
                 Bot.CallDelayed(300, StartAI);
@@ -354,14 +356,17 @@ namespace FightPlugin
         private void FindOptimalPlacement()
         {
             _currentTarget = FindWeakestEnemy();
-            Spell bestSpell = _character.GetOrderListOfSimpleAttackSpells(_currentTarget, true).FirstOrDefault();
+            IEnumerable<Spell> spells = _character.GetOrderListOfSimpleAttackSpells(_currentTarget, true);
+            Bot.Character.SendMessage(String.Format("Ordered attack spells agains {0} : {1}", _currentTarget, String.Join(",", spells)), Color.Blue);
+                
+            Spell bestSpell = spells.FirstOrDefault();
             if (bestSpell == null || _currentTarget == null)
             {
                 Bot.Character.SendMessage(String.Format("FindOptimalPlacement : can't find a position (bestSpell: {0}, weakestEnnemy: {1})", bestSpell, _currentTarget), Color.Red);
                 PlaceToWeakestEnemy();
                 return;
             }
-            //Bot.Character.SendMessage(String.Format("FindOptimalPlacement : bestSpell: {0}, weakestEnnemy: {1} ({2})", bestSpell, _currentTarget, _currentTarget.Cell));
+            Bot.Character.SendMessage(String.Format("FindOptimalPlacement : bestSpell: {0}, weakestEnnemy: {1} ({2}), range: {3}", bestSpell, _currentTarget, _currentTarget.Cell, _character.GetRealSpellRange(bestSpell.LevelTemplate)));
 
             PlaceAtDistanceFromWeakestEnemy(_character.GetRealSpellRange(bestSpell.LevelTemplate), bestSpell.LevelTemplate.castInLine);
         }
@@ -453,51 +458,72 @@ namespace FightPlugin
             Bot.Character.Fighter.ChangePrePlacement(bestCell);
         }
 
+        /// <summary>
+        /// If a proper path can be found, then move and return true. 
+        /// Otherwise, do nothing and return false;
+        /// </summary>
+        /// <param name="fighter"></param>
+        /// <param name="mp"></param>
+        /// <param name="maxDistanceWished"></param>
+        /// <param name="inLine"></param>
+        /// <param name="inDiagonal"></param>
+        /// <param name="needLOSCheck"></param>
+        /// <returns></returns>
+        private bool ComeAtSpellRangeWithNoRisk(Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck)
+        {
+            Cell dest = GetCellAtSpellRange(fighter, minRange, maxDistanceWished, inLine, inDiagonal, needLOSCheck, true, true);
+            if (dest == null) return false;
+            Path path = ((IAdvancedPathFinder)_pathFinder).FindPath(_character.Cell, dest, false, _character.Stats.CurrentMP, 0, true);
 
-        private void MoveNear(Fighter fighter, int mp, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck)
+            return !_character.Move(path);
+        }
+
+
+        private Cell GetCellAtSpellRange(Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck, bool cautious, bool getOnlyExactResult)
+        {
+            Cell dest = null;
+            IEnumerable<Cell> allMoves = GetPossibleMoves(cautious);
+            Bot.Character.ResetCellsHighlight();
+            Bot.Character.HighlightCells(allMoves, Color.Orange);
+            IEnumerable<Cell> selectedMoves = allMoves;
+            if (needLOSCheck)
+            {
+                _losMap.UpdateTargetCell(fighter, false, true, false);
+                selectedMoves = _losMap.GetCellsSeenByTarget(selectedMoves);
+            }
+            IEnumerable<Cell> bestSelectedMoves = selectedMoves;
+            
+            // Restrict selection as needed for InLine or InDiagonal constrains
+            if (inLine || inDiagonal)
+                bestSelectedMoves = bestSelectedMoves.Where(cell => inLine && (fighter.Cell.X == cell.X || fighter.Cell.Y == cell.Y) || inDiagonal && (Math.Abs(fighter.Cell.X - cell.X) == Math.Abs(fighter.Cell.Y - cell.Y)));
+            
+            // Keep only those cells that respect max distance to target
+            bestSelectedMoves = bestSelectedMoves.Where(cell => cell.ManhattanDistanceTo(fighter.Cell) <= maxDistanceWished && cell.ManhattanDistanceTo(fighter.Cell) >= minRange);
+
+            // As the cells are initialy sorted by distance from the starting position, just get the first one if any. 
+            dest = bestSelectedMoves.FirstOrDefault();
+            if (getOnlyExactResult || dest != null) return dest;
+
+            // If no result and no need to have a proper result, come as close as possible to the target
+            
+            // Find the closest position that is equal or under maxDistanceWished of the target, if any
+            dest = allMoves.FirstOrDefault(cell => cell.ManhattanDistanceTo(fighter.Cell) <= maxDistanceWished);
+            if (dest != null) return dest;
+            
+            // as we are far from the target, use PathFinding to find the shortest path to reach the target
+            Path path = ((IAdvancedPathFinder)_pathFinder).FindPath(_character.Cell, fighter.Cell, false, _character.Stats.CurrentMP);
+            return path.End;
+        }
+
+
+        private void MoveNear(Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck, bool cautious)
         {
             //Bot.Character.SendMessage(String.Format("MoveNear {0} : mp = {1}, distanceWished = {2}, inLine = {3}, inDiagonal = {4}, LOS = {5}", fighter, mp, maxDistanceWished, inLine, inDiagonal, needLOSCheck), Color.Pink);
             //_stopMovingDelegate = (sender, behavior, canceled, refused) => OnStopMoving(behavior, canceled, refused);
             //Bot.Character.Fighter.StopMoving += _stopMovingDelegate;
 
-            // TODO : find a cell with LOS OK, when needLOSCheck set
-            Cell dest = null;
-            string res = "";
-            if (needLOSCheck)
-            {
-                Cell[] allMoves = GetPossibleMoves();
-                IEnumerable<Cell> selectedMoves = allMoves;
-                if (needLOSCheck)
-                {
-                    _losMap.UpdateTargetCell(fighter, false, true, false);
-                    selectedMoves = _losMap.GetCellsSeenByTarget(selectedMoves);
-                }
-                if (inLine || inDiagonal)
-                    selectedMoves = selectedMoves.Where(cell => inLine && (fighter.Cell.X == cell.X || fighter.Cell.Y == cell.Y) || inDiagonal && (Math.Abs(fighter.Cell.X - cell.X) == Math.Abs(fighter.Cell.Y - cell.Y)));
-                selectedMoves = selectedMoves.Where(cell => cell.ManhattanDistanceTo(fighter.Cell) <= maxDistanceWished);
-                dest = selectedMoves.OrderBy(cell => cell.ManhattanDistanceTo(_character.Cell)).LastOrDefault();
-                res += string.Format("needLOSCheck => {0}, ", dest);
-            }
+            Cell dest = GetCellAtSpellRange(fighter, minRange, maxDistanceWished, inLine, inDiagonal, needLOSCheck, cautious, false);
 
-            if (inLine && (dest == null))
-            {
-                // Check if x or y move is needed to cast a spell in line
-                int dx = Math.Abs(fighter.Cell.X - _character.Cell.X);
-                int dy = Math.Abs(fighter.Cell.Y - _character.Cell.Y);
-                if (dx > 0 && dy > 0)
-                {
-                    dest = dx > dy ?
-                        _character.Map.Cells[_character.Cell.X, fighter.Cell.Y] :
-                        _character.Map.Cells[fighter.Cell.X, _character.Cell.Y];
-                    mp = Math.Min(dx, dy);
-                }
-                res += string.Format("inLine => {0} {1}mp, ", dest, mp);
-            }
-            if (dest == null) // Try to go as close as possible to a cell adjacent with the target, if no other path allready set
-            {
-                dest = fighter.Cell.GetAdjacentCells().OrderBy(cell => cell.ManhattanDistanceTo(_character.Cell)).FirstOrDefault();
-                res += string.Format("default => {0}, ", dest);
-            }
             if (dest == null)
             {
                 Bot.Character.SendMessage(String.Format("Can't Move near {0}", fighter), Color.Red);
@@ -507,7 +533,7 @@ namespace FightPlugin
             //Bot.Character.SendMessage(res, Color.Pink);
 
             //Move(_character.Cell, dest, true, mp);
-            if (!_character.Move(dest, mp, _pathFinder))
+            if (!_character.Move(dest, _pathFinder))
             {
                 Bot.Character.SendMessage(String.Format("Failed to move from {0} to {1}, near {2} => pass", _character.Cell, dest, fighter), Color.Red);
                 PassTurn();
@@ -518,56 +544,69 @@ namespace FightPlugin
 
         /// <summary>
         /// Gives walkable cells where the character may walk within the turn.
-        /// Note : it's not 100% reliable, as it doen't use PathFinding yet
+        /// Note : it's now supposed to be reliable, using PathFinder
         /// </summary>
         /// <returns></returns>
-        private Cell[] GetPossibleMoves()
+        private IEnumerable<Cell> GetPossibleMoves(bool cautious)
         {
-            // TODO : use PathFinding to make sure the cells can be reached
-            Lozenge shape = new Lozenge(0, (byte)_character.Stats.CurrentMP);
+            return _pathFinder.FindConnectedCells(
+                _character.Cell, true, cautious,
+                cell => cell.DistanceSteps <= _character.Stats.CurrentMP);
+            
+            /*Lozenge shape = new Lozenge(0, (byte)_character.Stats.CurrentMP);
 
             // It's quite inefficient, but well, no real need to optimize here
-            return shape.GetCells(_character.Cell, _character.Map).Where(cell => _character.Fight.IsCellWalkable(cell, false, _character.Cell)).ToArray();
+            return shape.GetCells(_character.Cell, _character.Map).Where(cell => _character.Fight.IsCellWalkable(cell, false, _character.Cell)).ToArray();*/
         }
 
-        private void MoveFar()
+        private void MoveFar(bool cautious)
         {
+            if (DoNotMoveAgain) return;
             //_isLastAction = true;
+            IEnumerable<Cell> enemyCells = _character.GetOpposedTeam().FightersAlive.Select(fighter => fighter.Cell);
+            
+            /*Cell dest = GetPossibleMoves().Where(cell => _character.Fight.IsCellWalkable(cell, false, _character.Cell)).OrderByDescending(cell => enemies.Min(ennCell => cell.ManhattanDistanceTo(ennCell.Cell))).FirstOrDefault();
+            // Do not move if the new position is not better than the old one. 
+            if (enemies.Min(ennCell => dest.ManhattanDistanceTo(ennCell.Cell)) < enemies.Min(ennCell => _character.Cell.ManhattanDistanceTo(ennCell.Cell)))
+            {                
+                DoNotMoveAgain = true;
+                return;
+            }*/
+            uint ActualDistanceFromEnnemies = enemyCells.Min(ennCell => _character.Cell.ManhattanDistanceTo(ennCell));
+            DoNotMoveAgain = true;
+            if (_character.Stats.CurrentMP < 1) return;
+            Cell dest = _pathFinder.FindConnectedCells(
+                _character.Cell, true, cautious,
+                cell => cell.DistanceSteps <= _character.Stats.CurrentMP && enemyCells.Min(ennCell => cell.Cell.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies,
+                cell => enemyCells.Min(ennCell => (int)cell.Cell.ManhattanDistanceTo(ennCell))).FirstOrDefault();
 
-            Cell dest = GetPossibleMoves().Where(cell => _character.Fight.IsCellWalkable(cell, false, _character.Cell)).OrderByDescending(cell => _character.GetOpposedTeam().FightersAlive.Min(x => cell.ManhattanDistanceTo(x.Cell))).FirstOrDefault();
-
+            Debug.Assert((enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies), "This move do not take the character away from monsters !");
             if (dest == null)
             {
+                DoNotMoveAgain = true;
                 PassTurn();
                 return;
             }
+
             //Move(_character.Cell, dest, true, _character.Stats.CurrentMP);
             if (!_character.Move(dest, _pathFinder))
             {
-                Bot.Character.SendMessage(String.Format("Failed to move far from {0} to {1}, away from {2} => pass", _character.Cell, dest, String.Join(",", _character.GetOpposedTeam().FightersAlive.Select(fighter => fighter.Cell))), Color.Red);
+                Bot.Character.SendMessage(String.Format("Failed to move far from {0} to {1}, away from {2} => pass", _character.Cell, dest, String.Join(",", enemyCells)), Color.Red);
                 PassTurn();
             }
             else
+            {
+                Bot.Character.SendMessage(String.Format("Moving away from ({0}) : pos {1}({2}) => {3}({4}) => pass", String.Join(",", enemyCells), _character.Cell, ActualDistanceFromEnnemies, dest, enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell))), Color.Pink);
+                
                 LastActionDesc = "MoveFar";
+            }
         }
 
         private Fighter GetNearestEnemy()
         {
+            if (_character == null) return null;
             var enemyTeam = _character.GetOpposedTeam();
-
-            Fighter nearestFighter = null;
-            foreach (var enemy in enemyTeam.FightersAlive)
-            {
-                if (nearestFighter == null)
-                    nearestFighter = enemy;
-
-                else if (_character.Cell.ManhattanDistanceTo(enemy.Cell) <
-                    nearestFighter.Cell.ManhattanDistanceTo(_character.Cell))
-                {
-                    nearestFighter = enemy;
-                }
-            }
-            return nearestFighter;
+            return enemyTeam.FightersAlive.OrderBy(enemy => _character.Cell.ManhattanDistanceTo(enemy.Cell)).FirstOrDefault();
         }
 
 

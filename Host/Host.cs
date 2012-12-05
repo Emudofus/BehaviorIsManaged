@@ -30,6 +30,7 @@ using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.MapTraveling.Storage;
 using BiM.Behaviors.Messages;
 using BiM.Core.Config;
+using BiM.Core.Database;
 using BiM.Core.I18n;
 using BiM.Core.Machine;
 using BiM.Core.Messages;
@@ -40,6 +41,7 @@ using BiM.Protocol.Tools;
 using BiM.Protocol.Tools.D2p;
 using BiM.Protocol.Tools.Dlm;
 using NLog;
+using ServiceStack.Redis;
 
 namespace BiM.Host
 {
@@ -83,8 +85,8 @@ namespace BiM.Host
         [Configurable("RealAuthPort")]
         public static int RealAuthPort = 5555;
 
-        [Configurable("SubMapFile")]
-        public static string SubMapFile = "./submaps.dat";
+        [Configurable("RedisServerExe")]
+        public static string RedisServerExe = "./Redis/redis-server.exe";
 
         public static event UnhandledExceptionEventHandler UnhandledException;
 
@@ -169,6 +171,11 @@ namespace BiM.Host
             var itemIconSource = new ItemIconSource(Path.Combine(GetDofusPath(), DofusItemIconPath));
             DataProvider.Instance.AddSource(itemIconSource);
 
+            logger.Info("Starting redis server ...");
+            RedisServerHost.Instance.ExecutablePath = RedisServerExe;
+            RedisServerHost.Instance.StartOrFindProcess();
+
+            logger.Info("Loading {0}...", MapDataSource.MapsDataFile);
             var mapdataSource = new MapDataSource();
             var progression = mapdataSource.Initialize();
 
@@ -185,6 +192,28 @@ namespace BiM.Host
             }
 
             DataProvider.Instance.AddSource(mapdataSource);
+
+            var submapSource = new SubMapDataSource();
+            // don't try this if you dont want to burn :)
+            logger.Info("Loading submaps ...");
+            progression = submapSource.Initialize();
+
+            if (progression != null)
+            {
+                double lastValue = progression.Value;
+                while (!progression.IsEnded)
+                {
+                    Thread.Sleep(1000);
+                    if (Math.Abs(lastValue - progression.Value) > 0.1)
+                        logger.Debug("{0} : {1:0.0}/{2}% Mem:{3}MB", progression.Text,  progression.Value, progression.Total, GC.GetTotalMemory(false) / ( 1024 * 1024 ));
+
+                    lastValue = progression.Value;
+                }
+
+                GC.Collect();
+            }
+
+            DataProvider.Instance.AddSource(submapSource);
 
             MITM = new MITM.MITM(new MITMConfiguration
                                      {
@@ -286,6 +315,7 @@ namespace BiM.Host
                 DispatcherTask.Stop();
 
             PluginManager.Instance.UnLoadAllPlugins();
+            RedisServerHost.Instance.Shutdown();
         }
 
         private static void OnProcessExit(object sender, EventArgs e)

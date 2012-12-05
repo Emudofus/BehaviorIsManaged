@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // CellList.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,7 +13,9 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -20,7 +23,7 @@ using System.Linq;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class CellList : IEnumerable<Cell>
+    public class CellList : ICellList<Cell>
     {
         private readonly Cell[] m_cells;
         private readonly Dictionary<Point, Cell> m_cellsByPoint = new Dictionary<Point, Cell>();
@@ -29,12 +32,6 @@ namespace BiM.Behaviors.Game.World
         {
             m_cells = cells;
             m_cellsByPoint = cells.ToDictionary(entry => entry.Point);
-        }
-
-        public Map Map
-        {
-            get;
-            private set;
         }
 
         /// <summary>
@@ -80,6 +77,18 @@ namespace BiM.Behaviors.Game.World
             get { return this[new Point(x, y)]; }
         }
 
+        /// <summary>
+        /// Returns the number of cells
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int Count
+        {
+            get { return m_cells.Length; }
+        }
+
+        #region IEnumerable<Cell> Members
+
         public IEnumerator<Cell> GetEnumerator()
         {
             return m_cells.AsEnumerable().GetEnumerator();
@@ -90,18 +99,6 @@ namespace BiM.Behaviors.Game.World
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns the number of cells
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public int Count
-        {
-            get
-            {
-                return m_cells.Length;
-            }
-        }
-
+        #endregion
     }
 }

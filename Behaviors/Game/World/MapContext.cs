@@ -27,7 +27,12 @@ using NLog;
 namespace BiM.Behaviors.Game.World
 {
     public interface IMapContext
-    {
+    {        
+        CellList Cells
+        {
+            get;
+        }
+
         IEnumerable<ContextActor> Actors
         {
             get;
@@ -56,6 +61,11 @@ namespace BiM.Behaviors.Game.World
 
     public abstract class MapContext<T> : IMapContext, INotifyPropertyChanged where T : ContextActor
     {
+        public const int ElevationTolerance = 11;
+        public const uint Width = 14;
+        public const uint Height = 20;
+        public const uint MapSize = Width * Height * 2;
+        
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private Dictionary<int, T> m_actors = new Dictionary<int, T>();
@@ -318,7 +328,7 @@ namespace BiM.Behaviors.Game.World
                 int floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
 
                 if (cell.MoveZone != previousCell.MoveZone ||
-                    cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff > Map.ElevationTolerance)
+                    cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff >  Map.ElevationTolerance)
                     return false;
             }
 

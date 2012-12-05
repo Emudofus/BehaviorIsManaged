@@ -74,6 +74,7 @@ namespace BiM.Behaviors.Handlers.Context
 
       bot.Character.NotifyStopMoving(true, true);
     }
+
     [MessageHandler(typeof(GameMapMovementMessage))]
     public static void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
     {

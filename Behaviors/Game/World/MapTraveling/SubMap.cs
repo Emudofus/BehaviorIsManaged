@@ -17,18 +17,30 @@
 #endregion
 
 using System.Collections.Generic;
+using BiM.Behaviors.Game.World.Data;
 
 namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class SubMap : SerializableSubMap
+    public class SubMap : SubMap<Cell, Map>
     {
-        public SubMap(Map map, Cell[] cells)
+        public SubMap(Map map, Cell[] cells, byte submapId)
+            : base(map, cells, submapId)
+        {
+        }
+    }
+
+    public class SubMap<TCell, TMap> : SerializableSubMap
+        where TCell : ICell 
+        where TMap : IMap
+    {
+        public SubMap(TMap map, TCell[] cells, byte submapId)
         {
             Map = map;
             Cells = cells;
+            SubMapId = submapId;
         }
 
-        public Map Map
+        public TMap Map
         {
             get;
             private set;
@@ -41,15 +53,15 @@ namespace BiM.Behaviors.Game.World.MapTraveling
 
         public override int X
         {
-            get { return Map.PosX; }
+            get { return Map.X; }
         }
 
         public override int Y
         {
-            get { return Map.PosY; }
+            get { return Map.Y; }
         }
 
-        public Cell[] Cells
+        public TCell[] Cells
         {
             get;
             set;

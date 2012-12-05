@@ -1,4 +1,5 @@
 ﻿#region License GNU GPL
+
 // SerializableSubMap.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
@@ -12,9 +13,9 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using BiM.Behaviors.Game.World.MapTraveling.Transitions;
@@ -23,9 +24,14 @@ namespace BiM.Behaviors.Game.World.MapTraveling
 {
     public class SerializableSubMap
     {
+        private int m_mapId;
+        private byte m_subMapId;
+        private int m_x;
+        private int m_y;
+
         public SerializableSubMap()
         {
-            Neighbours = new List<SubMapNeighbour>();   
+            Neighbours = new List<SubMapNeighbour>();
         }
 
         public SerializableSubMap(int mapId, byte subMapId, int x, int y, List<SubMapNeighbour> neighbours)
@@ -39,10 +45,8 @@ namespace BiM.Behaviors.Game.World.MapTraveling
 
         public long GlobalId
         {
-            get { return SubMapId << 32 | MapId; }
+            get { return (long)MapId << 8 | SubMapId; }
         }
-
-        private int m_mapId;
 
         public virtual int MapId
         {
@@ -50,23 +54,17 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             set { m_mapId = value; }
         }
 
-        private byte m_subMapId;
-
         public virtual byte SubMapId
         {
             get { return m_subMapId; }
             set { m_subMapId = value; }
         }
 
-        private int m_x;
-
         public virtual int X
         {
             get { return m_x; }
             set { m_x = value; }
         }
-
-        private int m_y;
 
         public virtual int Y
         {
@@ -90,7 +88,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             writer.Write(X);
             writer.Write(Y);
             writer.Write(Neighbours.Count);
-            foreach (var neighbour in Neighbours)
+            foreach (SubMapNeighbour neighbour in Neighbours)
             {
                 writer.Write(neighbour.GlobalId);
                 TransitionsManager.Instance.SerializeTransition(writer, neighbour.Transition);
@@ -104,11 +102,11 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             X = reader.ReadInt32();
             Y = reader.ReadInt32();
             Neighbours = new List<SubMapNeighbour>();
-            var length = reader.ReadInt32();
+            int length = reader.ReadInt32();
             for (int i = 0; i < length; i++)
             {
-                var id = reader.ReadInt64();
-                var transition = TransitionsManager.Instance.DeserializeTransition(reader);
+                long id = reader.ReadInt64();
+                SubMapTransition transition = TransitionsManager.Instance.DeserializeTransition(reader);
                 Neighbours[i] = new SubMapNeighbour(id, transition);
             }
         }
