@@ -108,7 +108,7 @@ namespace BiM.Behaviors.Game.Stats
     }
 
     public PlayerStats(PlayedCharacter owner, CharacterCharacteristicsInformations stats)
-      : this()
+        : this(owner)
     {
       if (stats == null) throw new ArgumentNullException("stats");
       Update(stats);

@@ -33,7 +33,7 @@ namespace SimplePlugin.Handlers
                 var splits = message.content.Split(' ');
                 if (splits.Length != 2)
                 {
-                    bot.Character.SendMessage("syntax : .move [Right/Left/Top/Bottom]");
+                    bot.Character.SendMessage("syntax : .move [Right/Left/Top/Bottom/Any]");
                     return;
                 }
 
@@ -44,7 +44,7 @@ namespace SimplePlugin.Handlers
                 }
                 catch (Exception)
                 {
-                    bot.Character.SendMessage("syntax : .move [Right/Left/Top/Bottom]");
+                    bot.Character.SendMessage("syntax : .move [Right/Left/Top/Bottom/Any]");
                     return;
                 }
 
