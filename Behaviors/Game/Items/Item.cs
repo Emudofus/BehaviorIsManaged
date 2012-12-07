@@ -99,7 +99,7 @@ namespace BiM.Behaviors.Game.Items
         {
             if (item == null) throw new ArgumentNullException("item");
             Guid = item.objectUID;
-            Template = DataProvider.Instance.Get<Protocol.Data.Item>(item.objectGID);
+            Template = ObjectDataManager.Instance.Get<Protocol.Data.Item>(item.objectGID);
 
             m_effects.Clear();
             foreach (EffectBase x in item.effects.Select(EffectBase.CreateInstance))

@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// ItemIconSource.cs
+// IconsManager.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,47 +13,35 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
+
 using System;
 using System.Collections.Generic;
-using BiM.Behaviors.Data;
-using BiM.Behaviors.Messages;
-using BiM.Core.Messages;
+using BiM.Core.Reflection;
 using BiM.Protocol.Tools.D2p;
 
-namespace BiM.Behaviors.Game.Items.Icons
+namespace BiM.Behaviors.Data
 {
-    public class ItemIconSource : IDataSource
+    public class IconsManager : Singleton<IconsManager>
     {
         private D2pFile m_d2PFile;
 
-        public ItemIconSource(string path)
+        public void Initialize(string path)
         {
             m_d2PFile = new D2pFile(path);
         }
 
-        public T ReadObject<T>(params object[] keys) where T : class
+        public Icon GetIcon(int id)
         {
-            if (keys.Length != 1 || !( keys[0] is IConvertible ))
-                throw new ArgumentException("D2OSource needs a int key, use ReadObject(int)");
-
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
-
-            int id = Convert.ToInt32(keys[0]);
-
             if (!m_d2PFile.Exists(id + ".png"))
                 throw new ArgumentException(string.Format("Item icon {0} not found", id));
 
             var data = m_d2PFile.ReadFile(id + ".png");
 
-            return new ItemIcon(id, id + ".png", data) as T;
+            return new Icon(id, id + ".png", data);
         }
 
-        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        public IEnumerable<Icon> EnumerateIcons()
         {
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
-
             foreach (var entry in m_d2PFile.Entries)
             {
                 if (!entry.FullFileName.EndsWith(".png"))
@@ -62,13 +50,8 @@ namespace BiM.Behaviors.Game.Items.Icons
                 var data = m_d2PFile.ReadFile(entry);
                 var id = int.Parse(entry.FileName.Replace(".png", ""));
 
-                yield return new ItemIcon(id, entry.FileName, data) as T;
+                yield return new Icon(id, entry.FileName, data);
             }
-        }
-
-        public bool DoesHandleType(Type type)
-        {
-            return type == typeof(ItemIcon);
         }
     }
 }

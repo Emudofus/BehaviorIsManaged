@@ -24,7 +24,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using BiM.Behaviors;
 using BiM.Behaviors.Data;
-using BiM.Behaviors.Game.Items.Icons;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.MapTraveling.Storage;
@@ -157,31 +156,23 @@ namespace BiM.Host
             logger.Info("{0} loaded", Path.GetFileName(Config.FilePath));
 
 
-            var d2oSource = new D2OSource();
-            d2oSource.AddReaders(Path.Combine(GetDofusPath(), DofusDataPath));
-            DataProvider.Instance.AddSource(d2oSource);
+            ObjectDataManager.Instance.AddReaders(Path.Combine(GetDofusPath(), DofusDataPath));
+            I18NDataManager.Instance.DefaultLanguage = Languages.English;;
+            I18NDataManager.Instance.AddReaders(Path.Combine(GetDofusPath(), DofusI18NPath));
+            IconsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusItemIconPath));
 
-            var maps = new D2PSource(new D2pFile(Path.Combine(GetDofusPath(), DofusMapsD2P)));
-            DataProvider.Instance.AddSource(maps);
 
-            var d2iSource = new D2ISource(Languages.English);
-            d2iSource.AddReaders(Path.Combine(GetDofusPath(), DofusI18NPath));
-            DataProvider.Instance.AddSource(d2iSource);
-
-            var itemIconSource = new ItemIconSource(Path.Combine(GetDofusPath(), DofusItemIconPath));
-            DataProvider.Instance.AddSource(itemIconSource);
 
             logger.Info("Starting redis server ...");
             RedisServerHost.Instance.ExecutablePath = RedisServerExe;
             RedisServerHost.Instance.StartOrFindProcess();
 
-            logger.Info("Loading {0}...", MapDataSource.MapsDataFile);
-            var mapdataSource = new MapDataSource();
-            var progression = mapdataSource.Initialize();
+            logger.Info("Loading {0}...", MapsManager.MapsDataFile);
+            var progression = MapsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusMapsD2P));
 
             if (progression != null)
             {
-                logger.Debug("Creating {0}...", MapDataSource.MapsDataFile);
+                logger.Debug("Creating {0}...", MapsManager.MapsDataFile);
                 while (!progression.IsEnded)
                 {
                     Thread.Sleep(500);
@@ -191,12 +182,8 @@ namespace BiM.Host
                 GC.Collect();
             }
 
-            DataProvider.Instance.AddSource(mapdataSource);
-
-            var submapSource = new SubMapDataSource();
-            // don't try this if you dont want to burn :)
             logger.Info("Loading submaps ...");
-            progression = submapSource.Initialize();
+            progression = SubMapsManager.Instance.Initialize();
 
             if (progression != null)
             {
@@ -213,7 +200,6 @@ namespace BiM.Host
                 GC.Collect();
             }
 
-            DataProvider.Instance.AddSource(submapSource);
 
             MITM = new MITM.MITM(new MITMConfiguration
                                      {
@@ -249,12 +235,7 @@ namespace BiM.Host
 
         public static void ChangeLanguage(Languages language)
         {
-            var source = DataProvider.Instance.Sources.OfType<D2ISource>().FirstOrDefault();
-
-            if (source != null)
-            {
-                source.DefaultLanguage = language;
-            }
+            I18NDataManager.Instance.DefaultLanguage = language;
 
             // todo : update the gui
         }

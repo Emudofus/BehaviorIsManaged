@@ -28,7 +28,7 @@ namespace BiM.Behaviors.Game.World.Areas
 
         public Area(int id)
         {
-            m_area = DataProvider.Instance.Get<Protocol.Data.Area>(id);
+            m_area = ObjectDataManager.Instance.Get<Protocol.Data.Area>(id);
             SuperArea = new SuperArea(SuperAreaId);
         }
 
@@ -44,7 +44,7 @@ namespace BiM.Behaviors.Game.World.Areas
 
         public string Name
         {
-            get { return DataProvider.Instance.Get<string>(NameId); }
+            get { return I18NDataManager.Instance.ReadText(NameId); }
         }
 
         public SuperArea SuperArea

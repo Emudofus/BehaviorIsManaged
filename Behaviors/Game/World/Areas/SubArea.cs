@@ -29,7 +29,7 @@ namespace BiM.Behaviors.Game.World.Areas
 
         public SubArea(int id)
         {
-            m_subArea = DataProvider.Instance.Get<Protocol.Data.SubArea>(id);
+            m_subArea = ObjectDataManager.Instance.Get<Protocol.Data.SubArea>(id);
             Area = new Area(AreaId);
         }
 
@@ -45,7 +45,7 @@ namespace BiM.Behaviors.Game.World.Areas
 
         public string Name
         {
-            get { return DataProvider.Instance.Get<string>(NameId); }
+            get { return I18NDataManager.Instance.ReadText(NameId); }
         }
 
         public int AreaId

@@ -43,7 +43,7 @@ namespace BiM.Behaviors.Game.Interactives
             if (map == null) throw new ArgumentNullException("map");
             if (interactive == null) throw new ArgumentNullException("interactive");
             Id = interactive.elementId;
-            Type = interactive.elementTypeId > 0 ? DataProvider.Instance.Get<Interactive>(interactive.elementTypeId) : null;
+            Type = interactive.elementTypeId > 0 ? ObjectDataManager.Instance.Get<Interactive>(interactive.elementTypeId) : null;
 
             Map = map;
 
@@ -78,7 +78,7 @@ namespace BiM.Behaviors.Game.Interactives
         {
             get
             {
-                return Type != null ? m_name ?? ( m_name = DataProvider.Instance.Get<string>(Type.nameId) ) : string.Empty;
+                return Type != null ? m_name ?? ( m_name = I18NDataManager.Instance.ReadText(Type.nameId) ) : string.Empty;
             }
         }
 
@@ -154,7 +154,7 @@ namespace BiM.Behaviors.Game.Interactives
         {
             if (interactive == null) throw new ArgumentNullException("interactive");
 
-            Type = interactive.elementTypeId > 0 ? DataProvider.Instance.Get<Interactive>(interactive.elementTypeId) : null;
+            Type = interactive.elementTypeId > 0 ? ObjectDataManager.Instance.Get<Interactive>(interactive.elementTypeId) : null;
             m_enabledSkills.Clear();
             foreach (var skill in interactive.enabledSkills)
             {

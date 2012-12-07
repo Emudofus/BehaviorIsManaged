@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// D2ISource.cs
+// I18NDataManager.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,22 +13,29 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using BiM.Core.Config;
 using BiM.Core.I18n;
-using BiM.Protocol.Data;
+using BiM.Core.Memory;
+using BiM.Core.Reflection;
 using BiM.Protocol.Tools;
 using NLog;
-using System.Diagnostics;
 
 namespace BiM.Behaviors.Data
 {
-    public class D2ISource : IDataSource
+    public class I18NDataManager : Singleton<I18NDataManager>
     {
-        const bool DelayLoading = true;
+        [Configurable("D2IDelayLoading")]
+        public static readonly bool DelayLoading = true;
+
         private static Logger logger = LogManager.GetCurrentClassLogger();
+        private WeakCollection<I18NString> m_links = new WeakCollection<I18NString>();
+        private Dictionary<Languages, D2IFile> m_readers = new Dictionary<Languages, D2IFile>();
         private static Dictionary<string, Languages> m_langsShortcuts = new Dictionary<string, Languages>()
         {
             {"fr", Languages.French},
@@ -42,44 +49,36 @@ namespace BiM.Behaviors.Data
             {"ru", Languages.Russish},
         };
 
-        public D2ISource(Languages defaultLanguage)
-        {
-            DefaultLanguage = defaultLanguage;
-        }
-
-        Languages _defaultLanguage;
+        Languages m_defaultLanguage;
         public Languages DefaultLanguage
         {
             get
             {
-                return _defaultLanguage;
+                return m_defaultLanguage;
             }
-            set 
+            set
             {
-                _defaultLanguage = value;
-                EnsureLanguageIsLoaded(_defaultLanguage);
+                m_defaultLanguage = value;
+                EnsureLanguageIsLoaded(m_defaultLanguage);
             }
         }
 
         private void EnsureLanguageIsLoaded(Languages language)
         {
             if (m_readers.ContainsKey(language)) return;
-            if (string.IsNullOrEmpty(_d2iPath)) return; // AddReaders not called yet
-            foreach (var d2iFile in Directory.EnumerateFiles(_d2iPath).Where(entry => entry.EndsWith(".d2i")).Where(path => GetLanguageOfFile(path)==language))                
+            if (string.IsNullOrEmpty(m_d2IPath)) return; // AddReaders not called yet
+            foreach (var d2iFile in Directory.EnumerateFiles(m_d2IPath).Where(entry => entry.EndsWith(".d2i")).Where(path => GetLanguageOfFile(path) == language))
             {
                 var reader = new D2IFile(d2iFile);
                 AddReader(reader, language);
             }
         }
-
-        private Dictionary<Languages, D2IFile> m_readers = new Dictionary<Languages, D2IFile>();
-
-        private string _d2iPath;
-        public void AddReaders(string directory, bool forceLoading=false)
+        private string m_d2IPath;
+        public void AddReaders(string directory, bool forceLoading = false)
         {
-            _d2iPath = directory;
+            m_d2IPath = directory;
             if (!DelayLoading || forceLoading)
-                foreach (string d2iFile in Directory.EnumerateFiles(directory).Where(entry => entry.EndsWith(".d2i")))                    
+                foreach (string d2iFile in Directory.EnumerateFiles(directory).Where(entry => entry.EndsWith(".d2i")))
                 {
                     var reader = new D2IFile(d2iFile);
 
@@ -87,9 +86,9 @@ namespace BiM.Behaviors.Data
                 }
         }
 
-        private Languages GetLanguageOfFile(string FilePath)
+        private Languages GetLanguageOfFile(string filePath)
         {
-            string file = Path.GetFileNameWithoutExtension(FilePath);
+            string file = Path.GetFileNameWithoutExtension(filePath);
 
             if (!file.Contains("_"))
                 throw new Exception(string.Format("Cannot found character '_' in file name {0}, cannot deduce the file lang", file));
@@ -115,51 +114,73 @@ namespace BiM.Behaviors.Data
             logger.Info("File added : {0}", Path.GetFileName(d2iFile.FilePath));
         }
 
-        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        public string ReadText(uint id, Languages? lang = null)
         {
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
-
-            var language = keys.Length == 1 ? (Languages)keys[0] : DefaultLanguage;
-
-            return m_readers[language].GetAllText().Values as IEnumerable<T>;
+            return ReadText((int)id);
         }
 
-        public bool DoesHandleType(Type type)
+        public string ReadText(int id, Languages? lang = null)
         {
-            return type == typeof(string);
+            if (lang != null)
+            {
+                EnsureLanguageIsLoaded(lang.Value);
+                return m_readers[lang.Value].GetText(id);
+            }
+
+            return m_readers[DefaultLanguage].GetText(id);
         }
 
-        public T ReadObject<T>(params object[] keys) where T : class
+        public string ReadText(string id, Languages? lang = null)
         {
-            if (keys.Length < 0 || keys.Length > 2 || (!( keys[0] is IConvertible)) || (keys.Length == 2 && !(keys[1] is Languages)) )
-                throw new ArgumentException("D2OSource needs a int key or a string key, use ReadObject(int) or ReadObject(string)." +
-                    "You can also specify a language ReadObject(int, Languages) or ReadObject(string, Languages)");
-
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
-
-            var language = keys.Length == 2 ? (Languages)keys[1] : DefaultLanguage;
-
-            if (keys[0] is string)
+            if (lang != null)
             {
-                string key = keys[0] as string;
-
-                if (!m_readers.ContainsKey(language))
-                    throw new Exception(string.Format("I18nFile for {0} is not found", language));
-
-                return m_readers[language].GetText(key) as T;
+                EnsureLanguageIsLoaded(lang.Value);
+                return m_readers[lang.Value].GetText(id);
             }
-            else
+
+            return m_readers[DefaultLanguage].GetText(id);
+        }
+
+        public I18NString GetTextLink(uint id, Languages? lang = null)
+        {
+            return GetTextLink((int)id);
+        }
+
+        public I18NString GetTextLink(int id, Languages? lang = null)
+        {
+            if (lang != null)
             {
-                int key = Convert.ToInt32(keys[0]);
-
-                if (!m_readers.ContainsKey(language))
-                    throw new Exception(string.Format("I18nFile for {0} is not found", language));
-
-                return m_readers[language].GetText(key) as T;
-
+                EnsureLanguageIsLoaded(lang.Value);
             }
-        } 
+
+            return new I18NString(id, this);
+        }
+
+        public I18NString GetTextLink(string id, Languages? lang = null)
+        {
+            if (lang != null)
+            {
+                EnsureLanguageIsLoaded(lang.Value);
+            }
+
+            return new I18NString(id, this);
+        }
+
+        public void ChangeLinksLanguage(Languages old, Languages @new)
+        {
+            foreach (var link in m_links.Where(x => x.Language == old))
+            {
+                // text refreshed when the language is changed
+                link.Language = @new;
+            }
+        }
+
+        public void RefreshLinks()
+        {
+            foreach (var link in m_links)
+            {
+                link.Refresh();
+            }
+        }
     }
 }

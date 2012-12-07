@@ -42,7 +42,7 @@ namespace BiM.Behaviors.Game.Effects
         public EffectBase(EffectBase effect)
         {
             Id = effect.Id;
-            m_template = DataProvider.Instance.Get<Effect>(effect.Id);
+            m_template = ObjectDataManager.Instance.Get<Effect>(effect.Id);
             Targets = effect.Targets;
             Delay = effect.Delay;
             Duration = effect.Duration;
@@ -59,7 +59,7 @@ namespace BiM.Behaviors.Game.Effects
         public EffectBase(short id, EffectBase effect)
         {
             Id = id;
-            m_template = DataProvider.Instance.Get<Effect>(id);
+            m_template = ObjectDataManager.Instance.Get<Effect>(id);
             Targets = effect.Targets;
             Delay = effect.Delay;
             Duration = effect.Duration;
@@ -76,7 +76,7 @@ namespace BiM.Behaviors.Game.Effects
         public EffectBase(short id, int targetId, int duration, int delay, int random, int group, int modificator, bool trigger, bool hidden, uint zoneSize, uint zoneShape, uint zoneMinSize)
         {
             Id = id;
-            m_template = DataProvider.Instance.Get<Effect>(id);
+            m_template = ObjectDataManager.Instance.Get<Effect>(id);
             Targets = (SpellTargetType) targetId;
             Delay = delay;
             Duration = duration;
@@ -97,7 +97,7 @@ namespace BiM.Behaviors.Game.Effects
             Id = effect.actionId;
             try
             {
-                m_template = DataProvider.Instance.Get<Effect>(Id);
+                m_template = ObjectDataManager.Instance.Get<Effect>(Id);
             }
             catch (Exception ex)
             {
@@ -109,7 +109,7 @@ namespace BiM.Behaviors.Game.Effects
         public EffectBase(EffectInstance effect)
         {
             Id = (short) effect.effectId;
-            m_template = DataProvider.Instance.Get<Effect>(effect.effectId);
+            m_template = ObjectDataManager.Instance.Get<Effect>(effect.effectId);
             Targets = (SpellTargetType) effect.targetId;
             Delay = effect.delay;
             Duration = effect.duration;
@@ -141,7 +141,7 @@ namespace BiM.Behaviors.Game.Effects
                 if (m_description != null)
                     return m_description;
 
-                var pattern = DataProvider.Instance.Get<string>(Template.descriptionId);
+                var pattern = I18NDataManager.Instance.ReadText(Template.descriptionId);
 
                 var decoder = new StringPatternDecoder(pattern, GetValues());
 

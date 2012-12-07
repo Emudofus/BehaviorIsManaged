@@ -132,7 +132,10 @@
     <Compile Include="Network\SocketAsyncEventArgsPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\ObjectDumper.cs" />
+    <Compile Include="Memory\SafeGCHandle.cs" />
     <Compile Include="Reflection\Singleton.cs" />
+    <Compile Include="Memory\WeakCollection.cs" />
+    <Compile Include="Memory\WeakReference.cs" />
     <Compile Include="Threading\SelfRunningTaskQueue.cs" />
     <Compile Include="Threading\SimplerTimer.cs" />
     <Compile Include="UI\HSVColorConverter.cs" />

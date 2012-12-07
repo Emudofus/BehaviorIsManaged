@@ -34,10 +34,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public Monster(MonsterInGroupLightInformations informations, EntityLook look)
         {
             Look = look;
-            m_monster = DataProvider.Instance.Get<Protocol.Data.Monster>(informations.creatureGenericId);
+            m_monster = ObjectDataManager.Instance.Get<Protocol.Data.Monster>(informations.creatureGenericId);
             m_monsterGrade = m_monster.grades[informations.grade - 1];
-            m_race = DataProvider.Instance.Get<MonsterRace>(m_monster.race);
-            m_superRace = DataProvider.Instance.Get<MonsterSuperRace>(m_race.superRaceId);
+            m_race = ObjectDataManager.Instance.Get<MonsterRace>(m_monster.race);
+            m_superRace = ObjectDataManager.Instance.Get<MonsterSuperRace>(m_race.superRaceId);
 
         }
 
@@ -74,7 +74,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public string Name
         {
-            get { return DataProvider.Instance.Get<string>(m_monster.nameId); }
+            get { return I18NDataManager.Instance.ReadText(m_monster.nameId); }
         }
 
         public bool IsBoss
@@ -84,7 +84,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public string RaceName
         {
-            get { return DataProvider.Instance.Get<string>(m_race.nameId); }
+            get { return I18NDataManager.Instance.ReadText(m_race.nameId); }
         }
 
         public bool IsArchMonster
@@ -94,7 +94,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public string SuperRaceName
         {
-            get { return DataProvider.Instance.Get<string>(m_superRace.nameId); }
+            get { return I18NDataManager.Instance.ReadText(m_superRace.nameId); }
         }
     }
 }

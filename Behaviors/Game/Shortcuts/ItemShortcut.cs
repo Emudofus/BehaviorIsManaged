@@ -26,7 +26,7 @@ namespace BiM.Behaviors.Game.Shortcuts
             : base(character, shortcut.slot)
         {
             Item = character.Inventory.GetItem(shortcut.itemUID);
-            Template = DataProvider.Instance.Get<Item>(shortcut.itemGID);
+            Template = ObjectDataManager.Instance.Get<Item>(shortcut.itemGID);
         }
 
         public Item Template
@@ -48,7 +48,7 @@ namespace BiM.Behaviors.Game.Shortcuts
             if (shortcut is ShortcutObjectItem)
             {
                 Item = Character.Inventory.GetItem(( shortcut as ShortcutObjectItem ).itemUID);
-                Template = DataProvider.Instance.Get<Item>(( shortcut as ShortcutObjectItem ).itemGID);
+                Template = ObjectDataManager.Instance.Get<Item>(( shortcut as ShortcutObjectItem ).itemGID);
             }
         }
     }

@@ -25,7 +25,7 @@ namespace BiM.Behaviors.Game.Shortcuts
         public EmoteShortcut(PlayedCharacter character, ShortcutEmote shortcut)
             : base(character, shortcut.slot)
         {
-            Emote = DataProvider.Instance.Get<Emoticon>(shortcut.emoteId);
+            Emote = ObjectDataManager.Instance.Get<Emoticon>(shortcut.emoteId);
         }
 
         public Emoticon Emote
@@ -39,7 +39,7 @@ namespace BiM.Behaviors.Game.Shortcuts
             base.Update(shortcut);
 
             if (shortcut is ShortcutEmote)
-                Emote = DataProvider.Instance.Get<Emoticon>((shortcut as ShortcutEmote).emoteId);
+                Emote = ObjectDataManager.Instance.Get<Emoticon>((shortcut as ShortcutEmote).emoteId);
         }
     }
 }

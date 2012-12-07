@@ -48,7 +48,7 @@ namespace BiM.Behaviors.Authentification
 
         public string Name
         {
-            get { return m_name ?? (m_name = DataProvider.Instance.Get<string>(Server.nameId)); }
+            get { return m_name ?? (m_name = I18NDataManager.Instance.ReadText(Server.nameId)); }
         }
 
         public ServerStatusEnum Status
@@ -90,7 +90,7 @@ namespace BiM.Behaviors.Authentification
             IsSelectable = server.isSelectable;
             CharactersCount = server.charactersCount;
             Date = server.date.UnixTimestampToDateTime();
-            Server = DataProvider.Instance.Get<Server>(server.id);
+            Server = ObjectDataManager.Instance.Get<Server>(server.id);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

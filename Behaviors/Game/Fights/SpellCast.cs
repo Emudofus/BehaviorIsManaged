@@ -39,8 +39,8 @@ namespace BiM.Behaviors.Game.Fights
             if (Caster == null)
                 logger.Error("Fighter {0} not found as he casted spell {1}", msg.sourceId, msg.spellId);
 
-            Spell = DataProvider.Instance.Get<Spell>(msg.spellId);
-            SpellLevel = DataProvider.Instance.Get<SpellLevel>((int)Spell.spellLevels[msg.spellLevel - 1]);
+            Spell = ObjectDataManager.Instance.Get<Spell>(msg.spellId);
+            SpellLevel = ObjectDataManager.Instance.Get<SpellLevel>((int)Spell.spellLevels[msg.spellLevel - 1]);
             Target = fight.Map.Cells[msg.destinationCellId];
             RoundCast = fight.Round;
             Critical = (FightSpellCastCriticalEnum) msg.critical;

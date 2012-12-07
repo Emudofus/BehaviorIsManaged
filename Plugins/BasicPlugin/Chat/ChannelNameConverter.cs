@@ -32,8 +32,8 @@ namespace BasicPlugin.Chat
             var channels = Enum.GetValues(typeof(ChatActivableChannelsEnum));
             foreach (ChatActivableChannelsEnum channel in channels)
             {
-                var data = DataProvider.Instance.Get<ChatChannel>((int)channel);
-                m_channelsNames.Add(channel, DataProvider.Instance.Get<string>(data.nameId));
+                var data = ObjectDataManager.Instance.Get<ChatChannel>((int)channel);
+                m_channelsNames.Add(channel, I18NDataManager.Instance.ReadText(data.nameId));
             }
         }
 
