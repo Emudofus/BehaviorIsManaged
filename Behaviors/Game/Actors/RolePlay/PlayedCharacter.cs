@@ -94,10 +94,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Id = informations.id;
             Level = informations.level;
             Name = informations.name;
-            Breed = new Breeds.Breed(DataProvider.Instance.Get<Breed>(informations.breed));
+            Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(informations.breed));
             Look = informations.entityLook;
             Sex = informations.sex;
-
+            
             Inventory = new Inventory(this);
             Stats = new Stats.PlayerStats(this);
             SpellsBook = new SpellsBook(this);
@@ -824,7 +824,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             m_emotes.Clear();
             foreach (var emoteId in msg.emoteIds)
             {
-                m_emotes.Add(DataProvider.Instance.Get<Emoticon>(emoteId));
+                m_emotes.Add(ObjectDataManager.Instance.Get<Emoticon>(emoteId));
             }
         }
 

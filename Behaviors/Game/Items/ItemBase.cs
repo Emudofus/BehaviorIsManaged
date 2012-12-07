@@ -15,7 +15,6 @@
 #endregion
 using System.ComponentModel;
 using BiM.Behaviors.Data;
-using BiM.Behaviors.Game.Items.Icons;
 using BiM.Protocol.Data;
 
 namespace BiM.Behaviors.Game.Items
@@ -25,11 +24,11 @@ namespace BiM.Behaviors.Game.Items
         private string m_description;
         private string m_name;
         private ItemType m_type;
-        private ItemIcon m_icon;
+        private Icon m_icon;
 
         protected ItemBase(int templateId)
         {
-            Template = DataProvider.Instance.Get<Protocol.Data.Item>(templateId);
+            Template = ObjectDataManager.Instance.Get<Protocol.Data.Item>(templateId);
         }
 
 
@@ -41,17 +40,17 @@ namespace BiM.Behaviors.Game.Items
 
         public ItemType Type
         {
-            get { return m_type ?? (m_type = DataProvider.Instance.Get<ItemType>(Template.typeId)); }
+            get { return m_type ?? (m_type = ObjectDataManager.Instance.Get<ItemType>(Template.typeId)); }
         }
 
         public string Name
         {
-            get { return m_name ?? (m_name = DataProvider.Instance.Get<string>(Template.nameId)); }
+            get { return m_name ?? (m_name = I18NDataManager.Instance.ReadText(Template.nameId)); }
         }
 
         public string Description
         {
-            get { return m_description ?? (m_description = DataProvider.Instance.Get<string>(Template.descriptionId)); }
+            get { return m_description ?? (m_description = I18NDataManager.Instance.ReadText(Template.descriptionId)); }
         }
 
         public ItemSuperTypeEnum SuperType
@@ -69,9 +68,9 @@ namespace BiM.Behaviors.Game.Items
             get { return Template.realWeight; }
         }
 
-        public ItemIcon Icon
+        public Icon Icon
         {
-            get { return m_icon ?? (m_icon = DataProvider.Instance.Get<ItemIcon>(Template.iconId)); }
+            get { return m_icon ?? (m_icon = IconsManager.Instance.GetIcon(Template.iconId)); }
         }
 
         #region INotifyPropertyChanged Members

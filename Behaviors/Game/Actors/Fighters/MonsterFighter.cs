@@ -38,7 +38,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Update(msg.disposition);
             Team = fight.GetTeam((FightTeamColor) msg.teamId);
             IsAlive = msg.alive;
-            MonsterTemplate = DataProvider.Instance.Get<Monster>(msg.creatureGenericId);
+            MonsterTemplate = ObjectDataManager.Instance.Get<Monster>(msg.creatureGenericId);
             MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
             Stats = new MinimalStats(msg.stats);
             Level = (int) MonsterGrade.level;
@@ -64,7 +64,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             get
             {
-                return m_name ?? (m_name = DataProvider.Instance.Get<string>(MonsterTemplate.nameId));
+                return m_name ?? (m_name = I18NDataManager.Instance.ReadText(MonsterTemplate.nameId));
             }
             protected set
             {
@@ -90,7 +90,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Look = msg.look;
             Update(msg.disposition);
             IsAlive = msg.alive;
-            MonsterTemplate = DataProvider.Instance.Get<Monster>(msg.creatureGenericId);
+            MonsterTemplate = ObjectDataManager.Instance.Get<Monster>(msg.creatureGenericId);
             MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
         }
 

@@ -44,7 +44,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Team = fight.GetTeam((FightTeamColor) msg.teamId);
             IsAlive = msg.alive;
             Alignment = new AlignmentInformations(msg.alignmentInfos);
-            Breed = new Breeds.Breed(DataProvider.Instance.Get<Breed>(msg.breed));
+            Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed));
             Stats = new MinimalStats(msg.stats);
             Summoned = msg.stats.summoned;
             if (Summoned)
@@ -85,7 +85,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Alignment = new AlignmentInformations(msg.alignmentInfos);
 
             if (Breed == null || Breed.Id != msg.breed)
-                Breed = new Breeds.Breed(DataProvider.Instance.Get<Breed>(msg.breed));
+                Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed));
 
             Stats.Update(msg.stats);
         }

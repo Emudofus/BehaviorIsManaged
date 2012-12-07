@@ -29,10 +29,10 @@ namespace BiM.Behaviors.Game.Interactives
         {
             Id = skill.skillInstanceUid;
             Interactive = interactive;
-            JobSkill = DataProvider.Instance.Get<Skill>(skill.skillId);
+            JobSkill = ObjectDataManager.Instance.Get<Skill>(skill.skillId);
 
             if (skill is InteractiveElementNamedSkill)
-                NameId = (int?) DataProvider.Instance.Get<SkillName>((skill as InteractiveElementNamedSkill).nameId).nameId;
+                NameId = (int?) ObjectDataManager.Instance.Get<SkillName>((skill as InteractiveElementNamedSkill).nameId).nameId;
         }
 
         public int Id
@@ -46,10 +46,10 @@ namespace BiM.Behaviors.Game.Interactives
             get
             {
                 if (NameId != null)
-                    return m_name ?? (m_name = DataProvider.Instance.Get<string>((int) NameId));
+                    return m_name ?? (m_name = I18NDataManager.Instance.ReadText((int) NameId));
 
                 else if (JobSkill != null)
-                    return m_templateName ?? (m_templateName = DataProvider.Instance.Get<string>(JobSkill.nameId));
+                    return m_templateName ?? (m_templateName = I18NDataManager.Instance.ReadText(JobSkill.nameId));
 
                 return string.Empty;
             }

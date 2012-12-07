@@ -27,7 +27,7 @@ namespace BiM.Behaviors.Game.Jobs
         public Job(PlayedCharacter owner, JobDescription job)
         {
             Owner = owner;
-            JobTemplate = DataProvider.Instance.Get<Protocol.Data.Job>(job.jobId);
+            JobTemplate = ObjectDataManager.Instance.Get<Protocol.Data.Job>(job.jobId);
         }
 
         public PlayedCharacter Owner
@@ -68,7 +68,7 @@ namespace BiM.Behaviors.Game.Jobs
 
         public string Name
         {
-            get { return m_name ?? (m_name = DataProvider.Instance.Get<string>(JobTemplate.nameId)); }
+            get { return m_name ?? (m_name = I18NDataManager.Instance.ReadText(JobTemplate.nameId)); }
         }
 
         public void Update(JobExperience experience)

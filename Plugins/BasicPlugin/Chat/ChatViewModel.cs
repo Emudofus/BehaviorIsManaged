@@ -72,8 +72,8 @@ namespace BasicPlugin.Chat
         };
 
 
-        private string m_wordFrom = DataProvider.Instance.Get<string>("ui.chat.from");
-        private string m_wordTo = DataProvider.Instance.Get<string>("ui.chat.to");
+        private string m_wordFrom = I18NDataManager.Instance.ReadText("ui.chat.from");
+        private string m_wordTo = I18NDataManager.Instance.ReadText("ui.chat.to");
 
         private int m_counter = 0;
 
@@ -395,8 +395,8 @@ namespace BasicPlugin.Chat
         [MessageHandler(typeof (TextInformationMessage))]
         public void HandleTextInformationMessage(Bot bot, TextInformationMessage message)
         {
-            var data = DataProvider.Instance.Get<InfoMessage>(message.msgType * 10000 + message.msgId);
-            var text = DataProvider.Instance.Get<string>(data.textId);
+            var data = ObjectDataManager.Instance.Get<InfoMessage>(message.msgType * 10000 + message.msgId);
+            var text = I18NDataManager.Instance.ReadText(data.textId);
 
             // todo : params
             for (int i = 0; i < message.parameters.Length; i++)

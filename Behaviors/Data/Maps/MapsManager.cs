@@ -1,6 +1,5 @@
 ﻿#region License GNU GPL
-
-// MapDataSource.cs
+// MapsManager.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,7 +12,6 @@
 // See the GNU General Public License for more details. 
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-
 #endregion
 
 using System;
@@ -22,28 +20,31 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using BiM.Behaviors.Data;
-using BiM.Behaviors.Messages;
+using BiM.Behaviors.Game.World;
+using BiM.Behaviors.Game.World.Data;
 using BiM.Core.Config;
-using BiM.Core.Messages;
+using BiM.Core.Reflection;
 using BiM.Core.UI;
 using BiM.Protocol.Data;
+using BiM.Protocol.Tools.D2p;
 using BiM.Protocol.Tools.Dlm;
 using NLog;
 using ProtoBuf;
 
-namespace BiM.Behaviors.Game.World.Data
+namespace BiM.Behaviors.Data
 {
-    public class MapDataSource : IDataSource
+    public class MapsManager : Singleton<MapsManager>
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private Dictionary<int, D2pEntry> m_entriesLinks = new Dictionary<int, D2pEntry>();
+        private D2pFile m_reader;
 
+        #region Map Data
         private const int HeaderSize = 14;
         public const ushort CurrentMapsFileVersion = 2;
 
         [Configurable("MapsDataFile")]
         public static readonly string MapsDataFile = "./maps.dat";
-
 
         private readonly ConcurrentDictionary<int, int> m_offsetsTable = new ConcurrentDictionary<int, int>();
         private ProgressionCounter m_progression;
@@ -53,52 +54,94 @@ namespace BiM.Behaviors.Game.World.Data
         private uint m_tableOffset;
         private uint m_length;
 
-        #region IDataSource Members
+        #endregion
 
-        public T ReadObject<T>(params object[] keys) where T : class
+        public int MapsCount
         {
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
+            get { return m_reader.Entries.Count(); }
+        }
 
-            if (keys.Length != 1)
-                throw new ArgumentException("keys.Length != 1");
+        public DlmMap GetDlmMap(int id, string decryptionKey)
+        {
+            // retrieve the bound entry to the key or find it in the d2p file
+            D2pEntry entry;
+            if (!m_entriesLinks.TryGetValue(id, out entry))
+            {
+                var idStr = id.ToString();
+                entry = m_reader.Entries.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x.FileName) == idStr);
 
-            int id = Convert.ToInt32(keys[0]);
+                if (entry == null)
+                    throw new ArgumentException(string.Format("Map id {0} not found", id));
 
+                m_entriesLinks.Add(id, entry);
+            }
+
+            // then retrieve the data source bound to the entry or create it
+            var dlmReader = new DlmReader(m_reader.ReadFile(entry));
+            dlmReader.DecryptionKey = decryptionKey;
+
+            return dlmReader.ReadMap();
+        }
+
+        public MapData GetMapData(int id)
+        {
             if (!m_offsetsTable.ContainsKey(id))
                 throw new Exception(string.Format("Map id {0} not found", id));
 
             var stream = File.OpenRead(MapsDataFile);
             stream.Seek(m_offsetsTable[id], SeekOrigin.Begin);
 
-            return Serializer.DeserializeWithLengthPrefix<MapData>(stream, PrefixStyle.Fixed32) as T;
+            return Serializer.DeserializeWithLengthPrefix<MapData>(stream, PrefixStyle.Fixed32);
         }
 
-        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        public IEnumerable<MapData> EnumerateMaps()
         {
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
-
             var stream = File.OpenRead(MapsDataFile);
             stream.Seek(HeaderSize, SeekOrigin.Begin);
 
             while (stream.Position < m_length + HeaderSize)
             {
-                yield return Serializer.DeserializeWithLengthPrefix<MapData>(stream, PrefixStyle.Fixed32) as T;
+                yield return Serializer.DeserializeWithLengthPrefix<MapData>(stream, PrefixStyle.Fixed32);
             }
 
             stream.Dispose();
         }
 
-        public bool DoesHandleType(Type type)
+
+        public IEnumerable<DlmMap> EnumerateClientMaps(string key)
         {
-            return type == typeof (MapData);
+
+            foreach (var entry in m_entriesLinks)
+            {
+                int id = int.Parse(Path.GetFileNameWithoutExtension(entry.Value.FileName));
+
+                // then retrieve the data source bound to the entry or create it
+                var dlmReader = new DlmReader(m_reader.ReadFile(entry.Value));
+                dlmReader.DecryptionKey = key;
+
+                yield return dlmReader.ReadMap();
+            }
         }
 
-        #endregion
-
-        public ProgressionCounter Initialize()
+        public IEnumerable<DlmMap> EnumerateClientMaps(DlmReader.KeyProvider decryptionKeyProvider)
         {
+
+            foreach (var entry in m_entriesLinks)
+            {
+                int id = int.Parse(Path.GetFileNameWithoutExtension(entry.Value.FileName));
+
+                // then retrieve the data source bound to the entry or create it
+                var dlmReader = new DlmReader(m_reader.ReadFile(entry.Value));
+                dlmReader.DecryptionKeyProvider = decryptionKeyProvider;
+
+                yield return dlmReader.ReadMap();
+            }
+        }
+
+        public ProgressionCounter Initialize(string d2pFile)
+        {
+            m_reader = new D2pFile(d2pFile);
+
             if (!File.Exists(MapsDataFile))
                 return BeginFileCreation();
 
@@ -114,7 +157,7 @@ namespace BiM.Behaviors.Game.World.Data
 
             if (m_fileVersion != CurrentMapsFileVersion)
             {
-                logger.Info("Maps.dat outdated (file version :{0}, expected version {1})", m_fileVersion, CurrentMapsFileVersion);
+                logger.Info("{0} outdated (file version :{1}, expected version {2})", MapsDataFile, m_fileVersion, CurrentMapsFileVersion);
                 reader.Dispose();
                 return BeginFileCreation();
             }
@@ -143,28 +186,28 @@ namespace BiM.Behaviors.Game.World.Data
             m_writer.Write(0); // table offset
             m_writer.Write(0); // total length
 
-            m_progression = new ProgressionCounter(CountMaps());
-            IEnumerable<DlmMap> maps = DataProvider.Instance.EnumerateAll<DlmMap>(Map.GenericDecryptionKey);
+            m_progression = new ProgressionCounter(MapsCount);
+            IEnumerable<DlmMap> maps = EnumerateClientMaps(Map.GenericDecryptionKey);
             int counter = 0;
             Task.Factory.StartNew(() =>
+            {
+                foreach (DlmMap map in maps)
                 {
-                    foreach (DlmMap map in maps)
-                    {
-                        var position = DataProvider.Instance.GetOrDefault<MapPosition>(map.Id);
-                        m_offsetsTable.TryAdd(map.Id, (int) m_writer.BaseStream.Position);
-                        Serializer.SerializeWithLengthPrefix(m_writer.BaseStream, new MapData(map, position), PrefixStyle.Fixed32);
+                    var position = ObjectDataManager.Instance.GetOrDefault<MapPosition>(map.Id);
+                    m_offsetsTable.TryAdd(map.Id, (int)m_writer.BaseStream.Position);
+                    Serializer.SerializeWithLengthPrefix(m_writer.BaseStream, new MapData(map, position), PrefixStyle.Fixed32);
 
-                        m_progression.UpdateValue(counter++);
-                    }
-                }).ContinueWith((task) => EndFileCreation());
+                    m_progression.UpdateValue(counter++);
+                }
+            }).ContinueWith((task) => EndFileCreation());
 
             return m_progression;
         }
 
         private void EndFileCreation()
         {
-            m_tableOffset = (uint) m_writer.BaseStream.Position;
-            m_length = (uint) (m_writer.BaseStream.Position - HeaderSize); // substracts the header
+            m_tableOffset = (uint)m_writer.BaseStream.Position;
+            m_length = (uint)( m_writer.BaseStream.Position - HeaderSize ); // substracts the header
 
             foreach (var entry in m_offsetsTable)
             {
@@ -184,15 +227,5 @@ namespace BiM.Behaviors.Game.World.Data
             m_progression.NotifyEnded();
         }
 
-        private int CountMaps()
-        {
-            D2PSource source = DataProvider.Instance.Sources.OfType<D2PSource>().
-                FirstOrDefault(x => x.Reader != null && x.Reader.FileName.Contains("maps"));
-
-            if (source != null)
-                return source.Reader.Entries.Count();
-
-            return 0;
-        }
     }
 }

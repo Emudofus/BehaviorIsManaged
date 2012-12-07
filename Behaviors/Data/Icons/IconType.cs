@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// ItemIcon.cs
+// IconType.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,39 +13,10 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System.IO;
-using System.Windows.Media.Imaging;
-
-namespace BiM.Behaviors.Game.Items.Icons
+namespace BiM.Behaviors.Data
 {
-    public class ItemIcon
+    public enum IconType
     {
-        public ItemIcon(int id, string name, byte[] data)
-        {
-            Id = id;
-            Name = name;
-            Image = new BitmapImage();
-            Image.BeginInit();
-            Image.StreamSource = new MemoryStream(data);
-            Image.EndInit();
-        }
-
-        public int Id
-        {
-            get;
-            private set;
-        }
-
-        public string Name
-        {
-            get;
-            private set;
-        }
-
-        public BitmapImage Image
-        {
-            get;
-            private set;
-        }
+        Item 
     }
 }

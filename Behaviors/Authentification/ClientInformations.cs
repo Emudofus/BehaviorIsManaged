@@ -293,7 +293,7 @@ namespace BiM.Behaviors.Authentification
         public void Update(SelectedServerDataMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            SelectedServer = Singleton<DataProvider>.Instance.Get<Server>(msg.serverId);
+            SelectedServer = ObjectDataManager.Instance.Get<Server>(msg.serverId);
             ConnectionTicket = msg.ticket;
             ServerAddress = msg.address;
             ServerPort = msg.port;

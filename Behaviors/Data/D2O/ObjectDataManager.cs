@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// D2OSource.cs
+// ObjectDataManager.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,22 +13,26 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BiM.Protocol.Data;
+using BiM.Core.Reflection;
 using BiM.Protocol.Tools;
 using NLog;
 
 namespace BiM.Behaviors.Data
 {
-    public class D2OSource : IDataSource
+    /// <summary>
+    /// Retrieves D2O objects. Thread safe
+    /// </summary>
+    public class ObjectDataManager : Singleton<ObjectDataManager>
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         private Dictionary<Type, D2OReader> m_readers = new Dictionary<Type, D2OReader>();
-        private List<Type> m_ignoredTyes = new List<Type>(); 
+        private List<Type> m_ignoredTyes = new List<Type>();
 
         public void AddReaders(string directory)
         {
@@ -65,46 +69,50 @@ namespace BiM.Behaviors.Data
 
         }
 
-        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        public T Get<T>(uint key)
+            where T : class
         {
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
+            return Get<T>((int)key);
+        }
 
+        public T Get<T>(int key)
+            where T : class
+        {
             if (!m_readers.ContainsKey(typeof(T)))
                 throw new ArgumentException("Cannot find data corresponding to type : " + typeof(T));
 
             var reader = m_readers[typeof(T)];
 
-            foreach (var index in reader.Indexes)
-            {
-                var obj = reader.ReadObject(index.Key, false);
+            return reader.ReadObject<T>(key, true);
+        }
 
-                if (obj is T)
-                    yield return obj as T;
+        public T GetOrDefault<T>(uint key)
+            where T : class
+        {
+            return GetOrDefault<T>((int)key);
+        }
+
+        public T GetOrDefault<T>(int key)
+            where T : class
+        {
+            try
+            {
+                return Get<T>(key);
+            }
+            catch
+            {
+                return null;
             }
         }
 
-        public bool DoesHandleType(Type type)
+        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
         {
-            return m_readers.ContainsKey(type);
-        }
-
-        public T ReadObject<T>(params object[] keys) where T : class
-        {
-            if (keys.Length != 1 || !( keys[0] is IConvertible ))
-                throw new ArgumentException("D2OSource needs a int key, use ReadObject(int)");
-
-            if (!DoesHandleType(typeof(T)))
-                throw new ArgumentException("typeof(T)");
-
-            int id = Convert.ToInt32(keys[0]);
-
             if (!m_readers.ContainsKey(typeof(T)))
                 throw new ArgumentException("Cannot find data corresponding to type : " + typeof(T));
 
             var reader = m_readers[typeof(T)];
 
-            return reader.ReadObject<T>(id);
+            return reader.Indexes.Select(index => reader.ReadObject(index.Key, true)).OfType<T>().Select(obj => obj);
         }
     }
 }

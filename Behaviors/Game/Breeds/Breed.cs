@@ -28,10 +28,10 @@ namespace BiM.Behaviors.Game.Breeds
         {
             if (breed == null) throw new ArgumentNullException("breed");
             Id = breed.id;
-            ShortName = DataProvider.Instance.Get<string>(breed.shortNameId);
-            LongName = DataProvider.Instance.Get<string>(breed.longNameId);
-            Description = DataProvider.Instance.Get<string>(breed.descriptionId);
-            GameplayDescription = DataProvider.Instance.Get<string>(breed.gameplayDescriptionId);
+            ShortName = I18NDataManager.Instance.ReadText(breed.shortNameId);
+            LongName = I18NDataManager.Instance.ReadText(breed.longNameId);
+            Description = I18NDataManager.Instance.ReadText(breed.descriptionId);
+            GameplayDescription = I18NDataManager.Instance.ReadText(breed.gameplayDescriptionId);
             MaleLook = breed.maleLook;
             FemaleLook = breed.femaleLook;
             CreatureBonesId = breed.creatureBonesId;

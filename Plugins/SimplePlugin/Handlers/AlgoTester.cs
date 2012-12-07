@@ -41,7 +41,7 @@ namespace SimplePlugin.Handlers
                 bot.Character.ResetCellsHighlight();
 
                 var sw = Stopwatch.StartNew();
-                var submaps = DataProvider.Instance.Get<SerializableSubMap[]>(bot.Character.Map.Id);
+                var submaps = SubMapsManager.Instance.GetMapSubMaps(bot.Character.Map.Id);
                 sw.Stop();
                 bot.Character.SendMessage(string.Format("{0}ms", sw.ElapsedMilliseconds));
 

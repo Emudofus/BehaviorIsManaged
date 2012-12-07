@@ -103,8 +103,8 @@ namespace BiM.Behaviors.Game.World
         public Map(int id, string decryptionKey)
         {
             // decryption key not used ? oO
-            m_map = DataProvider.Instance.Get<DlmMap>(id, GenericDecryptionKey);
-            m_position = DataProvider.Instance.GetOrDefault<MapPosition>(id);
+            m_map = MapsManager.Instance.GetDlmMap(id, GenericDecryptionKey);
+            m_position = ObjectDataManager.Instance.GetOrDefault<MapPosition>(id);
             IEnumerable<Cell> cells = m_map.Cells.Select(entry => new Cell(this, entry));
             m_cells = new CellList(cells.ToArray());
 
@@ -116,7 +116,7 @@ namespace BiM.Behaviors.Game.World
 
         private Map(MapData map)
         {
-            m_position = DataProvider.Instance.GetOrDefault<MapPosition>(map.Id);
+            m_position = ObjectDataManager.Instance.GetOrDefault<MapPosition>( map.Id );
             IEnumerable<Cell> cells = map.Cells.Select(entry => new Cell(this, entry));
             m_cells = new CellList(cells.ToArray());
         }
@@ -511,7 +511,7 @@ namespace BiM.Behaviors.Game.World
             get { if (m_position == null)
                 return string.Empty;
                 
-                return m_name ?? (m_name = DataProvider.Instance.Get<string>(m_position.nameId)); }
+                return m_name ?? (m_name = I18NDataManager.Instance.ReadText(m_position.nameId)); }
         }
 
         public int WorldMap
