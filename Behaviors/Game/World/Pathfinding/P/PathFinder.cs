@@ -97,6 +97,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.P
             }
         }
 
+
+
         /// <summary>
         /// PathFinding main method
         /// </summary>

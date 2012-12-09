@@ -455,7 +455,7 @@ namespace BasicPlugin.Chat
         {
             base.OnAttached();
 
-            var settings = Bot.Settings.GetEntry<BasicPluginSettings>();
+            var settings = Bot.Settings.GetOrAddEntry<BasicPluginSettings>();
 
             m_floodEntries = new ObservableCollection<FloodEntry>(settings.FloodEntries);
             m_readOnlyFloodEntries = new ReadOnlyObservableCollection<FloodEntry>(m_floodEntries);
@@ -471,7 +471,7 @@ namespace BasicPlugin.Chat
         {
             base.OnDetached();
 
-            var settings = Bot.Settings.GetEntry<BasicPluginSettings>();
+            var settings = Bot.Settings.GetOrAddEntry<BasicPluginSettings>();
 
             settings.FloodEntries = FloodEntries.ToArray();
 
