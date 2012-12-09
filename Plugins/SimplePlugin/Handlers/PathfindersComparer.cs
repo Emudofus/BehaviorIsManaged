@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
+
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
@@ -21,7 +23,9 @@ using BiM.Behaviors;
 using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Movements;
+using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
+using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Network;
@@ -58,15 +62,44 @@ namespace SimplePlugin.Handlers
 
             var clientPath = Path.BuildFromClientCompressedPath(bot.Character.Map, message.keyMovements);
 
-
+            /*
             var pathfinder = new Pathfinder(bot.Character.Map, bot.Character.Map);
             var botPath = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
 
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client
             bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), botPath.Cells.Select(entry => entry.Id).ToArray()));
             bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
-
+            
             message.keyMovements = botPath.GetClientPathKeys();
+             */
+
+            var sw = Stopwatch.StartNew();
+            for (int i = 0; i < 100; i++)
+            {
+                var p1 = new PathFinder(bot.Character.Map, false);
+                p1.FindPath(bot.Character.Cell.Id, clientPath.End.Id);
+            }
+            sw.Stop();
+            bot.Character.SendMessage(string.Format("FF : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
+
+            sw = Stopwatch.StartNew();
+            for (int i = 0; i < 100; i++)
+            {
+
+                var p2 = new BiM.Behaviors.Game.World.Pathfinding.P.PathFinder(bot.Character.Map, false);
+                p2.FindPath(new[] { bot.Character.Cell }, new[] { clientPath.End });
+            }
+            sw.Stop();
+
+            sw = Stopwatch.StartNew();
+            for (int i = 0; i < 100; i++)
+            {
+                var pathfinder = new Pathfinder(bot.Character.Map, bot.Character.Map);
+                var botPath = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
+            }
+            sw.Stop();
+
+            bot.Character.SendMessage(string.Format("New : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
         }
 
         [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
