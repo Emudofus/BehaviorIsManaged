@@ -45,7 +45,7 @@ namespace SimplePlugin.Handlers
         {
             if (!m_messageSent)
             {
-                var settings = bot.Settings.GetEntry<Settings>();
+                var settings = bot.Settings.GetOrAddEntry<Settings>();
 
                 bot.Character.SendMessage(settings.WelcomeMessage);
 
