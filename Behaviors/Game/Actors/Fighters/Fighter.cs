@@ -253,15 +253,15 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
     internal void UpdateHP(Protocol.Messages.GameActionFightLifePointsLostMessage message)
     {
-      if (this is PlayedFighter)
-        logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health - message.loss);
+      //if (this is PlayedFighter)
+      //  logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health - message.loss);
       Stats.UpdateHP(-message.loss);
     }
 
     internal void UpdateHP(Protocol.Messages.GameActionFightLifePointsGainMessage message)
     {
-      if (this is PlayedFighter)
-        logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health + message.delta);
+      //if (this is PlayedFighter)
+      //  logger.Debug("HP of {0} : {1} => {2}", Name, Stats.Health, Stats.Health + message.delta);
       Stats.UpdateHP(message.delta);
     }
 

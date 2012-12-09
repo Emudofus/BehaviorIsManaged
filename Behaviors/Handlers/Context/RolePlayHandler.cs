@@ -36,13 +36,13 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof(MapComplementaryInformationsDataMessage))]
         public void HandleMapComplementaryInformationsDataMessage(Bot bot, MapComplementaryInformationsDataMessage message)
         {
-            bot.Character.Map.Update(message);
+            bot.Character.Map.Update(bot, message);
         }
 
         [MessageHandler(typeof (GameRolePlayShowActorMessage))]
         public void HandleGameRolePlayShowActorMessage(Bot bot, GameRolePlayShowActorMessage message)
         {
-            bot.Character.Map.AddActor(message.informations);
+            bot.Character.Map.AddActor(bot, message.informations);
         }
 
         [MessageHandler(typeof (InteractiveElementUpdatedMessage))]

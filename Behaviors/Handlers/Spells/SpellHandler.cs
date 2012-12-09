@@ -38,7 +38,7 @@ namespace BiM.Behaviors.Handlers.Spells
         } */
 
         [MessageHandler(typeof(GameActionFightSpellCastMessage))]
-        public void HandleGameActionFightSpellCastMessage(Bot bot, GameActionFightSpellCastMessage message)
+        public static void HandleGameActionFightSpellCastMessage(Bot bot, GameActionFightSpellCastMessage message)
         {
             if (bot == null || bot.Character == null || bot.Character.Fight == null)
             {

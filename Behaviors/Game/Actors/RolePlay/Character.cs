@@ -49,5 +49,10 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             protected set;
         }
 
+        public override string ToString()
+        {
+            return String.Format("{0} [{1}]", Name,  Cell);
+        }
+
     }
 }

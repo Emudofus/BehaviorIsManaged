@@ -87,6 +87,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public PlayedCharacter(Bot bot, CharacterBaseInformations informations)
         {
+            InformationLevel = MessageLevel.All;// MessageLevel.Warning | MessageLevel.Error;
+
             if (informations == null) throw new ArgumentNullException("informations");
 
             Bot = bot;
@@ -494,6 +496,53 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         }
 
+
+        #region Messages
+        public MessageLevel InformationLevel {get; set;}
+
+        [FlagsAttribute]
+        public enum MessageLevel : byte
+        {
+            Information = 1,
+            Debug = 2,
+            Warning = 4,
+            Error = 8,
+            All = 15,
+            None = 0
+        }
+
+        public void SendInformation(string message, params object[] pars)
+        {
+            if ((InformationLevel & MessageLevel.Information) > 0)
+            {
+                SendMessage(String.Format(message, pars), Color.Green);
+            }
+        }
+
+        public void SendDebug(string message, params object[] pars)
+        {
+            if ((InformationLevel & MessageLevel.Debug) > 0)
+            {
+                SendMessage(String.Format(message, pars), Color.Gray);
+            }
+        }
+
+        public void SendWarning(string message, params object[] pars)
+        {
+            if ((InformationLevel & MessageLevel.Warning) > 0)
+            {
+                SendMessage(String.Format(message, pars), Color.Orange);
+            }
+        }
+
+        public void SendError(string message, params object[] pars)
+        {
+            if ((InformationLevel & MessageLevel.Error) > 0)
+            {
+                SendMessage(String.Format(message, pars), Color.Red);
+            }
+        }
+
         /// <summary>
         /// Send a message to the client's chat
         /// </summary>
@@ -511,6 +560,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             SendMessage(string.Format("<font color=\"#{0}\">{1}</font>", color.ToArgb().ToString("X"), message));
         }
+        #endregion
 
         public void OpenPopup(string message)
         {

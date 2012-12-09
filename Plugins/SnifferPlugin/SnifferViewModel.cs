@@ -33,6 +33,7 @@ using BiM.Host.UI;
 using BiM.Host.UI.Helpers;
 using BiM.Host.UI.ViewModels;
 using Microsoft.Win32;
+using BiM.Core.Config;
 
 namespace SnifferPlugin
 {
@@ -48,17 +49,23 @@ namespace SnifferPlugin
     public class SnifferViewModel : Frame<SnifferViewModel>, IViewModel<SnifferView>
     {
         #region Recording On The Fly
-        public const string OnTheFlyFileName = "OnTheFly.csv";
+        [Configurable("OnTheFlyFileName", "The name of the file used to record the messages on the fly. {0} is replaced by the name of the PC, {1} by the date.")]
+        public static string OnTheFlyFileName = "{1} - {0} OnTheFly.csv";
         private void FlushOnTheFly(string lastMessage)
         {
-            File.AppendAllText(OnTheFlyFileName, lastMessage);
+
+            File.AppendAllText(OnTheFlyFileName.Replace("{0}", Bot.Character == null ? "Bot" : Bot.Character.Name).Replace("{1}", DateTime.Today.ToString("yyMMdd")), lastMessage);
         }
         #endregion
 
-        /// <summary>
-        /// This says how message to keep in memory. The older will be removed as new messages come over this quantity 
-        /// </summary>
-        public const int NbMessagesToKeep = 1000;
+        [Configurable("NbMessagesToKeep", "This says how message to keep in memory. The older will be removed as new messages come over this quantity.")]
+        public static int NbMessagesToKeep = 1000;
+
+        [Configurable("DefaultPaused", "If true, the sniffer will be paused by default at start.")]
+        public static bool DefaultPaused = false;
+
+        [Configurable("DefaultRecordOnTheFly", "If true, the sniffer will record on the fly by default at start.")]
+        public static bool DefaultRecordOnTheFly = true;
 
         private readonly ObservableCollectionMT<ObjectDumpNode> m_messages;
         private readonly ReadOnlyObservableCollectionMT<ObjectDumpNode> m_readOnlyMessages;
@@ -72,6 +79,8 @@ namespace SnifferPlugin
         {
             m_messages = new ObservableCollectionMT<ObjectDumpNode>();
             m_readOnlyMessages = new ReadOnlyObservableCollectionMT<ObjectDumpNode>(m_messages);
+            IsPaused = DefaultPaused;
+            OnTheFly = DefaultRecordOnTheFly;
         }
 
         public ReadOnlyObservableCollection<ObjectDumpNode> Messages
