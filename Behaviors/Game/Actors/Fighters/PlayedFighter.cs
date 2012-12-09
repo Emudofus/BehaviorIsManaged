@@ -204,7 +204,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// Try to move to the targeted Cell (truncate the path if the player hasn't enough MP)
         /// </summary>
         /// <param name="cell">Targeted cell</param>
-        public bool Move(Cell cell, ISimplePathFinder pathFinder=null, int minDistance = 0)
+        public bool Move(Cell cell, IAdvancedPathFinder pathFinder = null, int minDistance = 0)
         {
             return Move(cell, Stats.CurrentMP, pathFinder, minDistance);
         }
@@ -215,7 +215,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// <param name="cell">Targeted cell</param>
         /// <param name="mp">MP to use</param>
         /// <returns>False if cannot move</returns>
-        public bool Move(Cell cell, int mp, ISimplePathFinder pathFinder=null, int minDistance = 0)
+        public bool Move(Cell cell, int mp, IAdvancedPathFinder pathFinder = null, int minDistance = 0)
         {
             if (!IsPlaying())
                 return false;
@@ -226,15 +226,9 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             }
 
             if (pathFinder == null)
-                if (minDistance == 0)
-                    pathFinder = new Pathfinder(Map, Map);
-                else
                     pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
             Path path = null;
-            if (pathFinder is IAdvancedPathFinder)
-                path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance);
-            else
-                path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp);
+            path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance);
             
             return Move(path);
 
@@ -255,7 +249,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             //Character.SendMessage(String.Format("Move {0} => {1} ({3} PM): {2}", Cell, cell, String.Join<Cell>(",", path.Cells), mp));
             //Character.ResetCellsHighlight();
             //Character.HighlightCells(path.Cells, Color.YellowGreen);
-            if (path.IsEmpty())
+            if (path == null || path.IsEmpty())
             {
                 Character.SendMessage("Empty path skipped", Color.Red);
                 return false;

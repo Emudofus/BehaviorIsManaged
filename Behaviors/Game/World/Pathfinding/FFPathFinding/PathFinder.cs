@@ -131,11 +131,11 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         /// <param name="filter">You can set here any filter on CellInfos, like criteria on distance from startingCell</param>
         /// <param name="sorter">You tell here how you want the cells to be sorted</param>
         /// <returns></returns>
-        public IEnumerable<Cell> FindConnectedCells(Cell startingCell, bool inFight, bool cautious, FilterCells filter = null, OrderingCells sorter = null)
+        public IEnumerable<Cell> FindConnectedCells(Cell startingCell, bool inFight, bool cautious, FilterCells filter = null, OrderingCells sorter = null, int maxDistance = CellInfo.DEFAULT_DISTANCE)
         {
             _isCautious = cautious;
             _isInFight = inFight;
-            FindPath(new short[] { startingCell.Id }, null, false, true); // Only 1st step
+            FindPath(new short[] { startingCell.Id }, null, false, true, maxDistance); // Only 1st step
             var set1 = _cells.Where(cell => cell.DistanceSteps < CellInfo.DEFAULT_DISTANCE);
             var count1 = set1.Count();
             var set2 = set1.Where(cell => filter == null || filter(cell));
@@ -240,7 +240,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         /// <param name="selectFartherCells"></param>
         /// <param name="firstStepOnly"></param>
         /// <returns></returns>
-        public bool FindPath(short[] startingCells, short[] exitCells, bool selectFartherCells = false, bool firstStepOnly = false)
+        public bool FindPath(short[] startingCells, short[] exitCells, bool selectFartherCells = false, bool firstStepOnly = false, int maxDistanceParam = CellInfo.DEFAULT_DISTANCE)
         {
             Random rnd = new Random();
             ClearLogic(startingCells, exitCells);
@@ -263,33 +263,34 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                     }
                 }
             //    cells[StartingCell].distanceSteps = 0;
-            int maxDistance = CellInfo.DEFAULT_DISTANCE;
+            int maxDistance = maxDistanceParam; // We don't search over this distance
 
             while (changed.Count > 0)
             {
                 changing = new List<CellInfo>();
                 // Look at each square on the board.
                 foreach (CellInfo curCell in changed)
-                {
-                    Debug.Assert((curCell != null && curCell.DistanceSteps < CellInfo.DEFAULT_DISTANCE));
-
-                    foreach (CellInfo newCell in ValidMoves(curCell, false))
+                    if (curCell.DistanceSteps < maxDistance)
                     {
-                        int newPass = curCell.DistanceSteps;
-                        if (_isInFight)
-                            newPass++;
-                        else
-                            newPass += newCell.IsDiagonal ? (int)(newCell.Weight * 1.414) : newCell.Weight;
+                        Debug.Assert((curCell != null && curCell.DistanceSteps < CellInfo.DEFAULT_DISTANCE));
 
-                        if (newCell.DistanceSteps > newPass)
+                        foreach (CellInfo newCell in ValidMoves(curCell, false))
                         {
-                            newCell.DistanceSteps = newPass;
-                            changing.Add(newCell);
-                            if (!firstStepOnly && !selectFartherCells && exitCells.Any(id => newCell.CellId == id))
-                                maxDistance = newPass;
+                            int newPass = curCell.DistanceSteps;
+                            if (_isInFight)
+                                newPass++;
+                            else
+                                newPass += newCell.IsDiagonal ? (int)(newCell.Weight * 1.414) : newCell.Weight;
+
+                            if (newCell.DistanceSteps > newPass)
+                            {
+                                newCell.DistanceSteps = newPass;
+                                changing.Add(newCell);
+                                if (!firstStepOnly && !selectFartherCells && exitCells.Any(id => newCell.CellId == id) && newPass<maxDistance)
+                                    maxDistance = newPass;  // We don't search on distance over closest exit
+                            }
                         }
                     }
-                }
                 changed = changing;
             }
 

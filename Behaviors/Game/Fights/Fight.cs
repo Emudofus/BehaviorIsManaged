@@ -531,5 +531,11 @@ namespace BiM.Behaviors.Game.Fights
             if (CurrentPlayer != null && CurrentPlayer.Id == message.authorId)
                 CurrentPlayer.NotifySequenceEnded();
         }
+
+        internal void Update(GameActionFightDeathMessage message)
+        {
+           // Process
+
+        }
     }
 }

@@ -25,6 +25,7 @@ using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using NLog;
+using BiM.Behaviors.Game.Actors.Fighters;
 
 namespace BiM.Behaviors.Handlers.Context
 {
@@ -73,6 +74,23 @@ namespace BiM.Behaviors.Handlers.Context
         return;
 
       bot.Character.NotifyStopMoving(true, true);
+    }
+
+    [MessageHandler(typeof(GameActionFightSlideMessage))]
+    public static void HandleGameActionFightSlideMessage(Bot bot, GameActionFightSlideMessage message)
+    {
+        if (!bot.Character.IsFighting() || bot.Character.Fight==null)
+        {
+            logger.Error("GameActionFightSlideMessage has no sense out of a fight");
+            return;
+        }
+        Fighter actor = bot.Character.Fight.GetActor(message.targetId);
+        if (actor==null)
+        {
+            logger.Error("Actor {0} is not known.", message.targetId);
+            return;
+        }
+        actor.SetPos(message.endCellId);
     }
 
     [MessageHandler(typeof(GameMapMovementMessage))]

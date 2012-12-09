@@ -26,6 +26,7 @@ using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Network;
 using BiM.Protocol.Messages;
+using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 
 namespace SimplePlugin.Handlers
 {
@@ -36,6 +37,7 @@ namespace SimplePlugin.Handlers
         {
             if (message.content.StartsWith(".compare pathfinder"))
             {
+                message.BlockNetworkSend();
                 if (bot.HasFrame<PathfindersComparer>())
                     bot.RemoveFrame<PathfindersComparer>();
                 else
@@ -60,13 +62,27 @@ namespace SimplePlugin.Handlers
 
 
             var pathfinder = new Pathfinder(bot.Character.Map, bot.Character.Map);
-            var botPath = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
+            var FFpathfinder = new PathFinder(bot.Character.Map, false);
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
+            Path botPath1= null, botPath2;
+            stopwatch.Start();
+            for(int i=0; i<100; i++)
+                botPath1 = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
+            stopwatch.Stop();
+            bot.Character.SendWarning("Dofus-like PathFinder x 100 = {0}", stopwatch.Elapsed.ToString("ss\\.fff"));
+            stopwatch.Start();
+            for (int i = 0; i < 100; i++)
+                FFpathfinder.FindPath(bot.Character.Cell.Id, clientPath.End.Id);
+            stopwatch.Stop();
+            bot.Character.SendWarning("FF PathFinder x 100 = {0}", stopwatch.Elapsed.ToString("ss\\.fff"));
+            botPath2 = new Path(bot.Character.Map, FFpathfinder.GetLastPathUnpacked(0).Select(id => bot.Character.Map.Cells[id]));
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client
-            bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), botPath.Cells.Select(entry => entry.Id).ToArray()));
-            bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
-
-            message.keyMovements = botPath.GetClientPathKeys();
+            bot.Character.HighlightCells(botPath2.Cells, Color.Green);
+            bot.Character.HighlightCells(botPath1.Cells, Color.Red);
+            bot.Character.HighlightCells(clientPath.Cells, Color.Blue);
+            
+            message.keyMovements = botPath1.GetClientPathKeys();
         }
 
         [MessageHandler(typeof (CharacterSelectedSuccessMessage))]

@@ -66,10 +66,31 @@ namespace BiM.Behaviors.Game.Spells
                 Debug.Assert(targetCount <= LevelTemplate.maxCastPerTarget);
             }
             Debug.Assert(_nbCastAllowed > 0 || LevelTemplate.maxCastPerTurn <= 0);
-            _nbTurnToWait = (uint) LevelTemplate.minCastInterval;
+            if (LevelTemplate.minCastInterval > 0)
+                _nbTurnToWait = (uint) LevelTemplate.minCastInterval + 1;
 
             if (_nbCastAllowed > 0)
                 _nbCastAllowed--;
+        }
+
+        public string AvailabilityExplainString(int? idTarget)
+        {
+            string res = string.Empty;
+            if (LevelTemplate.minCastInterval != 0 ||  _nbTurnToWait != 0)
+                res += string.Format("turns to wait : {0}/{1}, ", _nbTurnToWait, LevelTemplate.minCastInterval);
+            if (_nbCastAllowed != 0 || LevelTemplate.maxCastPerTurn != 0)
+                res += string.Format("cast allowed : {0}/{1}, ", _nbCastAllowed, LevelTemplate.maxCastPerTurn);
+            if (idTarget != null && LevelTemplate.maxCastPerTarget != 0)
+            {
+                int targetCount = 0;
+                if (!_targeted.TryGetValue(idTarget.Value, out targetCount))
+                    targetCount = 0;
+                res += string.Format("cast allowed on target {2}: {0}/{1}, ", targetCount, LevelTemplate.maxCastPerTarget, idTarget);
+            }
+            return res;
+            //private uint _nbCastAllowed;
+            //private uint _nbTurnToWait;
+            
         }
 
         public bool IsAvailable(int? idTarget, Spells.Spell.SpellCategory? category=null)
