@@ -74,9 +74,10 @@ namespace SimplePlugin.Handlers
              */
 
             var sw = Stopwatch.StartNew();
+            PathFinder p1 = null;
             for (int i = 0; i < 100; i++)
             {
-                var p1 = new PathFinder(bot.Character.Map, false);
+                p1 = new PathFinder(bot.Character.Map, false);
                 p1.FindPath(bot.Character.Cell.Id, clientPath.End.Id);
             }
             sw.Stop();
@@ -90,6 +91,7 @@ namespace SimplePlugin.Handlers
                 p2.FindPath(new[] { bot.Character.Cell }, new[] { clientPath.End });
             }
             sw.Stop();
+            bot.Character.SendMessage(string.Format("New : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
 
             sw = Stopwatch.StartNew();
             for (int i = 0; i < 100; i++)
@@ -99,7 +101,9 @@ namespace SimplePlugin.Handlers
             }
             sw.Stop();
 
-            bot.Character.SendMessage(string.Format("New : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
+            bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), p1.PathResult.ToArray()));
+            bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
+            bot.Character.SendMessage(string.Format("Old : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
         }
 
         [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
