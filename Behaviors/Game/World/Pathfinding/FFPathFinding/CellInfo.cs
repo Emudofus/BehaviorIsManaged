@@ -27,18 +27,21 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         public const int NB_CELL = 560;
         public const short CELL_ERROR = -1;
         public const int DEFAULT_DISTANCE = 999;
+
         //public static readonly Color DefaultColor = Color.Green;
         //public static readonly Color PathColor = Color.LightGreen;
         //public static readonly Color ForestColor = Color.Brown;
         public int Weight { get; set; }
         public const int MaxWeight = 50;
         public const int DefaultWeight = 5;
-        private int _distanceSteps = DEFAULT_DISTANCE;
-        public int DistanceSteps { get { return _distanceSteps; } set { Debug.Assert(value >= 0); _distanceSteps = value; } }
         public byte SubMapId { get; set; } // 0 = undefined
         public Cell Cell { get; set; }
+        
+        // Tmp data, used dirung Path Finding
+        public int DistanceSteps { get; set; }
+        public bool? IsOpen { get; set; }
         public bool IsDiagonal { get; set; } // Used to put an higher price on diagonals in PathFinding algorithm 
-
+        
         public CellInfo()
         {
             X = -1;
@@ -89,14 +92,25 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 
         static public short CellIdFromPos(int x, int y)
         {
-            int LowPart = (y + (x - y) / 2);
             int HighPart = x - y;
-            if (LowPart < 0 || LowPart >= MAP_SIZE) return CELL_ERROR;
             if (HighPart < 0 || HighPart > 39) return CELL_ERROR;
+            int LowPart = (y + HighPart / 2);
+            if (LowPart < 0 || LowPart >= MAP_SIZE) return CELL_ERROR;
             int result = HighPart * MAP_SIZE + LowPart;
             if (result >= NB_CELL || result < 0) return CELL_ERROR;
-            return (short)((x - y) * MAP_SIZE + y + (x - y) / 2);
+            return (short)result;
         }
+
+        static public short YFromId(short cellId)
+        {
+            return (short)((cellId % 14) - (cellId - cellId % 28) / 28); // OK            
+        }
+
+        static public short XFromId(short cellId)
+        {
+            return (short)(0.5 + cellId / 14.5 + (YFromId(cellId)) * 13.5 / 14.5);
+        }
+
 
         public short GetNeighbourCell(int dx, int dy)
         {
@@ -137,6 +151,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         public bool AllowLOS { get; set; }
         //public Color color { get; set; }
         public byte MapLink { get; set; }
+
+        public short[] Neighbours { get; set; }
+        
         //public int gfxCount { get; set; }
         //public uint firstGfx { get; set; }
         private int _speed;

@@ -65,22 +65,23 @@ namespace SimplePlugin.Handlers
             var FFpathfinder = new PathFinder(bot.Character.Map, false);
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
-            Path botPath1= null, botPath2;
+            Path botPath1 = null, botPath2 = null;
             stopwatch.Start();
             for(int i=0; i<100; i++)
                 botPath1 = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
             stopwatch.Stop();
             bot.Character.SendWarning("Dofus-like PathFinder x 100 = {0}", stopwatch.Elapsed.ToString("ss\\.fff"));
+            stopwatch.Reset();
             stopwatch.Start();
             for (int i = 0; i < 100; i++)
-                FFpathfinder.FindPath(bot.Character.Cell.Id, clientPath.End.Id);
+                botPath2 = ((ISimplePathFinder)FFpathfinder).FindPath(bot.Character.Cell, clientPath.End, true);
             stopwatch.Stop();
             bot.Character.SendWarning("FF PathFinder x 100 = {0}", stopwatch.Elapsed.ToString("ss\\.fff"));
-            botPath2 = new Path(bot.Character.Map, FFpathfinder.GetLastPathUnpacked(0).Select(id => bot.Character.Map.Cells[id]));
+            //botPath2 = new Path(bot.Character.Map, FFpathfinder.GetLastPathUnpacked(0).Select(id => bot.Character.Map.Cells[id]));
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client
-            bot.Character.HighlightCells(botPath2.Cells, Color.Green);
             bot.Character.HighlightCells(botPath1.Cells, Color.Red);
             bot.Character.HighlightCells(clientPath.Cells, Color.Blue);
+            bot.Character.HighlightCells(botPath2.Cells, Color.Green);
             
             message.keyMovements = botPath1.GetClientPathKeys();
         }
