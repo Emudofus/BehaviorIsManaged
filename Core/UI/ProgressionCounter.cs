@@ -31,6 +31,11 @@ namespace BiM.Core.UI
 
         public double EpsilonComparaison = 0.1;
 
+        public ProgressionCounter()
+        {
+            
+        }
+
         public ProgressionCounter(int total)
         {
             Total = total;   

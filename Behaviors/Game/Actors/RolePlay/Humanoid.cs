@@ -16,6 +16,7 @@
 using System;
 using System.Collections.ObjectModel;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.Movements;
 using BiM.Core.Collections;
 using BiM.Protocol.Data;

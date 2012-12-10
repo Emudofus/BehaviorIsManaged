@@ -16,6 +16,8 @@
 using System;
 using System.ComponentModel;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
 using BiM.Core.Extensions;
 using BiM.Protocol.Data;
 using BiM.Protocol.Enums;

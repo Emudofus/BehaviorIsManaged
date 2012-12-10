@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Game.Stats;
 
 namespace BiM.Behaviors.Game.Breeds

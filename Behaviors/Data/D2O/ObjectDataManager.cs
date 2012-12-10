@@ -22,7 +22,7 @@ using BiM.Core.Reflection;
 using BiM.Protocol.Tools;
 using NLog;
 
-namespace BiM.Behaviors.Data
+namespace BiM.Behaviors.Data.D2O
 {
     /// <summary>
     /// Retrieves D2O objects. Thread safe
@@ -105,7 +105,7 @@ namespace BiM.Behaviors.Data
             }
         }
 
-        public IEnumerable<T> EnumerateObjects<T>(params object[] keys) where T : class
+        public IEnumerable<T> EnumerateObjects<T>() where T : class
         {
             if (!m_readers.ContainsKey(typeof(T)))
                 throw new ArgumentException("Cannot find data corresponding to type : " + typeof(T));

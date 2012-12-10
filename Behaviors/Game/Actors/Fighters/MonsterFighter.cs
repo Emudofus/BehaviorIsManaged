@@ -15,6 +15,8 @@
 #endregion
 using System;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Stats;
 using BiM.Behaviors.Game.World;

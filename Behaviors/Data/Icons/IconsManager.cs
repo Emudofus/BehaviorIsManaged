@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using BiM.Core.Reflection;
 using BiM.Protocol.Tools.D2p;
 
-namespace BiM.Behaviors.Data
+namespace BiM.Behaviors.Data.Icons
 {
     public class IconsManager : Singleton<IconsManager>
     {

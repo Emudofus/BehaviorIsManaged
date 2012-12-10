@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Alignement;
 using BiM.Behaviors.Game.Fights;

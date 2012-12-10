@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Data;
 using BiM.Core.Config;
@@ -31,7 +32,7 @@ using BiM.Protocol.Tools.Dlm;
 using NLog;
 using ProtoBuf;
 
-namespace BiM.Behaviors.Data
+namespace BiM.Behaviors.Data.Maps
 {
     public class MapsManager : Singleton<MapsManager>
     {

@@ -24,6 +24,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using BiM.Behaviors;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
+using BiM.Behaviors.Data.Icons;
+using BiM.Behaviors.Data.Maps;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.MapTraveling.Storage;
@@ -33,6 +37,7 @@ using BiM.Core.Database;
 using BiM.Core.I18n;
 using BiM.Core.Machine;
 using BiM.Core.Messages;
+using BiM.Core.UI;
 using BiM.Host.Plugins;
 using BiM.MITM;
 using BiM.Protocol.Data;
@@ -169,36 +174,18 @@ namespace BiM.Host
 
             logger.Info("Loading {0}...", MapsManager.MapsDataFile);
             var progression = MapsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusMapsD2P));
-
             if (progression != null)
-            {
-                logger.Debug("Creating {0}...", MapsManager.MapsDataFile);
-                while (!progression.IsEnded)
-                {
-                    Thread.Sleep(500);
-                    logger.Debug("{0}/{1} Mem:{2}MB", progression.Value, progression.Total, GC.GetTotalMemory(false) / ( 1024 * 1024 ));
-                }
+                ExecuteProgress(progression);
 
-                GC.Collect();
-            }
+            logger.Info("Loading maps positions ...");
+            progression = MapsPositionManager.Instance.Initialize();
+            if (progression != null)
+                ExecuteProgress(progression);
 
             logger.Info("Loading submaps ...");
             progression = SubMapsManager.Instance.Initialize();
-
             if (progression != null)
-            {
-                double lastValue = progression.Value;
-                while (!progression.IsEnded)
-                {
-                    Thread.Sleep(1000);
-                    if (Math.Abs(lastValue - progression.Value) > 0.1)
-                        logger.Debug("{0} : {1:0.0}/{2}% Mem:{3}MB", progression.Text,  progression.Value, progression.Total, GC.GetTotalMemory(false) / ( 1024 * 1024 ));
-
-                    lastValue = progression.Value;
-                }
-
-                GC.Collect();
-            }
+                ExecuteProgress(progression);
 
 
             MITM = new MITM.MITM(new MITMConfiguration
@@ -231,6 +218,21 @@ namespace BiM.Host
             msg.Wait();
 
             Initialized = true;
+        }
+
+        private static void ExecuteProgress(ProgressionCounter progression, int refreshRate = 500)
+        {
+            double lastValue = progression.Value;
+            while (!progression.IsEnded)
+            {
+                Thread.Sleep(refreshRate);
+                if (Math.Abs(lastValue - progression.Value) > 0.1)
+                    logger.Debug("{0} : {1:0.0}/{2} Mem:{3}MB", progression.Text, progression.Value, progression.Total, GC.GetTotalMemory(false) / ( 1024 * 1024 ));
+
+                lastValue = progression.Value;
+            }
+
+            GC.Collect();
         }
 
         public static void ChangeLanguage(Languages language)

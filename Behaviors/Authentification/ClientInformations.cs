@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
 using BiM.Core.Extensions;
 using BiM.Core.Reflection;
 using BiM.Protocol.Data;

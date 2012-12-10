@@ -110,7 +110,7 @@ namespace BiM.Core.Database
             {
                 client.Ping();
             }
-            catch (RedisException)
+            catch (Exception)
             {
                 return false;
             }

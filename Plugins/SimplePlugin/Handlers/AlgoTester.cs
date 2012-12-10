@@ -21,6 +21,7 @@ using System.Drawing;
 using System.Linq;
 using BiM.Behaviors;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.Maps;
 using BiM.Behaviors.Game.Chat;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.MapTraveling;

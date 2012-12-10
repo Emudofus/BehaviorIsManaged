@@ -24,6 +24,8 @@ using System.Windows.Media;
 using AvalonDock.Layout;
 using BiM.Behaviors;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;

@@ -95,7 +95,9 @@
     <Compile Include="Authentification\ClientInformations.cs" />
     <Compile Include="Data\Maps\MapsManager.cs" />
     <Compile Include="Data\D2O\ObjectDataManager.cs" />
+    <Compile Include="Data\Maps\MapsPositionManager.cs" />
     <Compile Include="Data\Maps\SubMapsManager.cs" />
+    <Compile Include="Data\RedisDataManager.cs" />
     <Compile Include="DisplayState.cs" />
     <Compile Include="Frames\Frame.cs" />
     <Compile Include="Frames\IFrame.cs" />
@@ -217,6 +219,7 @@
     <Compile Include="Game\Actors\RolePlay\GroupMonster.cs" />
     <Compile Include="Game\World\Data\CellData.cs" />
     <Compile Include="Game\World\Data\CellDataList.cs" />
+    <Compile Include="Game\World\Data\MapPositionData.cs" />
     <Compile Include="Game\World\ICell.cs" />
     <Compile Include="Game\World\IMap.cs" />
     <Compile Include="Game\World\ICellList.cs" />

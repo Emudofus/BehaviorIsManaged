@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// Icon.cs
+// RedisDataManager.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -14,39 +14,25 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
-using System.IO;
-using System.Windows.Media.Imaging;
+using BiM.Core.Reflection;
+using ServiceStack.Redis;
+using ServiceStack.Redis.Generic;
 
-namespace BiM.Behaviors.Data.Icons
+namespace BiM.Behaviors.Data
 {
-    public class Icon
+    public abstract class RedisDataManager<T> : Singleton<T> 
+        where T : class
     {
-        public Icon(int id, string name, byte[] data)
+        private readonly PooledRedisClientManager m_clientManager = new PooledRedisClientManager("localhost");
+
+        protected PooledRedisClientManager ClientManager
         {
-            Id = id;
-            Name = name;
-            Image = new BitmapImage();
-            Image.BeginInit();
-            Image.StreamSource = new MemoryStream(data);
-            Image.EndInit();
+            get { return m_clientManager; }
         }
 
-        public int Id
+        protected IRedisClient GetClient()
         {
-            get;
-            private set;
-        }
-
-        public string Name
-        {
-            get;
-            private set;
-        }
-
-        public BitmapImage Image
-        {
-            get;
-            private set;
+            return m_clientManager.GetClient();
         }
     }
 }
