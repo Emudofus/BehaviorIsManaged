@@ -255,8 +255,6 @@
     <Compile Include="Game\World\Areas\SubArea.cs" />
     <Compile Include="Game\World\Areas\SuperArea.cs" />
     <Compile Include="Game\World\Areas\WorldMap.cs" />
-    <Compile Include="Game\World\Pathfinding\P\PathFinder.cs" />
-    <Compile Include="Game\World\Pathfinding\P\PathNode.cs" />
     <Compile Include="Handlers\Basics\BasicHandler.cs" />
     <Compile Include="Handlers\Characters\CharacterHandler.cs" />
     <Compile Include="Handlers\Chat\ChatHandler.cs" />

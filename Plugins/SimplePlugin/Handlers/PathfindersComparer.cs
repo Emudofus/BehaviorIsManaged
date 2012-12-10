@@ -64,66 +64,36 @@ namespace SimplePlugin.Handlers
 
             var clientPath = Path.BuildFromClientCompressedPath(bot.Character.Map, message.keyMovements);
 
-            /*
+            
             var pathfinder = new Pathfinder(bot.Character.Map, bot.Character.Map);
             var FFpathfinder = new PathFinder(bot.Character.Map, false);
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            var stopwatch = new Stopwatch();
 
-            Path botPath1= null, botPath2;
+            Path botPath1 = null, botPath2 = null;
             stopwatch.Start();
             for(int i=0; i<100; i++)
                 botPath1 = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
             stopwatch.Stop();
+
             bot.Character.SendWarning("Dofus-like PathFinder x 100 = {0}", stopwatch.Elapsed.ToString("ss\\.fff"));
+
+            stopwatch.Reset();
             stopwatch.Start();
             for (int i = 0; i < 100; i++)
-                FFpathfinder.FindPath(bot.Character.Cell.Id, clientPath.End.Id);
+                botPath2 = ((ISimplePathFinder)FFpathfinder).FindPath(bot.Character.Cell, clientPath.End, true);
             stopwatch.Stop();
+
             bot.Character.SendWarning("FF PathFinder x 100 = {0}", stopwatch.Elapsed.ToString("ss\\.fff"));
-            botPath2 = new Path(bot.Character.Map, FFpathfinder.GetLastPathUnpacked(0).Select(id => bot.Character.Map.Cells[id]));
+            //botPath2 = new Path(bot.Character.Map, FFpathfinder.GetLastPathUnpacked(0).Select(id => bot.Character.Map.Cells[id]));
             // if you see red cells it means the pathfinder is wrong and don't get the same path as the client
-            bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), botPath.Cells.Select(entry => entry.Id).ToArray()));
-            bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
              
-            bot.Character.HighlightCells(botPath2.Cells, Color.Green);
             bot.Character.HighlightCells(botPath1.Cells, Color.Red);
             bot.Character.HighlightCells(clientPath.Cells, Color.Blue);
+            bot.Character.HighlightCells(botPath2.Cells, Color.Green);
             
             
             message.keyMovements = botPath1.GetClientPathKeys();
-             */
-
-            var sw = Stopwatch.StartNew();
-            PathFinder p1 = null;
-            for (int i = 0; i < 100; i++)
-            {
-                p1 = new PathFinder(bot.Character.Map, false);
-                p1.FindPath(bot.Character.Cell.Id, clientPath.End.Id);
-            }
-            sw.Stop();
-            bot.Character.SendMessage(string.Format("FF : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
-
-            sw = Stopwatch.StartNew();
-            for (int i = 0; i < 100; i++)
-            {
-
-                var p2 = new BiM.Behaviors.Game.World.Pathfinding.P.PathFinder(bot.Character.Map, false);
-                p2.FindPath(new[] { bot.Character.Cell }, new[] { clientPath.End });
-            }
-            sw.Stop();
-            bot.Character.SendMessage(string.Format("New : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
-
-            sw = Stopwatch.StartNew();
-            for (int i = 0; i < 100; i++)
-            {
-                var pathfinder = new Pathfinder(bot.Character.Map, bot.Character.Map);
-                var botPath = pathfinder.FindPath(bot.Character.Cell, clientPath.End, true);
-            }
-            sw.Stop();
-
-            bot.SendToClient(new DebugHighlightCellsMessage(Color.Red.ToArgb(), p1.PathResult.ToArray()));
-            bot.SendToClient(new DebugHighlightCellsMessage(Color.Blue.ToArgb(), clientPath.Cells.Select(entry => entry.Id).ToArray()));
-            bot.Character.SendMessage(string.Format("Old : {0}ms {1}ticks", sw.ElapsedMilliseconds, sw.ElapsedTicks));
+             
         }
 
         [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
