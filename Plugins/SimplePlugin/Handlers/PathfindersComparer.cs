@@ -30,7 +30,6 @@ using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Network;
 using BiM.Protocol.Messages;
-using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 
 namespace SimplePlugin.Handlers
 {
