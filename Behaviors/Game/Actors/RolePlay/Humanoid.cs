@@ -40,15 +40,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Update(human);
         }
 
-        protected Humanoid(HumanWithGuildInformations human)                         
-            : this((HumanInformations)human)
-        {
-            GuildInformations = new GuildInformations(human.guildInformations);
-        }
+        private ObservableCollectionMT<IndexedEntityLook> m_followingCharactersLook = new ObservableCollectionMT<IndexedEntityLook>();
 
-        private ObservableCollectionMT<EntityLook> m_followingCharactersLook = new ObservableCollectionMT<EntityLook>();
-
-        public ObservableCollectionMT<EntityLook> FollowingCharactersLook
+        public ObservableCollectionMT<IndexedEntityLook> FollowingCharactersLook
         {
             get
             {
@@ -104,15 +98,41 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public void Update(HumanInformations human)
         {
-            m_followingCharactersLook = new ObservableCollectionMT<EntityLook>(human.followingCharactersLook);
-            Emote = human.emoteId > 0 ?
-                ObjectDataManager.Instance.Get<Emoticon>(human.emoteId) : null;
-            EmoteStartTime = human.emoteStartTime > 0 ?
-                new DateTime?(human.emoteStartTime.UnixTimestampToDateTime()) : null;
+            foreach (var option in human.options)
+            {
+                HandleOption(option);
+            }
             Restrictions = human.restrictions;
-            Title = human.titleId > 0 ?
-                ObjectDataManager.Instance.Get<Title>(human.titleId) : null;
-            TitleParam = human.titleParam;
+        }
+
+        private void HandleOption(HumanOption option)
+        {
+            if (option is HumanOptionEmote)
+            {
+                var emote = (HumanOptionEmote)option;
+                Emote = emote.emoteId > 0 ? ObjectDataManager.Instance.Get<Emoticon>(emote.emoteId) : null;
+                EmoteStartTime = emote.emoteStartTime > 0 ? new DateTime?(emote.emoteStartTime.UnixTimestampToDateTime()) : null;
+            }
+            else if (option is HumanOptionFollowers)
+            {
+                m_followingCharactersLook = new ObservableCollectionMT<IndexedEntityLook>(( (HumanOptionFollowers)option ).followingCharactersLook);
+            }
+            else if (option is HumanOptionGuild)
+            {
+                // todo : guild
+            }
+            else if (option is HumanOptionOrnament)
+            {
+                 // todo
+            }
+            else if (option is HumanOptionTitle)
+            {
+                // todo
+            }
+            else
+            {
+                throw new Exception(string.Format("Unattempt HumanOption type {0}", option.GetType()));
+            }
         }
 
         public override void Dispose()

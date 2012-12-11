@@ -15,16 +15,19 @@
 #endregion
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using BiM.Behaviors;
 using BiM.Behaviors.Authentification;
+using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Frames;
 using BiM.Core.Cryptography;
 using BiM.Core.Messages;
 using BiM.Host.UI;
 using BiM.Host.UI.Helpers;
 using BiM.Host.UI.ViewModels;
+using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 
@@ -99,6 +102,8 @@ namespace BasicPlugin.CharacterSelection
         private CharacterCreationData m_characterCreationData;
         private DelegateCommand m_createCharacterCommand;
 
+        private Head[] m_heads;
+
         public DelegateCommand CreateCharacterCommand
         {
             get { return m_createCharacterCommand ?? (m_createCharacterCommand = new DelegateCommand(OnCreateCharacter, CanCreateCharacter)); }
@@ -126,6 +131,9 @@ namespace BasicPlugin.CharacterSelection
 
             if (m_characterCreationDialog.ShowDialog() == true)
             {
+                if (m_heads == null)
+                    m_heads = ObjectDataManager.Instance.EnumerateObjects<Head>().ToArray();
+
                 int[] colors = new int[5];
                 colors[0] = m_characterCreationData.Color1Used ? ColorToInt(m_characterCreationData.Color1) : -1;
                 colors[1] = m_characterCreationData.Color2Used ? ColorToInt(m_characterCreationData.Color2) : -1;
@@ -134,7 +142,7 @@ namespace BasicPlugin.CharacterSelection
                 colors[4] = m_characterCreationData.Color5Used ? ColorToInt(m_characterCreationData.Color5) : -1;
 
                 Bot.SendToServer(new CharacterCreationRequestMessage(m_characterCreationData.CharacterName, (sbyte)m_characterCreationData.Breed,
-                    m_characterCreationData.Sex == SexTypeEnum.SEX_FEMALE, colors));
+                    m_characterCreationData.Sex == SexTypeEnum.SEX_FEMALE, colors, m_heads.First(x => x.breed == (uint) m_characterCreationData.Breed).id));
             }
         }
 

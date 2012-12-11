@@ -46,12 +46,6 @@ namespace BiM.Behaviors.Authentification
             set;
         }
 
-        public string Login
-        {
-            get;
-            set;
-        }
-
         public sbyte[] Credentials
         {
             get;
@@ -249,7 +243,6 @@ namespace BiM.Behaviors.Authentification
             if (msg == null) throw new ArgumentNullException("msg");
             Version = msg.version;
             Lang = msg.lang;
-            Login = msg.login.ToLower(); // always ToLower() for login
             Credentials = msg.credentials.ToArray();
         }
 

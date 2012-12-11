@@ -47,7 +47,7 @@ namespace BiM.Host
                     AccountPlaceHolder, CharacterPlaceHolder));
             }
 
-            var settingsPath = SettingsFile.Replace(AccountPlaceHolder, bot.ClientInformations.Login).
+            var settingsPath = SettingsFile.Replace(AccountPlaceHolder, bot.ClientInformations.Nickname).
                 Replace(CharacterPlaceHolder, bot.Character.Name);
 
             bot.LoadSettings(settingsPath);

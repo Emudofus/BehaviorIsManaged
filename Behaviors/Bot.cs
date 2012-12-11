@@ -384,8 +384,8 @@ namespace BiM.Behaviors
             if (Character != null && !string.IsNullOrEmpty(Character.Name))
                 return Character.Name;
 
-            if (ClientInformations != null && !string.IsNullOrEmpty(ClientInformations.Login))
-                return ClientInformations.Login;
+            if (ClientInformations != null && !string.IsNullOrEmpty(ClientInformations.Nickname))
+                return ClientInformations.Nickname;
 
             return "Bot";
         }
