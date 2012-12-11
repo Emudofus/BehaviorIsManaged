@@ -83,7 +83,7 @@ namespace BiM.Behaviors.Game.Spells
             if (idTarget != null && LevelTemplate.maxCastPerTarget != 0)
             {
                 int targetCount = 0;
-                if (!_targeted.TryGetValue(idTarget.Value, out targetCount))
+                if (_targeted!=null && !_targeted.TryGetValue(idTarget.Value, out targetCount))
                     targetCount = 0;
                 res += string.Format("cast allowed on target {2}: {0}/{1}, ", targetCount, LevelTemplate.maxCastPerTarget, idTarget);
             }
@@ -102,12 +102,12 @@ namespace BiM.Behaviors.Game.Spells
             if (LevelTemplate.maxCastPerTurn > 0 && _nbCastAllowed == 0) 
                 return false;
 
-            // No restriction per target => available
-            if (LevelTemplate.maxCastPerTarget <= 0 || _nbCastAllowed > 0) return true;
-
             if (!HasCategory(category)) 
                 return false;
 
+            // No restriction per target => available
+            if (LevelTemplate.maxCastPerTarget <= 0 || _nbCastAllowed > 0) return true;
+            
             // No target identified
             if (idTarget == null) return true;
 

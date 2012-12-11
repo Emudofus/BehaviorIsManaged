@@ -23,11 +23,19 @@ using System.Text;
 using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.World;
 using BiM.Core.Config;
+using BiM.Behaviors.Game.Stats;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public partial class PlayedFighter
     {
+        public int SummonedCount { get; set; }
+        public bool CanSummon()
+        {
+            return (Stats as PlayerStats).SummonLimit > SummonedCount;
+        }
+        private List<int> SummonedActors = new List<int>();
+
         [Configurable("DefaultRecordOnTheFly", "If true, the sniffer will record on the fly by default at start.")]
         public static bool DefaultRecordOnTheFly = true;
 
@@ -46,6 +54,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
         public IEnumerable<Spells.Spell> GetOrderListOfInvocationSpells()
         {
+            //Character.SendDebug("Sorted invocs : {0}", String.Join(",", Character.SpellsBook.GetOrderListOfSimpleBoostSpells(Character, Spell.SpellCategory.Invocation, false)));
             return Character.SpellsBook.GetOrderListOfSimpleBoostSpells(Character, Spell.SpellCategory.Invocation, false).
                 Where(spell => CanCastSpell(spell, (Cell)null, true) && spell.LevelTemplate.needFreeCell);
         }
@@ -80,6 +89,39 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         internal void Update(Protocol.Messages.GameActionFightNoSpellCastMessage message)
         {
             NotifyAck(true);
+        }
+
+
+        internal void Update(Protocol.Messages.GameFightSynchronizeMessage msg)
+        {
+            SummonedCount = 0;
+            SummonedActors.Clear();
+            foreach (var info in msg.fighters)
+                if (info.stats.summoned && info.stats.summoner == this.Id && info.alive)
+                    if (!SummonedActors.Contains(info.contextualId))
+                    {
+                        SummonedCount++;
+                        SummonedActors.Add(info.contextualId);
+                    }
+        }
+
+        internal void Update(Protocol.Messages.GameActionFightSummonMessage message)
+        {
+            if (message.summon.stats.summoned && message.summon.stats.summoner == Id)
+                if (!SummonedActors.Contains(message.summon.contextualId))
+                {
+                    SummonedCount++;
+                    SummonedActors.Add(message.summon.contextualId);
+                }            
+        }
+
+        internal void SummonUpdate(Protocol.Messages.GameActionFightDeathMessage message)
+        {
+            if (SummonedActors.Contains(message.targetId))
+            {
+                SummonedActors.Remove(message.targetId);
+                SummonedCount--;
+            }
         }
     }
 }

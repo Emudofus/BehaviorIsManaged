@@ -180,7 +180,7 @@ namespace BiM.Behaviors.Handlers.Context
                 logger.Error("Fight is not properly initialized.");
                 return; // Can't handle the message
             }
-            bot.Character.Fight.Update(message);
+            bot.Character.Fight.Update(bot, message);
         }
 
         [MessageHandler(typeof(GameFightNewRoundMessage))]
@@ -272,6 +272,8 @@ namespace BiM.Behaviors.Handlers.Context
                 return; // Can't handle the message
             }
             bot.Character.Fight.AddActor(message.summon);
+            if (bot.Character.Fighter != null)
+                bot.Character.Fighter.Update(message);
         }
 
         #region stats update
@@ -367,7 +369,7 @@ namespace BiM.Behaviors.Handlers.Context
                 logger.Error("Fight is not properly initialized.");
                 return; // Can't handle the message
             }
-            bot.Character.Fight.Update(message);            
+            bot.Character.Fight.Update(bot, message);            
         }
 
         #endregion stats update

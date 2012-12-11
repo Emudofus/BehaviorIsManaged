@@ -153,7 +153,7 @@ namespace BiM.Behaviors.Game.Spells
         
         public IEnumerable<Spell> GetOrderListOfSimpleBoostSpells(PlayedCharacter caster, Spell.SpellCategory category, bool canBeUsedOnCaster)
         {
-            return m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(caster.Id, category) && (!canBeUsedOnCaster || spell.LevelTemplate.minRange == 0)).OrderBy(spell => spell.Level).ThenBy(spell => spell.LevelTemplate.minPlayerLevel);
+            return m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(caster.Id, category) && (!canBeUsedOnCaster || spell.LevelTemplate.minRange == 0)).OrderByDescending(spell => spell.Level).ThenByDescending(spell => spell.LevelTemplate.minPlayerLevel);
         }
 
         public IEnumerable<Spell> GetOrderedAttackSpells(PlayedCharacter caster, Fighter target, Spell.SpellCategory? category = null)

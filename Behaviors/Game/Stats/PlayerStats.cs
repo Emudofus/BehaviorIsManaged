@@ -320,6 +320,11 @@ namespace BiM.Behaviors.Game.Stats
       get { return this[PlayerField.DodgeMPProbability].Total; }
     }
 
+        public int SummonLimit
+        {
+            get { return this[PlayerField.SummonLimit].Total; }
+        }
+
     public int NeutralResistPercent
     {
       get { return this[PvP ? PlayerField.PvpNeutralResistPercent : PlayerField.NeutralResistPercent].Total; }
