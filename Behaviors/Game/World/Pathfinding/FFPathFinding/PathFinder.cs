@@ -28,6 +28,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
     public class PathFinder : ISimplePathFinder, IAdvancedPathFinder
     {
         #region Properties
+
+       
         public MapMovement PathPacker;
 
         // When in combat, then MapNeighbours are resticted to 4, and distances are manhattan distances
@@ -80,9 +82,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                 if (cell != null)
                 {
                     cell.DistanceSteps = CellInfo.DEFAULT_DISTANCE;
-                    cell.IsInPath = false;
-                    //cell.isInPath2 = false;
-                    cell.IsCloseToEnemy = false;
+                    cell.IsInPath = cell.IsCloseToEnemy = false;
+                    cell.IsOpen = null;
                 }
             PathResult = new List<short>();
             StartingCell = CellInfo.CELL_ERROR;
@@ -131,11 +132,11 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         /// <param name="filter">You can set here any filter on CellInfos, like criteria on distance from startingCell</param>
         /// <param name="sorter">You tell here how you want the cells to be sorted</param>
         /// <returns></returns>
-        public IEnumerable<Cell> FindConnectedCells(Cell startingCell, bool inFight, bool cautious, FilterCells filter = null, OrderingCells sorter = null)
+        public IEnumerable<Cell> FindConnectedCells(Cell startingCell, bool inFight, bool cautious, FilterCells filter = null, OrderingCells sorter = null, int maxDistance = CellInfo.DEFAULT_DISTANCE)
         {
             _isCautious = cautious;
             _isInFight = inFight;
-            FindPath(new short[] { startingCell.Id }, null, false, true); // Only 1st step
+            FindPath(new short[] { startingCell.Id }, null, false, true, maxDistance); // Only 1st step
             var set1 = _cells.Where(cell => cell.DistanceSteps < CellInfo.DEFAULT_DISTANCE);
             var count1 = set1.Count();
             var set2 = set1.Where(cell => filter == null || filter(cell));
@@ -240,84 +241,154 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         /// <param name="selectFartherCells"></param>
         /// <param name="firstStepOnly"></param>
         /// <returns></returns>
-        public bool FindPath(short[] startingCells, short[] exitCells, bool selectFartherCells = false, bool firstStepOnly = false)
+        public bool FindPath(short[] startingCells, short[] exitCells, bool selectFartherCells = false, bool firstStepOnly = false, int maxDistanceParam = CellInfo.DEFAULT_DISTANCE)
         {
             Random rnd = new Random();
-            ClearLogic(startingCells, exitCells);
-
-            if ((startingCells == null) || (startingCells.Length == 0)) return false; // We need at least one starting cell
-            if (!firstStepOnly && (exitCells == null || exitCells.Length == 0)) return false; // We need at least one exit cell for step 2
+            if ((startingCells == null) || (startingCells.Length == 0)) return false; // We need at least one starting stCell
+            if (!firstStepOnly && (exitCells == null || exitCells.Length == 0)) return false; // We need at least one exit stCell for step 2
+            
             // PC starts at distance of 0. Set 0 to all possible starting cells
-            List<CellInfo> changed = new List<CellInfo>();
-            List<CellInfo> changing;
+            CellInfo[] changed = new CellInfo[560];
+            int changedPtr = 0;
+            CellInfo[] changing = new CellInfo[560];
+            int changingPtr = 0;
 
-            foreach (short cell in startingCells)
-                if (_cells[cell] != null)
-                {
-                    _cells[cell].DistanceSteps = 0;
-                    changed.Add(_cells[cell]);
-                    if (exitCells != null && !selectFartherCells && exitCells.Any(ecell => ecell == cell))
-                    {
-                        PathResult = new List<short> { cell };
-                        return true; // Empty path : starting cell = exit cell
-                    }
-                }
-            //    cells[StartingCell].distanceSteps = 0;
-            int maxDistance = CellInfo.DEFAULT_DISTANCE;
+            bool optimizerActiv = !firstStepOnly && !selectFartherCells; // This strong optimization may fail to find a path. In that case, the non-optimized algorithm is run 
 
-            while (changed.Count > 0)
+            while (true)
             {
-                changing = new List<CellInfo>();
-                // Look at each square on the board.
-                foreach (CellInfo curCell in changed)
-                {
-                    Debug.Assert((curCell != null && curCell.DistanceSteps < CellInfo.DEFAULT_DISTANCE));
+                ClearLogic(startingCells, exitCells);
+                uint EstimatedDistance = CellInfo.DEFAULT_DISTANCE;
+                Cell bestStartingCell = null;
+                Cell bestEndingCell = null;
 
-                    foreach (CellInfo newCell in ValidMoves(curCell, false))
+                foreach (short stCell in startingCells)
+                    if (_cells[stCell] != null)
                     {
-                        int newPass = curCell.DistanceSteps;
-                        if (_isInFight)
-                            newPass++;
-                        else
-                            newPass += newCell.IsDiagonal ? (int)(newCell.Weight * 1.414) : newCell.Weight;
+                        _cells[stCell].DistanceSteps = 0;
+                        changed[changedPtr++] = _cells[stCell];
+                        if (!firstStepOnly && !selectFartherCells)
+                            foreach (short exCell in exitCells)
+                            {
+                                if (exCell == stCell) 
+                                {
+                                    PathResult = new List<short> { stCell };
+                                    return true; // Empty path : starting stCell = exit stCell
+                                }
+                                if (optimizerActiv)
+                                {
+                                    uint distance = _cells[stCell].Cell.ManhattanDistanceTo(_cells[exCell].Cell);
+                                    if (distance < EstimatedDistance)
+                                    {
+                                        bestStartingCell = _cells[stCell].Cell;
+                                        bestEndingCell = _cells[exCell].Cell;
+                                        EstimatedDistance = distance;
+                                    }
+                                }
+                            }
+                    }
+                //    cells[StartingCell].distanceSteps = 0;
+                int maxDistance = maxDistanceParam; // We won't search over this distance - this optimization is OK in all cases
+                if (optimizerActiv && bestStartingCell == null || bestEndingCell == null)
+                    optimizerActiv = false;
 
-                        if (newCell.DistanceSteps > newPass)
+                while (changedPtr > 0)
+                {
+                    changingPtr = 0;
+                    // Look at each square on the board.
+                    while (changedPtr > 0)
+                    {
+                        CellInfo curCell = changed[--changedPtr];
+                        if (curCell.DistanceSteps < maxDistance)
                         {
-                            newCell.DistanceSteps = newPass;
-                            changing.Add(newCell);
-                            if (!firstStepOnly && !selectFartherCells && exitCells.Any(id => newCell.CellId == id))
-                                maxDistance = newPass;
+                            if (optimizerActiv) // Strong optimisation
+                            {
+                                uint lastEstimatedDistance = curCell.Cell.ManhattanDistanceTo(bestEndingCell);
+                                uint startDistance = curCell.Cell.ManhattanDistanceTo(bestStartingCell);
+                                if (startDistance + lastEstimatedDistance > EstimatedDistance) continue;
+                            }
+                            //Debug.Assert((curCell != null && curCell.DistanceSteps < CellInfo.DEFAULT_DISTANCE));
+                            short[] cellNeighbours = neighbours[curCell.CellId];
+                            for (short i = 0; i < cellNeighbours.Length; i++)
+                            {
+                                CellInfo newCell = _cells[cellNeighbours[i]];
+                                if (newCell == null) continue;
+                                if (newCell.DistanceSteps != 0 && !SquareOpen(newCell, null)) continue;
+                                //uint currentDistance = newCell.Cell.ManhattanDistanceTo(_cells[exitCells[0]].Cell);                            
+                                //if (currentDistance >= EstimatedDistance || currentDistance >= lastEstimatedDistance) continue;
+
+                                int newPass = curCell.DistanceSteps;
+                                if (_isInFight)
+                                    newPass++;
+                                else
+                                    newPass += newCell.Weight;
+
+                                if (newCell.DistanceSteps > newPass)
+                                {
+                                    newCell.DistanceSteps = newPass;
+                                    changing[changingPtr++] = newCell;
+                                    if (!firstStepOnly && !selectFartherCells && newPass < maxDistance && exitCells.Any(id => newCell.CellId == id))
+                                        maxDistance = newPass; // We won't search on distance over closest exit
+                                }
+                            }
+                            if (_isInFight) continue;
+                            cellNeighbours = diagNeighbours[curCell.CellId];
+                            for (short i = 0; i < cellNeighbours.Length; i++) // Process diagonals
+                            {
+                                CellInfo newCell = _cells[cellNeighbours[i]];
+                                if (newCell == null) continue;
+                                if (newCell.DistanceSteps != 0 && !SquareOpen(newCell, null)) continue;
+
+                                int newPass = curCell.DistanceSteps;
+                                if (_isInFight)
+                                    newPass++;
+                                else
+                                    newPass += (int)(newCell.Weight * 1.414);
+
+                                if (newCell.DistanceSteps > newPass)
+                                {
+                                    newCell.DistanceSteps = newPass;
+                                    changing[changingPtr++] = newCell;
+                                    if (!firstStepOnly && !selectFartherCells && newPass < maxDistance && exitCells.Any(id => newCell.CellId == id))
+                                        maxDistance = newPass;  // We won't search on distance over closest exit
+                                }
+                            }
                         }
                     }
+                    CellInfo[] tmpChanged = changed;
+                    changed = changing;
+                    changedPtr = changingPtr;
+                    changing = tmpChanged;
                 }
-                changed = changing;
-            }
-
-            if (firstStepOnly)
-                return true;
-            // Step 2
-            // Mark the path from Exit to Starting position.
+                if (firstStepOnly)
+                    return true;
+                // Step 2
+                // Mark the path from Exit to Starting position.
             // if several Exit cells, then get the lowest distance one = the closest from one starting cell
-            // (or the highest distance one if selectFartherCells)
-            ExitCell = exitCells[0];
-            int MinDist = _cells[ExitCell].DistanceSteps;
-            if (selectFartherCells)
-            {
-                foreach (short cell in exitCells)
-                    if (_cells[cell].DistanceSteps > MinDist)
-                    {
-                        ExitCell = cell;
-                        MinDist = _cells[cell].DistanceSteps;
-                    }
-            }
-            else
-            {
-                foreach (short cell in exitCells)
-                    if (_cells[cell].DistanceSteps < MinDist)
-                    {
-                        ExitCell = cell;
-                        MinDist = _cells[cell].DistanceSteps;
-                    }
+                // (or the highest distance one if selectFartherCells)
+                ExitCell = exitCells[0];
+                int MinDist = _cells[ExitCell].DistanceSteps;
+                if (selectFartherCells)
+                {
+                    foreach (short cell in exitCells)
+                        if (_cells[cell].DistanceSteps > MinDist)
+                        {
+                            ExitCell = cell;
+                            MinDist = _cells[cell].DistanceSteps;
+                        }
+                }
+                else
+                {
+                    foreach (short cell in exitCells)
+                        if (_cells[cell].DistanceSteps < MinDist)
+                        {
+                            ExitCell = cell;
+                            MinDist = _cells[cell].DistanceSteps;
+                        }
+                }
+                if (optimizerActiv == false || MinDist < CellInfo.DEFAULT_DISTANCE) break; // No need to run a second unoptimized algorithm
+                else
+                    optimizerActiv = false;
             }
             //int no = 0;
             //Debug.WriteLine("PathFinding from {0} ({1}) to {2} ({3})", _cells[startingCells[0]].cell, _cells[startingCells[0]].distanceSteps, _cells[ExitCell].cell, _cells[ExitCell].distanceSteps);
@@ -345,7 +416,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             short CurrentCell = ExitCell;
             PathResult.Add(ExitCell);
             _cells[ExitCell].IsInPath = true;
-            List<short> LowestPoints = new List<short>(10);
+            CellInfo[] lowestPoints = changed; // No ned to alloc a new one, this one won't be used anymore
+            int lowestPointsPtr = 0;
             short lowestPoint;
             int lowest;
 
@@ -355,33 +427,37 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                 // with the lowest number of steps marked.
                 lowestPoint = CellInfo.CELL_ERROR;
                 lowest = CellInfo.DEFAULT_DISTANCE;
-
-                foreach (CellInfo NewCell in ValidMoves(_cells[CurrentCell], true))
+                short[] neighbours = GetNeighbours(CurrentCell, _isInFight);
+                for (short i = 0; i < neighbours.Length; i++)
                 {
-                    int distance = NewCell.DistanceSteps;
-                    if (distance > CellInfo.DEFAULT_DISTANCE)
+                    //foreach (CellInfo newCell in ValidMoves(curCell, false))
+                    CellInfo newCell = _cells[neighbours[i]];
+                    if (newCell == null) continue;
+                           
+                //for (CellInfo NewCell in ValidMoves(_cells[CurrentCell], true))
+                //{
+                    int distance = newCell.DistanceSteps;
+                    /*if (distance > CellInfo.DEFAULT_DISTANCE)
                     {
                         Debug.Assert(false, "Distance shouldn't be higher than DEFAULT_DISTANCE", "Distance = {0} > Max = {1}", distance, CellInfo.DEFAULT_DISTANCE);
                         continue;
-                    }
+                    }*/
                     if (distance < lowest)
                     {
-                        LowestPoints.Clear();
+                        lowestPointsPtr = 1;
                         lowest = distance;
-                        lowestPoint = NewCell.CellId;
+                        lowestPoints[0] = newCell;
                     }
                     else
                         if (distance == lowest)
-                        {
-                            if (LowestPoints.Count == 0)
-                                LowestPoints.Add(lowestPoint);
-                            LowestPoints.Add(NewCell.CellId);
-                        }
+                            lowestPoints[lowestPointsPtr++] = newCell;
                 }
                 if (lowest == CellInfo.DEFAULT_DISTANCE) break; // Can't find a valid way :(
 
-                if (LowestPoints.Count > 1) // Several points with same distance =>> randomly select one of them
-                    lowestPoint = LowestPoints[rnd.Next(LowestPoints.Count)];
+                if (lowestPointsPtr > 1) // Several points with same distance =>> randomly select one of them
+                    lowestPoint = lowestPoints[rnd.Next(lowestPointsPtr)].CellId;
+                else
+                    lowestPoint = lowestPoints[0].CellId;
 
                 // Mark the square as part of the path if it is the lowest
                 // number. Set the current position as the square with
@@ -392,7 +468,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                     Debug.Assert(false, "PathFinder can't find a path - overflow");
                     break;
                 }
-                Debug.Assert(_cells[lowestPoint].IsInPath == false, "Point already in path", "CurrentCell : {0}, Lowest : {1} - distance : {2}, path : {3}", _cells[CurrentCell].Cell, _cells[lowestPoint].Cell, lowest, string.Join(",", _cells.Where(cell => cell.IsInPath)));
+                //Debug.Assert(_cells[lowestPoint].IsInPath == false, "Point already in path", "CurrentCell : {0}, Lowest : {1} - distance : {2}, path : {3}", _cells[CurrentCell].Cell, _cells[lowestPoint].Cell, lowest, string.Join(",", _cells.Where(stCell => stCell.IsInPath)));
                 _cells[lowestPoint].IsInPath = true;
                 CurrentCell = lowestPoint;
 
@@ -411,12 +487,13 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         private bool SquareOpen(CellInfo cell, CellInfo originCell = null)
         {
             if (cell == null) return false;
-            // A square is open if it is not a wall.
-
-            if (_isInFight)
-                return cell.IsCombatWalkable && _map.IsCellWalkable(cell.Cell, false, originCell == null ? null : originCell.Cell) && !cell.IsCloseToEnemy;
-            else
-                return _map.IsCellWalkable(cell.Cell, !_isCautious, originCell == null ? null : originCell.Cell);
+            
+            if (cell.IsOpen == null)
+                if (_isInFight)
+                    cell.IsOpen = cell.IsCombatWalkable && _map.IsCellWalkable(cell.Cell, false, originCell == null ? null : originCell.Cell) && !cell.IsCloseToEnemy;
+                else
+                    cell.IsOpen = _map.IsCellWalkable(cell.Cell, !_isCautious, originCell == null ? null : originCell.Cell);
+            return cell.IsOpen.Value;
         }
 
         CellInfo getNeighbourCell(CellInfo cell, int deltaX, int deltaY, bool fast)
@@ -706,5 +783,57 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                         return fishStruct.Key; // returns the corresponding fish cell
             return CellInfo.CELL_ERROR;
         }
+
+        #region Fast compute of neighbours  statics
+        static public short[] GetNeighbours(short cellId, bool fighting)
+        {
+            if (fighting) return neighbours[cellId];
+            return bothNeighbours[cellId];
+        }
+        
+        static short[][] diagNeighbours = ComputeNeighbours(false);
+        static short[][] neighbours = ComputeNeighbours(true);
+        static short[][] bothNeighbours = ComputeNeighbours(null);
+        
+        private static short[][] ComputeNeighbours(bool? fighting)
+        {
+            short[][] result = new short[560][];
+            for (short i = 0; i < 560; i++)
+                result[i] = Neighbours(i, fighting).ToArray();
+            return result;
+        }
+
+        // Return each valid square we can move to.
+        static IEnumerable<short> Neighbours(short cellId, bool? fighting)
+        {
+            short x = CellInfo.XFromId(cellId);
+            short y = CellInfo.YFromId(cellId);
+            short id;
+            if (fighting!=false)
+            {
+                id = CellInfo.CellIdFromPos(x + 1, y);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+                id = CellInfo.CellIdFromPos(x, y + 1);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+                id = CellInfo.CellIdFromPos(x - 1, y);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+                id = CellInfo.CellIdFromPos(x, y - 1);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+            }
+
+            if (fighting != true)
+            {
+                id = CellInfo.CellIdFromPos(x + 1, y + 1);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+                id = CellInfo.CellIdFromPos(x + 1, y - 1);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+                id = CellInfo.CellIdFromPos(x - 1, y + 1);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+                id = CellInfo.CellIdFromPos(x - 1, y - 1);
+                if (id != CellInfo.CELL_ERROR) yield return id;
+            }
+        }
+        /// </summary>
+        #endregion
     }
 }

@@ -17,6 +17,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.Effects;
 using BiM.Core.Collections;
 using BiM.Protocol.Data;

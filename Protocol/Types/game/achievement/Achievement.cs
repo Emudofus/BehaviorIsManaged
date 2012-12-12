@@ -1,18 +1,6 @@
-#region License GNU GPL
-// Achievement.cs
-// 
-// Copyright (C) 2012 - BehaviorIsManaged
-// 
-// This program is free software; you can redistribute it and/or modify it 
-// under the terms of the GNU General Public License as published by the Free Software Foundation;
-// either version 2 of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-// See the GNU General Public License for more details. 
-// You should have received a copy of the GNU General Public License along with this program; 
-// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#endregion
+
+
+// Generated on 12/11/2012 19:44:32
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,19 +17,33 @@ namespace BiM.Protocol.Types
         }
         
         public short id;
+        public Types.AchievementObjective[] finishedObjective;
+        public Types.AchievementStartedObjective[] startedObjectives;
         
         public Achievement()
         {
         }
         
-        public Achievement(short id)
+        public Achievement(short id, Types.AchievementObjective[] finishedObjective, Types.AchievementStartedObjective[] startedObjectives)
         {
             this.id = id;
+            this.finishedObjective = finishedObjective;
+            this.startedObjectives = startedObjectives;
         }
         
         public virtual void Serialize(IDataWriter writer)
         {
             writer.WriteShort(id);
+            writer.WriteUShort((ushort)finishedObjective.Length);
+            foreach (var entry in finishedObjective)
+            {
+                 entry.Serialize(writer);
+            }
+            writer.WriteUShort((ushort)startedObjectives.Length);
+            foreach (var entry in startedObjectives)
+            {
+                 entry.Serialize(writer);
+            }
         }
         
         public virtual void Deserialize(IDataReader reader)
@@ -49,6 +51,20 @@ namespace BiM.Protocol.Types
             id = reader.ReadShort();
             if (id < 0)
                 throw new Exception("Forbidden value on id = " + id + ", it doesn't respect the following condition : id < 0");
+            var limit = reader.ReadUShort();
+            finishedObjective = new Types.AchievementObjective[limit];
+            for (int i = 0; i < limit; i++)
+            {
+                 finishedObjective[i] = new Types.AchievementObjective();
+                 finishedObjective[i].Deserialize(reader);
+            }
+            limit = reader.ReadUShort();
+            startedObjectives = new Types.AchievementStartedObjective[limit];
+            for (int i = 0; i < limit; i++)
+            {
+                 startedObjectives[i] = new Types.AchievementStartedObjective();
+                 startedObjectives[i].Deserialize(reader);
+            }
         }
         
     }

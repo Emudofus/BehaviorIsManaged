@@ -49,7 +49,12 @@ namespace BiM.Behaviors.Settings
             private set;
         }
 
-        public T GetEntry<T>()
+        /// <summary>
+        /// Get the settings entry or create it with default constructor if it does not exist
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetOrAddEntry<T>()
             where T : SettingsEntry, new()
         {
             var entries = m_entries.OfType<T>().ToArray();
@@ -77,6 +82,53 @@ namespace BiM.Behaviors.Settings
             }
 
             return entries.Single();
+        }
+
+        public bool EntryExists(Type entryType)
+        {
+            return m_entries.Any(entryType.IsInstanceOfType);
+        }
+
+        public bool EntryExists<T>()
+        {
+            return m_entries.Any(x => x is T);
+        }
+
+        /// <summary>
+        /// Returns false if the entry already exists
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <returns></returns>
+        public bool AddEntry(SettingsEntry entry)
+        {
+            var type = entry.GetType();
+            if (EntryExists(type))
+                return false;
+
+           m_entries.Add(entry);
+           return true;
+        }
+
+        public bool AddOrSetEntry(SettingsEntry entry)
+        {
+             var type = entry.GetType();
+            if (EntryExists(type))
+                if (!RemoveEntry(type))
+                    throw new Exception(string.Format("Entry {0} already exists but cannot be removed for an unknow reason", type));
+
+
+            m_entries.Add(entry);
+            return true;
+        }
+
+        public bool RemoveEntry(Type entryType)
+        {
+            return m_entries.RemoveAll(entryType.IsInstanceOfType) > 0;
+        }
+
+        public bool RemoveEntry<T>()
+        {
+            return m_entries.RemoveAll(x => x is T) > 0;
         }
 
         private XmlNode GetEntryNode(string name)

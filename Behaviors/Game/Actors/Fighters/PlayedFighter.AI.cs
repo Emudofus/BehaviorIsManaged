@@ -21,11 +21,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BiM.Behaviors.Game.Spells;
+using BiM.Behaviors.Game.World;
+using BiM.Core.Config;
+using BiM.Behaviors.Game.Stats;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public partial class PlayedFighter
     {
+        public int SummonedCount 
+        { 
+            get 
+            {
+                return Fight.Actors.Count(fighter => fighter.Summoned && fighter.Summoner == this);
+            } 
+            
+        }
+        public bool CanSummon()
+        {
+            return (Stats as PlayerStats).SummonLimit > SummonedCount;
+        }
+        
+        [Configurable("DefaultRecordOnTheFly", "If true, the sniffer will record on the fly by default at start.")]
+        public static bool DefaultRecordOnTheFly = true;
+
+
         public IEnumerable<Spells.Spell> GetOrderListOfSimpleAttackSpells(Fighter target, bool NoRangeCheck = false)
         {
             return Character.SpellsBook.GetOrderedAttackSpells(Character, target, Spells.Spell.SpellCategory.Damages).
@@ -36,6 +56,13 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             return Character.SpellsBook.GetOrderListOfSimpleBoostSpells(Character, Spell.SpellCategory.Buff, true).
                 Where(spell => CanCastSpell(spell, this, true));
+        }
+
+        public IEnumerable<Spells.Spell> GetOrderListOfInvocationSpells()
+        {
+            //Character.SendDebug("Sorted invocs : {0}", String.Join(",", Character.SpellsBook.GetOrderListOfSimpleBoostSpells(Character, Spell.SpellCategory.Invocation, false)));
+            return Character.SpellsBook.GetOrderListOfSimpleBoostSpells(Character, Spell.SpellCategory.Invocation, false).
+                Where(spell => CanCastSpell(spell, (Cell)null, true) && spell.LevelTemplate.needFreeCell);
         }
 
         internal void Update(Protocol.Messages.GameMapNoMovementMessage message)
@@ -69,5 +96,6 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             NotifyAck(true);
         }
+
     }
 }

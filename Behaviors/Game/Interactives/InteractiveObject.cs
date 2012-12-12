@@ -17,6 +17,8 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.World;
 using BiM.Core.Collections;

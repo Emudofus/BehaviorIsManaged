@@ -61,10 +61,10 @@ namespace BiM.Host.UI.ViewModels
 
         #region Handlers
 
-        [MessageHandler(typeof (IdentificationMessage))]
-        public void HandleIdentificationMessage(Bot bot, IdentificationMessage message)
+        [MessageHandler(typeof(IdentificationSuccessMessage))]
+        public void HandleIdentificationSuccessMessage(Bot bot, IdentificationSuccessMessage message)
         {
-            Parent.Title = bot.ClientInformations.Login;
+            Parent.Title = bot.ClientInformations.Nickname;
         }
 
         [MessageHandler(typeof (CharacterSelectedSuccessMessage))]

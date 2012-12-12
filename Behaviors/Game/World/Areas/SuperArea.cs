@@ -17,6 +17,8 @@
 #endregion
 
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
 
 namespace BiM.Behaviors.Game.World.Areas
 {

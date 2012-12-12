@@ -479,6 +479,8 @@ namespace BiM.Behaviors.Game.World
         }
 
         #endregion
+        #region Map Changement
+        #endregion
 
         #region ICell Members
 

@@ -24,6 +24,8 @@ using System.Windows.Media;
 using AvalonDock.Layout;
 using BiM.Behaviors;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
@@ -455,7 +457,7 @@ namespace BasicPlugin.Chat
         {
             base.OnAttached();
 
-            var settings = Bot.Settings.GetEntry<BasicPluginSettings>();
+            var settings = Bot.Settings.GetOrAddEntry<BasicPluginSettings>();
 
             m_floodEntries = new ObservableCollection<FloodEntry>(settings.FloodEntries);
             m_readOnlyFloodEntries = new ReadOnlyObservableCollection<FloodEntry>(m_floodEntries);
@@ -471,7 +473,7 @@ namespace BasicPlugin.Chat
         {
             base.OnDetached();
 
-            var settings = Bot.Settings.GetEntry<BasicPluginSettings>();
+            var settings = Bot.Settings.GetOrAddEntry<BasicPluginSettings>();
 
             settings.FloodEntries = FloodEntries.ToArray();
 

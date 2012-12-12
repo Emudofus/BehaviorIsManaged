@@ -15,6 +15,7 @@
 #endregion
 using System;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.Alignement;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.Stats;
@@ -29,31 +30,15 @@ namespace BiM.Behaviors.Game.Actors.Fighters
     {
         protected static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        protected CharacterFighter(Fight fight)
+        protected CharacterFighter(Fight fight) : base()
         {
             Fight = fight;
         }
 
-        public CharacterFighter(GameFightCharacterInformations msg, Fight fight)
+        public CharacterFighter(GameFightCharacterInformations msg, Fight fight) : base (msg, fight)
         {
-            Id = msg.contextualId;
-            Fight = fight;
-            Look = msg.look;
-            Map = fight.Map;
-            Update(msg.disposition);
-            Team = fight.GetTeam((FightTeamColor) msg.teamId);
-            IsAlive = msg.alive;
             Alignment = new AlignmentInformations(msg.alignmentInfos);
-            Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed));
-            Stats = new MinimalStats(msg.stats);
-            Summoned = msg.stats.summoned;
-            if (Summoned)
-            {
-                Summoner = Fight.GetActor(msg.stats.summoner);
-
-                if (Summoner == null)
-                    logger.Error("Summoner {0} of monster {1} not found", msg.stats.summoner, this);
-            }
+            Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed));            
         }
 
         public override int Id

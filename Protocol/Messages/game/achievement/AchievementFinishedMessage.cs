@@ -1,18 +1,6 @@
-#region License GNU GPL
-// AchievementFinishedMessage.cs
-// 
-// Copyright (C) 2012 - BehaviorIsManaged
-// 
-// This program is free software; you can redistribute it and/or modify it 
-// under the terms of the GNU General Public License as published by the Free Software Foundation;
-// either version 2 of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-// See the GNU General Public License for more details. 
-// You should have received a copy of the GNU General Public License along with this program; 
-// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#endregion
+
+
+// Generated on 12/11/2012 19:44:10
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,27 +18,33 @@ namespace BiM.Protocol.Messages
             get { return Id; }
         }
         
-        public short achievementId;
+        public short id;
+        public short finishedlevel;
         
         public AchievementFinishedMessage()
         {
         }
         
-        public AchievementFinishedMessage(short achievementId)
+        public AchievementFinishedMessage(short id, short finishedlevel)
         {
-            this.achievementId = achievementId;
+            this.id = id;
+            this.finishedlevel = finishedlevel;
         }
         
         public override void Serialize(IDataWriter writer)
         {
-            writer.WriteShort(achievementId);
+            writer.WriteShort(id);
+            writer.WriteShort(finishedlevel);
         }
         
         public override void Deserialize(IDataReader reader)
         {
-            achievementId = reader.ReadShort();
-            if (achievementId < 0)
-                throw new Exception("Forbidden value on achievementId = " + achievementId + ", it doesn't respect the following condition : achievementId < 0");
+            id = reader.ReadShort();
+            if (id < 0)
+                throw new Exception("Forbidden value on id = " + id + ", it doesn't respect the following condition : id < 0");
+            finishedlevel = reader.ReadShort();
+            if (finishedlevel < 0 || finishedlevel > 200)
+                throw new Exception("Forbidden value on finishedlevel = " + finishedlevel + ", it doesn't respect the following condition : finishedlevel < 0 || finishedlevel > 200");
         }
         
     }

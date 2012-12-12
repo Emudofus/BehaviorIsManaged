@@ -424,11 +424,12 @@ namespace BiM.Behaviors.Game.Fights
             fighter.IsReady = msg.isReady;
         }
 
-        public void Update(GameFightSynchronizeMessage msg)
+        public void Update(Bot bot, GameFightSynchronizeMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-
+            
             TimeLine.Update(msg);
+
 
             foreach (var info in msg.fighters)
             {
@@ -530,6 +531,15 @@ namespace BiM.Behaviors.Game.Fights
             //}
             if (CurrentPlayer != null && CurrentPlayer.Id == message.authorId)
                 CurrentPlayer.NotifySequenceEnded();
+        }
+
+        internal void Update(Bot bot, GameActionFightDeathMessage message)
+        {
+              // Process
+            var Fighter = GetActor(message.targetId);
+            if (Fighter == null)
+                throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot let it die", message.targetId));
+            Fighter.IsAlive = false;
         }
     }
 }

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Game.Stats;
 
 namespace BiM.Behaviors.Game.Breeds
@@ -46,8 +47,6 @@ namespace BiM.Behaviors.Game.Breeds
             SpellsId = breed.breedSpellsId.ToArray();
             MaleColors = breed.maleColors.ToArray();
             FemaleColors = breed.femaleColors.ToArray();
-            AlternativeMaleSkin = breed.alternativeMaleSkin.ToArray();
-            AlternativeFemaleSkin = breed.alternativeFemaleSkin.ToArray();
         }
 
         public int Id
@@ -158,18 +157,6 @@ namespace BiM.Behaviors.Game.Breeds
         }
 
         public uint[] FemaleColors
-        {
-            get;
-            private set;
-        }
-
-        public uint[] AlternativeMaleSkin
-        {
-            get;
-            private set;
-        }
-
-        public uint[] AlternativeFemaleSkin
         {
             get;
             private set;

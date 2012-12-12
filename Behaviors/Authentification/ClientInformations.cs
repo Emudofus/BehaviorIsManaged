@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
 using BiM.Core.Extensions;
 using BiM.Core.Reflection;
 using BiM.Protocol.Data;
@@ -40,12 +41,6 @@ namespace BiM.Behaviors.Authentification
         }
 
         public sbyte[] PublicRSAKey
-        {
-            get;
-            set;
-        }
-
-        public string Login
         {
             get;
             set;
@@ -248,7 +243,6 @@ namespace BiM.Behaviors.Authentification
             if (msg == null) throw new ArgumentNullException("msg");
             Version = msg.version;
             Lang = msg.lang;
-            Login = msg.login.ToLower(); // always ToLower() for login
             Credentials = msg.credentials.ToArray();
         }
 

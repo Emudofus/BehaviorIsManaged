@@ -17,7 +17,7 @@
 using System.IO;
 using System.Windows.Media.Imaging;
 
-namespace BiM.Behaviors.Data
+namespace BiM.Behaviors.Data.Icons
 {
     public class Icon
     {

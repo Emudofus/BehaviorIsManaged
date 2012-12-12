@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using BiM.Core.Config;
 using BiM.Core.I18n;
 using BiM.Core.Memory;
@@ -26,7 +25,7 @@ using BiM.Core.Reflection;
 using BiM.Protocol.Tools;
 using NLog;
 
-namespace BiM.Behaviors.Data
+namespace BiM.Behaviors.Data.I18N
 {
     public class I18NDataManager : Singleton<I18NDataManager>
     {

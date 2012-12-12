@@ -1,18 +1,6 @@
-#region License GNU GPL
-// ChallengeTargetUpdateMessage.cs
-// 
-// Copyright (C) 2012 - BehaviorIsManaged
-// 
-// This program is free software; you can redistribute it and/or modify it 
-// under the terms of the GNU General Public License as published by the Free Software Foundation;
-// either version 2 of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-// See the GNU General Public License for more details. 
-// You should have received a copy of the GNU General Public License along with this program; 
-// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#endregion
+
+
+// Generated on 12/11/2012 19:44:16
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,14 +18,14 @@ namespace BiM.Protocol.Messages
             get { return Id; }
         }
         
-        public sbyte challengeId;
+        public short challengeId;
         public int targetId;
         
         public ChallengeTargetUpdateMessage()
         {
         }
         
-        public ChallengeTargetUpdateMessage(sbyte challengeId, int targetId)
+        public ChallengeTargetUpdateMessage(short challengeId, int targetId)
         {
             this.challengeId = challengeId;
             this.targetId = targetId;
@@ -45,13 +33,13 @@ namespace BiM.Protocol.Messages
         
         public override void Serialize(IDataWriter writer)
         {
-            writer.WriteSByte(challengeId);
+            writer.WriteShort(challengeId);
             writer.WriteInt(targetId);
         }
         
         public override void Deserialize(IDataReader reader)
         {
-            challengeId = reader.ReadSByte();
+            challengeId = reader.ReadShort();
             if (challengeId < 0)
                 throw new Exception("Forbidden value on challengeId = " + challengeId + ", it doesn't respect the following condition : challengeId < 0");
             targetId = reader.ReadInt();

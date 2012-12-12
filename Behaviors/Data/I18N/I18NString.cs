@@ -16,9 +16,8 @@
 
 using System.ComponentModel;
 using BiM.Core.I18n;
-using BiM.Protocol.Tools;
 
-namespace BiM.Behaviors.Data
+namespace BiM.Behaviors.Data.I18N
 {
     public class I18NString : INotifyPropertyChanged
     {
@@ -101,5 +100,11 @@ namespace BiM.Behaviors.Data
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }

@@ -1,18 +1,6 @@
-#region License GNU GPL
-// CharacterCreationRequestMessage.cs
-// 
-// Copyright (C) 2012 - BehaviorIsManaged
-// 
-// This program is free software; you can redistribute it and/or modify it 
-// under the terms of the GNU General Public License as published by the Free Software Foundation;
-// either version 2 of the License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-// See the GNU General Public License for more details. 
-// You should have received a copy of the GNU General Public License along with this program; 
-// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#endregion
+
+
+// Generated on 12/11/2012 19:44:13
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,17 +22,19 @@ namespace BiM.Protocol.Messages
         public sbyte breed;
         public bool sex;
         public int[] colors;
+        public int cosmeticId;
         
         public CharacterCreationRequestMessage()
         {
         }
         
-        public CharacterCreationRequestMessage(string name, sbyte breed, bool sex, int[] colors)
+        public CharacterCreationRequestMessage(string name, sbyte breed, bool sex, int[] colors, int cosmeticId)
         {
             this.name = name;
             this.breed = breed;
             this.sex = sex;
             this.colors = colors;
+            this.cosmeticId = cosmeticId;
         }
         
         public override void Serialize(IDataWriter writer)
@@ -56,6 +46,7 @@ namespace BiM.Protocol.Messages
             {
                  writer.WriteInt(entry);
             }
+            writer.WriteInt(cosmeticId);
         }
         
         public override void Deserialize(IDataReader reader)
@@ -70,6 +61,9 @@ namespace BiM.Protocol.Messages
             {
                  colors[i] = reader.ReadInt();
             }
+            cosmeticId = reader.ReadInt();
+            if (cosmeticId < 0)
+                throw new Exception("Forbidden value on cosmeticId = " + cosmeticId + ", it doesn't respect the following condition : cosmeticId < 0");
         }
         
     }

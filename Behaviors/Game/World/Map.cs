@@ -18,6 +18,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
+using BiM.Behaviors.Data.Maps;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Interactives;
@@ -78,10 +81,10 @@ namespace BiM.Behaviors.Game.World
             {MapNeighbour.Bottom, -532},
         };
 
-        public MapNeighbour GetDirectionOfTransitionCell(Cell cell)
+        public static MapNeighbour GetDirectionOfTransitionCell(Cell cell)
         {            
             foreach (MapNeighbour neighbourFound in Enum.GetValues(typeof(MapNeighbour)))
-                if (neighbourFound != MapNeighbour.Any && ((Map.MapChangeDatas[neighbourFound] & cell.MapChangeData) > 0))
+                if (neighbourFound != MapNeighbour.Any && ((MapChangeDatas[neighbourFound] & cell.MapChangeData) > 0))
                     return neighbourFound;
             return MapNeighbour.None;
         }
@@ -183,13 +186,12 @@ namespace BiM.Behaviors.Game.World
 
         #region Update methods
 
-        public void Update(MapComplementaryInformationsDataMessage message)
+        public void Update(Bot bot, MapComplementaryInformationsDataMessage message)
         {
             if (message == null) throw new ArgumentNullException("message");
             SubArea = new SubArea(message.subAreaId)
                           {AlignmentSide = (AlignmentSideEnum) message.subareaAlignmentSide};
 
-            Bot bot = BotManager.Instance.GetCurrentBot();
             ClearActors();
 
             foreach (GameRolePlayActorInformations actor in message.actors)
@@ -200,7 +202,7 @@ namespace BiM.Behaviors.Game.World
                     AddActor(bot.Character);
                 }
                 else
-                    AddActor(actor);
+                    AddActor(bot, actor);
             }
 
             foreach (InteractiveElement element in message.interactiveElements)
@@ -293,8 +295,14 @@ namespace BiM.Behaviors.Game.World
                 interactive.DefinePosition(element.Item2);
         }
 
-        public void AddActor(GameRolePlayActorInformations actor)
+        public void AddActor(Bot bot, GameRolePlayActorInformations actor)
         {
+            if (actor.contextualId == bot.Character.Id)
+            {
+                bot.Character.Update(actor as GameRolePlayCharacterInformations);
+                AddActor(bot.Character);
+            }
+            else
             AddActor(CreateRolePlayActor(actor));
         }
 

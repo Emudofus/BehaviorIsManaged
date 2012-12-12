@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
 using BiM.Behaviors.Data;
+using BiM.Behaviors.Data.D2O;
+using BiM.Behaviors.Data.I18N;
 using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 

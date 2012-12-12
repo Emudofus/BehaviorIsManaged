@@ -1,5 +1,5 @@
-#region License GNU GPL
-// Title.cs
+﻿#region License GNU GPL
+// Settings.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,18 +13,30 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System;
-using System.Collections.Generic;
-using BiM.Protocol.Tools;
+using BiM.Behaviors.Settings;
 
-namespace BiM.Protocol.Data
+namespace FightPlugin
 {
-    [D2OClass("Titles")]
-    public class Title : IDataObject
+    public class Settings : SettingsEntry
     {
-        private const String MODULE = "Titles";
-        public int id;
-        public uint nameId;
-        public String color;
+        public Settings()
+        {
+            IsInvoker = false;
+
+        }
+
+        public override string EntryName
+        {
+            get
+            {
+                return "FFight";
+            }
+        }
+
+        public bool IsInvoker
+        {
+            get;
+            set;
+        }
     }
 }
