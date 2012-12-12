@@ -97,7 +97,7 @@ namespace BiM.Behaviors.Game.World.Data
                 case MapNeighbour.Top:
                     return TopNeighbourId;
                 case MapNeighbour.Bottom:
-                    return RightNeighbourId;
+                    return BottomNeighbourId;
                 default:
                     return null;
             }
