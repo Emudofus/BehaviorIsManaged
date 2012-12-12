@@ -18,7 +18,7 @@ using System;
 namespace BiM.Behaviors.Game.Effects
 {
     [Flags]
-    public enum SpellTargetType
+    public enum SpellTargetType : int
     {
         NONE = 0,
         SELF = 0x1,

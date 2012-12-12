@@ -272,8 +272,6 @@ namespace BiM.Behaviors.Handlers.Context
                 return; // Can't handle the message
             }
             bot.Character.Fight.AddActor(message.summon);
-            if (bot.Character.Fighter != null)
-                bot.Character.Fighter.Update(message);
         }
 
         #region stats update

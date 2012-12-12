@@ -29,13 +29,19 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 {
     public partial class PlayedFighter
     {
-        public int SummonedCount { get; set; }
+        public int SummonedCount 
+        { 
+            get 
+            {
+                return Fight.Actors.Count(fighter => fighter.Summoned && fighter.Summoner == this);
+            } 
+            
+        }
         public bool CanSummon()
         {
             return (Stats as PlayerStats).SummonLimit > SummonedCount;
         }
-        private List<int> SummonedActors = new List<int>();
-
+        
         [Configurable("DefaultRecordOnTheFly", "If true, the sniffer will record on the fly by default at start.")]
         public static bool DefaultRecordOnTheFly = true;
 
@@ -91,37 +97,5 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             NotifyAck(true);
         }
 
-
-        internal void Update(Protocol.Messages.GameFightSynchronizeMessage msg)
-        {
-            SummonedCount = 0;
-            SummonedActors.Clear();
-            foreach (var info in msg.fighters)
-                if (info.stats.summoned && info.stats.summoner == this.Id && info.alive)
-                    if (!SummonedActors.Contains(info.contextualId))
-                    {
-                        SummonedCount++;
-                        SummonedActors.Add(info.contextualId);
-                    }
-        }
-
-        internal void Update(Protocol.Messages.GameActionFightSummonMessage message)
-        {
-            if (message.summon.stats.summoned && message.summon.stats.summoner == Id)
-                if (!SummonedActors.Contains(message.summon.contextualId))
-                {
-                    SummonedCount++;
-                    SummonedActors.Add(message.summon.contextualId);
-                }            
-        }
-
-        internal void SummonUpdate(Protocol.Messages.GameActionFightDeathMessage message)
-        {
-            if (SummonedActors.Contains(message.targetId))
-            {
-                SummonedActors.Remove(message.targetId);
-                SummonedCount--;
-            }
-        }
     }
 }

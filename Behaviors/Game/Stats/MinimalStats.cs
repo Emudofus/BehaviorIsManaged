@@ -33,6 +33,18 @@ namespace BiM.Behaviors.Game.Stats
       Update(stats);
     }
 
+    /*public bool Summoned
+    {
+        get;
+        set;
+    }
+
+    public int Summoner
+    {
+        get;
+        set;
+    }*/
+
     public int Initiative
     {
       get;
@@ -201,7 +213,8 @@ namespace BiM.Behaviors.Game.Stats
     public void Update(GameFightMinimalStats stats)
     {
       if (stats == null) throw new ArgumentNullException("stats");
-
+      //Summoner = stats.summoner; already processed at MonsterFighter / CharacterFighter level
+      //Summoned = stats.summoned;
       Health = stats.lifePoints;
       MaxHealth = stats.maxLifePoints;
       CurrentAP = stats.actionPoints;
