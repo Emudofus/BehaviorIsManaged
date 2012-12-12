@@ -40,7 +40,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
       m_readOnlySummons = new ReadOnlyObservableCollectionMT<Fighter>(m_summons);
     }
 
-    public Fighter(GameFightFighterInformations msg, Fight fight)
+    public Fighter(GameFightFighterInformations msg, Fight fight) : this()
         {
             Id = msg.contextualId;
             Fight = fight;
