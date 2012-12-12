@@ -114,7 +114,7 @@ namespace BiM.Behaviors.Game.Spells
         /// Notifies the start of a new fight turn to each spell 
         /// </summary>
         public void FightStart(GameFightStartingMessage msg)
-        {            
+        {
             foreach (Spell spell in m_spells)
             {
                 //Character.SendMessage(String.Format("Spell {0} : initialCooldown {1}, maxCastPerTurn {2}, maxCastPerTarget {3}, maxStack {4}, GlobalCoolDown {5}, minCastInterval {6}", spell, spell.LevelTemplate.initialCooldown, spell.LevelTemplate.maxCastPerTurn, spell.LevelTemplate.maxCastPerTarget, spell.LevelTemplate.maxStack, spell.LevelTemplate.globalCooldown, spell.LevelTemplate.minCastInterval), Color.Aquamarine); 
@@ -150,7 +150,34 @@ namespace BiM.Behaviors.Game.Spells
                 if (spell.IsAvailable(TargetId, category))
                     yield return spell;
         }
-        
+
+        public bool IsProperTarget(PlayedFighter caster, Fighter target, Spell spell)
+        {
+            // SpellTargetType
+
+            foreach (var spellEffect in spell.LevelTemplate.effects)
+            {
+                
+                if (spellEffect.targetId == (int)(SpellTargetType.ALL) && target == null) return true;
+
+                if (caster == target) // Self
+                    return ((spellEffect.targetId & (int)(SpellTargetType.ONLY_SELF | SpellTargetType.SELF)) != 0) && spell.LevelTemplate.minRange == 0;
+
+                if (caster.Team == target.Team) // Ally
+                    if (target.Summoned)
+                        return ((spellEffect.targetId & (int)(SpellTargetType.ALLY_STATIC_SUMMONS | SpellTargetType.ALLY_SUMMONS)) != 0) && spell.LevelTemplate.range > 0;
+                    else
+                        return ((spellEffect.targetId & (int)(SpellTargetType.ALLY_1 | SpellTargetType.ALLY_2 | SpellTargetType.ALLY_3 | SpellTargetType.ALLY_4 | SpellTargetType.ALLY_5)) != 0) && spell.LevelTemplate.range > 0;
+
+                // Enemies
+                if (target.Summoned)
+                    return ((spellEffect.targetId & (int)(SpellTargetType.ENEMY_STATIC_SUMMONS | SpellTargetType.ENEMY_SUMMONS)) != 0) && spell.LevelTemplate.range > 0;
+                else
+                    return ((spellEffect.targetId & (int)(SpellTargetType.ENEMY_1 | SpellTargetType.ENEMY_2 | SpellTargetType.ENEMY_3 | SpellTargetType.ENEMY_4 | SpellTargetType.ENEMY_5)) != 0) && spell.LevelTemplate.range > 0;
+            }
+            return false;
+        }
+
         public IEnumerable<Spell> GetOrderListOfSimpleBoostSpells(PlayedCharacter caster, Spell.SpellCategory category, bool canBeUsedOnCaster)
         {
             return m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(caster.Id, category) && (!canBeUsedOnCaster || spell.LevelTemplate.minRange == 0)).OrderByDescending(spell => spell.Level).ThenByDescending(spell => spell.LevelTemplate.minPlayerLevel);

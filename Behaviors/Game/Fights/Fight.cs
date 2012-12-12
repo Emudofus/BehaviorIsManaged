@@ -431,8 +431,6 @@ namespace BiM.Behaviors.Game.Fights
             TimeLine.Update(msg);
 
 
-            if (bot.Character.Fighter != null)
-                bot.Character.Fighter.Update(msg);
             foreach (var info in msg.fighters)
             {
                 var fighter = GetFighter(info.contextualId);
@@ -542,7 +540,6 @@ namespace BiM.Behaviors.Game.Fights
             if (Fighter == null)
                 throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot let it die", message.targetId));
             Fighter.IsAlive = false;
-            bot.Character.Fighter.SummonUpdate(message);            
         }
     }
 }

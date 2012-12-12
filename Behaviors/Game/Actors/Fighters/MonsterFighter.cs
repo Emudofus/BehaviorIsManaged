@@ -31,29 +31,11 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private string m_name;
 
-        public MonsterFighter(GameFightMonsterInformations msg, Fight fight)
+        public MonsterFighter(GameFightMonsterInformations msg, Fight fight) : base (msg, fight)
         {
-            Id = msg.contextualId;
-            Fight = fight;
-            Look = msg.look;
-            Map = fight.Map;
-            Update(msg.disposition);
-            Team = fight.GetTeam((FightTeamColor) msg.teamId);
-            IsAlive = msg.alive;
             MonsterTemplate = ObjectDataManager.Instance.Get<Monster>(msg.creatureGenericId);
             MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
-            Stats = new MinimalStats(msg.stats);
-            Level = (int) MonsterGrade.level;
-
-            Summoned = msg.stats.summoned;
-
-            if (Summoned)
-            {
-                Summoner = Fight.GetActor(msg.stats.summoner);
-
-                if (Summoner == null)
-                    logger.Error("Summoner {0} of monster {1} not found", msg.stats.summoner, this);
-            }
+            Level = (int) MonsterGrade.level;        
         }
 
         public override int Id
