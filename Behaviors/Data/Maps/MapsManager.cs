@@ -62,14 +62,6 @@ namespace BiM.Behaviors.Data.Maps
             get { return m_reader.Entries.Count(); }
         }
 
-        public bool FillLinks()
-        {
-            foreach (var entry in m_reader.Entries)
-                if (!m_entriesLinks.ContainsKey(entry.Index))
-                    m_entriesLinks.Add(entry.Index, entry);
-            return m_entriesLinks.Count > 0;
-        }
-
         public DlmMap GetDlmMap(int id, string decryptionKey)
         {
             // retrieve the bound entry to the key or find it in the d2p file
@@ -120,12 +112,12 @@ namespace BiM.Behaviors.Data.Maps
         public IEnumerable<DlmMap> EnumerateClientMaps(string key)
         {
 
-            foreach (var entry in m_entriesLinks)
+            foreach (var entry in m_reader.Entries)
             {
-                int id = int.Parse(Path.GetFileNameWithoutExtension(entry.Value.FileName));
+                int id = int.Parse(Path.GetFileNameWithoutExtension(entry.FileName));
 
                 // then retrieve the data source bound to the entry or create it
-                var dlmReader = new DlmReader(m_reader.ReadFile(entry.Value));
+                var dlmReader = new DlmReader(m_reader.ReadFile(entry));
                 dlmReader.DecryptionKey = key;
 
                 yield return dlmReader.ReadMap();
@@ -135,12 +127,12 @@ namespace BiM.Behaviors.Data.Maps
         public IEnumerable<DlmMap> EnumerateClientMaps(DlmReader.KeyProvider decryptionKeyProvider)
         {
 
-            foreach (var entry in m_entriesLinks)
+            foreach (var entry in m_reader.Entries)
             {
-                int id = int.Parse(Path.GetFileNameWithoutExtension(entry.Value.FileName));
+                int id = int.Parse(Path.GetFileNameWithoutExtension(entry.FileName));
 
                 // then retrieve the data source bound to the entry or create it
-                var dlmReader = new DlmReader(m_reader.ReadFile(entry.Value));
+                var dlmReader = new DlmReader(m_reader.ReadFile(entry));
                 dlmReader.DecryptionKeyProvider = decryptionKeyProvider;
 
                 yield return dlmReader.ReadMap();
@@ -194,8 +186,7 @@ namespace BiM.Behaviors.Data.Maps
             m_writer.Write(CurrentMapsFileVersion); // version
             m_writer.Write(0); // table offset
             m_writer.Write(0); // total length
-            if (m_entriesLinks.Count < 100)
-                FillLinks();
+
             m_progression = new ProgressionCounter(MapsCount);
             IEnumerable<DlmMap> maps = EnumerateClientMaps(Map.GenericDecryptionKey);
             int counter = 0;
