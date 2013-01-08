@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// GeneratedSubMap.cs
+// MapPathfinder.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -14,28 +14,15 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
-using BiM.Behaviors.Game.World.Data;
+using System;
 
-namespace BiM.Behaviors.Game.World.MapTraveling.Storage
+namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class GeneratedSubMap
+    public class MapTraveling
     {
-        public GeneratedSubMap(SerializableSubMap subMap, ICell[] changeCells)
+        public MapTravel FindPath(int fromX, int fromY, int toX, int toY)
         {
-            SubMap = subMap;
-            ChangeCells = changeCells;
-        }
-
-        public SerializableSubMap SubMap
-        {
-            get;
-            set;
-        }
-
-        public ICell[] ChangeCells
-        {
-            get;
-            set;
+            throw new NotImplementedException();
         }
     }
 }

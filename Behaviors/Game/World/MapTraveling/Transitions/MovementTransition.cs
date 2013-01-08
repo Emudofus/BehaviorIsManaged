@@ -43,7 +43,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Transitions
             set;
         }
 
-        public override bool BeginTransition(SubMap @from, SerializableSubMap to, PlayedCharacter character)
+        public override bool BeginTransition(SubMap @from, SubMapBinder to, PlayedCharacter character)
         {
             if (!character.ChangeMap(MapNeighbour, cell => Cells == null || Cells.Length == 0 || Array.IndexOf(Cells, cell.CellId) != -1))
             {

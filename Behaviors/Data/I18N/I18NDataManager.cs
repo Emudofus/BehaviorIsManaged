@@ -126,6 +126,7 @@ namespace BiM.Behaviors.Data.I18N
                 return m_readers[lang.Value].GetText(id);
             }
 
+            EnsureLanguageIsLoaded(DefaultLanguage);
             return m_readers[DefaultLanguage].GetText(id);
         }
 
@@ -137,6 +138,7 @@ namespace BiM.Behaviors.Data.I18N
                 return m_readers[lang.Value].GetText(id);
             }
 
+            EnsureLanguageIsLoaded(DefaultLanguage);
             return m_readers[DefaultLanguage].GetText(id);
         }
 

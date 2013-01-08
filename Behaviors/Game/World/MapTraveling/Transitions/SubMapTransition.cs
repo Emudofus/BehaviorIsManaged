@@ -25,15 +25,15 @@ namespace BiM.Behaviors.Game.World.MapTraveling.Transitions
     {
         #region Delegates
 
-        public delegate void TransitionEndedHandler(SubMapTransition transition, SubMap from, SerializableSubMap to, bool success);
+        public delegate void TransitionEndedHandler(SubMapTransition transition, SubMap from, SubMapBinder to, bool success);
 
         #endregion
 
-        public abstract bool BeginTransition(SubMap from, SerializableSubMap to, PlayedCharacter character);
+        public abstract bool BeginTransition(SubMap from, SubMapBinder to, PlayedCharacter character);
 
         public event TransitionEndedHandler TransitionEnded;
 
-        public virtual void OnTransitionEnded(SubMap from, SerializableSubMap to, bool success)
+        public virtual void OnTransitionEnded(SubMap from, SubMapBinder to, bool success)
         {
             TransitionEndedHandler evnt = TransitionEnded;
             if (evnt != null)

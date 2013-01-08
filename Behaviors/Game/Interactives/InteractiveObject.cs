@@ -84,15 +84,6 @@ namespace BiM.Behaviors.Game.Interactives
             }
         }
 
-        /// <summary>
-        /// Can be null
-        /// </summary>
-        public override Cell Cell
-        {
-            get;
-            protected set;
-        }
-
         public InteractiveState State
         {
             get;

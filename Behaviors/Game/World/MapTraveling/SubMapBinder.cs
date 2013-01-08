@@ -22,19 +22,22 @@ using BiM.Behaviors.Game.World.MapTraveling.Transitions;
 
 namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class SerializableSubMap
+    /// <summary>
+    /// Represent the binding between a submap and his neighbours submaps
+    /// </summary>
+    public class SubMapBinder
     {
         private int m_mapId;
         private byte m_subMapId;
         private int m_x;
         private int m_y;
 
-        public SerializableSubMap()
+        public SubMapBinder()
         {
             Neighbours = new List<SubMapNeighbour>();
         }
 
-        public SerializableSubMap(int mapId, byte subMapId, int x, int y, List<SubMapNeighbour> neighbours)
+        public SubMapBinder(int mapId, byte subMapId, int x, int y, List<SubMapNeighbour> neighbours)
         {
             m_mapId = mapId;
             m_subMapId = subMapId;
@@ -48,67 +51,37 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             get { return (long)MapId << 8 | SubMapId; }
         }
 
-        public virtual int MapId
+        public int MapId
         {
             get { return m_mapId; }
             set { m_mapId = value; }
         }
 
-        public virtual byte SubMapId
+        public byte SubMapId
         {
             get { return m_subMapId; }
             set { m_subMapId = value; }
         }
 
-        public virtual int X
+        public int X
         {
             get { return m_x; }
             set { m_x = value; }
         }
 
-        public virtual int Y
+        public int Y
         {
             get { return m_y; }
             set { m_y = value; }
         }
 
         /// <summary>
-        /// GlobalID of reachable sub maps
+        /// Reachable sub maps
         /// </summary>
         public List<SubMapNeighbour> Neighbours
         {
             get;
-            private set;
-        }
-
-        public void Serialize(BinaryWriter writer)
-        {
-            writer.Write(MapId);
-            writer.Write(SubMapId);
-            writer.Write(X);
-            writer.Write(Y);
-            writer.Write(Neighbours.Count);
-            foreach (SubMapNeighbour neighbour in Neighbours)
-            {
-                writer.Write(neighbour.GlobalId);
-                TransitionsManager.Instance.SerializeTransition(writer, neighbour.Transition);
-            }
-        }
-
-        public void Deserialize(BinaryReader reader)
-        {
-            MapId = reader.ReadInt32();
-            SubMapId = reader.ReadByte();
-            X = reader.ReadInt32();
-            Y = reader.ReadInt32();
-            Neighbours = new List<SubMapNeighbour>();
-            int length = reader.ReadInt32();
-            for (int i = 0; i < length; i++)
-            {
-                long id = reader.ReadInt64();
-                SubMapTransition transition = TransitionsManager.Instance.DeserializeTransition(reader);
-                Neighbours[i] = new SubMapNeighbour(id, transition);
-            }
+            protected set;
         }
     }
 }

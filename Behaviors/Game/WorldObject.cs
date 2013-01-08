@@ -16,6 +16,7 @@
 using System;
 using System.ComponentModel;
 using BiM.Behaviors.Game.World;
+using BiM.Behaviors.Game.World.MapTraveling;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
 using NLog;
@@ -36,10 +37,16 @@ namespace BiM.Behaviors.Game
             protected set;
         }
 
+        private Cell m_cell;
+
         public virtual Cell Cell
         {
-            get;
-            protected set;
+            get { return m_cell; }
+            protected set
+            {
+                m_cell = value;
+                SubMap = Map.GetSubMap(value);
+            }
         }
 
         public virtual DirectionsEnum Direction
@@ -49,6 +56,12 @@ namespace BiM.Behaviors.Game
         }
 
         public virtual Map Map
+        {
+            get;
+            protected set;
+        }
+
+        public virtual SubMap SubMap
         {
             get;
             protected set;

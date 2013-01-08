@@ -26,7 +26,6 @@ using System.Threading.Tasks;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.MapTraveling;
-using BiM.Behaviors.Game.World.MapTraveling.Storage;
 using BiM.Behaviors.Game.World.MapTraveling.Transitions;
 using BiM.Core.Reflection;
 using BiM.Core.UI;
@@ -48,17 +47,16 @@ namespace BiM.Behaviors.Data.Maps
         private readonly PooledRedisClientManager m_clientManager = new PooledRedisClientManager("localhost");
 
         // for generation only
-        private readonly ConcurrentDictionary<int, MapData> m_loadedMaps = new ConcurrentDictionary<int, MapData>();
-        private readonly ConcurrentDictionary<Point, List<MapData>> m_mapsByPosition = new ConcurrentDictionary<Point, List<MapData>>();
-        private readonly ConcurrentDictionary<MapData, GeneratedSubMap[]> m_submaps = new ConcurrentDictionary<MapData, GeneratedSubMap[]>();
+        private Dictionary<int, MapPositionData> m_mapsPosition = new Dictionary<int, MapPositionData>();
+        private readonly ConcurrentDictionary<int, AdjacentSubMap[]> m_submaps = new ConcurrentDictionary<int, AdjacentSubMap[]>();
 
-        public SerializableSubMap GetSubMap(long globalid)
+        public SubMapBinder GetSubMapBinder(long globalid)
         {
             AssertInitialized();
 
             using (var client = m_clientManager.GetClient())
             {
-                IRedisHash<long, SerializableSubMap> hash = client.As<SerializableSubMap>().GetHash<long>(REDIS_KEY);
+                IRedisHash<long, SubMapBinder> hash = client.As<SubMapBinder>().GetHash<long>(REDIS_KEY);
 
                 if (!hash.ContainsKey(globalid))
                     throw new Exception(string.Format("Submap {0} not found", globalid));
@@ -67,7 +65,7 @@ namespace BiM.Behaviors.Data.Maps
             }
         }
 
-        public SerializableSubMap[] GetMapSubMaps(int mapid)
+        public SubMapBinder[] GetMapSubMapsBinder(int mapid)
         {
             AssertInitialized();
 
@@ -77,10 +75,10 @@ namespace BiM.Behaviors.Data.Maps
                 IRedisHash<int, long[]> hash = keysClient.GetHash<int>(REDIS_MAPS);
 
                 if (!hash.ContainsKey(mapid))
-                    return new SerializableSubMap[0];
+                    return new SubMapBinder[0];
 
                 long[] submaps = hash[mapid];
-                var submapClient = (RedisTypedClient<SerializableSubMap>) client.As<SerializableSubMap>();
+                var submapClient = (RedisTypedClient<SubMapBinder>)client.As<SubMapBinder>();
 
                 return submapClient.GetValuesFromHash(submapClient.GetHash<long>(REDIS_KEY), submaps).ToArray();
             }
@@ -125,22 +123,14 @@ namespace BiM.Behaviors.Data.Maps
             double total = MapsManager.Instance.MapsCount;
 
             progression.UpdateValue(0, "Loading all maps ...");
+            m_mapsPosition = MapsPositionManager.Instance.EnumerateAllMaps().ToDictionary(x => x.MapId);
             int counter = 0;
             Parallel.ForEach(MapsManager.Instance.EnumerateMaps(), map =>
                 {
-                    var builder = new SubMapBuilder<CellData, MapData>(map);
-                    GeneratedSubMap[] submaps = builder.BuildLight();
+                    var builder = new SubMapBuilder();
+                    AdjacentSubMap[] submaps = builder.GenerateBinders(map);
 
-                    m_submaps.TryAdd(map, submaps);
-                    m_loadedMaps.TryAdd(map.Id, map);
-
-                    var pos = new Point(map.X, map.Y);
-                    lock (m_mapsByPosition)
-                    {
-                        List<MapData> list;
-                        if (m_mapsByPosition.TryGetValue(pos, out list)) list.Add(map);
-                        else m_mapsByPosition.TryAdd(pos, new List<MapData> {map});
-                    }
+                    m_submaps.TryAdd(map.Id, submaps);
 
                     // update the counter (in percent)
                     Interlocked.Increment(ref counter);
@@ -166,7 +156,7 @@ namespace BiM.Behaviors.Data.Maps
                             TryGetMapNeighbour(cacheEntry.Key, MapNeighbour.Bottom),
                         };
 
-                    foreach (GeneratedSubMap submap in cacheEntry.Value)
+                    foreach (AdjacentSubMap submap in cacheEntry.Value)
                     {
                         for (MapNeighbour neighbour = MapNeighbour.Right; neighbour <= MapNeighbour.Bottom; neighbour++)
                         {
@@ -176,22 +166,23 @@ namespace BiM.Behaviors.Data.Maps
                                 continue;
 
                             MapNeighbour opposite = GetOppositeDirection(neighbour);
-                            GeneratedSubMap[] submaps;
+                            AdjacentSubMap[] submaps;
                             int mapChangeData = Map.MapChangeDatas[neighbour];
                             int oppositeMapChangeData = Map.MapChangeDatas[neighbour];
                             int cellChangement = Map.MapCellChangement[neighbour];
 
-                            if (neighbours[i] != null && m_submaps.TryGetValue(neighbours[i], out submaps))
+                            if (neighbours[i] != null && m_submaps.TryGetValue(neighbours[i].Value, out submaps))
                             {
                                 lock (submaps)
-                                    foreach (GeneratedSubMap neighbourSubmap in submaps)
+                                    foreach (AdjacentSubMap neighbourSubmap in submaps)
                                     {
                                         // neighbor already set
-                                        if (submap.SubMap.Neighbours.Any(x => x.GlobalId == neighbourSubmap.SubMap.GlobalId))
-                                            continue;
+                                        lock (submap.SubMap.Neighbours)
+                                            if (submap.SubMap.Neighbours.Any(x => x.GlobalId == neighbourSubmap.SubMap.GlobalId))
+                                                continue;
 
                                         // if any cell of the submaps is a transition to another submap
-                                        GeneratedSubMap submap1 = neighbourSubmap;
+                                        AdjacentSubMap submap1 = neighbourSubmap;
                                         short[] links = submap.ChangeCells.Where(x => (x.MapChangeData & mapChangeData) != 0 &&
                                                                                       submap1.ChangeCells.Any(y => y.Id == x.Id + cellChangement)).Select(x => x.Id).ToArray();
                                         if (links.Length > 0)
@@ -227,20 +218,19 @@ namespace BiM.Behaviors.Data.Maps
             {
                 progression.UpdateValue(0, "Storing informations on Redis server...");
 
-                IRedisTypedClient<SerializableSubMap> typedClient1 = client.As<SerializableSubMap>();
+                IRedisTypedClient<SubMapBinder> typedClient1 = client.As<SubMapBinder>();
                 typedClient1.SetRangeInHash(typedClient1.GetHash<long>(REDIS_KEY), m_submaps.Values.SelectMany(x => x).ToDictionary(x => x.SubMap.GlobalId, x => x.SubMap));
                 progression.UpdateValue(50);
 
                 IRedisTypedClient<long[]> typedClient2 = client.As<long[]>();
-                typedClient2.SetRangeInHash(typedClient2.GetHash<int>(REDIS_MAPS), m_submaps.ToDictionary(x => x.Key.Id, x => x.Value.Select(y => y.SubMap.GlobalId).ToArray()));
+                typedClient2.SetRangeInHash(typedClient2.GetHash<int>(REDIS_MAPS), m_submaps.ToDictionary(x => x.Key, x => x.Value.Select(y => y.SubMap.GlobalId).ToArray()));
                 progression.UpdateValue(100);
 
                 client.Set(REDIS_VERSION, VERSION);
             }
 
             m_submaps.Clear();
-            m_loadedMaps.Clear();
-            m_mapsByPosition.Clear();
+            m_mapsPosition.Clear();
 
             progression.NotifyEnded();
         }
@@ -262,76 +252,25 @@ namespace BiM.Behaviors.Data.Maps
             }
         }
 
-        private MapData TryGetMapNeighbour(MapData map, MapNeighbour neighbour)
+        private int? TryGetMapNeighbour(int mapid, MapNeighbour neighbour)
         {
-            int posX;
-            int posY;
-            int clientMapId;
+            MapPositionData position;
+            if (!m_mapsPosition.TryGetValue(mapid, out position))
+                return null;
+
             switch (neighbour)
             {
-                case MapNeighbour.Top:
-                    clientMapId = map.TopNeighbourId;
-                    posX = map.X;
-                    posY = map.Y - 1;
-                    break;
-                case MapNeighbour.Bottom:
-                    clientMapId = map.BottomNeighbourId;
-                    posX = map.X;
-                    posY = map.Y + 1;
-                    break;
-                case MapNeighbour.Right:
-                    clientMapId = map.RightNeighbourId;
-                    posX = map.X + 1;
-                    posY = map.Y;
-                    break;
                 case MapNeighbour.Left:
-                    clientMapId = map.LeftNeighbourId;
-                    posX = map.X - 1;
-                    posY = map.Y;
-                    break;
-                default:
-                    return null;
+                    return position.LeftNeighbourId;
+                case MapNeighbour.Right:
+                    return position.RightNeighbourId;
+                case MapNeighbour.Bottom:
+                    return position.BottomNeighbourId;
+                case MapNeighbour.Top:
+                    return position.TopNeighbourId;
             }
 
-            if (clientMapId < 0)
-            {
-                return null;
-            }
-
-            MapData clientMap;
-            m_loadedMaps.TryGetValue(clientMapId, out clientMap);
-
-            List<MapData> mapsFromPos;
-            m_mapsByPosition.TryGetValue(new Point(posX, posY), out mapsFromPos);
-
-            // most of the cases
-            if (mapsFromPos != null && clientMap != null &&
-                (mapsFromPos.Count == 1 || mapsFromPos.Count(x => x.SubAreaId == clientMap.SubAreaId) == 1 && mapsFromPos.Any(x => x.Id == clientMap.Id)))
-                return clientMap;
-
-            // to guess the correct map we count the number of walkable cells to avoid "display only" maps
-            int clientMapCells = clientMap != null ? clientMap.Cells.Count(x => x.Walkable) : 0;
-
-            MapData relativeMap = null;
-            if (clientMap != null)
-                m_loadedMaps.TryGetValue((int) clientMap.RelativeId, out relativeMap);
-
-            int relativeMapCells = relativeMap != null ? relativeMap.Cells.Count(x => x.Walkable) : 0;
-
-            MapData betterMap = relativeMapCells < clientMapCells ? relativeMap : clientMap;
-            int betterMapCount = relativeMapCells < clientMapCells ? relativeMapCells : clientMapCells;
-            if (mapsFromPos != null)
-                foreach (MapData mapFromPos in mapsFromPos)
-                {
-                    int count = mapFromPos.Cells.Count(x => x.Walkable);
-                    if (count < betterMapCount)
-                    {
-                        betterMap = mapFromPos;
-                        betterMapCount = count;
-                    }
-                }
-
-            return betterMap;
+            return null;
         }
     }
 }

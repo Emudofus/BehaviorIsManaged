@@ -17,54 +17,73 @@
 #endregion
 
 using System.Collections.Generic;
-using BiM.Behaviors.Game.World.Data;
+using System.Collections.ObjectModel;
 
 namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class SubMap : SubMap<Cell, Map>
+    public class SubMap
     {
-        public SubMap(Map map, Cell[] cells, byte submapId)
-            : base(map, cells, submapId)
-        {
-        }
-    }
+        private bool m_isBound;
+        private List<SubMapNeighbour> m_neighbours; 
 
-    public class SubMap<TCell, TMap> : SerializableSubMap
-        where TCell : ICell 
-        where TMap : IMap
-    {
-        public SubMap(TMap map, TCell[] cells, byte submapId)
+        public SubMap(Map map, Cell[] cells, byte submapId)
         {
             Map = map;
             Cells = cells;
             SubMapId = submapId;
+            m_isBound = false;
         }
 
-        public TMap Map
+        public SubMap(Map map, Cell[] cells, SubMapBinder binder)
+        {
+            Map = map;
+            Cells = cells;
+            SubMapId = binder.SubMapId;
+            m_neighbours = binder.Neighbours;
+        }
+
+        public Map Map
         {
             get;
             private set;
         }
 
-        public override int MapId
+        public long GlobalId
         {
-            get { return Map.Id; }
+            get { return (long) Map.Id << 8 | SubMapId; }
         }
 
-        public override int X
+        public byte SubMapId
+        {
+            get;
+            private set;
+        }
+
+        public int X
         {
             get { return Map.X; }
         }
 
-        public override int Y
+        public int Y
         {
             get { return Map.Y; }
         }
 
-        public TCell[] Cells
+
+        public Cell[] Cells
         {
             get;
-            set;
+            private set;
+        }
+
+        public bool IsBound()
+        {
+            return m_isBound;
+        }
+
+        public ReadOnlyCollection<SubMapNeighbour> GetNeighbours()
+        {
+            return !m_isBound ? new List<SubMapNeighbour>().AsReadOnly() : m_neighbours.AsReadOnly();
         }
     }
 }

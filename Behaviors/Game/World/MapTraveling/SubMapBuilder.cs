@@ -19,29 +19,19 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using BiM.Behaviors.Game.World.Data;
-using BiM.Behaviors.Game.World.MapTraveling.Storage;
 using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 
 namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class SubMapBuilder : SubMapBuilder<Cell, Map>
-    {
-        public SubMapBuilder(Map map)
-            : base(map)
-        {
-        }
-    }
-
     /// <summary>
     /// Generate the submaps composing a Map
     /// </summary>
-    public class SubMapBuilder<TCell, TMap> : IDisposable
-        where TCell : ICell
-        where TMap : IMap
+    public class SubMapBuilder : IDisposable
     {
-        private class BoundCell
+        private class BoundCell<TCell>
+            where TCell : ICell
         {
-            public BoundCell(TCell cell, BoundCell[] neighbors)
+            public BoundCell(TCell cell, BoundCell<TCell>[] neighbors)
             {
                 Cell = cell;
                 Neighbors = neighbors;
@@ -53,7 +43,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
                 set;
             }
 
-            public BoundCell[] Neighbors
+            public BoundCell<TCell>[] Neighbors
             {
                 get;
                 set;
@@ -62,107 +52,91 @@ namespace BiM.Behaviors.Game.World.MapTraveling
 
         private List<short> m_treatedCells;
 
-        public SubMapBuilder(TMap map)
+        public SubMapBuilder()
         {
-            Map = map;
         }
 
-        public TMap Map
-        {
-            get;
-            set;
-        }
 
-        private IEnumerable<TCell> GetAdjacentCells(ICell cell, Predicate<short?> predicate1, Predicate<TCell> predicate2)
+        private IEnumerable<TCell> GetAdjacentCells<TCell>(ICell cell, ICellList<TCell> cellList, Predicate<short?> predicate1, Predicate<TCell> predicate2)
+            where TCell : ICell
         {
             Point pos = Cell.GetPointFromCell(cell.Id);
             short? cellId;
             TCell adjacent;
             if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y + 0) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                predicate1(cellId) && predicate2(adjacent = cellList[cellId.Value]))
                 yield return adjacent;
             if (( cellId = Cell.GetCellFromPoint(pos.X + 0, pos.Y + 1) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                predicate1(cellId) && predicate2(adjacent = cellList[cellId.Value]))
                 yield return adjacent;
             if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y + 0) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                predicate1(cellId) && predicate2(adjacent = cellList[cellId.Value]))
                 yield return adjacent;
             if (( cellId = Cell.GetCellFromPoint(pos.X + 0, pos.Y - 1) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
+                predicate1(cellId) && predicate2(adjacent = cellList[cellId.Value]))
                 yield return adjacent;
-            /*if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y + 1) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
-                yield return adjacent;
-            if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y + 1) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
-                yield return adjacent;
-            if (( cellId = Cell.GetCellFromPoint(pos.X + 1, pos.Y - 1) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
-                yield return adjacent;
-            if (( cellId = Cell.GetCellFromPoint(pos.X - 1, pos.Y - 1) ) != null &&
-                predicate1(cellId) && predicate2(adjacent = (TCell)Map.Cells[cellId.Value]))
-                yield return adjacent;*/
         }
 
         /// <summary>
         /// Generate the submaps composing the given Map
         /// </summary>
         /// <returns>The submap composing the given Map</returns>
-        public SubMap<TCell, TMap>[] Build()
+        public SubMap[] GenerateSubMaps(Map map)
         {
-            var availableCells = Map.Cells.Where(x => x.Walkable).ToArray();
+            var availableCells = map.Cells.Where(x => x.Walkable).ToArray();
 
-            var results = new List<SubMap<TCell, TMap>>();
+            var results = new List<SubMap>();
             m_treatedCells = new List<short>();
 
             if (availableCells.Length == 0)
-                return new SubMap<TCell, TMap>[0];
+                return new SubMap[0];
 
             byte submapid = 0;
             while (m_treatedCells.Count < availableCells.Length)
             {
                 var cell = availableCells.First(x => !m_treatedCells.Contains(x.Id));
 
-                var subMap = GetConnectedCells((TCell)cell).ToArray();
+                var subMap = GetConnectedCells(map, cell).ToArray();
 
-                results.Add(new SubMap<TCell, TMap>(Map, subMap.ToArray(), ++submapid));
+                results.Add(new SubMap(map, subMap.ToArray(), ++submapid));
             }
 
             return results.ToArray();
         }
 
         /// <summary>
-        /// Generate the submaps composing the given Map
+        /// Generate the binders of submaps composing a map
         /// </summary>
-        /// <returns>The submap composing the given Map</returns>
-        public GeneratedSubMap[] BuildLight()
+        /// <returns>The binders of submap composing the given Map</returns>
+        public AdjacentSubMap[] GenerateBinders(IMap map)
         {
-            var availableCells = Map.Cells.Where(x => x.Walkable).ToArray();
+            var availableCells = map.Cells.Where(x => x.Walkable).ToArray();
 
-            var results = new List<GeneratedSubMap>();
+            var results = new List<AdjacentSubMap>();
             m_treatedCells = new List<short>();
 
             if (availableCells.Length == 0)
-                return new GeneratedSubMap[0];
+                return new AdjacentSubMap[0];
             
             byte submapid = 0;
             while (m_treatedCells.Count < availableCells.Length)
             {
                 var cell = availableCells.First(x => !m_treatedCells.Contains(x.Id));
 
-                var subMap = GetConnectedCells((TCell)cell).ToArray();
-                var borderCells = subMap.Where(x => x.MapChangeData > 0).Select(x => (ICell)x).ToArray();
+                var subMap = GetConnectedCells(map, cell).ToArray();
+                var borderCells = subMap.Where(x => x.MapChangeData > 0).Select(x => x).ToArray();
 
                 if (borderCells.Length <= 0)
                     continue;
 
-                results.Add(new GeneratedSubMap(new SerializableSubMap(Map.Id, ++submapid, Map.X, Map.Y, new List<SubMapNeighbour>()), borderCells));
+                results.Add(new AdjacentSubMap(new SubMapBinder(map.Id, ++submapid, map.X, map.Y, new List<SubMapNeighbour>()), borderCells));
             }
 
             return results.ToArray();
         }
 
-        private bool IsCellWalkable(TCell cell, TCell previousCell)
+        private bool IsCellWalkable<TCell>(IMap map, TCell cell, TCell previousCell)
+            where TCell : ICell
         {
             if (!cell.Walkable)
                 return false;
@@ -171,7 +145,7 @@ namespace BiM.Behaviors.Game.World.MapTraveling
                 return false;
 
             // compare the floors
-            if (Map.UsingNewMovementSystem)
+            if (map.UsingNewMovementSystem)
             {
                 int floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
 
@@ -185,7 +159,8 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             return true;
         }
 
-        private IEnumerable<TCell> GetConnectedCells(TCell cell)
+        private IEnumerable<TCell> GetConnectedCells<TCell>(IMap map, TCell cell)
+            where TCell : ICell
         {
             if (m_treatedCells.Contains(cell.Id))
                 yield break;
@@ -193,11 +168,11 @@ namespace BiM.Behaviors.Game.World.MapTraveling
             m_treatedCells.Add(cell.Id);
             yield return cell;
 
-            foreach (var adjacent in GetAdjacentCells(cell, x => !m_treatedCells.Contains(x.Value), x => IsCellWalkable(x, cell)))
+            foreach (var adjacent in GetAdjacentCells(cell, map.Cells, x => !m_treatedCells.Contains(x.Value), x => IsCellWalkable(map, x, cell)))
             {
-                foreach (var connectedCell in GetConnectedCells(adjacent))
+                foreach (var connectedCell in GetConnectedCells(map, adjacent))
                 {
-                    yield return connectedCell;
+                    yield return (TCell)connectedCell;
                 }
             }
         }

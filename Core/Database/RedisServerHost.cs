@@ -21,12 +21,15 @@ using System.Linq;
 using System.Net;
 using BiM.Core.Network;
 using BiM.Core.Reflection;
+using NLog;
 using ServiceStack.Redis;
 
 namespace BiM.Core.Database
 {
     public class RedisServerHost : Singleton<RedisServerHost>
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public RedisServerHost()
         {
             
@@ -69,9 +72,13 @@ namespace BiM.Core.Database
                 ServerProcess.Start();
                 ServerProcess.BeginOutputReadLine();
 
+                logger.Info("Starting {0}...", Path.GetFileName(ExecutablePath));
+
                 // wait enough time
                 if (!CanReachServer(5000))
                     throw new Exception(string.Format("Redis Server hasn't been launch correctly (Timeout:{0})", 5000));
+
+                logger.Info("{0} started...", Path.GetFileName(ExecutablePath));
             }
             else
             {
@@ -92,6 +99,9 @@ namespace BiM.Core.Database
 
                     ServerProcess = Process.GetProcessById(matching.owningPid);
                 }
+
+
+                logger.Info("Redis process found (pid:{0})", ServerProcess.Id);
             }
         }
 
@@ -102,19 +112,22 @@ namespace BiM.Core.Database
             client.Shutdown();
         }
 
-        public bool CanReachServer(int timeout = 500)
+        public bool CanReachServer(int timeout = 1000)
         {
             var client = new RedisClient("localhost");
             client.ConnectTimeout = timeout;
             try
             {
+                logger.Info("Pinging Redis server ...");
                 client.Ping();
             }
             catch (Exception)
             {
+                logger.Info("Ping failed");
                 return false;
             }
 
+            logger.Info("Ping successed");
             return true;
         }
     }

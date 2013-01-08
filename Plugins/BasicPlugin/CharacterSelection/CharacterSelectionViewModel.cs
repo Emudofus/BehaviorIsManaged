@@ -142,7 +142,7 @@ namespace BasicPlugin.CharacterSelection
                 colors[4] = m_characterCreationData.Color5Used ? ColorToInt(m_characterCreationData.Color5) : -1;
 
                 Bot.SendToServer(new CharacterCreationRequestMessage(m_characterCreationData.CharacterName, (sbyte)m_characterCreationData.Breed,
-                    m_characterCreationData.Sex == SexTypeEnum.SEX_FEMALE, colors, m_heads.First(x => x.breed == (uint) m_characterCreationData.Breed).id));
+                    m_characterCreationData.Sex == SexTypeEnum.SEX_FEMALE, colors, m_heads.First(x => x.breed == (uint)m_characterCreationData.Breed && x.gender == (int)m_characterCreationData.Sex).id));
             }
         }
 

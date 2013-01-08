@@ -61,6 +61,36 @@
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\BehaviorIsManaged.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\BehaviorIsManaged.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -228,7 +258,8 @@
     <Compile Include="Game\World\MapContext.cs" />
     <Compile Include="Game\World\Data\MapData.cs" />
     <Compile Include="Game\World\MapNeighbour.cs" />
-    <Compile Include="Game\World\MapTraveling\Storage\GeneratedSubMap.cs" />
+    <Compile Include="Game\World\MapTraveling\MapTravel.cs" />
+    <Compile Include="Game\World\MapTraveling\AdjacentSubMap.cs" />
     <Compile Include="Game\World\MapTraveling\Transitions\MovementTransition.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\CellInfo.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\IWorldMapProvider.cs" />
@@ -239,17 +270,16 @@
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldMap.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPathFinder.cs" />
     <Compile Include="Game\World\Pathfinding\FFPathFinding\WorldPoint.cs" />
-    <Compile Include="Game\World\MapTraveling\SerializableSubMap.cs" />
+    <Compile Include="Game\World\MapTraveling\SubMapBinder.cs" />
     <Compile Include="Game\World\MapTraveling\SubMapNeighbour.cs" />
     <Compile Include="Game\World\MapTraveling\Transitions\SubMapTransition.cs" />
     <Compile Include="Game\World\MapTraveling\Transitions\TransitionAttribute.cs" />
-    <Compile Include="Game\World\MapTraveling\Transitions\TransitionsManager.cs" />
     <Compile Include="Game\World\Pathfinding\IAdvancedPathFinder.cs" />
     <Compile Include="Game\World\Pathfinding\IOpenList.cs" />
     <Compile Include="Game\World\Pathfinding\ISimplePathFinder.cs" />
     <Compile Include="Game\World\Pathfinding\LinearOpenList.cs" />
     <Compile Include="Game\World\Pathfinding\LogOpenList.cs" />
-    <Compile Include="Game\World\MapTraveling\MapPathfinder.cs" />
+    <Compile Include="Game\World\MapTraveling\MapTraveling.cs" />
     <Compile Include="Game\World\MapTraveling\SubMap.cs" />
     <Compile Include="Game\World\MapTraveling\SubMapBuilder.cs" />
     <Compile Include="Game\World\Pathfinding\Path.cs" />

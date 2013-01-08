@@ -134,6 +134,18 @@ namespace BiM.Behaviors.Data.Maps
             }
         }
 
+        public IEnumerable<MapPositionData> EnumerateAllMaps()
+        {
+            AssertInitialized();
+
+            using (var client = GetClient())
+            {
+                var hash = client.As<MapPositionData>().GetHash<int>(REDIS_KEY);
+
+                return client.As<MapPositionData>().GetHashValues(hash);
+            }
+        }
+
         private void AssertInitialized()
         {
             if (!m_initialized)

@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// MapPathfinder.cs
+// GeneratedSubMap.cs
 // 
 // Copyright (C) 2012 - BehaviorIsManaged
 // 
@@ -13,10 +13,29 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
+
+using BiM.Behaviors.Game.World.Data;
+
 namespace BiM.Behaviors.Game.World.MapTraveling
 {
-    public class MapPathfinder
+    public class AdjacentSubMap
     {
-         
+        public AdjacentSubMap(SubMapBinder subMap, ICell[] changeCells)
+        {
+            SubMap = subMap;
+            ChangeCells = changeCells;
+        }
+
+        public SubMapBinder SubMap
+        {
+            get;
+            set;
+        }
+
+        public ICell[] ChangeCells
+        {
+            get;
+            set;
+        }
     }
 }

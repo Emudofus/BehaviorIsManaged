@@ -26,6 +26,7 @@ using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Interactives;
 using BiM.Behaviors.Game.World.Areas;
 using BiM.Behaviors.Game.World.Data;
+using BiM.Behaviors.Game.World.MapTraveling;
 using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Collections;
 using BiM.Core.Config;
@@ -52,6 +53,7 @@ namespace BiM.Behaviors.Game.World
         private readonly List<Tuple<uint, Cell>> m_elements = new List<Tuple<uint, Cell>>();
         private readonly ObservableCollectionMT<InteractiveObject> m_interactives;
         private readonly ReadOnlyObservableCollectionMT<InteractiveObject> m_readOnlyInteractives;
+        private SubMap[] m_subMaps;
 
         // not used
         /*public static readonly Dictionary<MapNeighbour, int[]> MapChangeDatas = new Dictionary<MapNeighbour, int[]>
@@ -112,6 +114,7 @@ namespace BiM.Behaviors.Game.World
             m_cells = new CellList(cells.ToArray());
 
             InitializeElements();
+            LoadSubMaps();
 
             m_interactives = new ObservableCollectionMT<InteractiveObject>();
             m_readOnlyInteractives = new ReadOnlyObservableCollectionMT<InteractiveObject>(m_interactives);
@@ -138,9 +141,20 @@ namespace BiM.Behaviors.Game.World
             }
         }
 
+        private void LoadSubMaps()
+        {
+            var builder = new SubMapBuilder();
+            m_subMaps = builder.GenerateSubMaps(this);
+        }
+
         public ReadOnlyObservableCollectionMT<InteractiveObject> Interactives
         {
             get { return m_readOnlyInteractives; }
+        }
+
+        public SubMap[] SubMaps
+        {
+            get { return m_subMaps; }
         }
 
         public SubArea SubArea
@@ -273,6 +287,11 @@ namespace BiM.Behaviors.Game.World
         #endregion
 
         #region World Objects Management
+
+        public SubMap GetSubMap(Cell cell)
+        {
+            return m_subMaps.FirstOrDefault(x => x.Cells.Contains(cell));
+        }
 
         public InteractiveObject GetInteractive(int id)
         {
