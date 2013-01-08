@@ -165,9 +165,6 @@ namespace BiM.Host
             I18NDataManager.Instance.AddReaders(Path.Combine(GetDofusPath(), DofusI18NPath));
             IconsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusItemIconPath));
 
-            var file64 = I18NDataManager.Instance.ReadText("ui.link.changelog");
-            File.WriteAllBytes("fuck.swf", Convert.FromBase64String(file64));
-
 
             logger.Info("Starting redis server ...");
             RedisServerHost.Instance.ExecutablePath = RedisServerExe;
