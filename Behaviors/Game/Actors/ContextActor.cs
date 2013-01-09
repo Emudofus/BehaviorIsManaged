@@ -137,6 +137,8 @@ namespace BiM.Behaviors.Game.Actors
             if (handler != null) handler(this, message);
         }
 
+        public abstract bool IsAlive { get; set; }
+        
         public MovementBehavior Movement
         {
             get;

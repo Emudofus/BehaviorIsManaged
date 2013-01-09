@@ -105,10 +105,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FFight.cs" />
+    <Compile Include="FFight.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FFSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Behaviors\BiM.Behaviors.csproj">

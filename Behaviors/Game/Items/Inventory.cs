@@ -25,6 +25,7 @@ using BiM.Core.Collections;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using NLog;
+using BiM.Protocol.Data;
 
 namespace BiM.Behaviors.Game.Items
 {
@@ -79,6 +80,13 @@ namespace BiM.Behaviors.Game.Items
         public ReadOnlyObservableCollectionMT<Item> Items
         {
             get { return m_readOnlyItems; }
+        }
+
+        public Weapon GetEquippedWeapon()
+        {
+            BiM.Behaviors.Game.Items.Item item = Items.FirstOrDefault(x => x.Position == CharacterInventoryPositionEnum.ACCESSORY_POSITION_WEAPON);
+            if (item == null) return null;
+            return item.Template as Weapon;
         }
 
         public int Kamas

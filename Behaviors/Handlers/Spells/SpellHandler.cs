@@ -13,11 +13,11 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
+using BiM.Behaviors.Game.Actors.Fighters;
+using BiM.Behaviors.Game.Fights;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using NLog;
-using BiM.Behaviors.Game.Fights;
-using BiM.Behaviors.Game.Actors.Fighters;
 
 namespace BiM.Behaviors.Handlers.Spells
 {
@@ -30,12 +30,6 @@ namespace BiM.Behaviors.Handlers.Spells
         {
             bot.Character.Update(message);
         }
-        /* ***WARNING*** messages can only be handled at a single place 
-        [MessageHandler(typeof(GameFightStartMessage))]
-        public static void HandleGameFightStartMessage(Bot bot, GameFightStartMessage message)
-        {
-            bot.Character.SpellsBook.FightStart(message);
-        } */
 
         [MessageHandler(typeof(GameActionFightSpellCastMessage))]
         public static void HandleGameActionFightSpellCastMessage(Bot bot, GameActionFightSpellCastMessage message)
@@ -80,19 +74,10 @@ namespace BiM.Behaviors.Handlers.Spells
             }
         }
 
-
-        /* ***WARNING*** messages can only be handled at a single place
-        [MessageHandler(typeof(GameFightTurnEndMessage))]
-        public void HandleGameFightTurnEndMessage(Bot bot, GameFightTurnEndMessage message)
+        [MessageHandler(typeof(SpellUpgradeSuccessMessage))]
+        public static void HandleSpellUpgradeSuccessMessage(Bot bot, SpellUpgradeSuccessMessage message)
         {
-            bot.Character.SpellsBook.EndTurn();
-
+            bot.Character.Update(message);
         }
-        [MessageHandler(typeof(GameActionFightSpellCastMessage))]
-        public void HandleGameActionFightSpellCastMessage(Bot bot, GameActionFightSpellCastMessage message)
-        {
-            if (bot.Character.Id == message.sourceId)
-                bot.Character.SpellsBook.CastAt(message);                
-        }*/
     }
 }

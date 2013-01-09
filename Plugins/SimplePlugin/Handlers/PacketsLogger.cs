@@ -21,6 +21,7 @@ using BiM.Behaviors.Messages;
 using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Reflection;
+using System;
 
 namespace SimplePlugin.Handlers
 {
@@ -46,7 +47,15 @@ namespace SimplePlugin.Handlers
             var file = string.Format("{0}/log {1} {2}.log", Plugin.CurrentPlugin.GetPluginDirectory(), bot, Process.GetCurrentProcess().StartTime.ToString("dd MMM HH-mm-ss"));
 
             // this is thread safe
+            try
+            {
             File.AppendAllText(file, m_dumper.Dump(message) + "\r\n");
+        }
+            catch(Exception ex)
+            {
+                bot.Character.SendError("The log file for {0} can't be written in {1} : {2}", bot.Character, file, ex.Message);
+                AllowLogging = false;
+            }
         }
     }
 }

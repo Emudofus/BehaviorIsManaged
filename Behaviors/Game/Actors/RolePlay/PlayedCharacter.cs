@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using BiM.Behaviors.Data;
 using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Alignement;
@@ -30,6 +29,7 @@ using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.Stats;
 using BiM.Behaviors.Game.World;
 using BiM.Behaviors.Game.World.Pathfinding;
+using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 using BiM.Behaviors.Handlers.Context;
 using BiM.Core.Collections;
 using BiM.Protocol.Data;
@@ -38,8 +38,8 @@ using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
 using Job = BiM.Behaviors.Game.Jobs.Job;
+using System.Text.RegularExpressions;
 using System.Diagnostics;
-using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
 {
@@ -85,7 +85,9 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         private InteractiveSkill m_useAfterMove;
         private int? m_nextMap;
-
+        public int? NextMap { get { return m_nextMap; } }
+        private int? m_previousMap;
+        public int? PreviousMap { get { return m_previousMap; } }
         public PlayedCharacter(Bot bot, CharacterBaseInformations informations)
         {
             InformationLevel = MessageLevel.All;// MessageLevel.Warning | MessageLevel.Error;
@@ -100,7 +102,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(informations.breed));
             Look = informations.entityLook;
             Sex = informations.sex;
-            
+
             Inventory = new Inventory(this);
             Stats = new Stats.PlayerStats(this);
             SpellsBook = new SpellsBook(this);
@@ -298,8 +300,8 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
             if (!CanMove())
                 return false;
-            if (pathFinder==null)
-                    pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
+            if (pathFinder == null)
+                pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
             Path path = null;
             if (pathFinder is IAdvancedPathFinder)
                 path = (pathFinder as IAdvancedPathFinder).FindPath(Cell, cell, true, -1, minDistance, cautious);
@@ -343,6 +345,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 if (!canceled && !refused)
                 {
                     var id = m_nextMap.Value;
+                    m_previousMap = Map.Id;
                     Bot.AddMessage(() => Bot.SendToServer(new ChangeMapMessage(id)));
                 }
 
@@ -350,32 +353,79 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
         }
 
-        public bool ChangeMap(MapNeighbour neighbour = MapNeighbour.Any)
+        public bool ChangeMap(int SrcMap, short destCell, int dstMap, int nbTryLeft)
         {
-            try
+            if (SrcMap != Map.Id)
             {
-                m_nextMap = null;
+                SendWarning("I'm not on the proper map to follow leader on the next map");
+                return false;
+            }
+            if (destCell != Cell.Id)
+            {
                 PathFinder pathFinder = new PathFinder(Map, false);
+                if (!Move(destCell, pathFinder, 0, true))
+                {
+                    if (nbTryLeft > 0)
+                    {
+                        SendWarning("Can't join the leader yet, try later");
+                        Bot.CallDelayed(6000, () => ChangeMap(SrcMap, destCell, dstMap, nbTryLeft--));
+                    }
+                    else
+                        if (nbTryLeft > -6)
+                        {
+                            SendWarning("Can't join the leader, no try left. Trying another path");
+                            MapNeighbour neighbour = Map.GetDirectionOfTransitionCell(Map.Cells[destCell]);
+                            destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom().Id;
+                            Bot.CallDelayed(2000, () => ChangeMap(SrcMap, destCell, dstMap, nbTryLeft--));
+                        }
+                        else
+                            SendError("Can't find any path to join the leader. ");
+                    return false;
+                }
+                m_nextMap = dstMap;
+            }
+            else
+            {
+                Bot.AddMessage(() => Bot.SendToServer(new ChangeMapMessage(dstMap)));
+                m_previousMap = Map.Id;
+            }
+            return true;
+        }
 
-                // Select a random cell in the set of all reachable cells that allow map change in the right direction. 
-                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom();
-                if (destCell == null) return false;
-                neighbour = Map.GetDirectionOfTransitionCell(destCell);
-                if (neighbour == MapNeighbour.None) return false;
+        public MapNeighbour ChangeMap(MapNeighbour neighbour = MapNeighbour.Any)
+        {
+            m_nextMap = null;
+            PathFinder pathFinder = new PathFinder(Map, false);
+
+            // Select a random cell in the set of all reachable cells that allow map change in the right direction. 
+            Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom();
+            if (destCell == null) return MapNeighbour.None;
+            neighbour = Map.GetDirectionOfTransitionCell(destCell);
+            if (neighbour == MapNeighbour.None)
+            {
+                SendMessage(String.Format("Can't find any linked map from {0}", this), Color.Red);
+                return MapNeighbour.None;
+            }
+
+            if (destCell.Id != Cell.Id)
+            {
                 if (Move(destCell, pathFinder, 0, true))
                 {
                     m_nextMap = GetNeighbourId(neighbour);
-                    return true;
-                }
-                return false;
-            }
-            finally
-            {
-                if (m_nextMap == null)
-                    SendMessage(String.Format("Can't find any linked map from {0}", this), Color.Red);
-                else
                     SendMessage(String.Format("Moving at the {2} of map {0} to map {1}", this, m_nextMap, neighbour), Color.Pink);
+                    return neighbour;
+                }
+                else
+                    return MapNeighbour.None;
             }
+            else
+            {
+                Bot.AddMessage(() => Bot.SendToServer(new ChangeMapMessage(GetNeighbourId(neighbour))));
+                m_previousMap = Map.Id;
+                SendMessage(String.Format("Moving at the {2} of map {0} to map {1} (direct)", this, m_nextMap, neighbour), Color.Pink);
+            }
+            return neighbour;
+
         }
 
         public bool ChangeMap(MapNeighbour neighbour, Predicate<CellInfo> cellSelector)
@@ -386,13 +436,14 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 PathFinder pathFinder = new PathFinder(Map, false);
 
                 // Select a random cell in the set of all reachable cells that allow map change in the right direction. 
-                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => ( cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour] ) != 0 && cellSelector(cell)).GetRandom();
+                Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0 && cellSelector(cell)).GetRandom();
                 if (destCell == null) return false;
                 neighbour = Map.GetDirectionOfTransitionCell(destCell);
                 if (neighbour == MapNeighbour.None) return false;
                 if (Move(destCell, pathFinder, 0, true))
                 {
                     m_nextMap = GetNeighbourId(neighbour);
+                    m_previousMap = Map.Id;
                     return true;
                 }
                 return false;
@@ -408,7 +459,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         // Do not call NotifyStopMoving(false), wait for confirmation message
         public override void OnTimedPathExpired()
-        {            
+        {
         }
 
         /*
@@ -499,7 +550,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
 
         #region Messages
-        public MessageLevel InformationLevel {get; set;}
+        public MessageLevel InformationLevel { get; set; }
 
         [FlagsAttribute]
         public enum MessageLevel : byte
@@ -580,7 +631,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public void SpendStatsPoints(BoostableStat stat, short amount)
         {
             if (amount > Stats.SpellsPoints)
-                amount = (short) Stats.SpellsPoints;
+                amount = (short)Stats.SpellsPoints;
 
             Bot.SendToServer(new StatsUpgradeRequestMessage((sbyte)stat, amount));
         }
@@ -603,18 +654,18 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 }
 
                 // must fill the current threshold first
-                if (nextThreshold != null && amount > ( nextThreshold.PointsThreshold - currentPoints ))
+                if (nextThreshold != null && amount > (nextThreshold.PointsThreshold - currentPoints))
                 {
-                    boost = (short)( nextThreshold.PointsThreshold - pointsToSpend );
-                    pointsToSpend += (short)( boost * threshold.PointsPerBoost );
+                    boost = (short)(nextThreshold.PointsThreshold - pointsToSpend);
+                    pointsToSpend += (short)(boost * threshold.PointsPerBoost);
 
-                    boost = (short)( boost * threshold.BoostPerPoints );
+                    boost = (short)(boost * threshold.BoostPerPoints);
                 }
                 else
                 {
-                    pointsToSpend += (short)( amount * threshold.PointsPerBoost );
+                    pointsToSpend += (short)(amount * threshold.PointsPerBoost);
 
-                    boost = (short)( amount * threshold.BoostPerPoints );
+                    boost = (short)(amount * threshold.BoostPerPoints);
                 }
 
                 amount -= boost;
@@ -653,19 +704,19 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                 if (pointsToSpend - threshold.PointsPerBoost < 0)
                     break;
 
-                if (nextThreshold != null && ( pointsToSpend / (double)threshold.PointsPerBoost ) > ( nextThreshold.PointsThreshold - currentPoints ))
+                if (nextThreshold != null && (pointsToSpend / (double)threshold.PointsPerBoost) > (nextThreshold.PointsThreshold - currentPoints))
                 {
-                    boost = (short)( threshold.PointsThreshold - pointsToSpend );
-                    pointsToSpend -= (short)( boost * threshold.PointsPerBoost );
+                    boost = (short)(threshold.PointsThreshold - pointsToSpend);
+                    pointsToSpend -= (short)(boost * threshold.PointsPerBoost);
 
-                    boost = (short)( boost * threshold.BoostPerPoints );
+                    boost = (short)(boost * threshold.BoostPerPoints);
                 }
                 else
                 {
                     boost = (short)Math.Floor(pointsToSpend / (double)threshold.PointsPerBoost);
-                    pointsToSpend -= (short)( boost * threshold.PointsPerBoost );
+                    pointsToSpend -= (short)(boost * threshold.PointsPerBoost);
 
-                    boost = (short)( boost * threshold.BoostPerPoints );
+                    boost = (short)(boost * threshold.BoostPerPoints);
                 }
 
                 currentPoints += boost;
@@ -810,12 +861,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         #region Fights
 
-        public void TryStartFightWith(GroupMonster monster, ISimplePathFinder pathFinder=null)
+        public bool TryStartFightWith(GroupMonster monster, ISimplePathFinder pathFinder = null)
         {
             // todo
             var cell = monster.Cell;
 
-            Move(cell, pathFinder);
+            return Move(cell, pathFinder);
         }
 
         public void EnterFight(GameFightJoinMessage message)
@@ -847,7 +898,6 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             Context = Map;
             Bot.RemoveFrame<FightHandler>();
             OnFightLeft(Fight);
-
             Fighter = null;
         }
 
@@ -906,7 +956,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (msg == null) throw new ArgumentNullException("msg");
             SpellsBook.Update(msg);
         }
-        
+
         public void Update(GameRolePlayCharacterInformations msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
@@ -930,7 +980,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             if (Fighter.Team == null)
             {
                 // it's a bit tricky ...
-                Fighter.SetTeam(Fight.GetTeam((FightTeamColor) msg.teamNumber));
+                Fighter.SetTeam(Fight.GetTeam((FightTeamColor)msg.teamNumber));
                 Fight.AddActor(Fighter);
             }
 
@@ -952,7 +1002,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         public void Update(LifePointsRegenEndMessage message)
         {
-            Stats.Health = message.lifePoints;  
+            Stats.Health = message.lifePoints;
             // TODO : unfortunately, we never receive a message saying we have full health. 
             // So have to consider regen rate and compute current health based on it. 
         }
@@ -961,6 +1011,64 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             if (IsMoving())
                 NotifyStopMoving(true, true);
+        }
+
+        internal void Update(SpellUpgradeSuccessMessage message)
+        {
+            SpellsBook.Update(message);
+        }
+
+        internal bool CheckCriteria(string p)
+        {
+            string pattern = @"(P|C)(C|I|S|V|W|A|M)\&(g|l)t\;(\d+)";
+            MatchCollection matches = Regex.Matches(p, pattern);
+            foreach (Match match in matches)
+            {
+                Debug.Assert(match.Captures.Count == 4);
+                bool greater = match.Captures[2].Value == "g";
+                int Value = 0;
+                if (!int.TryParse(match.Captures[3].Value, out Value))
+                {
+                    logger.Error("Weapon criteria : {0} is not an int", match.Captures[3].Value);
+                    continue;
+                }
+
+                if (match.Captures[0].Value == "C")
+                {
+                    switch (match.Captures[1].Value)
+                    {
+                        case "C":
+                            if (greater && Stats.Chance.Total < Value) return false;
+                            if (!greater && Stats.Chance.Total < Value) return false;
+                            break;
+                        case "W":
+                            if (greater && Stats.Wisdom.Total < Value) return false;
+                            if (!greater && Stats.Wisdom.Total < Value) return false;
+                            break;
+                        case "S":
+                            if (greater && Stats.Strength.Total < Value) return false;
+                            if (!greater && Stats.Strength.Total < Value) return false;
+                            break;
+                        case "A":
+                            if (greater && Stats.Agility.Total < Value) return false;
+                            if (!greater && Stats.Agility.Total < Value) return false;
+                            break;
+                        case "V":
+                            if (greater && Stats.Vitality.Total < Value) return false;
+                            if (!greater && Stats.Vitality.Total < Value) return false;
+                            break;
+                        case "M":
+                            if (greater && Stats.MP.Total < Value) return false;
+                            if (!greater && Stats.MP.Total < Value) return false;
+                            break;
+                        case "I":
+                            if (greater && Stats.Intelligence.Total < Value) return false;
+                            if (!greater && Stats.Intelligence.Total < Value) return false;
+                            break;
+                    }
+                }
+            }
+            return true;
         }
     }
 }

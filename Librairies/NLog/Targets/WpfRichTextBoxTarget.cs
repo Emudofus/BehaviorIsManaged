@@ -210,7 +210,8 @@ namespace NLog.Targets
 
             string logMessage = Layout.Render(logEvent);
 
-            Application.Current.Dispatcher.Invoke(new Action(() => SendTheMessageToRichTextBox(logMessage, matchingRule)));
+            if (Application.Current != null)
+                Application.Current.Dispatcher.Invoke(new Action(() => SendTheMessageToRichTextBox(logMessage, matchingRule)));
         }
 
         private void SendTheMessageToRichTextBox(string logMessage, WpfRichTextBoxRowColoringRule rule)

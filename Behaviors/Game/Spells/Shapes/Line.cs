@@ -21,10 +21,10 @@ namespace BiM.Behaviors.Game.Spells.Shapes
 {
     public class Line : IShape
     {
-        public Line(byte radius)
+        public Line(byte radius, DirectionsEnum direction = DirectionsEnum.DIRECTION_SOUTH_EAST)
         {
             Radius = radius;
-            Direction = DirectionsEnum.DIRECTION_SOUTH_EAST;
+            Direction = direction;
         }
 
         #region IShape Members
@@ -59,7 +59,7 @@ namespace BiM.Behaviors.Game.Spells.Shapes
         {
             var result = new List<Cell>();
 
-            for (int i = (int) MinRadius; i <= Radius; i++)
+            for (int i = (int)MinRadius; i <= Radius; i++)
             {
                 switch (Direction)
                 {

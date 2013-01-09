@@ -32,7 +32,7 @@ namespace BiM.Behaviors.Game.Effects
         public EffectDice(EffectDice copy)
             : this(copy.Id, copy.Value, copy.DiceNum, copy.DiceFace, copy)
         {
-            
+
         }
 
         public EffectDice(short id, short value, short dicenum, short diceface, EffectBase effect)
@@ -43,7 +43,7 @@ namespace BiM.Behaviors.Game.Effects
         }
 
         public EffectDice(ObjectEffectDice effect)
-            : base (effect, effect.diceConst)
+            : base(effect, effect.diceConst)
         {
             m_diceface = effect.diceSide;
             m_dicenum = effect.diceNum;
@@ -52,8 +52,8 @@ namespace BiM.Behaviors.Game.Effects
         public EffectDice(EffectInstanceDice effect)
             : base(effect)
         {
-            m_dicenum = (short) effect.diceNum;
-            m_diceface = (short) effect.diceSide;
+            m_dicenum = (short)effect.diceNum;
+            m_diceface = (short)effect.diceSide;
         }
 
         public override int ProtocoleId
@@ -75,7 +75,7 @@ namespace BiM.Behaviors.Game.Effects
 
         public override object[] GetValues()
         {
-            return new object[] {DiceNum, DiceFace, Value};
+            return new object[] { DiceNum, DiceFace, Value };
         }
 
         public override ObjectEffect GetObjectEffect()
@@ -98,10 +98,10 @@ namespace BiM.Behaviors.Game.Effects
                 hidden = Hidden,
                 zoneMinSize = ZoneMinSize,
                 zoneSize = ZoneSize,
-                zoneShape = (uint) ZoneShape,
+                zoneShape = (uint)ZoneShape,
                 value = Value,
-                diceNum = (uint) DiceNum,
-                diceSide = (uint) DiceFace
+                diceNum = (uint)DiceNum,
+                diceSide = (uint)DiceFace
             };
         }
 
@@ -118,7 +118,7 @@ namespace BiM.Behaviors.Game.Effects
             if (ReferenceEquals(a, b))
                 return true;
 
-            if (((object) a == null) || ((object) b == null))
+            if (((object)a == null) || ((object)b == null))
                 return false;
 
             return a.Equals(b);
@@ -141,10 +141,16 @@ namespace BiM.Behaviors.Game.Effects
             unchecked
             {
                 int result = base.GetHashCode();
-                result = (result*397) ^ m_diceface;
-                result = (result*397) ^ m_dicenum;
+                result = (result * 397) ^ m_diceface;
+                result = (result * 397) ^ m_dicenum;
                 return result;
             }
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0} {1}-{2}, Targets: {3}, Area:{4} - {5}", (EffectsEnum)Id, DiceNum, DiceFace, Targets, AreaDesc(), Description);
+        }
+
     }
 }

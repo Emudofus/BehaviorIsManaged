@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System.Collections.Generic;
 using BiM.Behaviors.Game.World;
 using BiM.Protocol.Enums;
+using System.Diagnostics;
 
 namespace BiM.Behaviors.Game.Spells.Shapes
 {
@@ -24,6 +24,21 @@ namespace BiM.Behaviors.Game.Spells.Shapes
         private IShape m_shape;
 
         private SpellShapeEnum m_shapeType;
+
+        public Zone(string rawZone)
+        {
+            if (string.IsNullOrEmpty(rawZone)) return;
+            ShapeType = (SpellShapeEnum)rawZone[0];
+            if (rawZone.Length > 1)
+            {
+                rawZone = rawZone.Remove(0, 1);
+                string[] splitted = rawZone.Split(',');
+                if (splitted.Length >= 1)
+                    Radius = byte.Parse(splitted[0]);
+                if (splitted.Length >= 2)
+                    MinRadius = byte.Parse(splitted[1]);
+            }
+        }
 
         public Zone(SpellShapeEnum shape, byte radius)
         {
@@ -57,13 +72,13 @@ namespace BiM.Behaviors.Game.Spells.Shapes
 
         public uint Surface
         {
-            get { return m_shape.Surface; }
+            get { if (m_shape==null) return 0; return m_shape.Surface; }
         }
 
         public byte MinRadius
         {
             get { return m_shape.MinRadius; }
-            set { m_shape.MinRadius = value; }
+            set { if (m_shape != null) m_shape.MinRadius = value; else Debug.Assert(false); }
         }
 
         public DirectionsEnum Direction
@@ -88,7 +103,7 @@ namespace BiM.Behaviors.Game.Spells.Shapes
             get { return m_radius; }
             set
             {
-                m_radius = value; 
+                m_radius = value;
                 if (m_shape != null)
                     m_shape.Radius = value;
             }

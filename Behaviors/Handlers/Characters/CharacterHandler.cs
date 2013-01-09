@@ -23,36 +23,39 @@ namespace BiM.Behaviors.Handlers.Characters
     {
         [MessageHandler(typeof (CharactersListMessage))]
         public static void HandleCharactersListMessage(Bot bot, CharactersListMessage message)
-        {
+        {            
             bot.ClientInformations.Update(message);
             bot.Display = DisplayState.CharacterSelection;
         }
 
         [MessageHandler(typeof(CharacterSelectedSuccessMessage))]
         public static void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
-        {
+        {           
             bot.SetPlayedCharacter(new PlayedCharacter(bot, message.infos));
         }
 
         [MessageHandler(typeof(CharacterStatsListMessage))]
         public static void HandleCharacterStatsListMessage(Bot bot, CharacterStatsListMessage message)
         {
-            bot.Character.Update(message);
+            if (bot.Character != null)
+                bot.Character.Update(message);
         }
 
         [MessageHandler(typeof(SetCharacterRestrictionsMessage))]
         public static void HandleSetCharacterRestrictionsMessage(Bot bot, SetCharacterRestrictionsMessage message)
         {
-            bot.Character.Update(message);
+            if (bot.Character != null)
+                bot.Character.Update(message);
         }
 
         [MessageHandler(typeof(GameMapNoMovementMessage))]
         public static void HandleGameMapNoMovementMessage(Bot bot, GameMapNoMovementMessage message)
         {
-            if (bot.Character.IsFighting())
-                bot.Character.Fighter.Update(message);
-            else
-                bot.Character.Update(message);
+            if (bot.Character != null)
+                if (bot.Character.IsFighting())
+                    bot.Character.Fighter.Update(message);
+                else
+                    bot.Character.Update(message);
         }
     }
 }

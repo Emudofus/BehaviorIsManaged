@@ -169,7 +169,7 @@ namespace BiM.Behaviors.Game.Fights
 
             bool hasRed;
             bool hasBlue = false;
-            while (( hasRed = redEnumerator.MoveNext() ) | ( hasBlue = blueEnumerator.MoveNext() ))
+            while (( hasRed = redEnumerator.MoveNext() ) || ( hasBlue = blueEnumerator.MoveNext() ))
             {
                 if (redFighterFirst)
                 {

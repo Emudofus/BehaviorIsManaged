@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.Fighters;
-using System;
+using BiM.Behaviors.Game.Actors.RolePlay;
 
 namespace BiM.Behaviors.Game.World
 {
@@ -12,12 +13,40 @@ namespace BiM.Behaviors.Game.World
     public class LOSMap : IDisposable
     {
         private bool?[] _losMap;
-        private Fighter _fighter;
-        private int _fighterCellId;
+        private Cell _pivotCell;
+        private MapContext<Fighter> _mapF;
+        private MapContext<RolePlayActor> _mapRP;
+        bool _throughEntities;
 
-        public LOSMap()
+        private CellList cells
+        {
+            get
+            {
+                if (_mapF == null) return _mapRP.Cells;
+                return _mapF.Cells;
+            }
+        }
+
+        private bool CanBeSeen(Cell targetCell, bool throughEntities)
+        {
+            if (_mapF == null) return _mapRP.CanBeSeen(_pivotCell, targetCell, throughEntities);
+            return _mapF.CanBeSeen(_pivotCell, targetCell, throughEntities);
+        }
+
+        public LOSMap(MapContext<Fighter> map, bool throughEntities = false)
         {
             _losMap = null;
+            _mapF = map;
+            _pivotCell = null;
+            _throughEntities = throughEntities;
+        }
+
+        public LOSMap(MapContext<RolePlayActor> map, bool throughEntities = false)
+        {
+            _losMap = null;
+            _mapRP = map;
+            _pivotCell = null;
+            _throughEntities = throughEntities;
         }
 
         /// <summary>
@@ -30,24 +59,21 @@ namespace BiM.Behaviors.Game.World
         /// <param name="delayComputed">If set, force immediate compute of the full map. Otherwise, only compute needed cells on demand</param>
         /// <param name="forceUpdate">Should be used when obstacles (like actors) may have moved</param>
         /// <returns></returns>
-        public bool UpdateTargetCell(Fighter target, bool throughEntities, bool delayComputed, bool forceUpdate)
+        public bool UpdateTargetCell(Cell pivotCell, bool delayComputed, bool forceUpdate)
         {
-            if (target == null)
+            if (pivotCell == null)
             {
-                _losMap = null;            
-                _fighter = null;
+                _losMap = null;
+                _pivotCell = null;
                 return false;
             }
-            if (target == _fighter && _fighterCellId == target.Cell.Id && !forceUpdate) return true;
-            _fighterCellId = target.Cell.Id;
-            _fighter = target;
-            _losMap = null;
-            if (target == null) return false;
-            _losMap = new bool?[target.Map.Cells.Count()];
-            if (target.Cell == null) return false;
+
+            if (_pivotCell != null && _pivotCell.Id == pivotCell.Id && !forceUpdate) return true;
+            _pivotCell = pivotCell;
+            _losMap = new bool?[cells.Count()];
             if (!delayComputed)
-                foreach (Cell testCell in target.Map.Cells)
-                    _losMap[testCell.Id] = target.Context.CanBeSeen(target.Cell, testCell);
+                foreach (Cell testCell in cells)
+                    _losMap[testCell.Id] = CanBeSeen(testCell, _throughEntities);
             return true;
         }
 
@@ -58,12 +84,12 @@ namespace BiM.Behaviors.Game.World
         /// <returns></returns>
         public bool this[int cellId]
         {
-            get { return _losMap[cellId] ?? (_losMap[cellId] = _fighter.Context.CanBeSeen(_fighter.Cell, _fighter.Map.Cells[cellId])).Value; }
+            get { return _losMap[cellId] ?? (_losMap[cellId] = CanBeSeen(cells[cellId], _throughEntities)).Value; }
         }
 
         public bool this[Cell cell]
         {
-            get { return _losMap[cell.Id] ?? (_losMap[cell.Id] = _fighter.Context.CanBeSeen(_fighter.Cell, cell)).Value; }
+            get { return _losMap[cell.Id] ?? (_losMap[cell.Id] = CanBeSeen(cell, _throughEntities)).Value; }
         }
 
         /// <summary>
@@ -75,7 +101,7 @@ namespace BiM.Behaviors.Game.World
         public IEnumerable<Cell> GetCellsSeenByTarget(IEnumerable<Cell> setOfCells = null)
         {
             if (setOfCells == null)
-                return _fighter.Map.Cells.Where(cell => this[cell]);
+                return cells.Where(cell => this[cell]);
             return setOfCells.Where(cell => this[cell]);
         }
 
@@ -88,14 +114,18 @@ namespace BiM.Behaviors.Game.World
         public IEnumerable<Cell> GetCellsNotSeenByTarget(IEnumerable<Cell> setOfCells = null)
         {
             if (setOfCells == null)
-                return _fighter.Map.Cells.Where(cell => !this[cell]);
+                return cells.Where(cell => !this[cell]);
             return setOfCells.Where(cell => !this[cell]);
         }
 
         void IDisposable.Dispose()
         {
-            if (_fighter != null)
-                _fighter = null;
+            if (_pivotCell != null)
+                _pivotCell = null;
+            if (_mapRP != null)
+                _mapRP = null;
+            if (_mapF != null)
+                _mapF = null;
             if (_losMap != null)
                 _losMap = null;
 

@@ -117,6 +117,7 @@
     <Compile Include="Bot.cs" />
     <Compile Include="BotManager.cs" />
     <Compile Include="ClientConnectionType.cs" />
+    <Compile Include="Data\D2O\XmlDumper.cs" />
     <Compile Include="Data\I18N\I18NDataManager.cs" />
     <Compile Include="Data\I18N\I18NString.cs" />
     <Compile Include="Data\Icons\Icon.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Game\Chat\BotChatMessageClient.cs" />
     <Compile Include="Game\Chat\BotChatMessageServer.cs" />
     <Compile Include="Game\Contacts\ContactsBook.cs" />
+    <Compile Include="Game\Effects\EffectBase.AI.cs" />
     <Compile Include="Game\Effects\EffectBase.cs" />
     <Compile Include="Game\Effects\EffectCreature.cs" />
     <Compile Include="Game\Effects\EffectDate.cs" />
@@ -233,7 +235,10 @@
     <Compile Include="Game\Spells\Spell.AI.cs" />
     <Compile Include="Game\Spells\Spell.Availability.cs" />
     <Compile Include="Game\Spells\Spell.cs" />
+    <Compile Include="Game\Spells\SpellsBook.AI.cs" />
     <Compile Include="Game\Spells\SpellsBook.cs" />
+    <Compile Include="Game\Spells\SpellTarget.cs" />
+    <Compile Include="Game\Spells\WeaponSpell.cs" />
     <Compile Include="Game\Stats\BoostableStat.cs" />
     <Compile Include="Game\Stats\BoostThreshold.cs" />
     <Compile Include="Game\Stats\IMinimalStats.cs" />

@@ -38,6 +38,15 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Map = character.Map;
             Cell = character.Cell;
             Direction = character.Direction;
+            CanFight = true;
+            CanCastSpells = true;
+        }
+
+        internal override void NotifyTurnStarted()
+        {
+            CanFight = canFight();
+            CanCastSpells = canCastSpells();
+            base.NotifyTurnStarted();
         }
 
         public PlayedCharacter Character
@@ -64,6 +73,11 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             {
                 return Character.Stats;
             }
+        }
+
+        public Stats.PlayerStats PCStats
+        {
+            get {return Character.Stats;}
         }
 
         public override AlignmentInformations Alignment
@@ -108,6 +122,8 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             get { return null; }
             protected set { }
         }
+
+        
 
         /// <summary>
         /// Define the fighter team. Throws Exception if already defined.
@@ -167,6 +183,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         {
             // todo spells modifications
             // todo states
+            if (cell == null) NoRangeCheck = true;
 
             if (!NoRangeCheck && !IsPlaying()) 
                 return false;
@@ -226,10 +243,17 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             }
 
             if (pathFinder == null)
-                    pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Map, false);
+                    pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Fight, true);
             Path path = null;
-            path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance);
-            
+            path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance, true); // Try in cautious way first
+            if (path == null)
+            {
+                path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance, false); // If failed, then uncautious
+                if (path != null)
+                {
+                    Character.SendWarning("Couldn't find a cautious path from {0} to {1}, so go the unsafe way", Cell, cell);
+                }
+            }
             return Move(path);
 
         }

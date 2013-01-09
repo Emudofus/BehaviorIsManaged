@@ -27,13 +27,13 @@ using BiM.Behaviors;
 using BiM.Behaviors.Frames;
 using BiM.Behaviors.Messages;
 using BiM.Core.Collections;
+using BiM.Core.Config;
 using BiM.Core.Messages;
 using BiM.Core.Network;
 using BiM.Host.UI;
 using BiM.Host.UI.Helpers;
 using BiM.Host.UI.ViewModels;
 using Microsoft.Win32;
-using BiM.Core.Config;
 
 namespace SnifferPlugin
 {
@@ -50,11 +50,19 @@ namespace SnifferPlugin
     {
         #region Recording On The Fly
         [Configurable("OnTheFlyFileName", "The name of the file used to record the messages on the fly. {0} is replaced by the name of the PC, {1} by the date.")]
-        public static string OnTheFlyFileName = "{1} - {0} OnTheFly.csv";
+        public static string OnTheFlyFileName = "{1} - {0}.csv";
         private void FlushOnTheFly(string lastMessage)
         {
-
-            File.AppendAllText(OnTheFlyFileName.Replace("{0}", Bot.Character == null ? "Bot" : Bot.Character.Name).Replace("{1}", DateTime.Today.ToString("yyMMdd")), lastMessage);
+            string filename = "OnTheFly/" + OnTheFlyFileName.Replace("{0}", Bot.Character == null ? "Bot" : Bot.Character.Name).Replace("{1}", DateTime.Today.ToString("yyMMdd"));
+            try
+            {
+                Directory.CreateDirectory("OnTheFly");
+                File.AppendAllText(filename, lastMessage);
+            }
+            catch(Exception ex)
+            {
+                Bot.Character.SendError("Can't append OnTheFly data in {0} : {1}", filename, ex.Message);
+            }
         }
         #endregion
 

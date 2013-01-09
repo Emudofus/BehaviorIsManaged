@@ -20,14 +20,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors;
-using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Core.Collections;
 using NLog;
 
 namespace BiM.Behaviors.Game.World
 {
     public interface IMapContext
-    {        
+    {
         CellList Cells
         {
             get;
@@ -57,6 +56,10 @@ namespace BiM.Behaviors.Game.World
         bool CanBeSeen(Cell cell1, Cell cell2, bool throughEntities = true);
 
         bool IsCellWalkable(Cell cell, bool throughEntities = true, Cell previousCell = null);
+
+        void SetTrap(int NoTrap, int CellId, int radius);
+        void UnsetTrap(int NoTrap);
+        bool IsTrapped(short CellId);        
     }
 
     public abstract class MapContext<T> : IMapContext, INotifyPropertyChanged where T : ContextActor
@@ -65,17 +68,34 @@ namespace BiM.Behaviors.Game.World
         public const uint Width = 14;
         public const uint Height = 20;
         public const uint MapSize = Width * Height * 2;
-        
+
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        private Dictionary<int, T> m_actors = new Dictionary<int, T>();
-        private readonly ObservableCollectionMT<T> m_collectionActors;
-        private readonly ReadOnlyObservableCollectionMT<T> m_readOnlyActors;
+        protected SortedList<int, SortedSet<short>> _trappedCells;
+
+        public virtual bool IsTrapped(short CellId)
+        {
+            return false;
+        }
+        public virtual void SetTrap(int NoTrap, int CellId, int radius)
+        {
+        }
+
+        public virtual void UnsetTrap(int NoTrap)
+        {            
+            if (_trappedCells.ContainsKey(NoTrap))
+                _trappedCells.Remove(NoTrap);
+        }
+
+        private Dictionary<int, T> _actors = new Dictionary<int, T>();
+        private readonly ObservableCollectionMT<T> _collectionActors;
+        private readonly ReadOnlyObservableCollectionMT<T> _readOnlyActors;
 
         public MapContext()
         {
-            m_collectionActors = new ObservableCollectionMT<T>();
-            m_readOnlyActors = new ReadOnlyObservableCollectionMT<T>(m_collectionActors);
+            _collectionActors = new ObservableCollectionMT<T>();
+            _readOnlyActors = new ReadOnlyObservableCollectionMT<T>(_collectionActors);
+            _trappedCells = new SortedList<int, SortedSet<short>>();
         }
 
 
@@ -86,8 +106,9 @@ namespace BiM.Behaviors.Game.World
 
         public ReadOnlyObservableCollection<T> Actors
         {
-            get { return m_readOnlyActors; }
+            get { return _readOnlyActors; }
         }
+
 
         public abstract CellList Cells
         {
@@ -101,17 +122,17 @@ namespace BiM.Behaviors.Game.World
         /// <returns></returns>
         public virtual bool AddActor(T actor)
         {
-            if (m_actors.ContainsKey(actor.Id))
+            if (_actors.ContainsKey(actor.Id))
             {
                 RemoveActor(actor.Id);
 
-                m_actors.Add(actor.Id, actor);
-                m_collectionActors.Add(actor);
+                _actors.Add(actor.Id, actor);
+                _collectionActors.Add(actor);
                 return false;
             }
 
-            m_actors.Add(actor.Id, actor);
-            m_collectionActors.Add(actor);
+            _actors.Add(actor.Id, actor);
+            _collectionActors.Add(actor);
 
             return true;
         }
@@ -125,7 +146,7 @@ namespace BiM.Behaviors.Game.World
         public bool RemoveActor(int id)
         {
             T actor;
-            if (m_actors.TryGetValue(id, out actor))
+            if (_actors.TryGetValue(id, out actor))
                 return RemoveActor(actor);
 
             return false;
@@ -133,13 +154,13 @@ namespace BiM.Behaviors.Game.World
 
         public virtual bool RemoveActor(T actor)
         {
-            return m_actors.Remove(actor.Id) && m_collectionActors.Remove(actor);
+            return _actors.Remove(actor.Id) && _collectionActors.Remove(actor);
         }
 
         public virtual void ClearActors()
         {
-            m_actors.Clear();
-            m_collectionActors.Clear();
+            _actors.Clear();
+            _collectionActors.Clear();
         }
 
         ContextActor IMapContext.GetActor(int id)
@@ -198,9 +219,10 @@ namespace BiM.Behaviors.Game.World
             return Actors.OfType<TActor>().Where(predicate).ToArray();
         }
 
+        // Even dead one
         public T[] GetActorsOnCell(int cellId)
         {
-            return Actors.Where(actor => actor.Cell != null && actor.Cell.Id == cellId).ToArray();
+            return _actors.Values.Where(actor => actor.Cell != null && actor.Cell.Id == cellId).ToArray();
         }
 
         public T[] GetActorsOnCell(Cell cell)
@@ -209,12 +231,13 @@ namespace BiM.Behaviors.Game.World
         }
         public bool IsActor(int id)
         {
-            return m_actors.ContainsKey(id);
+            return _actors.ContainsKey(id);
         }
 
+        // Only if alive
         public bool IsActorOnCell(int cellId)
         {
-            return m_collectionActors.Any(actor => actor.Cell != null && actor.Cell.Id == cellId);
+            return _actors.Values.Any(actor => actor.Cell != null && actor.Cell.Id == cellId && actor.IsAlive);
         }
 
         public bool IsActorOnCell(Cell cell)
@@ -234,81 +257,34 @@ namespace BiM.Behaviors.Game.World
         /// </summary>
         private bool TooCloseFromSegment(int cx, int cy, int ax, int ay, int bx, int by)
         {
-            const double MIN_DISTANCE_SQUARED = 0.500;
+            const double MIN_DISTANCE_SQUARED = 0.5001;
 
             // Distance computing is inspired by Philip Nicoletti algorithm - http://forums.codeguru.com/printthread.php?t=194400&pp=15&page=2     
-            int numerator = ( cx - ax ) * ( bx - ax ) + ( cy - ay ) * ( by - ay );
-            int denomenator = ( bx - ax ) * ( bx - ax ) + ( by - ay ) * ( by - ay );
+            int numerator = (cx - ax) * (bx - ax) + (cy - ay) * (by - ay);
+            int denomenator = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
 
             if (numerator > denomenator || numerator < 0)
-                return false; //The point is outside the segment, so it doesn't block the LOS
+                return false; //The projection of the point on the line is outside the segment, so it doesn't block the LOS
 
-            double Base = ( ( ay - cy ) * ( bx - ax ) - ( ax - cx ) * ( by - ay ) );
+            double Base = ((ay - cy) * (bx - ax) - (ax - cx) * (by - ay));
             double distanceLineSquared = Base * Base / denomenator;
-            return ( distanceLineSquared <= MIN_DISTANCE_SQUARED ); // if distance to line is frankly over sqrt(2)/2, it won't block LOS. 
+            return (distanceLineSquared <= MIN_DISTANCE_SQUARED); // if distance to line is frankly over sqrt(2)/2, it won't block LOS. 
         }
+
 
         /// <summary>
         /// Says if Cell1 can see Cell2
         /// If not sure, then returns false. 
+        /// Warning : cell1 and cell2 are ignored !
         /// </summary>
         /// <returns></returns>
-        public bool CanBeSeen(Cell cell1, Cell cell2, bool throughEntities = true)
+        public bool CanBeSeen(Cell cell1, Cell cell2, bool throughEntities = false)
         {
             if (cell1 == null || cell2 == null) return false;
             if (cell1 == cell2) return true;
 
-            int x1, x2;
-            if (cell1.X < cell2.X)
-            {
-                x1 = cell1.X;
-                x2 = cell2.X;
-            }
-            else
-            {
-                x1 = cell2.X;
-                x2 = cell1.X;
-            }
-
-            int y1, y2;
-            if (cell1.Y < cell2.Y)
-            {
-                y1 = cell1.Y;
-                y2 = cell2.Y;
-            }
-            else
-            {
-                y1 = cell2.Y;
-                y2 = cell1.Y;
-            }
-
-            int cellIdStart, cellIdEnd;
-            if (cell1.Id < cell2.Id)
-            {
-                cellIdStart = cell1.Id;
-                cellIdEnd = cell2.Id;
-            }
-            else
-            {
-                cellIdStart = cell2.Id;
-                cellIdEnd = cell1.Id;
-            }
-
-            Cell info;
-            for (int cellId = cellIdStart + 1; cellId < cellIdEnd; cellId++)
-            {
-                info = Cells[cellId];
-
-                if (info == null)
-                    return false;
-
-                bool blocker = !info.LineOfSight || ( !throughEntities && IsActorOnCell(info) );
-
-                if (blocker && info.X >= x1 && info.X <= x2 && info.Y >= y1 && info.Y <= y2)
-                    // If one obstacle on the LOS, returns false
-                    if (TooCloseFromSegment(info.X, info.Y, cell1.X, cell1.Y, cell2.X, cell2.Y))
-                        return false;
-            }
+            foreach (Cell cell in cell1.GetAllCellsInRectangle(cell2, true, cell => cell != null && !cell.LineOfSight || (!throughEntities && IsActorOnCell(cell))))
+                if (TooCloseFromSegment(cell.X, cell.Y, cell1.X, cell1.Y, cell2.X, cell2.Y)) return false;
             return true;
         }
         #endregion
@@ -328,7 +304,7 @@ namespace BiM.Behaviors.Game.World
                 int floorDiff = Math.Abs(cell.Floor) - Math.Abs(previousCell.Floor);
 
                 if (cell.MoveZone != previousCell.MoveZone ||
-                    cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff >  Map.ElevationTolerance)
+                    cell.MoveZone == previousCell.MoveZone && cell.MoveZone == 0 && floorDiff > Map.ElevationTolerance)
                     return false;
             }
 

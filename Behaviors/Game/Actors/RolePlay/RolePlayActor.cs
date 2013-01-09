@@ -34,6 +34,12 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public delegate void InteractiveUsageEndedHandler(RolePlayActor actor, InteractiveObject interactive, InteractiveSkill skill);
         public event InteractiveUsageEndedHandler StopUsingInteractive;
 
+        public override bool IsAlive 
+        { 
+            get { return true; } 
+            set { } 
+        }
+
         public virtual void NotifyInteractiveUseEnded()
         {
             var skill = UsingSkill;
@@ -98,10 +104,14 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         {
             base.Tick(dt);
         }
-       
+
         public override void Dispose()
         {
             base.Dispose();
+        }
+        public override string ToString()
+        {
+            return string.Format("RP#{0} at {1}", Id, Cell); 
         }
     }
 }

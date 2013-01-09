@@ -38,16 +38,12 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Level = (int) MonsterGrade.level;        
         }
 
-        public override int Id
-        {
-            get;
-            protected set;
-        }
-
         public override string Name
         {
             get
             {
+                if (m_name == null && MonsterTemplate == null)
+                    return "???";
                 return m_name ?? (m_name = I18NDataManager.Instance.ReadText(MonsterTemplate.nameId));
             }
             protected set
@@ -70,26 +66,21 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public void Update(GameFightMonsterInformations msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Id = msg.contextualId;
-            Look = msg.look;
-            Update(msg.disposition);
-            IsAlive = msg.alive;
+            //Id = msg.contextualId;
+            //Look = msg.look;
+            //Update(msg.disposition);
+            //IsAlive = msg.alive;
             MonsterTemplate = ObjectDataManager.Instance.Get<Monster>(msg.creatureGenericId);
             MonsterGrade = MonsterTemplate.grades[msg.creatureGrade - 1];
         }
 
-        public override void Update(GameFightFighterInformations informations)
+        public override void Update(GameContextActorInformations informations)
         {
             if (informations == null) throw new ArgumentNullException("informations");
-
+            base.Update(informations);
             if (informations is GameFightMonsterInformations)
             {
                 Update(informations as GameFightMonsterInformations);
-            }
-            else
-            {
-                logger.Error("Cannot update a {0} with a {1} instance", GetType(), informations.GetType());
-                base.Update(informations);
             }
         }
     }

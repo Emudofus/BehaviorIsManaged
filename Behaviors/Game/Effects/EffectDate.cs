@@ -47,6 +47,7 @@ namespace BiM.Behaviors.Game.Effects
             m_day = day;
             m_hour = hour;
             m_minute = minute;
+            FixDate();
         }
 
         public EffectDate(ObjectEffectDate effect)
@@ -58,6 +59,7 @@ namespace BiM.Behaviors.Game.Effects
             m_day = effect.day;
             m_hour = effect.hour;
             m_minute = effect.minute;
+            FixDate();
         }
 
         public EffectDate(EffectInstanceDate effect)
@@ -68,8 +70,20 @@ namespace BiM.Behaviors.Game.Effects
             m_day = (short) effect.day;
             m_hour = (short) effect.hour;
             m_minute = (short) effect.minute;
+            FixDate();
         }
 
+
+        void FixDate()
+        {
+            if (m_year < 1) m_year = 1;
+            if (m_year > 9999) m_year = 9999;
+            if (m_month < 1) m_month = 1;
+            if (m_month > 12) m_month = 12;
+            if (m_day < 1) m_day = 1;
+            if (m_day > 31) m_day = 31;
+
+        }
 
         public override int ProtocoleId
         {
@@ -86,7 +100,7 @@ namespace BiM.Behaviors.Game.Effects
         }
 
         public DateTime GetDate()
-        {
+        {            
             return new DateTime(m_year, m_month, m_day, m_hour, m_minute, 0);
         }
 

@@ -67,6 +67,18 @@ namespace WindowManager
             }
         }
 
+        /// <summary>
+        /// This is used to avoid inactivity inhibition of the client. 
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="message"></param>
+        [MessageHandler(typeof(GameFightTurnEndMessage))]
+        private void HandleGameFightTurnEndMessage(Bot bot, GameFightTurnEndMessage message)
+        {
+            if (bot.Character != null && bot.Character.Id == message.id)
+                CloseWindow();
+        }
+
         [MessageHandler(typeof(GameFightEndMessage))]
         private void HandleGameFightEndMessage(Bot bot, GameFightEndMessage message)
         {

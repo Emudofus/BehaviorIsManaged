@@ -96,7 +96,7 @@ namespace BiM.Behaviors.Handlers.Context
     [MessageHandler(typeof(GameMapMovementMessage))]
     public static void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
     {
-      if (bot.Character.Context == null)
+        if (bot.Character == null || bot.Character.Context == null)
       {
         logger.Error("Context is null as processing movement");
         return;
@@ -112,10 +112,7 @@ namespace BiM.Behaviors.Handlers.Context
         fightActor = true;
       if (actor == null)
       {
-        if (fightActor)
-          logger.Error("Actor {0} not found (known : {1})", message.actorId, String.Join(",", bot.Character.Fight.Actors)); // only a log for the moment until context are fully handled
-        else
-          logger.Error("Actor {0} not found (known : {1})", message.actorId, String.Join(",", bot.Character.Context.Actors)); // only a log for the moment until context are fully handled
+        logger.Error("Actor {0} not found (known : {1})", message.actorId, String.Join(",", fightActor ? bot.Character.Fight.Actors : bot.Character.Context.Actors)); // only a log for the moment until context are fully handled
         return;
       }
 

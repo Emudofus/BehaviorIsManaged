@@ -63,11 +63,11 @@ namespace BiM.Behaviors.Game.Spells
                 else
                     targetCount++;
                 _targeted[idTarget] = targetCount;
-                Debug.Assert(targetCount <= LevelTemplate.maxCastPerTarget);
+                //Debug.Assert(targetCount <= LevelTemplate.maxCastPerTarget);
             }
-            Debug.Assert(_nbCastAllowed > 0 || LevelTemplate.maxCastPerTurn <= 0);
+            //Debug.Assert(_nbCastAllowed > 0 || LevelTemplate.maxCastPerTurn <= 0);
             if (LevelTemplate.minCastInterval > 0)
-                _nbTurnToWait = (uint) LevelTemplate.minCastInterval + 1;
+                _nbTurnToWait = (uint) LevelTemplate.minCastInterval;
 
             if (_nbCastAllowed > 0)
                 _nbCastAllowed--;

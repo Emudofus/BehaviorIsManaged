@@ -75,15 +75,15 @@ namespace BiM.Behaviors.Data.D2O
             return Get<T>((int)key);
         }
 
-        public T Get<T>(int key)
+        public T Get<T>(int key, bool noExceptionThrown = false)
             where T : class
         {
-            if (!m_readers.ContainsKey(typeof(T)))
+            if (!m_readers.ContainsKey(typeof(T))) // This exception should be called in all cases (serious)
                 throw new ArgumentException("Cannot find data corresponding to type : " + typeof(T));
 
             var reader = m_readers[typeof(T)];
 
-            return reader.ReadObject<T>(key, true);
+            return reader.ReadObject<T>(key, true, noExceptionThrown);
         }
 
         public T GetOrDefault<T>(uint key)
@@ -103,6 +103,21 @@ namespace BiM.Behaviors.Data.D2O
             {
                 return null;
             }
+        }
+
+        public IEnumerable<Type> GetAllTypes()
+        {
+            return m_readers.Keys;
+        }
+
+        public IEnumerable<object> EnumerateObjects(Type type)
+        {
+            if (!m_readers.ContainsKey(type))
+                throw new ArgumentException("Cannot find data corresponding to type : " + type);
+
+            var reader = m_readers[type];
+
+            return reader.Indexes.Select(index => reader.ReadObject(index.Key, true)).Where(obj=>obj.GetType().Name == type.Name);
         }
 
         public IEnumerable<T> EnumerateObjects<T>() where T : class

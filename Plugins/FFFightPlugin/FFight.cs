@@ -17,9 +17,11 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using BiM.Behaviors;
+using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.Fighters;
@@ -29,626 +31,1274 @@ using BiM.Behaviors.Game.Movements;
 using BiM.Behaviors.Game.Spells;
 using BiM.Behaviors.Game.Spells.Shapes;
 using BiM.Behaviors.Game.World;
+using BiM.Behaviors.Game.World.Pathfinding;
+using BiM.Behaviors.Game.World.Pathfinding.FFPathFinding;
 using BiM.Core.Messages;
 using BiM.Core.Threading;
+using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
+using BiM.Protocol.Types;
 using NLog;
-using System.Diagnostics;
-using BiM.Behaviors.Game.World.Pathfinding;
 
-namespace FightPlugin
+namespace zFFFightPlugin
 {
-    internal static class WelcomeMessageRegister
+  internal static class WelcomeMessageRegister
+  {
+    static void SetFrame(Bot bot, Mode mode)
     {
-        [MessageHandler(typeof(ChatClientMultiMessage))]
-        public static void HandleChatMessage(Bot bot, ChatClientMultiMessage message)
+      if (bot.HasFrame<FFight>())
+      {
+        bot.Character.SendInformation("Set existing FFight to {0} mode", mode);
+        bot.GetFrame<FFight>().Mode = mode;
+      }
+      else
+        if (bot.AddFrame(new FFight(bot, mode)))
+          bot.Character.SendInformation("Experimental AI fight started in {0} mode", mode);
+        else
+          bot.Character.SendInformation("Failed to start a new FFight frame !");
+
+    }
+
+    [MessageHandler(typeof(ChatClientMultiMessage))]
+    public static void HandleChatMessage(Bot bot, ChatClientMultiMessage message)
+    {
+      if (message.content == ".help")
+      {
+        message.BlockNetworkSend();// do not send this message to the server                
+        bot.Character.SendInformation(".dump spells");
+        bot.Character.SendInformation(".dump all");
+        bot.Character.SendInformation(".FF ? => Show all plugins running");
+        bot.Character.SendInformation(".FF on or .FF auto => Starts experimental AI fight in automatic mode");
+        bot.Character.SendInformation(".FF fol => Put the experimental AI fight in follower mode");
+        bot.Character.SendInformation(".FF gat => Put the experimental AI fight in gathering mode (not implemented yet)");
+        bot.Character.SendInformation(".FF off or .FF man => Disable experimental AI fight (manual mode)");
+        bot.Character.SendInformation(".FF stats => gives some stats");
+        bot.Character.SendInformation(".FF all => Starts experimental AI fight on all Bots");
+        bot.Character.SendInformation(".FF /all => Stops experimental AI fight on all Bots");
+        bot.Character.SendInformation("message <Level> => Filters the messages received from the bot to the Dofus client. <Level> is a bit field (4 bits, so values range from 0 to 7)");
+
+      }
+      else if (message.content == ".dump all")
+      {
+        message.BlockNetworkSend();// do not send this message to the server                
+        XmlDumper.DumpAll();
+      }
+      else if (message.content == ".dump spells")
+      {
+        message.BlockNetworkSend();// do not send this message to the server                
+        XmlDumper.SpellsDumper("_Spells.xml");
+      }
+
+      if (message.content.StartsWith(".FF"))
+      {
+        message.BlockNetworkSend();// do not send this message to the server                
+        if (message.content == ".FF ?")
         {
-            if (message.content.StartsWith(".FF"))
+          int BotNo = 0;
+          int FrameNo = 0;
+          foreach (Bot subBot in BotManager.Instance.Bots)
+          {
+            BotNo++;
+            foreach (IFrame frame in subBot.Frames)
             {
-                message.BlockNetworkSend();// do not send this message to the server                
+              FrameNo++;
+              bot.Character.SendInformation("Bot {0} ({3}) Frame {1} : {2}", BotNo, FrameNo, frame.GetType().Name, subBot.Character);
             }
+          }
 
-            if (message.content == ".help")
+        }
+        else
+          if (message.content == ".FF all")
+          {
+            bot.Character.SendInformation("Experimental AI fight started for all played characters (set to follower mode for non-leaders of parties)");
+            foreach (Bot subBot in BotManager.Instance.Bots)
             {
-                bot.Character.SendMessage(".FF on => Starts experimental AI fight");
-                bot.Character.SendMessage(".FF off => Stops experimental AI fight");
-                bot.Character.SendMessage(".FF stats => gives some stats");
-            }
+              if (subBot.AddFrame(new FFight(subBot)))
+              {
+                subBot.Character.SendInformation("Experimental AI fight started");
+                bot.Character.SendInformation("FF started for {0}", bot.Character);
+              }
+              else
+              {
+                subBot.Character.SendInformation("Can't start FF");
+                bot.Character.SendInformation("Can't start FF for {0}", bot.Character);
+              }
 
-            else if (message.content == ".FF on")
-            {
-                bot.AddFrame(new FFight(bot));
-                bot.Character.SendMessage("Experimental AI fight started");
             }
-            else if (message.content == ".FF off")
+          }
+          else if (message.content == ".FF /all")
+          {
+            bot.Character.SendInformation("Experimental AI fight stopped for all played characters (set to manual mode)");
+            foreach (Bot subBot in BotManager.Instance.Bots)
             {
-                bot.RemoveFrame<FFight>();
-                bot.Character.SendMessage("Experimental AI fight stopped");
+              if (subBot.RemoveFrame<FFight>())
+              {
+                subBot.Character.SendInformation("Experimental AI fight stopped");
+                bot.Character.SendInformation("FF stopped for {0}", bot.Character);
+              }
+              else
+              {
+                subBot.Character.SendInformation("Failed to stop Experimental AI fight. Probably not running ?");
+                bot.Character.SendInformation("Can't stop FF for {0}", bot.Character);
+              }
             }
-            else if (message.content == ".FF stats")
+          }
+          else if (message.content.StartsWith(".FF fol", StringComparison.InvariantCultureIgnoreCase))
+            SetFrame(bot, Mode.Follower);
+          else if (message.content.StartsWith(".FF gat", StringComparison.InvariantCultureIgnoreCase))
+            SetFrame(bot, Mode.Ressources);
+          else if (message.content.StartsWith(".FF auto", StringComparison.InvariantCultureIgnoreCase) || message.content.StartsWith(".FF on", StringComparison.InvariantCultureIgnoreCase))
+            SetFrame(bot, Mode.AutomaticFight);
+          else if (message.content.StartsWith(".FF man", StringComparison.InvariantCultureIgnoreCase) || message.content.StartsWith(".FF off", StringComparison.InvariantCultureIgnoreCase))
+            SetFrame(bot, Mode.Manual);
+          else if (message.content == ".FF stats")
+          {
+            if (!bot.HasFrame<FFight>())
             {
-                if (!bot.HasFrame<FFight>())
-                {
-                    bot.Character.SendMessage("Experimental AI fight is NOT running");
-                }
-                else
-                {
-                    FFight fightBot = bot.GetFrame<FFight>();
-                    bot.Character.SendMessage("Experimental AI fight IS running");
-                    fightBot.Dump();
-                }
+              bot.Character.SendInformation("Experimental AI fight is NOT running");
             }
+            else
+            {
+              FFight fightBot = bot.GetFrame<FFight>();
+              bot.Character.SendInformation("Experimental AI fight IS running in mode {0}", fightBot.Mode);
+              fightBot.Dump();
+            }
+          }
+      }
+
+      PlayedCharacter PC = bot.Character;
+      if (message.content == "?")
+      {
+        message.BlockNetworkSend();// do not send this message to the server
+        PC.SendInformation(String.Format("Position : NF{0} - F{1}", PC.Cell, PC.Fighter != null ? PC.Fighter.Cell.ToString() : "N/A"));
+        /*PC.ResetCellsHighlight();
+        if (PC.Fighter != null)
+        {
+            PC.HighlightCells(PC.Fight.BlueTeam.FightersAlive.Select(fighter => fighter.Cell), Color.Blue);
+            PC.HighlightCells(PC.Fight.RedTeam.FightersAlive.Select(fighter => fighter.Cell), Color.Red);
+            PC.HighlightCell(PC.Fighter.Cell, Color.Pink);
+        }
+        else
+            PC.HighlightCell(PC.Cell, Color.Pink);*/
+      }
+      if (message.content.StartsWith("message"))
+      {
+        message.BlockNetworkSend();// do not send this message to the server
+        string sdbgLevel = message.content.Replace("message", "").Trim();
+        PlayedCharacter.MessageLevel dbgLevel = PC.InformationLevel;
+        if (PlayedCharacter.MessageLevel.TryParse(sdbgLevel, out dbgLevel))
+        {
+          PC.SendMessage(String.Format("MessageLevel was {0}, it is now {1}", PC.InformationLevel, dbgLevel));
+          PC.InformationLevel = dbgLevel;
+        }
+        else
+          PC.SendMessage(String.Format("MessageLevel is {0}", PC.InformationLevel));
+      }
+
+    }
+  }
+
+  public enum Mode { AutomaticFight, Follower, Ressources, Manual }
+  internal partial class FFight : Frame<FFight>
+  {
+    //private WindowDetector wndProcessor;
+    private static int FFightCount = 0;
+    public int FFightNb { get; private set; }
+    #region Setting stats
+    private Stopwatch sitTimer;
+    private Stopwatch fightTimer;
+    private Stopwatch botTimer;
+    private int startingElapsSecondes;
+    #endregion Setting stats
+
+    private SimplerTimer _checkTimer;
+    private bool _sit = false;
+    private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+    //private ContextActor.MoveStopHandler _stopMovingDelegate;
+    private Fighter _currentTarget;
+    private LOSMap _losMapF, _losMapRP;
+    private BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder _pathFinder;
+    private string _lastPathDetail;
+    private SpellTarget spellTarget;
+    private bool isMoving;
+    FFSettings settings;
+    public Mode Mode { get; set; }
+    public bool LeaderMode { get; set; }
+    public FFight LeaderBot { get; set; }
+
+    public int? PartyLeaderId { get; private set; }
+    public List<PartyMemberInformations> Party { get; set; }
+    public int PartyId { get; private set; }
+
+    public PlayedCharacter Character { get; private set; }
+    public PlayedFighter Fighter { get; private set; }
+
+    public FFight(Bot bot, Mode mode = Mode.AutomaticFight)
+      : base(bot)
+    {
+      FFightNb = ++FFightCount;
+      if (bot.Character == null)
+      {
+        OnDetached();
+        return;
+      }
+      Mode = mode;
+      #region Settings and logs
+      Directory.CreateDirectory("Spells");
+      bot.CallDelayed(5000, () => File.WriteAllText("spells/" + bot.Character.Name + ".spells.txt", bot.Character.SpellsBook.GetFullDetail()));
+      settings = Bot.Settings.GetOrAddEntry<FFSettings>();
+      if (settings.Restarts == 0)
+        settings.Init(bot.Character);
+      Character = bot.Character;
+      Party = null;
+      botTimer = new Stopwatch();
+      botTimer.Start();
+      startingElapsSecondes = settings.BotElapsedSeconds;
+      fightTimer = new Stopwatch();
+      sitTimer = new Stopwatch();
+      settings.Restarts++;
+      #endregion
+
+      isMoving = false;
+      Character.FightJoined += OnFightJoined;
+      Character.FightLeft += OnFightLeft;
+      Character.MapJoined += OnMapJoined;
+      _losMapRP = new LOSMap(bot.Character.Map);
+
+      TeamMeUp();
+      //bot.CallDelayed(2000, () => wndProcessor = bot.GetFrame<WindowDetector>());
+      if (bot.Character.IsFighting()) // reconnect
+        OnFightJoined(bot.Character, bot.Character.Fight);
+      else if (bot.Character.Map != null)
+        OnMapJoined(bot.Character, bot.Character.Map);
+    }
+
+    /// <summary>
+    /// Get All other FFight plugins within the same server
+    /// </summary>
+    /// <returns></returns>
+    IEnumerable<FFight> GetOtherFFights(bool withinSameParty = false)
+    {
+      foreach (Bot subBot in BotManager.Instance.Bots)
+        if (subBot != Bot && subBot.Character != null && subBot.ClientInformations.SelectedServer.id == Bot.ClientInformations.SelectedServer.id)
+          if (subBot.HasFrame<FFight>())
+            if (!withinSameParty || (Party != null && Party.Any(member => member.id == subBot.Character.Id)))
+              yield return subBot.GetFrame<FFight>();
+    }
+
+    private void TeamMeUp()
+    {
+      // Looking for other bots on the same server
+      foreach (FFight ffight in GetOtherFFights()) // The first one we find on the same server, and not gathered mode
+        if (ffight.Mode != Mode.Ressources)
+        {
+          LeaderBot = ffight;
+          ffight.Bot.SendToServer(new PartyInvitationRequestMessage(Character.Name));
+          return;
         }
     }
 
 
-    internal class FFight : Frame<FFight>
+    private void OnMapJoined(PlayedCharacter character, Map map)
     {
-        private PlayedFighter _character;
-        private SimplerTimer _checkTimer;
-        private bool _sit = false;
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        //private ContextActor.MoveStopHandler _stopMovingDelegate;
-        private Fighter _currentTarget;
-        private LOSMap _losMap;
-        private BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder _pathFinder;
-        public FFight(Bot bot)
-            : base(bot)
+
+      _pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(map, false);
+      _losMapRP = new LOSMap(map);
+      if (_checkTimer != null)
+      {
+        _checkTimer.Dispose();
+        _checkTimer = null;
+      }
+      _checkTimer = character.Bot.CallPeriodically(4 * 1000, CheckMonsters);
+    }
+
+    public void Sit()
+    {
+      if (!_sit)
+      {
+        sitTimer.Restart();
+
+        Bot.SendToServer(new EmotePlayRequestMessage(1));
+        //Bot.Character.Say("/sit");
+
+        _sit = true;
+
+        Bot.Character.StartMoving += StandUp;
+
+      }
+    }
+
+    private void StandUp(ContextActor sender, MovementBehavior path)
+    {
+      Debug.Assert(sitTimer.IsRunning);
+      sitTimer.Stop();
+      settings.BotHealingElapsedSeconds += (int)(sitTimer.ElapsedMilliseconds / 1000);
+
+      _sit = false;
+      Bot.Character.StartMoving -= StandUp;
+    }
+
+    int MapMoveFailedCount = 0;
+    Stopwatch waitingOtherTimer = new Stopwatch();
+    private void CheckMonsters()
+    {
+      //startingElapsSecondes = settings.BotElapsedSeconds;
+      settings.BotElapsedSeconds = startingElapsSecondes + (int)(botTimer.ElapsedMilliseconds / 1000);
+      settings.LastActivityDate = DateTime.Now;
+      Bot.SaveSettings();
+      if (Character.Stats.Health * 10 < Bot.Character.Stats.MaxHealth * 9) // under 90% full health
+      {
+        if (!_sit)
         {
-            bot.Character.FightJoined += OnFightJoined;
-            bot.Character.FightLeft += OnFightLeft;
-            bot.Character.MapJoined += OnMapJoined;
-            _losMap = new LOSMap();
-            if (bot.Character.IsFighting())
-                OnFightJoined(bot.Character, bot.Character.Fight);
-            else if (bot.Character.Map != null)
-                OnMapJoined(bot.Character, bot.Character.Map);
+          Character.SendWarning("Character health too low : {0}/{1} => sit", Bot.Character.Stats.Health, Bot.Character.Stats.MaxHealth);
+
+          Bot.CallDelayed(500, Sit);
         }
 
-        private void OnMapJoined(PlayedCharacter character, Map map)
-        {
-            _pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(map, false);
-            if (_checkTimer != null)
-                _checkTimer.Dispose();
-            _checkTimer = character.Bot.CallPeriodically(4 * 1000, CheckMonsters);
-        }
+        return;
+      }
+      if (Mode != Mode.AutomaticFight && Mode != Mode.Ressources)
+        return; // 
 
-        private void Sit()
+      if (settings.MaxPower < 0.1)
+        settings.MaxPower = 0.99;
+      int level = (int)(Character.Level * settings.MaxPower);
+
+      if (PartyLeaderId == Character.Id) // Leader mode : wait all members of the party are in the same map
+      {
+        if (!Party.All(member => Character.Map.Actors.Any(actor => actor.Id == member.id)))
         {
-            if (!_sit)
+          if (!waitingOtherTimer.IsRunning)
+            waitingOtherTimer.Start();
+          if (waitingOtherTimer.ElapsedMilliseconds > 60000) // Over 1 minute
+          {
+            Character.SendInformation("Leader : waiting for over 1 minute for other members of the party {0} => come back on previous map", string.Join(",", Party.Where(member => !Character.Map.Actors.Any(actor => actor.Id == member.id)).Select(member => string.Format("{0} ({1}/{2})", member.name, member.lifePoints, member.maxLifePoints))));
+            if (Character.PreviousMap.HasValue)
+              Character.ChangeMap(Character.Map.Id, Character.Cell.Id, Character.PreviousMap.Value, 10);
+            waitingOtherTimer.Reset();
+          }
+          else
+            Character.SendInformation("Leader : waiting for other members of the party {0}", string.Join(",", Party.Where(member => !Character.Map.Actors.Any(actor => actor.Id == member.id)).Select(member => string.Format("{0} ({1}/{2})", member.name, member.lifePoints, member.maxLifePoints))));
+          return;
+        }
+        level = Party.Sum(member => member.level);
+        Character.SendInformation("Leader : looking for monsters around team level = {0}", level);
+      }
+      waitingOtherTimer.Reset();
+      int levelMax = Math.Max(Math.Min(level + 10, level * 2), (int)(level * 1.2));
+      int levelMin = level / 2;
+
+      var reachableCells = _pathFinder.FindConnectedCells(Character.Cell, false, false);
+      var monster = Character.Map.Actors.OfType<GroupMonster>()
+          .Where(x => x.Level <= levelMax && x.Level >= levelMin && (reachableCells.Any(cell => cell.Id == x.Cell.Id)))
+          .OrderBy(x => Math.Abs(x.Level - level)).FirstOrDefault(); // As close as possible from character's level
+
+      if (monster != null && MapMoveFailedCount < 5)
+      {
+        //Bot.Character.SendMessage(String.Format("Trying to start a fight with group lv {0}, stCell {1}, leader {2} lv {3}", monster.Level, monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
+        if (!Character.TryStartFightWith(monster, _pathFinder))
+          MapMoveFailedCount++;
+        else
+          MapMoveFailedCount = 0;
+        //Move(Bot.Character.Cell, monster.Cell, false, -1);
+      }
+      else
+        if (!Character.IsMoving())
+          Bot.CallDelayed(500, () => ChangeMap());
+    }
+
+    public void ChangeMap(MapNeighbour neighbour = MapNeighbour.Any)
+    {
+      MapNeighbour choosenNeighbour = Bot.Character.ChangeMap(neighbour);
+      if (choosenNeighbour == MapNeighbour.None) return; // Failed
+      MapMoveFailedCount = 0;
+      if (otherFFights != null && Bot.Character != null && Bot.Character.Movement != null && choosenNeighbour != MapNeighbour.None)
+        foreach (FFight ffight in otherFFights)
+          ffight.ComeOnMyMap(Bot.Character.Movement.EndCell.Id, Bot.Character.NextMap, choosenNeighbour);
+    }
+
+    List<Bot> otherBots;
+    List<FFight> otherFFights;
+
+    public bool JoinAsFollower(Fight otherFight)
+    {
+      return false;
+    }
+
+    public bool ComeOnMyMap(short cellId, int? mapId, MapNeighbour neighbour)
+    {
+      return false;
+    }
+
+    private void OnFightJoined(PlayedCharacter character, Fight fight)
+    {
+      otherBots = new List<Bot>();
+      otherFFights = new List<FFight>();
+      Fighter = character.Fighter;
+
+      /*if (Mode != Mode.Follower)
+          foreach (Bot otherBot in BotManager.Instance.Bots)
+              if (otherBot != Bot)
+                  if (otherBot.Character != null && otherBot.Character.Map != null && otherBot.Character.Map.Id == character.Map.Id)
+                  {
+                      if (otherBot.AddFrame(new FFight(otherBot, Mode.Follower)))
+                      {
+                      }
+                      FFight otherFFight = otherBot.GetFrame<FFight>();
+                      if (otherFFight != null)
+                      {
+                          otherFFights.Add(otherBot.GetFrame<FFight>());
+                          otherBots.Add(otherBot);
+                          otherFFight.JoinAsFollower(fight);
+                          character.SendInformation(string.Format("Asking {0} to join on the fight", otherBot.Character));
+                      }
+                  }*/
+
+      fightTimer.Restart();
+      settings.FightStarted++;
+      settings.LastFightDate = DateTime.Now;
+      if (_checkTimer != null)
+      {
+        _checkTimer.Dispose();
+        _checkTimer = null;
+      }
+      _pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(fight, true);
+      _losMapF = new LOSMap(fight);
+
+      Fighter = character.Fighter;
+      Fighter.TurnStarted += OnTurnStarted;
+      fight.StateChanged += OnStateChanged;
+      //Fighter.SequenceEnded += OnSequenceEnd;
+      Fighter.Acknowledge += OnAcknowledgement;
+    }
+
+    private void OnStateChanged(Fight fight, FightPhase phase)
+    {
+      if (phase == FightPhase.Placement)
+        Bot.CallDelayed(2000, Placement);
+    }
+
+    void FindBestAttack()
+    {
+      bestAttackSpell = Fighter.FindMostEfficientAttackSpell();
+      if (bestAttackSpell == null)
+        bestDistance = 1;
+      bestDistance = Fighter.GetRealSpellRange(bestAttackSpell.LevelTemplate);
+    }
+
+    void Placement()
+    {
+      FindBestAttack();
+      if (Mode == Mode.Manual) return;
+      int delay = 50;
+      if (PartyLeaderId != null && PartyLeaderId != Character.Id)
+      {
+        if (Character.Breed.Id == (int)BreedEnum.Eniripsa)
+          delay = 6000;
+        delay = 2000;
+      }
+
+      if (settings.IsInvoker)
+        Bot.CallDelayed(delay, FindFarPlacement);
+      else if (settings.IsHealer)
+        Bot.CallDelayed(delay, PlaceCloseToFriendsButFarFromEnemies);
+      else
+        Bot.CallDelayed(delay, FindOptimalPlacement);
+    }
+
+    private void OnFightLeft(PlayedCharacter character, Fight fight)
+    {
+      Debug.Assert(character == Character);
+      Character.ResetCellsHighlight();
+      Debug.Assert(fightTimer.IsRunning);
+      fightTimer.Stop();
+      settings.BotFightingElapsedSecond += (int)(fightTimer.ElapsedMilliseconds / 1000);
+
+      _lastPathDetail = null;
+      _losMapF = null;
+
+      if (Fighter != null)
+      {
+        //Fighter.SequenceEnded -= OnSequenceEnd;
+        Fighter.Acknowledge -= OnAcknowledgement;
+        Fighter.TurnStarted -= OnTurnStarted;
+      }
+      /*if (_stopMovingDelegate != null)
+      {
+          if (Fighter != null) Fighter.StopMoving -= _stopMovingDelegate;
+          _stopMovingDelegate = null;
+      }*/
+      fight.StateChanged -= OnStateChanged;
+      Fighter.Dispose();
+      Fighter = null;
+      _pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(character.Map, false);
+    }
+
+    //bool DoNotMoveAgain;
+    int bestDistance = 4;
+    Spell bestAttackSpell;
+    int _IAStep;
+
+    private void OnTurnStarted(Fighter fighter)
+    {
+      //if (wndProcessor!=null) 
+      //    wndProcessor.CloseWindow(50+50*FFightNb);
+      Debug.Assert(fighter == Fighter);
+      if (Mode == Mode.Manual) return;
+      _losMapF.UpdateTargetCell(null, true, true);
+      //DoNotMoveAgain = false;            
+      Bot.CallDelayed(500, StartAI);
+      _attackDone = false;
+      _IAStep = 0;
+      spellTarget = null;
+      isMoving = false;
+    }
+
+    bool _attackDone = false;
+
+
+    private void StartAI()
+    {
+      Bot.Character.ResetCellsHighlight();
+      isMoving = false;
+      spellTarget = null;
+      _lastPathDetail = null;
+      _lastActionDesc = string.Empty;
+
+      if (Fighter == null) return;
+
+      _currentTarget = GetNearestEnemy(); // Better nearest here than weakest. Even if the weakest should be the nearest, it's not a sure thing. 
+
+      if (_currentTarget == null)
+      {
+        Bot.Character.SendWarning("No target => Pass turn");
+        PassTurn();
+        return;
+      }
+
+      Bot.Character.SendDebug("StartAI AP:{0}, MP:{1}, Pos:{2}, Target:{3} ({4})", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, Fighter.Cell, _currentTarget, _currentTarget != null ? _currentTarget.Cell.ToString() : "?-?");
+
+      _losMapF.UpdateTargetCell(_currentTarget.Cell, true, false);
+
+
+      //DisplaySpellAvailability();
+
+      //_isLastAction = false;
+      // Don't use invocs against mutants
+      while (true)
+      {
+        switch (_IAStep++)
+        {
+          case 0:
+            if (settings.IsInvoker && Fighter.Fight.BlueTeam.TeamType != BiM.Protocol.Enums.TeamTypeEnum.TEAM_TYPE_MUTANT && Fighter.Fight.RedTeam.TeamType != BiM.Protocol.Enums.TeamTypeEnum.TEAM_TYPE_MUTANT)
             {
-                Bot.SendToServer(new EmotePlayRequestMessage(1));
-                //Bot.Character.Say("/sit");
-
-                _sit = true;
-
-                Bot.Character.StartMoving += StandUp;
-            }
-        }
-
-        private void StandUp(ContextActor sender, MovementBehavior path)
-        {
-            _sit = false;
-            Bot.Character.StartMoving -= StandUp;
-        }
-
-
-        private void CheckMonsters()
-        {
-
-            if (Bot.Character.Stats.Health < Bot.Character.Stats.MaxHealth ) // under 90% full health
-            {
-                if (!_sit)
+              if (Fighter.CanSummon())
+              {
+                Fighter.Character.SendDebug("Trying to cast an invoc {0}/{1}", Fighter.SummonedCount, Fighter.PCStats.SummonLimit);
+                if (CastInvocation())
                 {
-                    Bot.Character.SendMessage(String.Format("Character health too low : {0}/{1} => sit", Bot.Character.Stats.Health, Bot.Character.Stats.MaxHealth));
-
-                    Bot.CallDelayed(500, Sit);
+                  return;
                 }
-
-                return;
+              }
+              Fighter.Character.SendDebug("Can't invoc a creature yet. {0}/{1}", Fighter.SummonedCount, Fighter.PCStats.SummonLimit);
+              /*if (_IAStep == 1 && Cast(Spell.SpellCategory.Buff))
+              {
+                  _IAStep = 2;
+                  return; // trying to improve invoc count                
+              }*/
             }
-
-            var monster = Bot.Character.Map.Actors.OfType<GroupMonster>()
-                .Where(x => x.Level < Math.Min(Bot.Character.Level * 2 + 1, Bot.Character.Level + 10) && x.Level > Bot.Character.Level / 2)
-                .OrderBy(x => Math.Abs(x.Level - Bot.Character.Level)).FirstOrDefault(); // As close as possible from character's level
-
-            if (monster != null)
-            {
-                //Bot.Character.SendMessage(String.Format("Trying to start a fight with group lv {0}, cell {1}, leader {2} lv {3}", monster.Level, monster.Cell, monster.Leader.Name, monster.Leader.Grade.grade));
-                Bot.Character.TryStartFightWith(monster, _pathFinder);
-                //Move(Bot.Character.Cell, monster.Cell, false, -1);
-            }
-            else
-                if (!Bot.Character.IsMoving())
-                    Bot.Character.ChangeMap();
-        }
-
-        private void OnFightJoined(PlayedCharacter character, Fight fight)
-        {
-            if (_checkTimer != null)
-                _checkTimer.Dispose();
-            _pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(character.Map, true);
-
-            _character = character.Fighter;
-            _character.TurnStarted += OnTurnStarted;
-            fight.StateChanged += OnStateChanged;
-            _character.SequenceEnded += OnSequenceEnd;
-            _character.Acknowledge += OnAcknowledgement;
-        }
-
-        private void OnStateChanged(Fight fight, FightPhase phase)
-        {
-            if (phase == FightPhase.Placement)
-            {
-                Bot.CallDelayed(500, FindOptimalPlacement);
-
-                Bot.CallDelayed(2500, new Action(() => Bot.SendToServer(new GameFightReadyMessage(true))));
-            }
-        }
-
-
-        private void OnFightLeft(PlayedCharacter character, Fight fight)
-        {
-            if (_character != null)
-            {
-                _character.SequenceEnded -= OnSequenceEnd;
-                _character.Acknowledge -= OnAcknowledgement;
-            }
-            /*if (_stopMovingDelegate != null)
-            {
-                if (_character != null) _character.StopMoving -= _stopMovingDelegate;
-                _stopMovingDelegate = null;
-            }*/
-            if (_character != null) _character.TurnStarted -= OnTurnStarted;
-            fight.StateChanged -= OnStateChanged;
-            _character.Dispose();
-            _character = null;
-            _pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(character.Map, false);
-        }
-
-        bool DoNotMoveAgain;
-        private void OnTurnStarted(Fighter fighter)
-        {
-            _losMap.UpdateTargetCell(null, false, true, true);
-            DoNotMoveAgain = false;
-            Bot.CallDelayed(500, StartAI);
-        }
-
-
-
-        private void StartAI()
-        {
-            if (_character == null) return;
-            /*if (_stopMovingDelegate != null)
-            {
-                _character.StopMoving -= _stopMovingDelegate;
-                _stopMovingDelegate = null;
-            }*/
-
-            _currentTarget = GetNearestEnemy(); // Better nearest here than weakest. Even if the weakest should be the nearest, it's not a sure thing. 
-
-            //Bot.Character.SendMessage(String.Format("StartAI AP:{0}, MP:{1}, Pos:{2}, Target:{3} ({4})", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _character.Cell, _currentTarget, _currentTarget.Cell), Color.Pink);
-
-            _losMap.UpdateTargetCell(_currentTarget, false, true, false);
-
-            if (_currentTarget == null)
-            {
-                Bot.Character.SendMessage("No target => Pass turn", Color.Pink);
-                PassTurn();
-                return;
-            }
-
-            int maxDistanceWished = -1;
-            uint minDistance = 1;
-            bool inLine = false;
-            bool inDiagonal = false;
-            bool needLOSCheck = false;
-            //_isLastAction = false;
-
-            foreach (Spell spell in _character.GetOrderListOfSimpleAttackSpells(_currentTarget, true))
-            {
-                bool inRange = _character.IsInSpellRange(_currentTarget.Cell, spell.LevelTemplate);
-                bool LoSisOK = !spell.LevelTemplate.castTestLos || _character.Fight.CanBeSeen(_character.Cell, _currentTarget.Cell, false);
-                if (!inRange || !LoSisOK)
-                {
-                    if (ComeAtSpellRangeWithNoRisk(_currentTarget, spell.LevelTemplate.minRange, _character.GetRealSpellRange(spell.LevelTemplate), spell.LevelTemplate.castInLine, spell.LevelTemplate.castInDiagonal, spell.LevelTemplate.castTestLos))
-                    {
-                        Bot.Character.SendMessage(String.Format("StartAI - moving at range to cast Spell {0} (cat {2}) on {1}", spell, _currentTarget, spell.Categories), Color.Pink);
-                        return;
-                    }
-                    else
-                        if (maxDistanceWished == -1)
-                        { // Keep the best one only
-                            maxDistanceWished = _character.GetRealSpellRange(spell.LevelTemplate);
-                            inLine = spell.LevelTemplate.castInLine;
-                            inDiagonal = spell.LevelTemplate.castInDiagonal;
-                            needLOSCheck = spell.LevelTemplate.castTestLos;
-                            minDistance = spell.LevelTemplate.minRange;
-                        }
-                }
-                else
-                    if (!_character.CastSpell(spell, _currentTarget.Cell))
-                        _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1} on {2}", _character.Name, spell, _currentTarget));
-                    else
-                    {
-                        LastActionDesc = "Spell " + spell + " casted";
-                        Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} (cat {2}) on {1}", spell, _currentTarget, spell.Categories), Color.Pink);
-
-                        //_spellCastedDelegate = (sender, spellCast) => StartAI();
-                        return; // EndSenquence will call StartAI again
-                    }
-            }
-
-            // Can't cast an attack => try to cast some boost, heal or invoc, or just pass
-            foreach (var spell in _character.GetOrderListOfSimpleBoostSpells())
-            {
-                if (!_character.CastSpell(spell, _character.Cell))
-                    _character.Character.SendMessage(String.Format("For some reason, {0} can't cast the spell {1} on himself", _character.Name, spell));
-                else
-                {
-                    LastActionDesc = "Spell " + spell + " casted";
-                    Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} (cat {2}) on himself, cell {3} (monster cell : {1})]", spell, _currentTarget.Cell, spell.Categories, _character.Cell), Color.Pink);
-                    //Bot.Character.SendMessage(String.Format("StartAI casting Spell {0} on himself]", spell), Color.Pink);
-
-                    //_spellCastedDelegate = (sender, spellCast) => StartAI();
-                    return; // EndSenquence will call StartAI again
-                }
-            }
-
-            if (_character.Stats.CurrentMP <= 0)
-            {
-                Bot.CallDelayed(250, PassTurn);
-                return;
-            }
-
-            // No other spells can be cast (out of AP) => move away and pass the turn
-            if (maxDistanceWished == -1)
-            {
-                Bot.Character.SendMessage(String.Format("StartAI No spell castable, moving away {0}pm", _character.Stats.CurrentMP), Color.Pink);
-                MoveFar(false);
-                return;
-            }
-
-            // If no spell is at range, then try to come closer and try again. No need to be cautious here : we can't cast anything else
-            MoveNear(_currentTarget, Math.Max(1, minDistance), maxDistanceWished, inLine, inDiagonal, needLOSCheck, false);
-        }
-
-        //private bool _isLastAction;
-        private void PassTurn()
-        {
-            //Bot.Character.SendMessage("PassTurn", Color.Pink);
-            if (_character != null)
-                _character.PassTurn();
-        }
-
-        string LastActionDesc;
-        private void OnSequenceEnd(Fighter fighter)
-        {
-            //Bot.Character.SendMessage(String.Format("OnSequenceEnd AP:{0}, MP:{1}, LastAction:{2} ({3})", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _isLastAction, LastActionDesc), Color.Pink);
-            //LastActionDesc = "OnSequenceEnd";
-            //if (!_isLastAction)
-            //  Bot.CallDelayed(300, StartAI);
             //else
-            //  Bot.CallDelayed(300, PassTurn);
-        }
-
-        private void OnAcknowledgement(bool failed)
-        {
-            Bot.Character.SendMessage(String.Format("OnAcknowledgement AP:{0}, MP:{1}, LastAction {3} failed ? {2}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, failed, LastActionDesc), Color.Pink);
-            LastActionDesc = "OnSequenceEnd";
-            if (!failed)
-                Bot.CallDelayed(300, StartAI);
-            else
-                Bot.CallDelayed(300, PassTurn);
-        }
-
-        /*private void OnStopMoving(MovementBehavior movement, bool Canceled, bool refused)
-        {
-            Bot.Character.Fighter.StopMoving -= _stopMovingDelegate;
-            _stopMovingDelegate = null;
-
-            // MP update is now handled by GameActionFightPointsVariationMessage massage
-            //if (!refused)
-            //    Bot.Character.Stats.CurrentMP -= movement.MovementPath.MPCost;
-            //StartAI();                       
-        }*/
-
-
-
-        private void FindOptimalPlacement()
-        {
-            _currentTarget = FindWeakestEnemy();
-            IEnumerable<Spell> spells = _character.GetOrderListOfSimpleAttackSpells(_currentTarget, true);
-            Bot.Character.SendMessage(String.Format("Ordered attack spells agains {0} : {1}", _currentTarget, String.Join(",", spells)), Color.Blue);
-                
-            Spell bestSpell = spells.FirstOrDefault();
-            if (bestSpell == null || _currentTarget == null)
+            //    if (settings.IsHealer)
+            //        if (Cast(Spell.SpellCategory.Healing))
+            //            return;
+            break;
+          case 1:
+            if (settings.FavoredBoostSpells != null && settings.FavoredBoostSpells.Count > 0 && Cast(settings.FavoredBoostSpells)) return;
+            break;
+          case 2:
+            if (Cast(Spell.SpellCategory.All ^ Spell.SpellCategory.Invocation))
             {
-                Bot.Character.SendMessage(String.Format("FindOptimalPlacement : can't find a position (bestSpell: {0}, weakestEnnemy: {1})", bestSpell, _currentTarget), Color.Red);
-                PlaceToWeakestEnemy();
-                return;
+              if (spellTarget != null && spellTarget.Spell != null)
+              {
+                if ((spellTarget.Spell.Categories & Spell.SpellCategory.Damages) > 0) _attackDone = true;
+                if (spellTarget.Spell.Template.id != 0) // Not the Weapon => To step 4
+                  _IAStep++;
+              }
+              return;
             }
-            Bot.Character.SendMessage(String.Format("FindOptimalPlacement : bestSpell: {0}, weakestEnnemy: {1} ({2}), range: {3}", bestSpell, _currentTarget, _currentTarget.Cell, _character.GetRealSpellRange(bestSpell.LevelTemplate)));
-
-            PlaceAtDistanceFromWeakestEnemy(_character.GetRealSpellRange(bestSpell.LevelTemplate), bestSpell.LevelTemplate.castInLine);
-        }
-
-        private Fighter FindWeakestEnemy()
-        {
-            return _character.GetOpposedTeam().FightersAlive.OrderBy(x => x.Level).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Initial placement : find the position the closest to the weakest ennemy
-        /// </summary>
-        private void PlaceToWeakestEnemy()
-        {
-            var enemy = FindWeakestEnemy();
-            if (enemy == null)
+            _IAStep++; // No spell available => to step 4
+            break;
+          case 3:
+            if (Cast(Spell.SpellCategory.All ^ Spell.SpellCategory.Invocation, false))
             {
-                Bot.Character.SendMessage("PlaceToWeakestEnemy : no enemy left ?", Color.Red);
-                return;
+              if (spellTarget != null && spellTarget.Spell != null && (spellTarget.Spell.Categories & Spell.SpellCategory.Damages) > 0) _attackDone = true;
+              return;
             }
-
-            var cell = Bot.Character.Fighter.Team.PlacementCells.OrderBy(x => x.ManhattanDistanceTo(enemy.Cell)).FirstOrDefault();
-            Bot.Character.Fighter.ChangePrePlacement(cell);
+            break;
+          case 4:
+            //if (Cast(Spell.SpellCategory.Curse)) return;    
+            break;
+          case 5:
+            if (!settings.IsInvoker && CastInvocation()) return;
+            break;
+          case 6:
+            if (Fighter.Stats.CurrentMP <= 0)
+            {
+              Bot.CallDelayed(250, PassTurn);
+              return;
+            }
+            break;
+          case 7: // No other spells can be cast (out of AP) and at least one attack succeeded => move away and pass the turn
+            if (settings.IsInvoker || _attackDone)
+            {
+              Bot.Character.SendDebug("StartAI No spell castable, moving away {0}pm", Fighter.Stats.CurrentMP);
+              MoveFar(false);
+              return;
+            }
+            break;
+          case 8: // If no spell is at range, then try to come closer (best spell distance) and try again. No need to be cautious here : we can't cast anything else
+            MoveNear();
+            return;
+          default:
+            return;
         }
-
-        /// <summary>
-        /// Select the best starting position, close to the weakest monster, in proper distance for best spell, 
-        /// and as far as possible from other monsters. 
-        /// </summary>
-        /// <param name="distance"></param>
-        /// <param name="InLine"></param>
-        private void PlaceAtDistanceFromWeakestEnemy(int distance, bool InLine)
-        {
-            // TODO : also consider LOS      
-
-            Fighter weakestEnemy = FindWeakestEnemy();
-            if (weakestEnemy == null)
-            {
-                logger.Warn("PlaceAtDistanceFromWeakestEnemy : weakestEnemy is null");
-                return;
-            }
-            // find the cells under distance from weakestEnemy, and - if needed - in line
-            Cell[] startingSet = Bot.Character.Fighter.Team.PlacementCells.Where(cell => ((cell.ManhattanDistanceTo(weakestEnemy.Cell) <= distance) && (!InLine || cell.X == weakestEnemy.Cell.X || cell.Y == weakestEnemy.Cell.Y))).ToArray();
-            if (startingSet.Length == 0)
-            {
-                logger.Debug("No cell at range => PlaceToWeakestEnemy");
-                PlaceToWeakestEnemy();
-                return;
-            }
-            logger.Debug("Placement of {0} vs {1} (cell {2}) - max Distance {4} - InLine {5} - choices : {3}", _character.Name, weakestEnemy.ToString(), weakestEnemy.Cell, string.Join<Cell>(",", startingSet), distance, InLine);
-
-            Cell[] finalSet = startingSet;
-            if (finalSet.Length > 1 && _character.GetOpposedTeam().FightersAlive.Length > 1)
-            {
-                // remove all cells where another enemy is closer
-                foreach (Fighter otherEnnemy in _character.GetOpposedTeam().FightersAlive)
-                    if (otherEnnemy != weakestEnemy)
-                        finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) >= x.ManhattanDistanceTo(weakestEnemy.Cell)).ToArray();
-                logger.Debug("Rule 1 : choices {0}", string.Join<Cell>(",", finalSet));
-
-                // if none, then we only remove cells where we are in contact of any other ennemy 
-                if (startingSet.Length == 0)
-                {
-                    finalSet = startingSet;
-                    foreach (Fighter otherEnnemy in _character.GetOpposedTeam().FightersAlive)
-                        if (otherEnnemy != weakestEnemy)
-                            finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) > 1).ToArray();
-                    logger.Debug("Rule 2 : choices {0}", string.Join<Cell>(",", finalSet));
-                }
-
-                // if still none, just keep all cells, ignoring other enemies
-                if (finalSet.Length == 0)
-                {
-                    finalSet = startingSet;
-                    logger.Debug("Rule 3 (full set) : choices {0}", string.Join<Cell>(",", finalSet));
-                }
-            }
-            // Find a cell as far as possible from weakest ennemy, but not over distance
-            var bestCell = finalSet.OrderBy(x => x.ManhattanDistanceTo(weakestEnemy.Cell)).LastOrDefault();
-
-            // If none under distance, then the closest
-            if (bestCell == null)
-            {
-                logger.Debug("No cell at range => PlaceToWeakestEnemy");
-                PlaceToWeakestEnemy();
-                return;
-            }
-            //logger.Debug("Cell selected : {0}, distance {1}", bestCell, bestCell.ManhattanDistanceTo(weakestEnemy.Cell));
-            Bot.Character.Fighter.ChangePrePlacement(bestCell);
-        }
-
-        /// <summary>
-        /// If a proper path can be found, then move and return true. 
-        /// Otherwise, do nothing and return false;
-        /// </summary>
-        /// <param name="fighter"></param>
-        /// <param name="mp"></param>
-        /// <param name="maxDistanceWished"></param>
-        /// <param name="inLine"></param>
-        /// <param name="inDiagonal"></param>
-        /// <param name="needLOSCheck"></param>
-        /// <returns></returns>
-        private bool ComeAtSpellRangeWithNoRisk(Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck)
-        {
-            Cell dest = GetCellAtSpellRange(fighter, minRange, maxDistanceWished, inLine, inDiagonal, needLOSCheck, true, true);
-            if (dest == null) return false;
-            Path path = ((IAdvancedPathFinder)_pathFinder).FindPath(_character.Cell, dest, false, _character.Stats.CurrentMP, 0, true);
-
-            return !_character.Move(path);
-        }
-
-
-        private Cell GetCellAtSpellRange(Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck, bool cautious, bool getOnlyExactResult)
-        {
-            Cell dest = null;
-            IEnumerable<Cell> allMoves = GetPossibleMoves(cautious);
-            Bot.Character.ResetCellsHighlight();
-            Bot.Character.HighlightCells(allMoves, Color.Orange);
-            IEnumerable<Cell> selectedMoves = allMoves;
-            if (needLOSCheck)
-            {
-                _losMap.UpdateTargetCell(fighter, false, true, false);
-                selectedMoves = _losMap.GetCellsSeenByTarget(selectedMoves);
-            }
-            IEnumerable<Cell> bestSelectedMoves = selectedMoves;
-            
-            // Restrict selection as needed for InLine or InDiagonal constrains
-            if (inLine || inDiagonal)
-                bestSelectedMoves = bestSelectedMoves.Where(cell => inLine && (fighter.Cell.X == cell.X || fighter.Cell.Y == cell.Y) || inDiagonal && (Math.Abs(fighter.Cell.X - cell.X) == Math.Abs(fighter.Cell.Y - cell.Y)));
-            
-            // Keep only those cells that respect max distance to target
-            bestSelectedMoves = bestSelectedMoves.Where(cell => cell.ManhattanDistanceTo(fighter.Cell) <= maxDistanceWished && cell.ManhattanDistanceTo(fighter.Cell) >= minRange);
-
-            // As the cells are initialy sorted by distance from the starting position, just get the first one if any. 
-            dest = bestSelectedMoves.FirstOrDefault();
-            if (getOnlyExactResult || dest != null) return dest;
-
-            // If no result and no need to have a proper result, come as close as possible to the target
-            
-            // Find the closest position that is equal or under maxDistanceWished of the target, if any
-            dest = allMoves.FirstOrDefault(cell => cell.ManhattanDistanceTo(fighter.Cell) <= maxDistanceWished);
-            if (dest != null) return dest;
-            
-            // as we are far from the target, use PathFinding to find the shortest path to reach the target
-            Path path = ((IAdvancedPathFinder)_pathFinder).FindPath(_character.Cell, fighter.Cell, false, _character.Stats.CurrentMP);
-            return path.End;
-        }
-
-
-        private void MoveNear(Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck, bool cautious)
-        {
-            //Bot.Character.SendMessage(String.Format("MoveNear {0} : mp = {1}, distanceWished = {2}, inLine = {3}, inDiagonal = {4}, LOS = {5}", fighter, mp, maxDistanceWished, inLine, inDiagonal, needLOSCheck), Color.Pink);
-            //_stopMovingDelegate = (sender, behavior, canceled, refused) => OnStopMoving(behavior, canceled, refused);
-            //Bot.Character.Fighter.StopMoving += _stopMovingDelegate;
-
-            Cell dest = GetCellAtSpellRange(fighter, minRange, maxDistanceWished, inLine, inDiagonal, needLOSCheck, cautious, false);
-
-            if (dest == null)
-            {
-                Bot.Character.SendMessage(String.Format("Can't Move near {0}", fighter), Color.Red);
-                PassTurn();
-                return;
-            }
-            //Bot.Character.SendMessage(res, Color.Pink);
-
-            //Move(_character.Cell, dest, true, mp);
-            if (!_character.Move(dest, _pathFinder))
-            {
-                Bot.Character.SendMessage(String.Format("Failed to move from {0} to {1}, near {2} => pass", _character.Cell, dest, fighter), Color.Red);
-                PassTurn();
-            }
-            else
-                LastActionDesc = "MoveNear";
-        }
-
-        /// <summary>
-        /// Gives walkable cells where the character may walk within the turn.
-        /// Note : it's now supposed to be reliable, using PathFinder
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerable<Cell> GetPossibleMoves(bool cautious)
-        {
-            return _pathFinder.FindConnectedCells(
-                _character.Cell, true, cautious,
-                cell => cell.DistanceSteps <= _character.Stats.CurrentMP);
-            
-            /*Lozenge shape = new Lozenge(0, (byte)_character.Stats.CurrentMP);
-
-            // It's quite inefficient, but well, no real need to optimize here
-            return shape.GetCells(_character.Cell, _character.Map).Where(cell => _character.Fight.IsCellWalkable(cell, false, _character.Cell)).ToArray();*/
-        }
-
-        private void MoveFar(bool cautious)
-        {
-            if (DoNotMoveAgain) return;
-            //_isLastAction = true;
-            IEnumerable<Cell> enemyCells = _character.GetOpposedTeam().FightersAlive.Select(fighter => fighter.Cell);
-            
-            /*Cell dest = GetPossibleMoves().Where(cell => _character.Fight.IsCellWalkable(cell, false, _character.Cell)).OrderByDescending(cell => enemies.Min(ennCell => cell.ManhattanDistanceTo(ennCell.Cell))).FirstOrDefault();
-            // Do not move if the new position is not better than the old one. 
-            if (enemies.Min(ennCell => dest.ManhattanDistanceTo(ennCell.Cell)) < enemies.Min(ennCell => _character.Cell.ManhattanDistanceTo(ennCell.Cell)))
-            {                
-                DoNotMoveAgain = true;
-                return;
-            }*/
-            uint ActualDistanceFromEnnemies = enemyCells.Min(ennCell => _character.Cell.ManhattanDistanceTo(ennCell));
-            DoNotMoveAgain = true;
-            if (_character.Stats.CurrentMP < 1) return;
-            Cell dest = _pathFinder.FindConnectedCells(
-                _character.Cell, true, cautious,
-                cell => cell.DistanceSteps <= _character.Stats.CurrentMP && enemyCells.Min(ennCell => cell.Cell.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies,
-                cell => enemyCells.Min(ennCell => (int)cell.Cell.ManhattanDistanceTo(ennCell))).FirstOrDefault();
-
-            Debug.Assert((enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies), "This move do not take the character away from monsters !");
-            if (dest == null)
-            {
-                DoNotMoveAgain = true;
-                PassTurn();
-                return;
-            }
-
-            //Move(_character.Cell, dest, true, _character.Stats.CurrentMP);
-            if (!_character.Move(dest, _pathFinder))
-            {
-                Bot.Character.SendMessage(String.Format("Failed to move far from {0} to {1}, away from {2} => pass", _character.Cell, dest, String.Join(",", enemyCells)), Color.Red);
-                PassTurn();
-            }
-            else
-            {
-                Bot.Character.SendMessage(String.Format("Moving away from ({0}) : pos {1}({2}) => {3}({4}) => pass", String.Join(",", enemyCells), _character.Cell, ActualDistanceFromEnnemies, dest, enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell))), Color.Pink);
-                
-                LastActionDesc = "MoveFar";
-            }
-        }
-
-        private Fighter GetNearestEnemy()
-        {
-            if (_character == null) return null;
-            var enemyTeam = _character.GetOpposedTeam();
-            return enemyTeam.FightersAlive.OrderBy(enemy => _character.Cell.ManhattanDistanceTo(enemy.Cell)).FirstOrDefault();
-        }
-
-
-        public override void OnAttached()
-        {
-            base.OnAttached();
-        }
-
-        public override void OnDetached()
-        {
-            if (Bot.Character != null)
-            {
-                Bot.Character.FightJoined -= OnFightJoined;
-                Bot.Character.FightLeft -= OnFightLeft;
-                Bot.Character.MapJoined -= OnMapJoined;
-                Bot.Character.StartMoving -= StandUp;
-            }
-
-            if (_character != null)
-            {
-                _character.TurnStarted -= OnTurnStarted;
-                if (_character.Fight != null)
-                    _character.Fight.StateChanged -= OnStateChanged;
-                _character.SequenceEnded -= OnSequenceEnd;
-                _character.Acknowledge -= OnAcknowledgement;
-                _character = null;
-            }
-
-            if (_checkTimer != null)
-                _checkTimer.Dispose();
-
-            base.OnDetached();
-        }
-
-        internal void Dump()
-        {
-            Bot.Character.SendMessage(String.Format("Current target : {0}", _currentTarget));
-            Bot.Character.SendMessage(String.Format("HP : {0}, AP : {1}, MP : {2}", Bot.Character.Stats.Health, Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP));
-            Bot.Character.SendMessage(String.Format("Sitting : {0}, Moving : {1}, Fighting : {2}", _sit, _character != null ? _character.IsMoving() : Bot.Character.IsMoving(), Bot.Character.IsFighting()));
-            Bot.Character.SendMessage(String.Format("MapID : {0}, Cell : {1}", _character != null ? _character.Map.Id : Bot.Character.Map.Id, _character != null ? _character.Cell : Bot.Character.Cell));
-        }
+      }
     }
+
+    private void DisplaySpellAvailability()
+    {
+      foreach (Spell spell in Bot.Character.SpellsBook.Spells)
+      {
+        if (!spell.IsAvailable(Fighter.Id, null))
+          Bot.Character.SendDebug("{0} is not available : {1}", spell, spell.AvailabilityExplainString(Fighter.Id));
+      }
+    }
+
+    private string _explain;
+
+    bool lastActionFailed;
+    // It's valid here to have uninitialized spellTarget => returns false quietly in that case. 
+    bool TryCast(string explain)
+    {
+      lastActionFailed = false;
+      _explain = explain;
+      if (spellTarget == null || spellTarget.Spell == null || spellTarget.FromCell == null || spellTarget.TargetCell == null || spellTarget.Efficiency <= 0 || spellTarget.cast == true)
+        return false;
+      ComeAtSpellRangeThenCast();
+      return !lastActionFailed;
+    }
+
+    void ComeAtSpellRangeThenCast()
+    {
+      lastActionFailed = false;
+
+      isMoving = false;
+      if (spellTarget == null || spellTarget.Spell == null || spellTarget.FromCell == null || spellTarget.TargetCell == null || spellTarget.cast == true)
+      {
+        Bot.Character.SendError("ComeAtSpellRangeThenCast <{0}> can't be used : spellTarget is not properly initialized (or already cast) => PassTurn", _explain);
+        //PassTurn();//PassTurn();
+        lastActionFailed = true;
+        return;
+      }
+      if (Fighter.Cell.Id == spellTarget.FromCell.Id) // No Need to move
+      {
+        lastActionFailed = !CastSpell();
+        return;
+      }
+
+      if (!Fighter.Move(spellTarget.FromCell, _pathFinder))
+      {
+        //DoNotMoveAgain = true;
+        Debug.Assert(Fighter.Cell.Id != spellTarget.FromCell.Id);
+        Bot.Character.SendError("Failed to move from {0} to {1} to cast {2} => pass", Fighter.Cell, spellTarget.FromCell, spellTarget.Spell);
+        //PassTurn();
+        lastActionFailed = true;
+        return;
+      }
+      else
+      {
+        if (Fighter.Movement == null)
+        {
+          _lastPathDetail = "???";
+          Bot.Character.SendWarning("Failed to move to cast {0} ?", spellTarget.Spell);
+        }
+        else
+        {
+          isMoving = true;
+          _lastPathDetail = Fighter.MovementPath.ToString();
+          Bot.Character.SendDebug("Moving to cast {0} : pos {1} => {2} [{3}]", spellTarget.Spell, Fighter.Cell, spellTarget.FromCell, Fighter.Movement.MovementPath.ToString());
+        }
+        _lastActionDesc = "MoveToCast";
+        return;
+      }
+    }
+
+    bool CastSpell()
+    {
+      if (Fighter.CastSpell(spellTarget.Spell, spellTarget.TargetCell))
+      {
+        Bot.Character.SendInformation("Casting {0} Spell {1} (cat {2}) on [{3}] {4} (search time : {5}ms)", _explain, spellTarget.Spell, spellTarget.Spell.Categories, string.Join<Fighter>(",", Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell)), spellTarget.TargetCell, spellTarget.TimeSpan.TotalMilliseconds);
+        _lastActionDesc = String.Format("Casting {0} spell {1}", _explain, spellTarget.Spell);
+        //spellTarget = null;
+        return true;
+      }
+      Bot.Character.SendError("Failed to cast {0} Spell {1} (cat {2}) on [{3}] {4}", _explain, spellTarget.Spell, spellTarget.Spell.Categories, string.Join<Fighter>(",", Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell)), spellTarget.TargetCell);
+      //spellTarget = null;
+      //PassTurn();
+      return false;
+    }
+
+    Cell GetRandomSurroundingFreeCell(Cell center, Cell target, Spell spell)
+    {
+      int distanceMax = Fighter.GetRealSpellRange(spell.LevelTemplate);
+      Lozenge shape = new Lozenge(0, (byte)distanceMax);
+      //Bot.Character.SendWarning("Fight.AliveActors:{0} - Fighter.Map.Actors:{1}", string.Join(",", Fighter.Fight.Map.Actors), string.Join(",", Fighter.Map.Actors));
+      //Fighter.Fight.AliveActorsCells.Except(Fighter.Map.Actors.Select(actor => actor.Cell));
+      IEnumerable<Cell> cells = shape.GetCells(center, Fighter.Map)/*.Except(Fighter.Fight.AliveActorsCells)*/.Where(cell => cell.Walkable && !cell.NonWalkableDuringFight && !Fighter.Fight.IsActorOnCell(cell));
+      // Restrict selection as needed for InLine or InDiagonal constrains
+      if (spell.LevelTemplate.castInLine || spell.LevelTemplate.castInDiagonal)
+        cells = cells.Where(cell => spell.LevelTemplate.castInLine && (center.X == cell.X || center.Y == cell.Y) || spell.LevelTemplate.castInDiagonal && (Math.Abs(center.X - cell.X) == Math.Abs(center.Y - cell.Y)));
+      // Restrict selection as needed for LoS constrain
+      if (spell.LevelTemplate.castTestLos)
+      {
+        _losMapF.UpdateTargetCell(Fighter.Cell, true, true);
+        cells = _losMapF.GetCellsSeenByTarget(cells);
+      }
+      //Bot.Character.HighlightCells(cells, Color.AntiqueWhite);
+      // Keep the stCell the closest from target
+      if (target != null)
+        return cells.OrderBy(cell => cell.ManhattanDistanceTo(target)).FirstOrDefault();
+      else
+        return cells.GetRandom();
+    }
+
+    bool CastInvocation()
+    {
+      foreach (Spell spell in Fighter.GetOrderListOfInvocationSpells())
+      {
+        Cell dest = GetRandomSurroundingFreeCell(Fighter.Cell, _currentTarget.Cell, spell);
+        if (dest != null)
+        {
+          spellTarget = new SpellTarget(1, Fighter.Cell, dest, spell);
+        }
+        else
+        {
+          Cell whereToMove = Fighter.GetPossibleMoves(true, false, _pathFinder).FirstOrDefault(cell => GetRandomSurroundingFreeCell(cell, _currentTarget.Cell, spell) != null);
+          if (whereToMove == null) continue;
+          spellTarget = new SpellTarget(1, whereToMove, dest, spell);
+        }
+        return TryCast("invocation");
+      }
+      return false;
+    }
+
+
+    bool Cast(Spell.SpellCategory category, bool withWeapon = true)
+    {
+      if (Fighter.Stats.CurrentAP <= 0) return false;
+      spellTarget = Bot.Character.SpellsBook.FindBestUsage(Fighter, category, withWeapon);
+      return TryCast(category.ToString());
+    }
+
+    bool Cast(List<int> spellIds)
+    {
+
+      if (Fighter.Stats.CurrentAP <= 0) return false;
+      spellTarget = Bot.Character.SpellsBook.FindBestUsage(Fighter, spellIds);
+      return TryCast(string.Format("Spells {0}", string.Join(",", spellIds)));
+    }
+
+
+    //private bool _isLastAction;
+    private void PassTurn()
+    {
+      //Bot.Character.SendMessage("PassTurn", Color.Pink);
+      if (Fighter != null)
+      {
+        Fighter.PassTurn();
+
+      }
+    }
+
+    string _lastActionDesc;
+    //private void OnSequenceEnd(Fighter fighter)
+    //{
+    //Bot.Character.SendMessage(String.Format("OnSequenceEnd AP:{0}, MP:{1}, LastAction:{2} ({3})", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _isLastAction, _lastActionDesc), Color.Pink);
+    //_lastActionDesc = "OnSequenceEnd";
+    //if (!_isLastAction)
+    //  Bot.CallDelayed(300, StartAI);
+    //else
+    //  Bot.CallDelayed(300, PassTurn);
+    //}
+
+    private void OnAcknowledgement(bool failed)
+    {
+      if (Mode == Mode.Manual) return;
+      if (_IAStep == 0)
+      {
+        Bot.Character.SendWarning("OnAcknowledgement before any action on the turn => ignored. AP:{0}, MP:{1}. LastAction: {2}, Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail);
+        return;
+      }
+
+      bool NoSpellTarget = spellTarget == null || spellTarget.Spell == null || spellTarget.cast == true;
+
+
+      if (failed == true)
+      {
+        if (!isMoving && NoSpellTarget)
+        {
+          Bot.Character.SendError("OnAcknowledgement [{6} - {7}] : Failed, but it is neither a move or a spell ! - {2} FAILED. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, FFightNb, Character);
+          settings.UnvalidAckFailed++;
+        }
+        else
+          if (isMoving)
+          {
+            settings.FMovesFailed++;
+            Bot.Character.SendError("OnAcknowledgement [{6} - {7}] : {2} FAILED. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, FFightNb, Character);
+          }
+          else
+          {
+            settings.SpellsFailed++;
+            Cell cellTarget = spellTarget.TargetCell;
+            Fighter[] targets = cellTarget == null ? new Fighter[0] : Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell);
+            Bot.Character.SendError("OnAcknowledgement [{9}{10}] : {2} FAILED. AP : {0}, MP : {1}. {3} casted on {4} on cell {5} : {6} -  Actors {7} on Cells {8}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP,
+                    _lastActionDesc, spellTarget.Spell, string.Join<Fighter>(",", targets), cellTarget, spellTarget.Spell.AvailabilityExplainString(targets.Select(fighter => fighter.Id).FirstOrDefault()), string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), FFightNb, Character);
+            spellTarget.cast = true;
+          }
+      }
+      else
+      {
+        if (!isMoving && NoSpellTarget)
+        {
+          Bot.Character.SendError("OnAcknowledgement [{6} - {7}] : Succeeded, but it is neither a move or a spell ! - {2} SUCCESS. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, FFightNb, Character);
+          settings.UnvalidAckSucceeded++;
+        }
+        else
+          if (isMoving)
+          {
+            settings.FMovesSucceded++;
+            Bot.Character.SendDebug("Success on Moving \"{2}\"  - OnAcknowledgement AP:{0}, MP:{1}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc);
+          }
+          else
+          {
+            settings.SpellsSucceded++;
+            Bot.Character.SendDebug("Success on Cast \"{2}\"  - OnAcknowledgement AP:{0}, MP:{1}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc);
+            spellTarget.cast = true;
+          }
+
+        //if (_lastSpellCasted != null)
+        //{
+        //    Bot.Character.SendDebug("Availability of {0} after casted : {1}", _lastSpellCasted, _lastSpellCasted.AvailabilityExplainString(_lastSpellTarget));
+        //}
+      }
+      _lastActionDesc = "OnAcknowledgement for " + _lastActionDesc;
+      if (isMoving && !NoSpellTarget) // Move to reach casting position
+        if (!failed)
+          Bot.CallDelayed(300, ComeAtSpellRangeThenCast);
+        else  // Move failed
+          Bot.CallDelayed(300, StartAI); // continue after last failed operation. 
+      else
+        if (!NoSpellTarget) // spell cast
+        {
+          if (!failed) // If spell cast succeedeed, then restart AI from start. Otherwise, continue after last failed operation. 
+            _IAStep = 0;
+          Bot.CallDelayed(300, StartAI);
+        }
+        else
+          if (isMoving) // Move without casting => pass turn in all cases
+            Bot.CallDelayed(300, PassTurn);
+          else
+            Bot.CallDelayed(300, PassTurn);
+    }
+
+    private void ReadyToStartFight()
+    {
+      if (Fighter == null)
+        if (Character.Fighter == null)
+          return;
+        else
+          Fighter = Character.Fighter;
+      if (PartyLeaderId == Character.Id && Fighter.Fight.Phase == FightPhase.Placement)
+      {
+        foreach (var member in Party)
+        {
+          if (!Fighter.Team.FightersAlive.Any(fighter => fighter.Id == member.id))
+          {
+            Character.SendInformation("Leader : Waiting for {0} to come in fight", member.name);
+            Bot.CallDelayed(500, ReadyToStartFight);
+            return;
+          }
+        }
+      }
+      Character.SendInformation("I'm Ready to start");
+      Bot.CallDelayed(500, () => Bot.SendToServer(new GameFightReadyMessage(true)));
+    }
+
+    private void FindFarPlacement()
+    {
+      var fighterCells = Fighter.AvailablePlacementCells.ToArray();
+      var enemyCells = Fighter.EnemiesCells.ToArray();
+      if ((fighterCells.Length > 0) && (enemyCells.Length > 0))
+      {
+        Cell farCell = fighterCells.OrderBy(placementCell => enemyCells.Min(cell => cell.ManhattanDistanceTo(placementCell))).LastOrDefault();
+        Bot.Character.Fighter.ChangePrePlacement(farCell);
+      }
+      ReadyToStartFight();
+
+    }
+
+    private void FindOptimalPlacement()
+    {
+      var fighterCells = Fighter.AvailablePlacementCells.ToArray();
+      var enemyCells = Fighter.EnemiesCells.ToArray();
+      if ((fighterCells.Length > 0) && (enemyCells.Length > 0))
+      {
+        spellTarget = Bot.Character.SpellsBook.FindBestUsage(Fighter, Spell.SpellCategory.Damages, true, fighterCells.OrderByDescending(cell => enemyCells.Min(ennemyCell => cell.ManhattanDistanceTo(ennemyCell))));
+        if (spellTarget != null && spellTarget.Efficiency > 0)
+        {
+          Character.SendDebug("FindOptimalPlacement : bestSpell: {0}, efficiency : {1}, posCell {2}, targetCell {3}", spellTarget.Spell, spellTarget.Efficiency, spellTarget.FromCell, spellTarget.TargetCell);
+          Character.Fighter.ChangePrePlacement(spellTarget.FromCell);
+        }
+      }
+      ReadyToStartFight();
+    }
+
+    private Fighter FindWeakestEnemy()
+    {
+      return Fighter.GetOpposedTeam().FightersAlive.OrderBy(x => x.Level).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Initial placement : find the position the closest to the weakest ennemy
+    /// </summary>
+    private void PlaceToWeakestEnemy()
+    {
+      var enemy = FindWeakestEnemy();
+      if (enemy == null)
+      {
+        Bot.Character.SendError("PlaceToWeakestEnemy : no enemy left ?");
+        return;
+      }
+
+      var cell = Fighter.AvailablePlacementCells.OrderBy(x => x.ManhattanDistanceTo(enemy.Cell)).FirstOrDefault();
+      Fighter.ChangePrePlacement(cell);
+      ReadyToStartFight();
+    }
+
+    public void JoinFight(PartyMemberInFightMessage message, int nbTry)
+    {
+      if (nbTry <= 0)
+      {
+        Character.SendWarning("Can't join {0}'s fight, no try left !", message.memberName);
+        return;
+      }
+      if (Character.IsFighting())
+      {
+        Character.SendWarning("Can't join {0}'s fight, as I'm already fighting ! Trying again later.", message.memberName);
+        Bot.CallDelayed(4000, () => JoinFight(message, nbTry - 2));
+        return;
+      }
+      if (Character.Map.Id != message.fightMap.mapId)
+      {
+        Character.SendWarning("Can't join {4}'s fight, as I'm not on the same map ({0} vs {1} [{2},{3}]) ! Trying again later.", Character.Map, message.fightMap.mapId, message.fightMap.worldX, message.fightMap.worldY, message.memberName);
+        Bot.CallDelayed(2000, () => JoinFight(message, nbTry - 1));
+        return;
+      }
+      Character.SendInformation("Joining {0}'s fight !", message.memberName);
+      if (Character.IsMoving())
+        Character.CancelMove(false);
+      if (nbTry == 14)
+        Bot.CallDelayed(2500, () => Bot.SendToServer(new GameFightJoinRequestMessage(message.memberId, message.fightId)));
+      else
+        Bot.SendToServer(new GameFightJoinRequestMessage(message.memberId, message.fightId));
+    }
+
+    private void PlaceCloseToFriendsButFarFromEnemies()
+    {
+      var fighterCells = Fighter.AvailablePlacementCells.ToArray();
+      var friendCells = Fighter.FriendCells.ToArray();
+      var enemyCells = Fighter.EnemiesCells.ToArray();
+      if (fighterCells.Length > 0 && friendCells.Length > 0 && enemyCells.Length > 0)
+      {
+        Cell bestPos = Fighter.AvailablePlacementCells.OrderBy(pos => (5 * friendCells.Sum(friendCell => friendCell.ManhattanDistanceTo(pos))) / (friendCells.Length + 1) - enemyCells.Sum(enemyCell => enemyCell.ManhattanDistanceTo(pos)) / (enemyCells.Length + 1)).FirstOrDefault();
+        Fighter.ChangePrePlacement(bestPos);
+      }
+
+      ReadyToStartFight();
+    }
+
+    /// <summary>
+    /// Select the best starting position, close to the weakest monster, in proper distance for best spell, 
+    /// and as far as possible from other monsters. 
+    /// </summary>
+    /// <param name="distance"></param>
+    /// <param name="InLine"></param>
+    private void PlaceAtDistanceFromWeakestEnemy(int distance, bool InLine)
+    {
+      // TODO : also consider LOS      
+
+      Fighter weakestEnemy = FindWeakestEnemy();
+      if (weakestEnemy == null)
+      {
+        logger.Warn("PlaceAtDistanceFromWeakestEnemy : weakestEnemy is null");
+        return;
+      }
+      // find the cells under distance from weakestEnemy, and - if needed - in line
+      Cell[] startingSet = Fighter.AvailablePlacementCells.Where(cell => ((cell.ManhattanDistanceTo(weakestEnemy.Cell) <= distance) && (!InLine || cell.X == weakestEnemy.Cell.X || cell.Y == weakestEnemy.Cell.Y))).ToArray();
+      if (startingSet.Length == 0)
+      {
+        logger.Debug("No cell at range => PlaceToWeakestEnemy");
+        PlaceToWeakestEnemy();
+        return;
+      }
+      logger.Debug("Placement of {0} vs {1} (cell {2}) - max Distance {4} - InLine {5} - choices : {3}", Fighter.Name, weakestEnemy.ToString(), weakestEnemy.Cell, string.Join<Cell>(",", startingSet), distance, InLine);
+
+      Cell[] finalSet = startingSet;
+      if (finalSet.Length > 1 && Fighter.GetOpposedTeam().FightersAlive.Length > 1)
+      {
+        // remove all cells where another enemy is closer
+        foreach (Fighter otherEnnemy in Fighter.GetOpposedTeam().FightersAlive)
+          if (otherEnnemy != weakestEnemy)
+            finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) >= x.ManhattanDistanceTo(weakestEnemy.Cell)).ToArray();
+        logger.Debug("Rule 1 : choices {0}", string.Join<Cell>(",", finalSet));
+
+        // if none, then we only remove cells where we are in contact of any other ennemy 
+        if (startingSet.Length == 0)
+        {
+          finalSet = startingSet;
+          foreach (Fighter otherEnnemy in Fighter.GetOpposedTeam().FightersAlive)
+            if (otherEnnemy != weakestEnemy)
+              finalSet = finalSet.Where(x => x.ManhattanDistanceTo(otherEnnemy.Cell) > 1).ToArray();
+          logger.Debug("Rule 2 : choices {0}", string.Join<Cell>(",", finalSet));
+        }
+
+        // if still none, just keep all cells, ignoring other enemies
+        if (finalSet.Length == 0)
+        {
+          finalSet = startingSet;
+          logger.Debug("Rule 3 (full set) : choices {0}", string.Join<Cell>(",", finalSet));
+        }
+      }
+      // Find a stCell as far as possible from weakest ennemy, but not over distance
+      var bestCell = finalSet.OrderBy(x => x.ManhattanDistanceTo(weakestEnemy.Cell)).LastOrDefault();
+
+      // If none under distance, then the closest
+      if (bestCell == null)
+      {
+        logger.Debug("No cell at range => PlaceToWeakestEnemy");
+        PlaceToWeakestEnemy();
+        return;
+      }
+      //logger.Debug("Cell selected : {0}, distance {1}", bestCell, bestCell.ManhattanDistanceTo(weakestEnemy.Cell));
+      Fighter.ChangePrePlacement(bestCell);
+    }
+
+
+    private Cell GetCellAtSpellRange(Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck, bool cautious, bool getOnlyExactResult)
+    {
+      Cell dest = null;
+      IEnumerable<Cell> allMoves = Fighter.GetPossibleMoves(cautious);
+      //Bot.Character.ResetCellsHighlight();
+      //Bot.Character.HighlightCells(allMoves, Color.Orange);
+      IEnumerable<Cell> selectedMoves = allMoves;
+      if (needLOSCheck)
+      {
+        _losMapF.UpdateTargetCell(fighter.Cell, true, false);
+        selectedMoves = _losMapF.GetCellsSeenByTarget(selectedMoves);
+      }
+      IEnumerable<Cell> bestSelectedMoves = selectedMoves;
+
+      // Restrict selection as needed for InLine or InDiagonal constrains
+      if (inLine || inDiagonal)
+        bestSelectedMoves = bestSelectedMoves.Where(cell => inLine && (fighter.Cell.X == cell.X || fighter.Cell.Y == cell.Y) || inDiagonal && (Math.Abs(fighter.Cell.X - cell.X) == Math.Abs(fighter.Cell.Y - cell.Y)));
+
+      // Keep only those cells that respect max distance to target
+      bestSelectedMoves = bestSelectedMoves.Where(cell => cell.ManhattanDistanceTo(fighter.Cell) <= maxDistanceWished && cell.ManhattanDistanceTo(fighter.Cell) >= minRange);
+
+      // As the cells are initialy sorted by distance from the starting position, just get the first one if any. 
+      dest = bestSelectedMoves.FirstOrDefault();
+      if (getOnlyExactResult || dest != null) return dest;
+
+      // If no bestResult and no need to have a proper bestResult, come as close as possible to the target
+
+      // Find the closest position that is equal or under maxDistanceWished of the target, if any
+      dest = allMoves.FirstOrDefault(cell => cell.ManhattanDistanceTo(fighter.Cell) <= maxDistanceWished);
+      if (dest != null) return dest;
+
+      // as we are far from the target, use PathFinding to find the shortest path to reach the target
+      BiM.Behaviors.Game.World.Pathfinding.Path path = ((IAdvancedPathFinder)_pathFinder).FindPath(Fighter.Cell, fighter.Cell, false, Fighter.Stats.CurrentMP);
+
+      //Bot.Character.ResetCellsHighlight();
+      //Bot.Character.HighlightCells(Bot.Character.Fight.GetTrappedCellIds(), Color.Brown);
+      //Bot.Character.HighlightCells(path.Cells, Color.OrangeRed);                       
+
+      return path.End;
+    }
+
+
+    private void MoveNear()
+    {
+
+      //Fighter fighter, uint minRange, int maxDistanceWished, bool inLine, bool inDiagonal, bool needLOSCheck, bool cautious;
+      //bestAttackSpell
+      //Bot.Character.SendMessage(String.Format("MoveNear {0} : mp = {1}, distanceWished = {2}, inLine = {3}, inDiagonal = {4}, LOS = {5}", fighter, mp, maxDistanceWished, inLine, inDiagonal, needLOSCheck), Color.Pink);
+      //_stopMovingDelegate = (sender, behavior, canceled, refused) => OnStopMoving(behavior, canceled, refused);
+      //Bot.Character.Fighter.StopMoving += _stopMovingDelegate;
+      Fighter fighter = Fighter.GetOpposedTeam().FightersAlive.OrderBy(_fighter => _fighter.Stats.Health).FirstOrDefault();
+      if (fighter == null)
+      {
+        Bot.Character.SendWarning("No enemy left => PassTurn");
+        PassTurn();
+      }
+
+      if (bestAttackSpell == null) FindBestAttack();
+      Cell dest = GetCellAtSpellRange(fighter, bestAttackSpell.LevelTemplate.minRange, bestDistance, bestAttackSpell.LevelTemplate.castInLine, bestAttackSpell.LevelTemplate.castInDiagonal, bestAttackSpell.LevelTemplate.castTestLos, false, false);
+
+      if (dest == null)
+      {
+        Bot.Character.SendWarning("Can't Move near {0}", fighter);
+        PassTurn();
+        return;
+      }
+      //Bot.Character.SendMessage(res, Color.Pink);
+
+      //Move(Fighter.Cell, dest, true, mp);
+      if (!Fighter.Move(dest, _pathFinder))
+      {
+        Bot.Character.SendError("Failed to move from {0} to {1}, near {2} => pass", Fighter.Cell, dest, fighter);
+        PassTurn();
+      }
+      else
+      {
+        {
+          if (Fighter.Movement == null)
+            _lastPathDetail = "???";
+          else
+            _lastPathDetail = Fighter.MovementPath.ToString();
+          _lastActionDesc = "MoveNear";
+          isMoving = true;
+        }
+      }
+    }
+
+
+    // Move away and pass turn
+    private void MoveFar(bool cautious)
+    {
+      //try
+      {
+        //DoNotMoveAgain = true;
+        //_isLastAction = true;
+        IEnumerable<Cell> enemyCells = Fighter.GetOpposedTeam().FightersAlive.Select(fighter => fighter.Cell);
+
+        /*Cell dest = GetPossibleMoves().Where(stCell => Fighter.Fight.IsCellWalkable(stCell, false, Fighter.Cell)).OrderByDescending(stCell => enemies.Min(ennCell => stCell.ManhattanDistanceTo(ennCell.Cell))).FirstOrDefault();
+        // Do not move if the new position is not better than the old one. 
+        if (enemies.Min(ennCell => dest.ManhattanDistanceTo(ennCell.Cell)) < enemies.Min(ennCell => Fighter.Cell.ManhattanDistanceTo(ennCell.Cell)))
+        {                
+            DoNotMoveAgain = true;
+            return;
+        }*/
+        uint ActualDistanceFromEnnemies = enemyCells.Min(ennCell => Fighter.Cell.ManhattanDistanceTo(ennCell));
+        //DoNotMoveAgain = true;
+        //Bot.Character.ResetCellsHighlight();
+        //Bot.Character.HighlightCells(Bot.Character.Fight.GetTrappedCellIds(), Color.Brown);
+        /*Bot.Character.HighlightCells(_pathFinder.FindConnectedCells(
+            Fighter.Cell, true, cautious,
+            cell => enemyCells.Min(ennCell => cell.Cell.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies,
+            cell => enemyCells.Min(ennCell => (int)cell.Cell.ManhattanDistanceTo(ennCell)), Fighter.Stats.CurrentMP), Color.Yellow);
+        Bot.Character.HighlightCells(enemyCells, Color.Red);
+        Bot.Character.HighlightCell(Fighter.Cell, Color.Blue);*/
+        if (Fighter.Stats.CurrentMP < 1)
+        {
+          PassTurn();
+          return;
+        }
+        Cell dest = _pathFinder.FindConnectedCells(
+            Fighter.Cell, true, cautious,
+            cell => enemyCells.Min(ennCell => cell.Cell.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies,
+            cell => enemyCells.Min(ennCell => (int)cell.Cell.ManhattanDistanceTo(ennCell)), Fighter.Stats.CurrentMP).LastOrDefault();
+
+        if (dest == null)
+        {
+          Bot.Character.SendWarning("Can't find a path away from monsters", Fighter.Cell, dest, String.Join(",", enemyCells));
+
+          //DoNotMoveAgain = true;
+          PassTurn();
+          return;
+        }
+        Debug.Assert((enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies), "This move do not take the character away from monsters !");
+
+        //Move(Fighter.Cell, dest, true, Fighter.Stats.CurrentMP);
+        if (!Fighter.Move(dest, _pathFinder))
+        {
+          //DoNotMoveAgain = true;
+          Bot.Character.SendError("Failed to move far from {0} to {1}, away from {2} => pass", Fighter.Cell, dest, String.Join(",", enemyCells));
+          PassTurn();
+          return;
+        }
+        else
+        {
+          if (Fighter.Movement == null)
+            _lastPathDetail = "???";
+          else
+            _lastPathDetail = Fighter.MovementPath.ToString();
+          Bot.Character.SendDebug("Moving away from ({0}) : pos {1}({2}) => {3}({4}) => pass", String.Join(",", enemyCells), Fighter.Cell, ActualDistanceFromEnnemies, dest, enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)));
+          isMoving = true;
+          _lastActionDesc = "MoveFar";
+        }
+      }
+    }
+
+    private Fighter GetNearestEnemy()
+    {
+      if (Fighter == null) return null;
+      var enemyTeam = Fighter.GetOpposedTeam();
+      return enemyTeam.FightersAlive.OrderBy(enemy => Fighter.Cell.ManhattanDistanceTo(enemy.Cell)).FirstOrDefault();
+    }
+
+
+    public override void OnAttached()
+    {
+      base.OnAttached();
+    }
+
+    public override void OnDetached()
+    {
+      if (Bot.Character != null)
+      {
+        Bot.Character.FightJoined -= OnFightJoined;
+        Bot.Character.FightLeft -= OnFightLeft;
+        Bot.Character.MapJoined -= OnMapJoined;
+        Bot.Character.StartMoving -= StandUp;
+      }
+
+      if (Fighter != null)
+      {
+        Fighter.TurnStarted -= OnTurnStarted;
+        if (Fighter.Fight != null)
+          Fighter.Fight.StateChanged -= OnStateChanged;
+        //Fighter.SequenceEnded -= OnSequenceEnd;
+        Fighter.Acknowledge -= OnAcknowledgement;
+        Fighter = null;
+      }
+
+      if (_checkTimer != null)
+      {
+        _checkTimer.Dispose();
+        _checkTimer = null;
+      }
+
+      base.OnDetached();
+    }
+
+    internal void Dump()
+    {
+      Bot.Character.SendInformation("Current target : {0}", _currentTarget);
+      Bot.Character.SendInformation("HP : {0}, AP : {1}, MP : {2}", Bot.Character.Stats.Health, Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP);
+      Bot.Character.SendInformation("Sitting : {0}, Moving : {1}, Fighting : {2}", _sit, Fighter != null ? Fighter.IsMoving() : Bot.Character.IsMoving(), Bot.Character.IsFighting());
+      Bot.Character.SendInformation("MapID : {0}, Cell : {1}", Fighter != null ? Fighter.Map.Id : Bot.Character.Map.Id, Fighter != null ? Fighter.Cell : Bot.Character.Cell);
+    }
+
+
+  }
 }

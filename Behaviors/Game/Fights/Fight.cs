@@ -16,15 +16,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.World;
-using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
-using System.Drawing;
+using System.Diagnostics;
 
 namespace BiM.Behaviors.Game.Fights
 {
@@ -33,7 +31,7 @@ namespace BiM.Behaviors.Game.Fights
 
         public delegate void StateChangedHandler(Fight fight, FightPhase phase);
         public event StateChangedHandler StateChanged;
-
+        
         protected void OnStateChanged(FightPhase phase)
         {
             StateChangedHandler handler = StateChanged;
@@ -73,7 +71,7 @@ namespace BiM.Behaviors.Game.Fights
             CanCancelFight = msg.canBeCancelled;
             CanSayReady = msg.canSayReady;
             IsSpectator = msg.isSpectator;
-            Type = (FightTypeEnum) msg.fightType;
+            Type = (FightTypeEnum)msg.fightType;
 
             RedTeam = new FightTeam(this, FightTeamColor.Red);
             BlueTeam = new FightTeam(this, FightTeamColor.Blue);
@@ -195,7 +193,7 @@ namespace BiM.Behaviors.Game.Fights
 
         public FightTeam GetTeam(sbyte color)
         {
-            return GetTeam((FightTeamColor) color);
+            return GetTeam((FightTeamColor)color);
         }
 
         public FightTeam GetTeam(FightTeamColor color)
@@ -242,7 +240,7 @@ namespace BiM.Behaviors.Game.Fights
         public void StartTurn(int playerId)
         {
             var fighter = GetFighter(playerId);
-            
+
             if (fighter == null)
                 throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot start turn", playerId));
 
@@ -253,7 +251,16 @@ namespace BiM.Behaviors.Game.Fights
                 evnt(this, TimeLine.CurrentPlayer);
 
             if (TimeLine.CurrentPlayer != null)
+            {
+                if (Effects.ContainsKey(TimeLine.CurrentPlayer))
+                    foreach (var effectT in Effects[TimeLine.CurrentPlayer].ToArray())
+                    {
+                        effectT.Item1.turnDuration--;
+                        if (effectT.Item1.turnDuration == 0) // Effect expired
+                            Effects[TimeLine.CurrentPlayer].Remove(effectT);
+                    }
                 TimeLine.CurrentPlayer.NotifyTurnStarted();
+            }
         }
 
         public void EndTurn()
@@ -271,6 +278,28 @@ namespace BiM.Behaviors.Game.Fights
         public bool HasFightStarted()
         {
             return DateTime.Now >= StartTime;
+        }
+
+        public override bool IsTrapped(short CellId)
+        {
+            foreach (SortedSet<short> list in _trappedCells.Values)
+                if (list.Contains(CellId)) return true;
+            return false;
+        }
+
+        public override void SetTrap(int NoTrap, int CellId, int radius)
+        {
+            if (_trappedCells.ContainsKey(NoTrap))
+                UnsetTrap(NoTrap);
+            SortedSet<short> newSet = new SortedSet<short>(Cells[CellId].GetAllCellsInRange(0, radius, false, null).Select(cell => cell.Id));
+            _trappedCells[NoTrap] = newSet;
+        }
+
+        public IEnumerable<short> GetTrappedCellIds()
+        {
+            foreach (SortedSet<short> list in _trappedCells.Values)
+                foreach (short cellId in list)
+                    yield return cellId;
         }
 
         public override bool AddActor(Fighter actor)
@@ -357,6 +386,16 @@ namespace BiM.Behaviors.Game.Fights
             return Actors.ToArray();
         }
 
+        public IEnumerable<Fighter> AliveActors
+        {
+            get { return Actors.Where(actor => actor.IsAlive); }
+        }
+
+        public IEnumerable<Cell> AliveActorsCells
+        {
+            get { return AliveActors.Select(actor => actor.Cell); }
+        }
+
         public Fighter GetFighter(int id)
         {
             return Actors.FirstOrDefault(entry => entry.Id == id);
@@ -364,7 +403,7 @@ namespace BiM.Behaviors.Game.Fights
 
         public T GetFighter<T>(int id) where T : Fighter
         {
-            return (T) Actors.FirstOrDefault(entry => entry is T && entry.Id == id);
+            return (T)Actors.FirstOrDefault(entry => entry is T && entry.Id == id);
         }
 
         public Fighter GetFighter(Cell cell)
@@ -427,7 +466,7 @@ namespace BiM.Behaviors.Game.Fights
         public void Update(Bot bot, GameFightSynchronizeMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            
+
             TimeLine.Update(msg);
 
 
@@ -449,31 +488,21 @@ namespace BiM.Behaviors.Game.Fights
         public void Update(GameFightRefreshFighterMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-
-            if (!( msg.informations is GameFightFighterInformations ))
+            var fighter = GetFighter(msg.informations.contextualId);
+            if (fighter == null)
             {
-                logger.Error("(GameFightRefreshFighterMessage) Cannot update a fighter with a {0} instance", msg.informations.GetType());
+                logger.Error("(GameFightRefreshFighterMessage) Fighter {0} not found", msg.informations.contextualId);
+                return;
             }
-            else
-            {
-                var fighter = GetFighter(msg.informations.contextualId);
 
-                if (fighter == null)
-                {
-                    logger.Error("(GameFightRefreshFighterMessage) Fighter {0} not found", msg.informations.contextualId);
-                }
-                else
-                {
-                    fighter.Update(msg.informations as GameFightFighterInformations);
-                }
-            }
+            fighter.Update(msg.informations);
 
             if (Phase == FightPhase.Placement)
                 TimeLine.RefreshTimeLine();
         }
 
         public void Update(GameFightTurnListMessage msg)
-        {            
+        {
             if (msg == null) throw new ArgumentNullException("msg");
             foreach (var deadsId in msg.deadsIds)
             {
@@ -516,7 +545,7 @@ namespace BiM.Behaviors.Game.Fights
         public void EndSequence(SequenceEndMessage message)
         {
             var fighter = GetFighter(message.authorId);
-            
+
             if (fighter == null)
                 throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot end sequence", message.authorId));
 
@@ -535,11 +564,51 @@ namespace BiM.Behaviors.Game.Fights
 
         internal void Update(Bot bot, GameActionFightDeathMessage message)
         {
-              // Process
-            var Fighter = GetActor(message.targetId);
-            if (Fighter == null)
+            // Process
+            var fighter = GetActor(message.targetId);
+            if (fighter == null)
                 throw new InvalidOperationException(string.Format("Fighter {0} not found, cannot let it die", message.targetId));
-            Fighter.IsAlive = false;
+            logger.Debug(string.Format("{0} is dead", fighter));
+            fighter.IsAlive = false;
         }
+
+        private SortedList<Fighter, List<Tuple<AbstractFightDispellableEffect, short>>> _effects;
+        public SortedList<Fighter, List<Tuple<AbstractFightDispellableEffect, short>>> Effects { get { if (_effects == null) _effects = new SortedList<Fighter, List<Tuple<AbstractFightDispellableEffect, short>>>(); return _effects; } }
+        internal void AddEffect(AbstractFightDispellableEffect abstractFightDispellableEffect, short actionId)
+        {
+            if (TimeLine.CurrentPlayer != null)
+            {
+                if (Effects.ContainsKey(TimeLine.CurrentPlayer))
+                    Effects[TimeLine.CurrentPlayer].Add(new Tuple<AbstractFightDispellableEffect, short>(abstractFightDispellableEffect, actionId));
+                else
+                    Effects[TimeLine.CurrentPlayer] = new List<Tuple<AbstractFightDispellableEffect, short>>() { new Tuple<AbstractFightDispellableEffect, short>(abstractFightDispellableEffect, actionId) };
+            }
+        }
+
+        public void DispelEffect(int boostUid, int targetId)
+        {
+            foreach (var effectList in Effects)
+                foreach (var effectT in effectList.Value.ToArray())
+                    if (effectT.Item1.uid == boostUid && effectT.Item1.targetId == targetId && effectT.Item1.dispelable != 2)
+                        Effects[effectList.Key].Remove(effectT);
+        }
+
+        public void DispelTarget(int targetId)
+        {
+            foreach (var effectList in Effects)
+                    foreach (var effectT in effectList.Value.ToArray())
+                        if (effectT.Item1.targetId == targetId && effectT.Item1.dispelable != 2)
+                            Effects[effectList.Key].Remove(effectT);
+        }
+
+        public void DispelSpell(int targetId, int spellId)
+        {
+            foreach (var effectList in Effects)
+                foreach (var effectT in effectList.Value.ToArray())
+                    if (effectT.Item1.targetId == targetId && effectT.Item1.spellId == spellId && effectT.Item1.dispelable != 2)
+                        Effects[effectList.Key].Remove(effectT);
+        }
+
+
     }
 }

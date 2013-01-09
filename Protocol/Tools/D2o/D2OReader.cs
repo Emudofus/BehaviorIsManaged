@@ -361,28 +361,32 @@ namespace BiM.Protocol.Tools
             return objectCreators[classDefinition.ClassType](values.ToArray());
         }
 
-        public T ReadObject<T>(int index, bool cloneReader = false)
+        public T ReadObject<T>(int index, bool cloneReader = false, bool noExceptionThrown = false)
             where T : class
         {
             if (cloneReader)
             {
                 using (var reader = CloneReader())
                 {
-                    return ReadObject<T>(index, reader);
+                    return ReadObject<T>(index, reader, noExceptionThrown);
                 }
             }
 
-            return ReadObject<T>(index, m_reader);
+            return ReadObject<T>(index, m_reader, noExceptionThrown);
         }
 
-        private T ReadObject<T>(int index, IDataReader reader)
+        private T ReadObject<T>(int index, IDataReader reader, bool noExceptionThrown = false)
             where T : class
         {
             if (!IsTypeDefined(typeof (T)))
-                throw new Exception("The file doesn't contain this class");
+                throw new Exception("The file doesn't contain this class"); // Serious error, exception always thrown
 
             int offset = 0;
-            if (!m_indextable.TryGetValue(index, out offset)) throw new Exception(string.Format("Can't find Index {0} in {1}", index, this.FileName));
+            if (!m_indextable.TryGetValue(index, out offset))
+            {
+                if (noExceptionThrown) return null;
+                throw new Exception(string.Format("Can't find Index {0} in {1}", index, this.FileName));
+            }
 
             reader.Seek(offset, SeekOrigin.Begin);
 

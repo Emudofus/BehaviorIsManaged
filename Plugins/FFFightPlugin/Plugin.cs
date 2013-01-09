@@ -17,7 +17,7 @@
 using System;
 using BiM.Host.Plugins;
 
-namespace FFFightPlugin
+namespace zFFFightPlugin
 {
   public class Plugin : PluginBase
   {

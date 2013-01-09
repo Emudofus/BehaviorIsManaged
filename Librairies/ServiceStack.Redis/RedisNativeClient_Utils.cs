@@ -380,7 +380,7 @@ namespace ServiceStack.Redis
 		private string SendExpectCode(params byte[][] cmdWithBinaryArgs)
 		{
 			if (!SendCommand(cmdWithBinaryArgs))
-				throw CreateConnectionError();
+                 return string.Empty;
 
             if (Pipeline != null)
 			{

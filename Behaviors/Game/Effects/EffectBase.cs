@@ -14,11 +14,13 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
-using BiM.Behaviors.Data;
+using System.Collections.Generic;
 using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Game.Spells.Shapes;
+using BiM.Behaviors.Game.World;
 using BiM.Protocol.Data;
+using BiM.Protocol.Enums;
 using BiM.Protocol.Tools;
 using BiM.Protocol.Types;
 using NLog;
@@ -26,7 +28,7 @@ using NLog;
 namespace BiM.Behaviors.Game.Effects
 {
     [Serializable]
-    public class EffectBase : ICloneable
+    public partial class EffectBase : ICloneable
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private string m_description;
@@ -75,11 +77,11 @@ namespace BiM.Behaviors.Game.Effects
             ZoneShape = effect.ZoneShape;
         }
 
-        public EffectBase(short id, int targetId, int duration, int delay, int random, int group, int modificator, bool trigger, bool hidden, uint zoneSize, uint zoneShape, uint zoneMinSize)
+        public EffectBase(short id, int targetId, int duration, int delay, int random, int group, int modificator, bool trigger, bool hidden, byte zoneSize, uint zoneShape, byte zoneMinSize)
         {
             Id = id;
             m_template = ObjectDataManager.Instance.Get<Effect>(id);
-            Targets = (SpellTargetType) targetId;
+            Targets = (SpellTargetType)targetId;
             Delay = delay;
             Duration = duration;
             Group = group;
@@ -91,7 +93,7 @@ namespace BiM.Behaviors.Game.Effects
             m_zoneMinSize = zoneMinSize;
             ZoneMinSize = zoneMinSize;
             ZoneSize = zoneSize;
-            ZoneShape = (SpellShapeEnum) zoneShape;
+            ZoneShape = (SpellShapeEnum)zoneShape;
         }
 
         public EffectBase(ObjectEffect effect)
@@ -99,7 +101,8 @@ namespace BiM.Behaviors.Game.Effects
             Id = effect.actionId;
             try
             {
-                m_template = ObjectDataManager.Instance.Get<Effect>(Id);
+                m_template = ObjectDataManager.Instance.Get<Effect>(Id, true);
+                if (m_template == null) m_template = new Effect();        
             }
             catch (Exception ex)
             {
@@ -110,9 +113,9 @@ namespace BiM.Behaviors.Game.Effects
 
         public EffectBase(EffectInstance effect)
         {
-            Id = (short) effect.effectId;
+            Id = (short)effect.effectId;
             m_template = ObjectDataManager.Instance.Get<Effect>(effect.effectId);
-            Targets = (SpellTargetType) effect.targetId;
+            Targets = (SpellTargetType)effect.targetId;
             Delay = effect.delay;
             Duration = effect.duration;
             Group = effect.group;
@@ -122,7 +125,7 @@ namespace BiM.Behaviors.Game.Effects
             Hidden = effect.hidden;
             m_zoneMinSize = effect.zoneMinSize;
             m_zoneSize = effect.zoneSize;
-            ZoneShape = (SpellShapeEnum) effect.zoneShape;            
+            ZoneShape = (SpellShapeEnum)effect.zoneShape;
         }
 
         public virtual int ProtocoleId
@@ -219,9 +222,9 @@ namespace BiM.Behaviors.Game.Effects
             protected set;
         }
 
-        public uint ZoneSize
+        public byte ZoneSize
         {
-            get { return m_zoneSize >= 63 ? (byte) 63 : (byte) m_zoneSize; }
+            get { return m_zoneSize >= 63 ? (byte)63 : (byte)m_zoneSize; }
             protected set { m_zoneSize = value; }
         }
 
@@ -231,9 +234,9 @@ namespace BiM.Behaviors.Game.Effects
             protected set;
         }
 
-        public uint ZoneMinSize
+        public byte ZoneMinSize
         {
-            get { return m_zoneMinSize >= 63 ? (byte) 63 : (byte) m_zoneMinSize; }
+            get { return m_zoneMinSize >= 63 ? (byte)63 : (byte)m_zoneMinSize; }
             protected set { m_zoneMinSize = value; }
         }
 
@@ -308,8 +311,8 @@ namespace BiM.Behaviors.Game.Effects
         {
             return new EffectInstance
                        {
-                           effectId = (uint) Id,
-                           targetId = (int) Targets,
+                           effectId = (uint)Id,
+                           targetId = (int)Targets,
                            delay = Delay,
                            duration = Duration,
                            @group = Group,
@@ -319,7 +322,7 @@ namespace BiM.Behaviors.Game.Effects
                            hidden = Hidden,
                            zoneMinSize = ZoneMinSize,
                            zoneSize = ZoneSize,
-                           zoneShape = (uint) ZoneShape
+                           zoneShape = (uint)ZoneShape
                        };
         }
 
@@ -332,8 +335,8 @@ namespace BiM.Behaviors.Game.Effects
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != typeof (EffectBase)) return false;
-            return Equals((EffectBase) obj);
+            if (obj.GetType() != typeof(EffectBase)) return false;
+            return Equals((EffectBase)obj);
         }
 
         public static bool operator ==(EffectBase left, EffectBase right)
@@ -356,6 +359,35 @@ namespace BiM.Behaviors.Game.Effects
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return String.Format("{0} Targets: {1}, Area:{2} - {3}", (EffectsEnum)Id, Targets, AreaDesc(), Description);
+        }
+
+        public string AreaDesc()
+        {
+            Zone zone = new Zone(ZoneShape, (byte)ZoneSize);
+            zone.MinRadius = (byte)ZoneMinSize;
+            return string.Format("{0} ({1} cells)", zone.Shape.GetType().Name, zone.Surface);
+
+        }
+
+        public uint Surface
+        {
+            get
+            {
+               return  new Zone(ZoneShape, (byte)ZoneSize).Surface;
+            }
+        }
+
+        public IEnumerable<Cell> GetArea(Cell origin, Cell dest)
+        {
+            DirectionsEnum direction = origin.OrientationTo(dest, true);
+            Zone zone = new Zone(ZoneShape, (byte)ZoneSize, direction);
+            zone.MinRadius = (byte)ZoneMinSize;
+            return zone.GetCells(dest, dest.Map);
         }
     }
 }

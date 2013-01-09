@@ -21,12 +21,12 @@ namespace BiM.Behaviors.Game.Spells.Shapes
 {
     public class HalfLozenge : IShape
     {
-        public HalfLozenge(byte minRadius, byte radius)
+        public HalfLozenge(byte minRadius, byte radius, DirectionsEnum direction = DirectionsEnum.DIRECTION_NORTH)
         {
             MinRadius = minRadius;
             Radius = radius;
 
-            Direction = DirectionsEnum.DIRECTION_NORTH;
+            Direction = direction;
         }
 
         public uint Surface

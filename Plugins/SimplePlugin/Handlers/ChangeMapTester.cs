@@ -49,7 +49,7 @@ namespace SimplePlugin.Handlers
                 }
 
 
-                if (!bot.Character.ChangeMap(neighbour))
+                if (bot.Character.ChangeMap(neighbour) == MapNeighbour.None)
                 {
                     bot.Character.SendMessage(string.Format("Cannot move to {0} !", neighbour));
                 }

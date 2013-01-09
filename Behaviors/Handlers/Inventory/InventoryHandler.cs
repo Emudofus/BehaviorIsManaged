@@ -20,6 +20,12 @@ namespace BiM.Behaviors.Handlers.Inventory
 {
     public class InventoryHandler
     {
+        [MessageHandler(typeof(InventoryContentAndPresetMessage))]
+        public static void HandleInventoryContentAndPresetMessage(Bot bot, InventoryContentAndPresetMessage message)
+        {
+            bot.Character.Inventory.Update(message);
+        }
+
         [MessageHandler(typeof(InventoryContentMessage))]
         public static void HandleInventoryContentMessage(Bot bot, InventoryContentMessage message)
         {

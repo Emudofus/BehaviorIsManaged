@@ -65,15 +65,18 @@ namespace BiM.Behaviors.Game.Fights
                 return m_placementCells;
             }
         }
-
+        
         public ReadOnlyCollection<Fighter> Fighters
         {
             get { return m_fighters.AsReadOnly(); }
         }
 
+        /// <summary>
+        /// Retreives all fighters that are alive and visible
+        /// </summary>
         public Fighter[] FightersAlive
         {
-            get { return m_fighters.Where(x => x.IsAlive).ToArray(); }
+            get { return m_fighters.Where(x => x.IsAlive && x.Cell != null).ToArray(); }
         }
 
         public Fighter Leader

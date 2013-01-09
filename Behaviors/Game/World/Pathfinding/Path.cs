@@ -238,5 +238,10 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         {
             return new Path(map, new[] {startCell});
         }
+
+        public override string ToString()
+        {
+            return string.Join<Cell>("-", m_cellsPath);
+        }
     }
 }

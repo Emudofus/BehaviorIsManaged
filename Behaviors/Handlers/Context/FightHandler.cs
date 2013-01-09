@@ -16,9 +16,9 @@
 using BiM.Behaviors.Data;
 using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.Fights;
-using BiM.Behaviors.Game.Spells;
 using BiM.Core.Messages;
 using BiM.Protocol.Enums;
+using BiM.Behaviors.Game.Spells;
 using BiM.Protocol.Messages;
 using NLog;
 using BiM.Protocol.Types;
@@ -41,7 +41,7 @@ namespace BiM.Behaviors.Handlers.Context
             bot.Character.SpellsBook.FightStart(message);
         }
 
-        [MessageHandler(typeof (GameFightJoinMessage))]
+        [MessageHandler(typeof(GameFightJoinMessage))]
         public static void HandleGameFightJoinMessage(Bot bot, GameFightJoinMessage message)
         {
             if (bot == null || bot.Character == null)
@@ -149,7 +149,7 @@ namespace BiM.Behaviors.Handlers.Context
 
         }
 
-        [MessageHandler(typeof (GameFightStartMessage))]
+        [MessageHandler(typeof(GameFightStartMessage))]
         public void HandleGameFightStartMessage(Bot bot, GameFightStartMessage message)
         {
             if (bot == null || bot.Character == null || bot.Character.Fight == null)
@@ -157,7 +157,7 @@ namespace BiM.Behaviors.Handlers.Context
                 logger.Error("Fight is not properly initialized.");
                 return; // Can't handle the message
             }
-            bot.Character.Fight.StartFight();            
+            bot.Character.Fight.StartFight();
         }
 
         [MessageHandler(typeof(GameFightEndMessage))]
@@ -223,10 +223,10 @@ namespace BiM.Behaviors.Handlers.Context
             {
                 logger.Error("Fight is not properly initialized.");
                 return; // Can't handle the message
-            }            
+            }
             bot.Character.Fight.EndSequence(message);
         }
-        
+
         [MessageHandler(typeof(GameFightTurnEndMessage))]
         public void HandleGameFightTurnEndMessage(Bot bot, GameFightTurnEndMessage message)
         {
@@ -236,25 +236,72 @@ namespace BiM.Behaviors.Handlers.Context
                 return; // Can't handle the message
             }
             bot.Character.Fight.EndTurn();
-            bot.Character.SpellsBook.EndTurn();
+            if (message.id == bot.Character.Fighter.Id)
+                bot.Character.SpellsBook.EndTurn();
         }
 
+        /// <summary>
+        /// New effect 
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="message"></param>
         [MessageHandler(typeof(GameActionFightDispellableEffectMessage))]
         public void HandleGameActionFightDispellableEffectMessage(Bot bot, GameActionFightDispellableEffectMessage message)
         {
-
+            if (bot == null || bot.Character == null || bot.Character.Fight == null)
+            {
+                logger.Error("Fight is not properly initialized.");
+                return; // Can't handle the message
+            }
+            bot.Character.Fight.AddEffect(message.effect, message.actionId);
         }
+
+        /// <summary>
+        /// Effect dispelled
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="message"></param>
+        [MessageHandler(typeof(GameActionFightDispellEffectMessage))]
+        public void HandleGameActionFightDispellEffectMessage(Bot bot, GameActionFightDispellEffectMessage message)
+        {
+            bot.Character.Fight.DispelEffect(message.boostUID, message.targetId);
+        }
+
+        [MessageHandler(typeof(GameActionFightDispellMessage))]
+        public void HandleGameActionFightDispellMessage(Bot bot, GameActionFightDispellMessage message)
+        {
+            bot.Character.Fight.DispelTarget(message.targetId);
+        }
+
+        [MessageHandler(typeof(GameActionFightDispellSpellMessage))]
+        public void HandleGameActionFightDispellSpellMessage(Bot bot, GameActionFightDispellSpellMessage message)
+        {
+            bot.Character.Fight.DispelSpell(message.targetId, message.spellId);
+        }
+
+
 
         [MessageHandler(typeof(GameActionFightMarkCellsMessage))]
         public void HandleGameActionFightMarkCellsMessage(Bot bot, GameActionFightMarkCellsMessage message)
         {
-
+            if (bot == null || bot.Character == null || bot.Character.Fight == null)
+            {
+                logger.Error("Fight is not properly initialized.");
+                return; // Can't handle the message
+            }
+            foreach (var cellSet in message.mark.cells)
+                bot.Character.Fight.SetTrap(message.mark.markId, cellSet.cellId, cellSet.zoneSize);
         }
 
         [MessageHandler(typeof(GameActionFightUnmarkCellsMessage))]
         public void HandleGameActionFightUnmarkCellsMessage(Bot bot, GameActionFightUnmarkCellsMessage message)
         {
-
+            if (bot == null || bot.Character == null || bot.Character.Fight == null)
+            {
+                logger.Error("Fight is not properly initialized.");
+                return; // Can't handle the message
+            }
+            bot.Character.Fight.UnsetTrap(message.markId);
         }
 
         [MessageHandler(typeof(GameActionFightTriggerGlyphTrapMessage))]
@@ -263,7 +310,13 @@ namespace BiM.Behaviors.Handlers.Context
 
         }
 
-        [MessageHandler(typeof (GameActionFightSummonMessage))]
+        [MessageHandler(typeof(FighterStatsListMessage))]
+        public void HandleFighterStatsListMessage(Bot bot, FighterStatsListMessage message)
+        {            
+            bot.Character.Stats.Update(message.stats);
+        }
+
+        [MessageHandler(typeof(GameActionFightSummonMessage))]
         public void HandleGameActionFightSummonMessage(Bot bot, GameActionFightSummonMessage message)
         {
             if (bot == null || bot.Character == null || bot.Character.Fight == null)
@@ -275,7 +328,7 @@ namespace BiM.Behaviors.Handlers.Context
         }
 
         #region stats update
-        
+
 
         [MessageHandler(typeof(GameActionFightLifePointsLostMessage))]
         public void HandleGameActionFightLifePointsLostMessage(Bot bot, GameActionFightLifePointsLostMessage message)
@@ -316,7 +369,7 @@ namespace BiM.Behaviors.Handlers.Context
             else
             {
                 fighter.UpdateHP(message);
-            }            
+            }
         }
 
         [MessageHandler(typeof(GameActionFightPointsVariationMessage))]
@@ -334,15 +387,15 @@ namespace BiM.Behaviors.Handlers.Context
             else
             {
                 fighter.Update(message);
-            }            
+            }
         }
-        
-        
+
+
         [MessageHandler(typeof(GameActionFightTackledMessage))]
         public void HandleGameActionFightTackledMessage(Bot bot, GameActionFightTackledMessage message)
-        {            
+        {
         }
- 
+
         [MessageHandler(typeof(GameActionAcknowledgementMessage))]
         public void HandleGameActionAcknowledgementMessage(Bot bot, GameActionAcknowledgementMessage message)
         {
@@ -356,7 +409,7 @@ namespace BiM.Behaviors.Handlers.Context
             if (fighter != null)
             {
                 fighter.Update(message);
-            }            
+            }
         }
 
         [MessageHandler(typeof(GameActionFightDeathMessage))]
@@ -367,7 +420,7 @@ namespace BiM.Behaviors.Handlers.Context
                 logger.Error("Fight is not properly initialized.");
                 return; // Can't handle the message
             }
-            bot.Character.Fight.Update(bot, message);            
+            bot.Character.Fight.Update(bot, message);
         }
 
         #endregion stats update

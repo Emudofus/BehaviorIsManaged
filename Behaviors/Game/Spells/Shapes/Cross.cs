@@ -22,12 +22,13 @@ namespace BiM.Behaviors.Game.Spells.Shapes
 {
     public class Cross : IShape
     {
-        public Cross(byte minRadius, byte radius)
+        public Cross(byte minRadius, byte radius, DirectionsEnum? direction = null)
         {
             MinRadius = minRadius;
             Radius = radius;
 
             DisabledDirections = new List<DirectionsEnum>();
+            if (direction != null) Direction = direction.Value;
         }
 
         public bool Diagonal
@@ -125,7 +126,7 @@ namespace BiM.Behaviors.Game.Spells.Shapes
                 }
             }
 
-            for (var i = (int) Radius; i > 0; i--)
+            for (var i = (int)Radius; i > 0; i--)
             {
                 if (i < MinRadius)
                     continue;

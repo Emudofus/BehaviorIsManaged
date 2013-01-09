@@ -119,16 +119,15 @@ namespace BiM.Core.Database
             try
             {
                 logger.Info("Pinging Redis server ...");
-                client.Ping();
+                bool res = client.Ping();
+                logger.Info("Ping successed");
+                return res;
             }
             catch (Exception)
             {
                 logger.Info("Ping failed");
                 return false;
             }
-
-            logger.Info("Ping successed");
-            return true;
         }
     }
 }

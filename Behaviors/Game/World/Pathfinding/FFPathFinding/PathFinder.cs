@@ -22,6 +22,8 @@ using System.Diagnostics;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Actors.RolePlay;
+using BiM.Behaviors.Game.Fights;
+using BiM.Behaviors.Game.World.Data;
 
 namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 {
@@ -29,7 +31,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
     {
         #region Properties
 
-       
+
         public MapMovement PathPacker;
 
         // When in combat, then MapNeighbours are resticted to 4, and distances are manhattan distances
@@ -49,9 +51,10 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         #endregion Properties
 
         #region Constructor
-        // Ctor : provides Map and mode (combat or not)
+        // Ctor : provides Map and mode (combat or not). Beware, use a Fight context un fight, and a Map out of fights
         public PathFinder(IMapContext map, bool fight)
         {
+            Debug.Assert(fight && map is Fight || !fight && map is IMap);
             _isInFight = fight;
             _map = map;
             _cells = new CellInfo[map.Cells.Count];
@@ -88,7 +91,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             PathResult = new List<short>();
             StartingCell = CellInfo.CELL_ERROR;
             ExitCell = CellInfo.CELL_ERROR;
-            if (_isCautious)
+            if (_isCautious || _isInFight)
             {
                 // Find cells of all enemies on the map
                 IEnumerable<Cell> enemyCells;
@@ -103,18 +106,29 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                 else
                     enemyCells = _map.Actors.OfType<GroupMonster>().Select(fighter => fighter.Cell);
 
-                // Remove starting en exit celles from those
+                // Remove (/starting and) exit cells from those
                 if (enemyCells != null && startingCells != null)
                 {
-                    if (startingCells.Length > 0)
-                        enemyCells = enemyCells.Except(startingCells.Select(cellid => _cells[cellid].Cell));
+                    //if (startingCells.Length > 0)
+                    //    enemyCells = enemyCells.Except(startingCells.Select(cellid => _cells[cellid].Cell));
                     if (exitCells != null && exitCells.Length > 0)
                         enemyCells = enemyCells.Except(exitCells.Select(cellid => _cells[cellid].Cell));
 
                     // Then for each remainding cell, set all surrouding cells as "isCloseToEnemy"
-                    foreach (var cellid in enemyCells.SelectMany(cell => cell.GetAdjacentCells()).Select(cell => cell.Id))
+                    PlayedFighter playedFighter = null;
+                    if (_map is Fight)
+                    {
+                        playedFighter = (_map as Fight).CurrentPlayer as PlayedFighter;
+                        //if (playedFighter != null)
+                        //    playedFighter.Character.ResetCellsHighlight();
+                    }
+                    foreach (var cellid in enemyCells.Where(cell => cell != null).SelectMany(cell => cell.GetAdjacentCells()).Select(cell => cell.Id))
                         if (_cells[cellid] != null)
+                        {
+                            //if (playedFighter != null)
+                            //    playedFighter.Character.HighlightCell(cellid, System.Drawing.Color.Black);
                             _cells[cellid].IsCloseToEnemy = true;
+                        }
                 }
 
             }
@@ -137,12 +151,12 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             _isCautious = cautious;
             _isInFight = inFight;
             FindPath(new short[] { startingCell.Id }, null, false, true, maxDistance); // Only 1st step
-            var set1 = _cells.Where(cell => cell.DistanceSteps < CellInfo.DEFAULT_DISTANCE);
+            var set1 = _cells.Where(cell => cell.DistanceSteps <= maxDistance);
             var count1 = set1.Count();
             var set2 = set1.Where(cell => filter == null || filter(cell));
             var count2 = set2.Count();
-
-            return _cells.Where(cell => cell.DistanceSteps < CellInfo.DEFAULT_DISTANCE).Where(cell => filter == null || filter(cell)).OrderBy(cell => sorter == null ? cell.DistanceSteps : sorter(cell)).Select(cell => cell.Cell);
+            // Avoid to come in a trap if we're not in a trap at start. In all cases, favours cells not trapped if possible.
+            return _cells.Where(cell => cell != null && cell.DistanceSteps <= maxDistance && (filter == null || filter(cell)) && /*(_map.IsTrapped(startingCell.Id) || */!_map.IsTrapped(cell.CellId)/*)*/).OrderBy(cell => (sorter == null ? cell.DistanceSteps : sorter(cell)) /*+ (_map.IsTrapped(cell.CellId)?100:0)*/).Select(cell => cell.Cell);
         }
         #endregion
 
@@ -233,6 +247,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         }
 
 
+
+
         /// <summary>
         /// PathFinding main method
         /// </summary>
@@ -246,7 +262,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             Random rnd = new Random();
             if ((startingCells == null) || (startingCells.Length == 0)) return false; // We need at least one starting stCell
             if (!firstStepOnly && (exitCells == null || exitCells.Length == 0)) return false; // We need at least one exit stCell for step 2
-            
+
             // PC starts at distance of 0. Set 0 to all possible starting cells
             CellInfo[] changed = new CellInfo[560];
             int changedPtr = 0;
@@ -270,7 +286,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                         if (!firstStepOnly && !selectFartherCells)
                             foreach (short exCell in exitCells)
                             {
-                                if (exCell == stCell) 
+                                if (exCell == stCell)
                                 {
                                     PathResult = new List<short> { stCell };
                                     return true; // Empty path : starting stCell = exit stCell
@@ -299,6 +315,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                     while (changedPtr > 0)
                     {
                         CellInfo curCell = changed[--changedPtr];
+                        if (curCell.IsCloseToEnemy && _isCautious)
+                            continue; // Cautious mode (in or out of fight) : Can't move from a cell near an ennemy
+
                         if (curCell.DistanceSteps < maxDistance)
                         {
                             if (optimizerActiv) // Strong optimisation
@@ -318,6 +337,8 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                                 //if (currentDistance >= EstimatedDistance || currentDistance >= lastEstimatedDistance) continue;
 
                                 int newPass = curCell.DistanceSteps;
+                                if (curCell.IsCloseToEnemy)
+                                    newPass++; // Penality when close of an ennemy (same in fight and RP map)
                                 if (_isInFight)
                                     newPass++;
                                 else
@@ -340,6 +361,9 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                                 if (newCell.DistanceSteps != 0 && !SquareOpen(newCell, null)) continue;
 
                                 int newPass = curCell.DistanceSteps;
+                                if (curCell.IsCloseToEnemy)
+                                    newPass++; // Penality when close of an ennemy (same in fight and RP map)
+
                                 if (_isInFight)
                                     newPass++;
                                 else
@@ -364,28 +388,17 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                     return true;
                 // Step 2
                 // Mark the path from Exit to Starting position.
-            // if several Exit cells, then get the lowest distance one = the closest from one starting cell
+                // if several Exit cells, then get the lowest distance one = the closest from one starting cell
                 // (or the highest distance one if selectFartherCells)
                 ExitCell = exitCells[0];
                 int MinDist = _cells[ExitCell].DistanceSteps;
-                if (selectFartherCells)
-                {
-                    foreach (short cell in exitCells)
-                        if (_cells[cell].DistanceSteps > MinDist)
-                        {
-                            ExitCell = cell;
-                            MinDist = _cells[cell].DistanceSteps;
-                        }
-                }
-                else
-                {
-                    foreach (short cell in exitCells)
-                        if (_cells[cell].DistanceSteps < MinDist)
-                        {
-                            ExitCell = cell;
-                            MinDist = _cells[cell].DistanceSteps;
-                        }
-                }
+                foreach (short cell in exitCells)
+                    if ((selectFartherCells && _cells[cell].DistanceSteps > MinDist) || (!selectFartherCells && _cells[cell].DistanceSteps < MinDist))
+                    {
+                        ExitCell = cell;
+                        MinDist = _cells[cell].DistanceSteps;
+                    }
+
                 if (optimizerActiv == false || MinDist < CellInfo.DEFAULT_DISTANCE) break; // No need to run a second unoptimized algorithm
                 else
                     optimizerActiv = false;
@@ -432,10 +445,10 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
                 {
                     //foreach (CellInfo newCell in ValidMoves(curCell, false))
                     CellInfo newCell = _cells[neighbours[i]];
-                    if (newCell == null) continue;
-                           
-                //for (CellInfo NewCell in ValidMoves(_cells[CurrentCell], true))
-                //{
+                    if (newCell == null || (newCell.IsCloseToEnemy && _isCautious && newCell.DistanceSteps != 0)) continue; // In cautious mode, don't come close to an enemy
+
+                    //for (CellInfo NewCell in ValidMoves(_cells[CurrentCell], true))
+                    //{
                     int distance = newCell.DistanceSteps;
                     /*if (distance > CellInfo.DEFAULT_DISTANCE)
                     {
@@ -487,12 +500,12 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         private bool SquareOpen(CellInfo cell, CellInfo originCell = null)
         {
             if (cell == null) return false;
-            
+
             if (cell.IsOpen == null)
                 if (_isInFight)
-                    cell.IsOpen = cell.IsCombatWalkable && _map.IsCellWalkable(cell.Cell, false, originCell == null ? null : originCell.Cell) && !cell.IsCloseToEnemy;
+                    cell.IsOpen = cell.IsCombatWalkable && _map.IsCellWalkable(cell.Cell, false, originCell == null ? null : originCell.Cell)/* && !cell.IsCloseToEnemy*/;
                 else
-                    cell.IsOpen = _map.IsCellWalkable(cell.Cell, !_isCautious, originCell == null ? null : originCell.Cell);
+                    cell.IsOpen = _map.IsCellWalkable(cell.Cell, !_isCautious, originCell == null ? null : originCell.Cell)/* && (!_isCautious || !cell.IsCloseToEnemy)*/;
             return cell.IsOpen.Value;
         }
 
@@ -790,11 +803,11 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             if (fighting) return neighbours[cellId];
             return bothNeighbours[cellId];
         }
-        
+
         static short[][] diagNeighbours = ComputeNeighbours(false);
         static short[][] neighbours = ComputeNeighbours(true);
         static short[][] bothNeighbours = ComputeNeighbours(null);
-        
+
         private static short[][] ComputeNeighbours(bool? fighting)
         {
             short[][] result = new short[560][];
@@ -809,7 +822,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
             short x = CellInfo.XFromId(cellId);
             short y = CellInfo.YFromId(cellId);
             short id;
-            if (fighting!=false)
+            if (fighting != false)
             {
                 id = CellInfo.CellIdFromPos(x + 1, y);
                 if (id != CellInfo.CELL_ERROR) yield return id;

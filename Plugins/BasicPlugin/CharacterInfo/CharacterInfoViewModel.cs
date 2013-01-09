@@ -90,7 +90,8 @@ namespace BasicPlugin.CharacterInfo
             base.OnDetached();
 
             BotViewModel viewModel = Bot.GetViewModel();
-            viewModel.RemoveDocument(ViewModel);
+            if (viewModel != null)
+               viewModel.RemoveDocument(ViewModel);
         }
     }
 }

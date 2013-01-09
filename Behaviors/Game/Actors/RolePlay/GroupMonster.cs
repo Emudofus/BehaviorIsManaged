@@ -87,5 +87,11 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             get;
             set;
         }
+
+        public override string ToString()
+        {
+            return string.Format("RP#{0} at {1}", Id, Cell);
+        }
+
     }
 }

@@ -14,12 +14,8 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Effects;
 using BiM.Core.Collections;
@@ -27,11 +23,10 @@ using BiM.Core.Reflection;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
-using System.Drawing;
 
 namespace BiM.Behaviors.Game.Spells
 {
-    public class SpellsBook : INotifyPropertyChanged
+    public partial class SpellsBook : INotifyPropertyChanged
     {
         private ObservableCollectionMT<Spell> m_spells;
         private ReadOnlyObservableCollectionMT<Spell> m_readOnlySpells;
@@ -80,7 +75,12 @@ namespace BiM.Behaviors.Game.Spells
 
         public bool CanUpgradeSpell(Spell spell)
         {
-            throw new NotImplementedException();
+            if (Character.IsFighting()) return false;
+            if (spell.Level > Character.Stats.SpellsPoints) return false;
+            if (!HasSpell(spell.Template.id)) return false;
+            if (spell.Template.spellLevels.Count <= spell.Level) return false;
+            if (spell.Level == 5 && spell.LevelTemplate.minPlayerLevel + 100 > Character.Level) return false;
+            return true;
         }
 
         public bool UpgradeSpell(Spell spell)
@@ -88,6 +88,7 @@ namespace BiM.Behaviors.Game.Spells
             throw new NotImplementedException();
         }
 
+        // Initializes full SpellsBook
         public void Update(SpellListMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
@@ -101,6 +102,17 @@ namespace BiM.Behaviors.Game.Spells
             //FullDump();
         }
 
+        // Learns a new spell
+        public void Update(SpellUpgradeSuccessMessage message)
+        {
+            Spell newSpell = new Spell(message);
+            Spell known = m_spells.FirstOrDefault(spell => spell.Template.id == newSpell.Template.id);
+            if (known != null)
+                m_spells[m_spells.IndexOf(known)] = newSpell;
+            else
+                m_spells.Add(newSpell);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName)
@@ -109,87 +121,7 @@ namespace BiM.Behaviors.Game.Spells
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #region Availability management
-        /// <summary>
-        /// Notifies the start of a new fight turn to each spell 
-        /// </summary>
-        public void FightStart(GameFightStartingMessage msg)
-        {
-            foreach (Spell spell in m_spells)
-            {
-                //Character.SendMessage(String.Format("Spell {0} : initialCooldown {1}, maxCastPerTurn {2}, maxCastPerTarget {3}, maxStack {4}, GlobalCoolDown {5}, minCastInterval {6}", spell, spell.LevelTemplate.initialCooldown, spell.LevelTemplate.maxCastPerTurn, spell.LevelTemplate.maxCastPerTarget, spell.LevelTemplate.maxStack, spell.LevelTemplate.globalCooldown, spell.LevelTemplate.minCastInterval), Color.Aquamarine); 
-                spell.StartFight();
-            }
-        }
 
-        /// <summary>
-        /// Notifies the end of the fighting turn to each spell 
-        /// </summary>
-        public void EndTurn()
-        {
-            foreach (Spell spell in m_spells)
-                spell.EndTurn();
-        }
-
-        /// <summary>
-        /// Notifies the spell that it has been cast on a given target
-        /// </summary>        
-        public void CastAt(GameActionFightSpellCastMessage msg)
-        {
-            if (msg == null) throw new ArgumentNullException("msg");
-            Spell spell = GetSpell(msg.spellId);
-            if (spell == null)
-                throw new ArgumentException(String.Format("Spell Id {0} do not exists in the SpellsBook of {1}, with {2} entries", msg.spellId, Character.Name, m_spells.Count));
-            spell.CastAt(msg.targetId);
-            //Character.SendMessage(string.Format("Spell {0} cast at actor Id {1}. Still available : {2}", spell, msg.targetId, spell.IsAvailable(msg.targetId)));
-        }
-
-        public IEnumerable<Spell> GetAvailableSpells(int? TargetId = null, Spells.Spell.SpellCategory? category = null)
-        {
-            foreach (Spell spell in m_spells)
-                if (spell.IsAvailable(TargetId, category))
-                    yield return spell;
-        }
-
-        public bool IsProperTarget(PlayedFighter caster, Fighter target, Spell spell)
-        {
-            // SpellTargetType
-
-            foreach (var spellEffect in spell.LevelTemplate.effects)
-            {
-                
-                if (spellEffect.targetId == (int)(SpellTargetType.ALL) && target == null) return true;
-
-                if (caster == target) // Self
-                    return ((spellEffect.targetId & (int)(SpellTargetType.ONLY_SELF | SpellTargetType.SELF)) != 0) && spell.LevelTemplate.minRange == 0;
-
-                if (caster.Team == target.Team) // Ally
-                    if (target.Summoned)
-                        return ((spellEffect.targetId & (int)(SpellTargetType.ALLY_STATIC_SUMMONS | SpellTargetType.ALLY_SUMMONS)) != 0) && spell.LevelTemplate.range > 0;
-                    else
-                        return ((spellEffect.targetId & (int)(SpellTargetType.ALLY_1 | SpellTargetType.ALLY_2 | SpellTargetType.ALLY_3 | SpellTargetType.ALLY_4 | SpellTargetType.ALLY_5)) != 0) && spell.LevelTemplate.range > 0;
-
-                // Enemies
-                if (target.Summoned)
-                    return ((spellEffect.targetId & (int)(SpellTargetType.ENEMY_STATIC_SUMMONS | SpellTargetType.ENEMY_SUMMONS)) != 0) && spell.LevelTemplate.range > 0;
-                else
-                    return ((spellEffect.targetId & (int)(SpellTargetType.ENEMY_1 | SpellTargetType.ENEMY_2 | SpellTargetType.ENEMY_3 | SpellTargetType.ENEMY_4 | SpellTargetType.ENEMY_5)) != 0) && spell.LevelTemplate.range > 0;
-            }
-            return false;
-        }
-
-        public IEnumerable<Spell> GetOrderListOfSimpleBoostSpells(PlayedCharacter caster, Spell.SpellCategory category, bool canBeUsedOnCaster)
-        {
-            return m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(caster.Id, category) && (!canBeUsedOnCaster || spell.LevelTemplate.minRange == 0)).OrderByDescending(spell => spell.Level).ThenByDescending(spell => spell.LevelTemplate.minPlayerLevel);
-        }
-
-        public IEnumerable<Spell> GetOrderedAttackSpells(PlayedCharacter caster, Fighter target, Spell.SpellCategory? category = null)
-        {
-            Debug.Assert(category == null || ((category & Spell.SpellCategory.Damages) > 0), "category do not include Damage effects");
-            return m_spells.Where(spell => (caster.Stats.CurrentAP >= spell.LevelTemplate.apCost) && spell.IsAvailable(target.Id, category)).OrderByDescending(spell => (int)(spell.GetSpellDamages(caster, target).Damage) * (caster.Stats.CurrentAP / (int)spell.LevelTemplate.apCost));
-        }
-
-        #endregion Availability management
 
         #region debug tool
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -207,6 +139,14 @@ namespace BiM.Behaviors.Game.Spells
                     logger.Error("       Effect {0} : {1} - {2} {3:P}", effect.Description, effectdice.diceNum <= effectdice.diceSide ? effectdice.diceNum : effectdice.diceSide, effectdice.diceNum > effectdice.diceSide ? effectdice.diceNum : effectdice.diceSide, effectdice.random == 0 ? 1.0 : effectdice.random / 100.0);
                 }
             }
+        }
+
+        public string GetFullDetail()
+        {
+            string st = string.Empty;
+            foreach (var spell in m_spells)
+                st += spell.GetFullDescription() + "\r\n";
+            return st;
         }
         #endregion debug tool
 

@@ -41,12 +41,6 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed));            
         }
 
-        public override int Id
-        {
-            get;
-            protected set;
-        }
-
         public virtual AlignmentInformations Alignment
         {
             get;
@@ -62,11 +56,11 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public void Update(GameFightCharacterInformations msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Id = msg.contextualId;
-            Look = msg.look;
-            Map = Fight.Map;
-            Update(msg.disposition);
-            IsAlive = msg.alive;
+            //Id = msg.contextualId;
+            //Look = msg.look;
+            //Map = Fight.Map;
+            //Update(msg.disposition);
+            //IsAlive = msg.alive;
             Alignment = new AlignmentInformations(msg.alignmentInfos);
 
             if (Breed == null || Breed.Id != msg.breed)
@@ -75,10 +69,10 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             Stats.Update(msg.stats);
         }
 
-        public override void Update(GameFightFighterInformations informations)
+        public override void Update(GameContextActorInformations informations)
         {
             if (informations == null) throw new ArgumentNullException("informations");
-
+            base.Update(informations);
             if (informations is GameFightCharacterInformations)
             {
                 Update(informations as GameFightCharacterInformations);
@@ -86,7 +80,6 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             else
             {
                 logger.Error("Cannot update a {0} with a {1} instance", GetType(), informations.GetType()); 
-                base.Update(informations);
             }
         }
     }

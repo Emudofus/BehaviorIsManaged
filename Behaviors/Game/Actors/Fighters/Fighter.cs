@@ -14,6 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
+using System.Linq;
 using BiM.Behaviors.Game.Actions;
 using BiM.Behaviors.Game.Actors.Interfaces;
 using BiM.Behaviors.Game.Fights;
@@ -24,16 +25,25 @@ using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Types;
 using NLog;
+using BiM.Protocol.Messages;
+using System.Collections.Generic;
+using BiM.Behaviors.Data.D2O;
 
 namespace BiM.Behaviors.Game.Actors.Fighters
 {
-  public abstract class Fighter : ContextActor, INamed
+  public abstract class Fighter : ContextActor, INamed, IComparable
   {
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
     private ObservableCollectionMT<Fighter> m_summons = new ObservableCollectionMT<Fighter>();
     private ReadOnlyObservableCollectionMT<Fighter> m_readOnlySummons;
-
+    #region IComparable
+    public int CompareTo(object obj)
+    {
+        if (!(obj is WorldObject)) return 0;
+        return Id.CompareTo((obj as WorldObject).Id);
+    }
+    #endregion
     protected Fighter()
     {
       CastsHistory = new SpellCastHistory(this);
@@ -72,18 +82,18 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
     public event TurnHandler TurnStarted;
 
-    internal void NotifyTurnStarted()
+    virtual internal void NotifyTurnStarted()
     {
       if (TurnStarted != null) TurnStarted(this);
     }
 
     public event TurnHandler TurnEnded;
 
-    internal void NotifyTurnEnded()
+    virtual internal void NotifyTurnEnded()
     {
       if (IsMoving())
         NotifyStopMoving(false);
-
+      
       TurnHandler handler = TurnEnded;
       if (handler != null) handler(this);
     }
@@ -101,6 +111,12 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
     private bool m_isReady;
 
+    public override int Id
+    {
+        get;
+        protected set;
+    }
+
     public Fight Fight
     {
       get;
@@ -113,10 +129,10 @@ namespace BiM.Behaviors.Game.Actors.Fighters
       protected set;
     }
 
-    public virtual bool IsAlive
+    public override bool IsAlive
     {
-      get;
-      set;
+        get;
+        set;
     }
 
     public bool IsReady
@@ -255,20 +271,26 @@ namespace BiM.Behaviors.Game.Actors.Fighters
     }
 
     public event Action<Fighter, bool> ReadyStateChanged;
-
-    public virtual void Update(GameFightFighterInformations informations)
+    
+    public virtual void Update(GameContextActorInformations actorInformation)
     {
-      IsAlive = informations.alive;
-
-      Stats.Update(informations.stats);
-
-      Update(informations.disposition);
+        GameFightFighterInformations fighterInformations = actorInformation as GameFightFighterInformations;       
+        if (fighterInformations != null)
+        {
+            IsAlive = fighterInformations.alive;
+            Stats.Update(fighterInformations.stats);
+        }
+        Id = actorInformation.contextualId;
+        Look = actorInformation.look;
+        Map = Fight.Map;
+            
+        Update(actorInformation.disposition);
 
     }
 
     public override string ToString()
     {
-      return String.Format("{0} (lv {1} {2})", Name, Level, Team.TeamType == TeamTypeEnum.TEAM_TYPE_PLAYER ? "friend" : "foe");
+      return String.Format("{0} (lv {1}) at {2}", Name, Level, Cell);
     }
 
     internal void UpdateHP(Protocol.Messages.GameActionFightLifePointsLostMessage message)
@@ -326,5 +348,58 @@ namespace BiM.Behaviors.Game.Actors.Fighters
           break;
       }
     }
+
+    public IEnumerable<AbstractFightDispellableEffect> GetAllEffects(short? actionId=null)
+    {
+        return Fight.Effects.Values.SelectMany(effectList => effectList.Where(effectT => effectT.Item1.targetId == Id && effectT.Item2 == actionId).Select(effectT => effectT.Item1));
+    }
+
+    public IEnumerable<FightTemporaryBoostEffect> GetAllBoostEffects(short? actionId = null)
+    {
+        // AbstractFightDispellableEffect + delta
+        return GetAllEffects(actionId).Where(effect => effect is FightTemporaryBoostEffect).Select(effect => effect as FightTemporaryBoostEffect);
+    }
+
+    public IEnumerable<FightTriggeredEffect> GetFightTriggeredEffects(short? actionId=null)
+    {
+        // AbstractFightDispellableEffect + arg1, arg2, arg3, delay
+        return GetAllEffects(actionId).Where(effect => effect is FightTriggeredEffect).Select(effect => effect as FightTriggeredEffect);
+    }
+
+    public IEnumerable<FightTemporarySpellImmunityEffect> GetSpellImmunityEffects(short? actionId = null)
+    {
+        // AbstractFightDispellableEffect + immuneSpellId
+        return GetAllEffects(actionId).Where(effect => effect is FightTemporarySpellImmunityEffect).Select(effect => effect as FightTemporarySpellImmunityEffect);
+    }
+
+    public IEnumerable<FightTemporarySpellBoostEffect> GetSpellBoostEffects(short? actionId = null)
+    {
+        // FightTemporaryBoostEffect + boostedSpellId
+        return GetAllEffects(actionId).Where(effect => effect is FightTemporarySpellBoostEffect).Select(effect => effect as FightTemporarySpellBoostEffect);
+    }
+
+    public IEnumerable<FightTemporaryBoostStateEffect> GetBoostStateEffects(short? actionId = null)
+    {
+        // FightTemporaryBoostEffect + stateId        
+        return GetAllEffects(actionId).Where(effect => effect is FightTemporaryBoostStateEffect).Select(effect => effect as FightTemporaryBoostStateEffect);
+    }
+
+    public IEnumerable<FightTemporaryBoostWeaponDamagesEffect> GetBoostWeaponDamagesEffects(short? actionId = null)
+    {
+        // FightTemporaryBoostEffect + weaponTypeId
+        return GetAllEffects(actionId).Where(effect => effect is FightTemporaryBoostWeaponDamagesEffect).Select(effect => effect as FightTemporaryBoostWeaponDamagesEffect);
+    }
+
+
+    /// <summary>
+    /// Says if a given effect is in effect
+    /// </summary>
+    /// <param name="state"></param>
+    /// <returns></returns>
+    public bool HasState(int state)
+    {
+        return GetBoostStateEffects().Any(eff => eff.stateId == state);
+    }
+
   }
 }

@@ -22,12 +22,11 @@ namespace BiM.Behaviors.Game.Spells.Shapes
 {
     public class Cone : IShape
     {
-        public Cone(byte minRadius, byte radius)
+        public Cone(byte minRadius, byte radius, DirectionsEnum direction = DirectionsEnum.DIRECTION_SOUTH_EAST)
         {
             MinRadius = minRadius;
             Radius = radius;
-
-            Direction = DirectionsEnum.DIRECTION_SOUTH_EAST;
+            Direction = direction;
         }
 
         #region IShape Members
@@ -36,7 +35,7 @@ namespace BiM.Behaviors.Game.Spells.Shapes
         {
             get
             {
-                return ( (uint)Radius + 1 ) * ( (uint)Radius + 1 );
+                return ((uint)Radius + 1) * ((uint)Radius + 1);
             }
         }
 

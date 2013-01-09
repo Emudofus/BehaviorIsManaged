@@ -238,6 +238,7 @@ namespace BiM.Behaviors.Game.World
 
         public uint ManhattanDistanceTo(Cell cell)
         {
+            if (cell == null) return 255;
             return (uint)(Math.Abs(Point.X - cell.X) + Math.Abs(Point.Y - cell.Y));
         }
 
@@ -401,7 +402,7 @@ namespace BiM.Behaviors.Game.World
 
         public IEnumerable<Cell> GetAdjacentCells(bool diagonals = false)
         {
-            return GetAdjacentCells(IsInMap);
+            return GetAdjacentCells(IsInMap, diagonals);
         }
 
         public IEnumerable<Cell> GetAdjacentCells(Func<Cell, bool> predicate, bool diagonal = false)
@@ -442,29 +443,59 @@ namespace BiM.Behaviors.Game.World
             }
         }
 
+        public IEnumerable<Cell> GetAllCellsInRange(int minRange, int maxRange, bool ignoreThis, Func<Cell, bool> predicate)
+        {
+            for (int x = X - maxRange; x <= X + maxRange; x++)
+                for (int y = Y - maxRange; y <= Y + maxRange; y++)
+                    if (!ignoreThis || x != X || y != Y)
+                    {
+                        int distance = Math.Abs(x - X) + Math.Abs(y - Y);
+                        if (IsInMap(x, y) && distance <= maxRange && distance >= minRange)
+                        {
+                            Cell cell = Map.Cells[x, y];
+                            if (cell != null && (predicate == null || predicate(cell))) yield return cell;
+                        }
+                    }
+        }
+
+        public IEnumerable<Cell> GetAllCellsInRectangle(Cell oppositeCell, bool skipStartAndEndCells, Func<Cell, bool> predicate)
+        {
+            int x1 = Math.Min(oppositeCell.X, X),
+                y1 = Math.Min(oppositeCell.Y, Y),
+                x2 = Math.Max(oppositeCell.X, X),
+                y2 = Math.Max(oppositeCell.Y, Y);
+            for (int x = x1; x <= x2; x++)
+                for (int y = y1; y <= y2; y++)
+                    if (!skipStartAndEndCells || (!(x == X && y == Y) && !(x == oppositeCell.X && y == oppositeCell.Y)))
+                    {
+                        Cell cell = Map.Cells[x, y];
+                        if (cell != null && (predicate == null || predicate(cell))) yield return cell;
+                    }
+        }
+
         public Cell[] GetCellsBetween(Cell cell, bool includeVertex = true)
         {
             int dx = cell.X - X;
-            int dy = Y - cell.Y;
+            int dy = cell.Y - Y;
 
             double distance = Math.Sqrt(dx * dx + dy * dy);
-            double angleInRadians = Math.Acos(dx / distance);
-            var roundedDistance = (int)distance;
+            double vx = dx / distance;
+            double vy = dy / distance;
+            int roundedDistance = (int)distance;
 
-            var result = new Cell[roundedDistance + (includeVertex ? 1 : 0)];
+            var result = new Cell[includeVertex ? roundedDistance + 1 : roundedDistance - 1];
             int i = 0;
             if (includeVertex)
-            {
-                i++;
-                result[0] = this;
-            }
+                result[i++] = this;
 
-            for (; i < roundedDistance; i++)
-            {
-                var x = (int)(distance * Math.Cos(angleInRadians));
-                var y = (int)(distance * Math.Sin(angleInRadians));
+            double x = X + vx;
+            double y = Y + vx;
 
-                result[i] = Map.Cells[x, y];
+            while (i < roundedDistance)
+            {
+                x += vx;
+                y += vy;
+                result[i++] = Map.Cells[(int)x, (int)y];
             }
 
             if (includeVertex)
