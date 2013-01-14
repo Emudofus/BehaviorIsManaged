@@ -2,39 +2,58 @@
         Title="MainWindow" mc:Ignorable="d" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:avalonDock="http://avalondock.codeplex.com" xmlns:Converters="clr-namespace:BiM.Host.UI.Converters" xmlns:Views="clr-namespace:BiM.Host.UI.Views"
-        ResizeMode="CanResize" Height="541" Width="836">
-  <DockPanel>
-    <avalonDock:DockingManager AllowMixedOrientation="True"
+        xmlns:avalonDock="http://avalondock.codeplex.com"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:Converters="clr-namespace:BiM.Host.UI.Converters" ResizeMode="CanResize" Height="541" Width="836">
+  <Window.Resources>
+    <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+  </Window.Resources>
+    <xctk:BusyIndicator IsBusy="{Binding IsBusy}">
+      <xctk:BusyIndicator.BusyContentTemplate>
+        <DataTemplate>
+        <StackPanel Width="320" Margin="4" DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
+            <TextBlock Text="{Binding BusyMessage}" FontWeight="Bold" HorizontalAlignment="Center" />
+            <ProgressBar Value="{Binding BusyCounter}" Maximum="{Binding BusyCounterMax}" Height="15"
+                         IsIndeterminate="{Binding IsBusyCounterDisplayed, Converter={StaticResource InverseBooleanConverter}}"  />
+          </StackPanel>
+        </DataTemplate>
+    </xctk:BusyIndicator.BusyContentTemplate>
+    <xctk:BusyIndicator.ProgressBarStyle>
+      <Style TargetType="ProgressBar">
+        <Setter Property="Visibility" Value="Collapsed" />
+      </Style>
+    </xctk:BusyIndicator.ProgressBarStyle>
+    <DockPanel>
+      <avalonDock:DockingManager AllowMixedOrientation="True"
                                DocumentsSource="{Binding Documents}" Loaded="OnDockingManagerLoaded">
-      <avalonDock:DockingManager.Theme>
-        <avalonDock:AeroTheme/>
-      </avalonDock:DockingManager.Theme>
-      
-      <avalonDock:LayoutRoot>
-        <avalonDock:LayoutPanel>
-          <avalonDock:LayoutDocumentPane x:Name="DocumentPane">
+        <avalonDock:DockingManager.Theme>
+          <avalonDock:AeroTheme/>
+        </avalonDock:DockingManager.Theme>
 
-          </avalonDock:LayoutDocumentPane>
-        </avalonDock:LayoutPanel>
-        
-        <avalonDock:LayoutRoot.BottomSide>
-          <avalonDock:LayoutAnchorSide>
-            <avalonDock:LayoutAnchorGroup>
-              <avalonDock:LayoutAnchorable Title="General Logs" ContentId="Logs" x:Name="GeneralTab" AutoHideHeight="150">
-                <RichTextBox Name="Console" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                         ScrollViewer.VerticalScrollBarVisibility="Visible">
-                  <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                      <Setter Property="Margin" Value="0" />
-                    </Style>
-                  </RichTextBox.Resources>
-                </RichTextBox>
-              </avalonDock:LayoutAnchorable>
-            </avalonDock:LayoutAnchorGroup>
-          </avalonDock:LayoutAnchorSide>
-        </avalonDock:LayoutRoot.BottomSide>
-      </avalonDock:LayoutRoot>
-    </avalonDock:DockingManager>
-  </DockPanel>
+        <avalonDock:LayoutRoot>
+          <avalonDock:LayoutPanel>
+            <avalonDock:LayoutDocumentPane x:Name="DocumentPane">
+
+            </avalonDock:LayoutDocumentPane>
+          </avalonDock:LayoutPanel>
+
+          <avalonDock:LayoutRoot.BottomSide>
+            <avalonDock:LayoutAnchorSide>
+              <avalonDock:LayoutAnchorGroup>
+                <avalonDock:LayoutAnchorable Title="General Logs" ContentId="Logs" x:Name="GeneralTab" AutoHideHeight="150">
+                  <RichTextBox Name="Console" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                         ScrollViewer.VerticalScrollBarVisibility="Visible" IsReadOnly="true">
+                    <RichTextBox.Resources>
+                      <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0" />
+                      </Style>
+                    </RichTextBox.Resources>
+                  </RichTextBox>
+                </avalonDock:LayoutAnchorable>
+              </avalonDock:LayoutAnchorGroup>
+            </avalonDock:LayoutAnchorSide>
+          </avalonDock:LayoutRoot.BottomSide>
+        </avalonDock:LayoutRoot>
+      </avalonDock:DockingManager>
+    </DockPanel>
+  </xctk:BusyIndicator>
 </Window>

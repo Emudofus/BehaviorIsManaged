@@ -163,7 +163,8 @@ namespace BiM.MITM
 
         private void OnWorldClientDisconnected(ConnectionMITM client)
         {
-            client.Bot.AddMessage(client.Bot.Dispose);
+            if (client.Bot != null)
+                client.Bot.AddMessage(client.Bot.Dispose);
         }
 
         private void OnAuthClientMessageReceived(Client client, NetworkMessage message)

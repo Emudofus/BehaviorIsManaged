@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -51,12 +52,32 @@ namespace BiM.Host.UI.ViewModels
             private set;
         }
 
+        private LayoutContent m_parent;
+
+        public LayoutContent Parent
+        {
+            get
+            {
+                return m_parent;
+            }
+            set
+            {
+                m_parent = value;
+                Parent.Closing += OnClosing;
+            }
+        }
+
         protected override LayoutDocumentPane DocumentPane
         {
             get
             {
                 return View.DocumentPane;
             }
+        }
+
+        private void OnClosing(object sender, CancelEventArgs e)
+        {
+            Bot.Dispose();
         }
 
         #region Handlers
@@ -81,12 +102,6 @@ namespace BiM.Host.UI.ViewModels
                 Bot.Dispatcher.UnRegisterNonShared(this);
 
             UIManager.Instance.RemoveDocument(View);
-        }
-
-        public LayoutContent Parent
-        {
-            get;
-            set;
         }
     }
 }

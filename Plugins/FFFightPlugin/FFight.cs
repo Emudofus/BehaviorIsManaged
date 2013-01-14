@@ -422,7 +422,7 @@ namespace zFFFightPlugin
 
     public bool JoinAsFollower(Fight otherFight)
     {
-      return false;
+        return false;
     }
 
     public bool ComeOnMyMap(short cellId, int? mapId, MapNeighbour neighbour)
@@ -436,7 +436,7 @@ namespace zFFFightPlugin
       otherFFights = new List<FFight>();
       Fighter = character.Fighter;
 
-      /*if (Mode != Mode.Follower)
+      if (Mode != Mode.Follower)
           foreach (Bot otherBot in BotManager.Instance.Bots)
               if (otherBot != Bot)
                   if (otherBot.Character != null && otherBot.Character.Map != null && otherBot.Character.Map.Id == character.Map.Id)
@@ -452,7 +452,7 @@ namespace zFFFightPlugin
                           otherFFight.JoinAsFollower(fight);
                           character.SendInformation(string.Format("Asking {0} to join on the fight", otherBot.Character));
                       }
-                  }*/
+                  }
 
       fightTimer.Restart();
       settings.FightStarted++;

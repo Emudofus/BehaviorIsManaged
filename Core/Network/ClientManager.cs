@@ -19,12 +19,15 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using NLog;
 
 namespace BiM.Core.Network
 {
     public class ClientManager<T>
         where T : class, IClient
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public const int MaxConcurrentConnections = 1000;
         public const int BufferSize = 8192;
 
@@ -159,29 +162,42 @@ namespace BiM.Core.Network
             if (!Running)
                 return;
 
-            // use a async arg from the pool avoid to re-allocate memory on each connection
-            var args = new SocketAsyncEventArgs();
-            args.Completed += OnReceiveCompleted;
-
-            m_bufferManager.SetBuffer(args);
-            
-            // create the client instance
-            var client = m_clientCreationDelegate(e.AcceptSocket);
-            args.UserToken = client;
-
-            lock (m_clients)
-                m_clients.Add(client);
-
-            OnClientConnected(client);
-
-            // if the event is not raised we first check new connections before parsing message that can blocks the connection queue
-            if (!e.AcceptSocket.ReceiveAsync(args))
+            T client = null;
+            try
             {
-                StartAccept();
-                ProcessReceive(args);
+                // use a async arg from the pool avoid to re-allocate memory on each connection
+                var args = new SocketAsyncEventArgs();
+                args.Completed += OnReceiveCompleted;
+
+                m_bufferManager.SetBuffer(args);
+
+                // create the client instance
+                client = m_clientCreationDelegate(e.AcceptSocket);
+                args.UserToken = client;
+
+                lock (m_clients)
+                    m_clients.Add(client);
+
+                OnClientConnected(client);
+
+                // if the event is not raised we first check new connections before parsing message that can blocks the connection queue
+                if (!e.AcceptSocket.ReceiveAsync(args))
+                {
+                    StartAccept();
+                    ProcessReceive(args);
+                }
+                else
+                {
+                    StartAccept();
+
+                }
             }
-            else
+            catch (Exception ex)
             {
+                logger.Error("Exception occured during client connection : {0}", ex);
+                if (client != null)
+                    client.Disconnect();
+
                 StartAccept();
             }
         }
@@ -250,7 +266,10 @@ namespace BiM.Core.Network
             var client = e.UserToken as T;
 
             if (client == null)
+            {
+                e.Dispose();
                 return;
+            }
 
             try
             {
@@ -258,11 +277,16 @@ namespace BiM.Core.Network
             }
             finally
             {
+                bool removed = false;
                 lock (m_clients)
-                    m_clients.Remove(client);
+                    removed = m_clients.Remove(client);
 
-                OnClientDisconnected(client);
-                m_semaphore.Release();
+                if (removed)
+                {
+                    OnClientDisconnected(client);
+                    m_semaphore.Release();
+                }
+
                 e.Dispose();
             }
         }

@@ -48,7 +48,7 @@
         </StackPanel>
         <TextBox Margin="3" Text="{Binding TextToSend, Mode=TwoWay}" KeyUp="OnTextKeyUp" />
       </DockPanel>
-      <RichTextBox Name="ChatTextBox" VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
+      <RichTextBox Name="ChatTextBox" VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top" IsReadOnly="true">
         <RichTextBox.Resources>
           <Style TargetType="{x:Type Paragraph}">
             <Setter Property="Margin" Value="0" />

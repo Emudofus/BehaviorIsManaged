@@ -33,7 +33,7 @@ using BiM.Host.UI.Views;
 
 namespace BiM.Host.UI
 {
-    public class UIManager : DockContainer<MainWindow>, INotifyPropertyChanged
+    public class UIManager : DockContainer<MainWindow>
     {
         private static readonly UIManager m_instance = new UIManager();
 
@@ -41,6 +41,7 @@ namespace BiM.Host.UI
         {
             get { return m_instance; }
         }
+
 
         public UIManager()
         {
@@ -75,6 +76,51 @@ namespace BiM.Host.UI
                     Select(x => (x.Content as BotControl).ViewModel).ToArray();
             }
         }
+
+        #region Busy
+        public void SetBusy(bool toggle)
+        {
+            IsBusy = toggle;
+        }
+
+        public void SetBusyProgress(double current, double max)
+        {
+            IsBusyCounterDisplayed = Math.Abs(current - max) > 0.1;
+            BusyCounter = current;
+            BusyCounterMax = max;
+        }
+
+        public bool IsBusy
+        {
+            get;
+            set;
+        }
+
+        public string BusyMessage
+        {
+            get;
+            set;
+        }
+
+        public bool IsBusyCounterDisplayed
+        {
+            get;
+            set;
+        }
+
+        public double BusyCounter
+        {
+            get;
+            set;
+        }
+
+        public double BusyCounterMax
+        {
+            get;
+            set;
+        }
+
+        #endregion
 
         protected override LayoutDocumentPane DocumentPane
         {

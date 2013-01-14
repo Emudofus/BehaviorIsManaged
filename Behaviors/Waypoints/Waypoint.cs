@@ -1,7 +1,7 @@
 ﻿#region License GNU GPL
-// MainWindow.xaml.cs
+// Waypoint.cs
 // 
-// Copyright (C) 2012 - BehaviorIsManaged
+// Copyright (C) 2013 - BehaviorIsManaged
 // 
 // This program is free software; you can redistribute it and/or modify it 
 // under the terms of the GNU General Public License as published by the Free Software Foundation;
@@ -13,38 +13,43 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-using System.Windows;
-using BiM.Host.UI.ViewModels;
 
-namespace BiM.Host.UI.Views
+using System;
+
+namespace BiM.Behaviors.Waypoints
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window, IView<UIManager>
+    [Serializable]
+    public class Waypoint
     {
-        public MainWindow()
-        {
-            DataContext = ViewModel = UIManager.Instance;
-            ViewModel.View = this;
-            InitializeComponent();
-        }
-
-        object IView.ViewModel
-        {
-            get { return ViewModel; }
-            set { ViewModel = (UIManager)value; }
-        }
-
-        public UIManager ViewModel
+        public WaypointAction[] Actions
         {
             get;
             set;
         }
 
-        private void OnDockingManagerLoaded(object sender, RoutedEventArgs e)
+        public MovementSchema MovementSchema
         {
-            //GeneralTab.IsActive = true;
+            get;
+            set;
+        }
+
+        public void Start()
+        {
+
+        }
+
+        public void Pause()
+        {
+        }
+
+        public void Resume()
+        {
+
+        }
+
+        public void Stop()
+        {
+
         }
     }
 }

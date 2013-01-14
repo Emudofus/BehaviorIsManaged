@@ -557,11 +557,21 @@ namespace BiM.Behaviors.Game.World
             }
         }
 
+
+        public bool IsNeighbour(int mapId)
+        {
+            return RightNeighbourId == mapId ||
+                LeftNeighbourId == mapId ||
+                BottomNeighbourId == mapId ||
+                TopNeighbourId == mapId;
+        }
+
         #endregion
 
         public override string ToString()
         {
             return String.Format("#{0} [{1},{2}] {3}", Id, X, Y, Name);
         }
+
     }
 }

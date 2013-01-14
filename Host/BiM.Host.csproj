@@ -129,6 +129,7 @@
     <Compile Include="I18n\ClientLanguageDetector.cs" />
     <Compile Include="SettingsLoader.cs" />
     <Compile Include="UI\BotExtensions.cs" />
+    <Compile Include="UI\Converters\InverseBooleanConverter.cs" />
     <Compile Include="UI\Helpers\ActiveGroupingCollectionView.cs" />
     <Compile Include="UI\Helpers\ApplicationInfo.cs" />
     <Compile Include="UI\Helpers\BindingProxy.cs" />
