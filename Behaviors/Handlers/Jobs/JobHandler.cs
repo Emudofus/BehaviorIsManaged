@@ -23,13 +23,13 @@ namespace BiM.Behaviors.Handlers.Jobs
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        [MessageHandler(typeof (JobDescriptionMessage))]
+        [MessageHandler(typeof(JobDescriptionMessage))]
         public static void HandleJobDescriptionMessage(Bot bot, JobDescriptionMessage message)
         {
             bot.Character.Update(message);
         }
 
-        [MessageHandler(typeof (JobExperienceMultiUpdateMessage))]
+        [MessageHandler(typeof(JobExperienceMultiUpdateMessage))]
         public static void HandleJobExperienceMultiUpdateMessage(Bot bot, JobExperienceMultiUpdateMessage message)
         {
             foreach (var update in message.experiencesUpdate)
@@ -43,7 +43,14 @@ namespace BiM.Behaviors.Handlers.Jobs
             }
         }
 
-        [MessageHandler(typeof (JobExperienceUpdateMessage))]
+        [MessageHandler(typeof(JobLevelUpMessage))]
+        public static void HandleJobLevelUpMessage(Bot bot, JobLevelUpMessage message)
+        {
+            bot.Character.Update(message);
+
+        }
+
+        [MessageHandler(typeof(JobExperienceUpdateMessage))]
         public static void HandleJobExperienceUpdateMessage(Bot bot, JobExperienceUpdateMessage message)
         {
             var job = bot.Character.GetJob(message.experiencesUpdate.jobId);
