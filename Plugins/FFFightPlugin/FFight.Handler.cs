@@ -1,6 +1,25 @@
-﻿using System.Collections.Generic;
+﻿#region License GNU GPL
+// AutoFight.cs
+// 
+// Copyright (C) 2012, 2013 - BehaviorIsManaged
+// 
+// This program is free software; you can redistribute it and/or modify it 
+// under the terms of the GNU General Public License as published by the Free Software Foundation;
+// either version 2 of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+// See the GNU General Public License for more details. 
+// You should have received a copy of the GNU General Public License along with this program; 
+// if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+// Author : FastFrench - antispam@laposte.net
+#endregion
+using System.Collections.Generic;
 using System.Linq;
 using BiM.Behaviors;
+using BiM.Behaviors.Game.Actors.Fighters;
+using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
@@ -92,7 +111,7 @@ namespace FFFightPlugin
     {
       foreach (FFight ffight in GetOtherFFights())
         if (ffight.Character.Id == message.fromId)
-          Bot.CallDelayed(1000, () => Bot.SendToServer(new PartyAcceptInvitationMessage(message.partyId)));
+                    Bot.SendToServer(new PartyAcceptInvitationMessage(message.partyId), 1000);
       //PartyRefuseInvitationMessage
     }
 
@@ -108,29 +127,22 @@ namespace FFFightPlugin
       JoinFight(message, 14);
     }
 
-    [MessageHandler(typeof(PartyUpdateLightMessage))]
-    public void HandlePartyUpdateLightMessage(Bot bot, PartyUpdateLightMessage message)
-    {
-      var member = Party.Find(mem => mem.id == message.id);
-      if (member != null)
-      {
-        member.lifePoints = message.lifePoints;
-        member.maxLifePoints = message.maxLifePoints;
-      }
-    }
-
     #endregion Party
 
+        #region movement
     short LastLeaderCell;
     [MessageHandler(typeof(GameMapMovementMessage))]
     public void HandleGameMapMovementMessage(Bot bot, GameMapMovementMessage message)
     {
       if (message.actorId == PartyLeaderId && Character.Id != message.actorId)
       {
-        //LastLeaderCell = message.keyMovements.Last();
         //foreach (FFight ffight in GetOtherFFights().Where(plug => Party != null && Party.Any(member => member.id == plug.Character.Id)))
         if (message.keyMovements.Length > 0)
-          Character.Move(message.keyMovements.Last(), null, 1, true);
+                {
+                    LastLeaderCell = message.keyMovements.Last();
+                    Character.SendInformation("Follow leader in {0}s : {1} => 1 cell from {2}", (500.0m * Id) / 1000.0m, Character.Cell, Character.Map.Cells[message.keyMovements.Last()]);
+                    Character.MoveIfNeededThenAction(message.keyMovements.Last(), null, 500 * Id, 1, true);                    
+                }
       }
     }
 
@@ -140,15 +152,51 @@ namespace FFFightPlugin
       if (Character.Id == PartyLeaderId) // I'm the leader => ask all other characters to follow me on the new map
       {
         LastLeaderCell = Character.Cell.Id; // Select all ffight plugins within the party
-        foreach (FFight ffight in GetOtherFFights().Where(plug => Party != null && Party.Any(member => member.id == plug.Character.Id)))
-          ffight.Character.ChangeMap(Character.Map.Id, Character.Cell.Id, message.mapId, 10);
+                int previousmapId = Character.Map.Id;
+                foreach (FFight ffight in GetOtherFFights(true, true))
+                    ffight.ComeOnMyMap(previousmapId, LastLeaderCell, message.mapId);
+            }
+        }
+
+        [MessageHandler(typeof(PartyUpdateLightMessage))]
+        public void HandlePartyUpdateLightMessage(Bot bot, PartyUpdateLightMessage message)
+        {
+            if (Party == null) return;
+            var member = Party.Find(mem => mem.id == message.id);
+            if (member != null)
+            {
+                member.lifePoints = message.lifePoints;
+                member.maxLifePoints = message.maxLifePoints;
+            }
+        }
+
+        [MessageHandler(typeof(InteractiveUseRequestMessage))]
+        public void HandleInteractiveUseRequestMessage(Bot bot, InteractiveUseRequestMessage message)
+        {
+            if (PartyLeaderId == CharacterId)
+                foreach (FFight ffight in GetOtherFFights(true, true)) // All member of the party on the same map
+                {
+                    //if (Character.Cell.Id != ffight.Character.Cell.Id)
+                    ffight.Bot.Character.MoveIfNeededThenAction(Character.Cell.Id, () => ffight.Bot.SendToServer(new InteractiveUseRequestMessage(message.elemId, message.skillInstanceUid), 2500 + 500 * ffight.Id), 500 * ffight.Id, 0);
+                    //ffight.Bot.SendToServer(new InteractiveUseRequestMessage(message.elemId, message.skillInstanceUid), 2500 + 500 * ffight.Id);
       }
     }
+
+
+        [MessageHandler(typeof(TeleportRequestMessage))]
+        public void HandleTeleportRequestMessage(Bot bot, TeleportRequestMessage message)
+        {
+            if (PartyLeaderId == CharacterId)
+                foreach (FFight ffight in GetOtherFFights(true, true)) // All member of the party on the same map
+                    ffight.Bot.SendToServer(new TeleportRequestMessage(message.teleporterType, message.mapId), 2500 + 500 * ffight.Id);
+        }
+
+        #endregion movement
 
     [MessageHandler(typeof(CharacterExperienceGainMessage))]
     public void HandleCharacterExperienceGainMessage(Bot bot, CharacterExperienceGainMessage message)
     {
-      if (bot == null || bot.Character == null || bot.Character.Fight == null)
+            if (bot == null || bot.Character == null)
       {
         logger.Error("Fight is not properly initialized.");
         return; // Can't handle the message
@@ -171,8 +219,27 @@ namespace FFFightPlugin
         else
           if (fighter == Fighter)
             settings.FightLost++;
-      logger.Debug(string.Format("{0} is dead (FF)", fighter));
-      fighter.IsAlive = false;
+        }
+
+        /// <summary>
+        /// When the leader is NOT a FFbot, then try to guess in what map he moved
+        /// </summary>
+        /// <param name="bot"></param>
+        /// <param name="message"></param>
+        [MessageHandler(typeof(GameContextRemoveElementMessage))]
+        public void HandleGameContextRemoveElementMessage(Bot bot, GameContextRemoveElementMessage message)
+        {
+            if (message.id == PartyLeaderId && CharacterId != PartyLeaderId)
+            {
+                foreach (FFight ffight in GetOtherFFights(true))
+                    if (ffight.CharacterId == PartyLeaderId)
+                        return; // we found a FFight playing the leader => we skip this message
+                int NextMap = Character.GetMapLinkedToCell(LastLeaderCell);
+                if (NextMap == -1)
+                    logger.Error("Can't follow the leader, no map linked from last cell {0}.", LastLeaderCell);
+                else
+                    ComeOnMyMap(Character.Map.Id, LastLeaderCell, NextMap);
+            }
     }
   }
 }

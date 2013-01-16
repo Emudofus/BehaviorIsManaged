@@ -1,7 +1,7 @@
 ﻿#region License GNU GPL
 // AutoFight.cs
 // 
-// Copyright (C) 2012 - BehaviorIsManaged
+// Copyright (C) 2012, 2013 - BehaviorIsManaged
 // 
 // This program is free software; you can redistribute it and/or modify it 
 // under the terms of the GNU General Public License as published by the Free Software Foundation;
@@ -203,7 +203,10 @@ namespace zFFFightPlugin
   {
     //private WindowDetector wndProcessor;
     private static int FFightCount = 0;
-    public int FFightNb { get; private set; }
+
+        public int Id { get; private set; }
+        public int CharacterId { get { if (Character != null) return Character.Id; return 0; } }
+
     #region Setting stats
     private Stopwatch sitTimer;
     private Stopwatch fightTimer;
@@ -230,14 +233,14 @@ namespace zFFFightPlugin
     public List<PartyMemberInformations> Party { get; set; }
     public int PartyId { get; private set; }
 
-    public PlayedCharacter Character { get; private set; }
+        public PlayedCharacter Character { get { return Bot.Character; } }
     public PlayedFighter Fighter { get; private set; }
 
     public FFight(Bot bot, Mode mode = Mode.AutomaticFight)
       : base(bot)
     {
-      FFightNb = ++FFightCount;
-      if (bot.Character == null)
+            Id = ++FFightCount;
+            if (Character == null)
       {
         OnDetached();
         return;
@@ -245,11 +248,10 @@ namespace zFFFightPlugin
       Mode = mode;
       #region Settings and logs
       Directory.CreateDirectory("Spells");
-      bot.CallDelayed(5000, () => File.WriteAllText("spells/" + bot.Character.Name + ".spells.txt", bot.Character.SpellsBook.GetFullDetail()));
+      bot.CallDelayed(5000, () => File.WriteAllText("spells/" + Character.Name + ".spells.txt", Character.SpellsBook.GetFullDetail()));
       settings = Bot.Settings.GetOrAddEntry<FFSettings>();
       if (settings.Restarts == 0)
         settings.Init(bot.Character);
-      Character = bot.Character;
       Party = null;
       botTimer = new Stopwatch();
       botTimer.Start();
@@ -267,22 +269,24 @@ namespace zFFFightPlugin
 
       TeamMeUp();
       //bot.CallDelayed(2000, () => wndProcessor = bot.GetFrame<WindowDetector>());
-      if (bot.Character.IsFighting()) // reconnect
-        OnFightJoined(bot.Character, bot.Character.Fight);
-      else if (bot.Character.Map != null)
-        OnMapJoined(bot.Character, bot.Character.Map);
+            if (Character.IsFighting()) // reconnect
+                OnFightJoined(Character, bot.Character.Fight);
+            else if (Character.Map != null)
+                OnMapJoined(Character, Character.Map);
     }
 
     /// <summary>
     /// Get All other FFight plugins within the same server
     /// </summary>
     /// <returns></returns>
-    IEnumerable<FFight> GetOtherFFights(bool withinSameParty = false)
+        IEnumerable<FFight> GetOtherFFights(bool withinSameParty = false, bool withinSameMap = false)
     {
+            if (Character != null)
       foreach (Bot subBot in BotManager.Instance.Bots)
-        if (subBot != Bot && subBot.Character != null && subBot.ClientInformations.SelectedServer.id == Bot.ClientInformations.SelectedServer.id)
+                    if (subBot != Bot && subBot.Character != null && subBot.ClientInformations.SelectedServer.id == Bot.ClientInformations.SelectedServer.id && subBot.Character.Id != CharacterId)
           if (subBot.HasFrame<FFight>())
             if (!withinSameParty || (Party != null && Party.Any(member => member.id == subBot.Character.Id)))
+                                if (!withinSameMap || subBot.Character.Map.Id == Character.Map.Id)
               yield return subBot.GetFrame<FFight>();
     }
 
@@ -309,7 +313,7 @@ namespace zFFFightPlugin
         _checkTimer.Dispose();
         _checkTimer = null;
       }
-      _checkTimer = character.Bot.CallPeriodically(4 * 1000, CheckMonsters);
+            _checkTimer = Bot.CallPeriodically(4 * 1000, CheckMonsters);
     }
 
     public void Sit()
@@ -323,7 +327,7 @@ namespace zFFFightPlugin
 
         _sit = true;
 
-        Bot.Character.StartMoving += StandUp;
+                Character.StartMoving += StandUp;
 
       }
     }
@@ -335,7 +339,7 @@ namespace zFFFightPlugin
       settings.BotHealingElapsedSeconds += (int)(sitTimer.ElapsedMilliseconds / 1000);
 
       _sit = false;
-      Bot.Character.StartMoving -= StandUp;
+            Character.StartMoving -= StandUp;
     }
 
     int MapMoveFailedCount = 0;
@@ -346,11 +350,11 @@ namespace zFFFightPlugin
       settings.BotElapsedSeconds = startingElapsSecondes + (int)(botTimer.ElapsedMilliseconds / 1000);
       settings.LastActivityDate = DateTime.Now;
       Bot.SaveSettings();
-      if (Character.Stats.Health * 10 < Bot.Character.Stats.MaxHealth * 9) // under 90% full health
+            if (Character.Stats.Health * 10 < Character.Stats.MaxHealth * 9) // under 90% full health
       {
         if (!_sit)
         {
-          Character.SendWarning("Character health too low : {0}/{1} => sit", Bot.Character.Stats.Health, Bot.Character.Stats.MaxHealth);
+                    Character.SendWarning("Character health too low : {0}/{1} => sit", Character.Stats.Health, Character.Stats.MaxHealth);
 
           Bot.CallDelayed(500, Sit);
         }
@@ -364,7 +368,7 @@ namespace zFFFightPlugin
         settings.MaxPower = 0.99;
       int level = (int)(Character.Level * settings.MaxPower);
 
-      if (PartyLeaderId == Character.Id) // Leader mode : wait all members of the party are in the same map
+            if (PartyLeaderId == CharacterId) // Leader mode : wait all members of the party are in the same map
       {
         if (!Party.All(member => Character.Map.Actors.Any(actor => actor.Id == member.id)))
         {
@@ -409,12 +413,12 @@ namespace zFFFightPlugin
 
     public void ChangeMap(MapNeighbour neighbour = MapNeighbour.Any)
     {
-      MapNeighbour choosenNeighbour = Bot.Character.ChangeMap(neighbour);
+            MapNeighbour choosenNeighbour = Character.ChangeMap(neighbour);
       if (choosenNeighbour == MapNeighbour.None) return; // Failed
       MapMoveFailedCount = 0;
-      if (otherFFights != null && Bot.Character != null && Bot.Character.Movement != null && choosenNeighbour != MapNeighbour.None)
+            if (otherFFights != null && Character != null && Character.Movement != null && choosenNeighbour != MapNeighbour.None)
         foreach (FFight ffight in otherFFights)
-          ffight.ComeOnMyMap(Bot.Character.Movement.EndCell.Id, Bot.Character.NextMap, choosenNeighbour);
+                    ffight.ComeOnMyMap(Character.Movement.EndCell.Id, Character.NextMap, choosenNeighbour);
     }
 
     List<Bot> otherBots;
@@ -424,6 +428,12 @@ namespace zFFFightPlugin
     {
         return false;
     }
+
+        public void ComeOnMyMap(int srcMap, short destCell, int dstMap)
+        {
+            Character.SendInformation("Leader call me on the map {0}, through cell {1}. I'm on cell {2} in map {3}", dstMap, destCell, Character.Cell, Character.Map);
+            Bot.CallDelayed(1000 + 500 * Id, () => Character.ChangeMap(srcMap, destCell, dstMap, 10));
+        }
 
     public bool ComeOnMyMap(short cellId, int? mapId, MapNeighbour neighbour)
     {
@@ -436,23 +446,6 @@ namespace zFFFightPlugin
       otherFFights = new List<FFight>();
       Fighter = character.Fighter;
 
-      if (Mode != Mode.Follower)
-          foreach (Bot otherBot in BotManager.Instance.Bots)
-              if (otherBot != Bot)
-                  if (otherBot.Character != null && otherBot.Character.Map != null && otherBot.Character.Map.Id == character.Map.Id)
-                  {
-                      if (otherBot.AddFrame(new FFight(otherBot, Mode.Follower)))
-                      {
-                      }
-                      FFight otherFFight = otherBot.GetFrame<FFight>();
-                      if (otherFFight != null)
-                      {
-                          otherFFights.Add(otherBot.GetFrame<FFight>());
-                          otherBots.Add(otherBot);
-                          otherFFight.JoinAsFollower(fight);
-                          character.SendInformation(string.Format("Asking {0} to join on the fight", otherBot.Character));
-                      }
-                  }
 
       fightTimer.Restart();
       settings.FightStarted++;
@@ -491,7 +484,7 @@ namespace zFFFightPlugin
       FindBestAttack();
       if (Mode == Mode.Manual) return;
       int delay = 50;
-      if (PartyLeaderId != null && PartyLeaderId != Character.Id)
+            if (PartyLeaderId != null && PartyLeaderId != CharacterId)
       {
         if (Character.Breed.Id == (int)BreedEnum.Eniripsa)
           delay = 6000;
@@ -559,7 +552,7 @@ namespace zFFFightPlugin
 
     private void StartAI()
     {
-      Bot.Character.ResetCellsHighlight();
+            Character.ResetCellsHighlight();
       isMoving = false;
       spellTarget = null;
       _lastPathDetail = null;
@@ -571,17 +564,13 @@ namespace zFFFightPlugin
 
       if (_currentTarget == null)
       {
-        Bot.Character.SendWarning("No target => Pass turn");
-        PassTurn();
-        return;
+                Character.SendWarning("No target => no attack");
+                //PassTurn();
+                //return;
       }
 
-      Bot.Character.SendDebug("StartAI AP:{0}, MP:{1}, Pos:{2}, Target:{3} ({4})", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, Fighter.Cell, _currentTarget, _currentTarget != null ? _currentTarget.Cell.ToString() : "?-?");
+            Character.SendDebug("StartAI AP:{0}, MP:{1}, Pos:{2}", Character.Stats.CurrentAP, Character.Stats.CurrentMP, Fighter.Cell);
 
-      _losMapF.UpdateTargetCell(_currentTarget.Cell, true, false);
-
-
-      //DisplaySpellAvailability();
 
       //_isLastAction = false;
       // Don't use invocs against mutants
@@ -616,47 +605,40 @@ namespace zFFFightPlugin
             if (settings.FavoredBoostSpells != null && settings.FavoredBoostSpells.Count > 0 && Cast(settings.FavoredBoostSpells)) return;
             break;
           case 2:
+                        if (_currentTarget == null) // no enemy can be seen
+                        {
+                            if (Cast(Spell.SpellCategory.Buff | Spell.SpellCategory.Healing))
+                                return;
+                        }
+                        else
             if (Cast(Spell.SpellCategory.All ^ Spell.SpellCategory.Invocation))
             {
               if (spellTarget != null && spellTarget.Spell != null)
-              {
                 if ((spellTarget.Spell.Categories & Spell.SpellCategory.Damages) > 0) _attackDone = true;
-                if (spellTarget.Spell.Template.id != 0) // Not the Weapon => To step 4
-                  _IAStep++;
-              }
               return;
             }
-            _IAStep++; // No spell available => to step 4
             break;
           case 3:
-            if (Cast(Spell.SpellCategory.All ^ Spell.SpellCategory.Invocation, false))
-            {
-              if (spellTarget != null && spellTarget.Spell != null && (spellTarget.Spell.Categories & Spell.SpellCategory.Damages) > 0) _attackDone = true;
-              return;
-            }
+                        if (!settings.IsInvoker && Fighter.CanSummon() && CastInvocation()) return;
             break;
-          case 4:
-            //if (Cast(Spell.SpellCategory.Curse)) return;    
-            break;
-          case 5:
-            if (!settings.IsInvoker && CastInvocation()) return;
-            break;
-          case 6:
+                    case 4: // No spell can be cast
             if (Fighter.Stats.CurrentMP <= 0)
             {
               Bot.CallDelayed(250, PassTurn);
               return;
             }
             break;
-          case 7: // No other spells can be cast (out of AP) and at least one attack succeeded => move away and pass the turn
+                    case 5: // No other spells can be cast (out of AP) and at least one attack succeeded => move away and pass the turn
             if (settings.IsInvoker || _attackDone)
             {
-              Bot.Character.SendDebug("StartAI No spell castable, moving away {0}pm", Fighter.Stats.CurrentMP);
+                            Character.SendDebug("StartAI No spell castable, moving away {0}pm", Fighter.Stats.CurrentMP);
+                            if (_currentTarget != null)
               MoveFar(false);
               return;
             }
             break;
-          case 8: // If no spell is at range, then try to come closer (best spell distance) and try again. No need to be cautious here : we can't cast anything else
+                    case 6: // If no spell is at range, then try to come closer (best spell distance) and try again. No need to be cautious here : we can't cast anything else
+                        if (_currentTarget != null)
             MoveNear();
             return;
           default:
@@ -667,10 +649,10 @@ namespace zFFFightPlugin
 
     private void DisplaySpellAvailability()
     {
-      foreach (Spell spell in Bot.Character.SpellsBook.Spells)
+            foreach (Spell spell in Character.SpellsBook.Spells)
       {
         if (!spell.IsAvailable(Fighter.Id, null))
-          Bot.Character.SendDebug("{0} is not available : {1}", spell, spell.AvailabilityExplainString(Fighter.Id));
+                    Character.SendDebug("{0} is not available : {1}", spell, spell.AvailabilityExplainString(Fighter.Id));
       }
     }
 
@@ -695,7 +677,7 @@ namespace zFFFightPlugin
       isMoving = false;
       if (spellTarget == null || spellTarget.Spell == null || spellTarget.FromCell == null || spellTarget.TargetCell == null || spellTarget.cast == true)
       {
-        Bot.Character.SendError("ComeAtSpellRangeThenCast <{0}> can't be used : spellTarget is not properly initialized (or already cast) => PassTurn", _explain);
+                Character.SendError("ComeAtSpellRangeThenCast <{0}> can't be used : spellTarget is not properly initialized (or already cast) => PassTurn", _explain);
         //PassTurn();//PassTurn();
         lastActionFailed = true;
         return;
@@ -710,7 +692,7 @@ namespace zFFFightPlugin
       {
         //DoNotMoveAgain = true;
         Debug.Assert(Fighter.Cell.Id != spellTarget.FromCell.Id);
-        Bot.Character.SendError("Failed to move from {0} to {1} to cast {2} => pass", Fighter.Cell, spellTarget.FromCell, spellTarget.Spell);
+                Character.SendError("Failed to move from {0} to {1} to cast {2} => pass", Fighter.Cell, spellTarget.FromCell, spellTarget.Spell);
         //PassTurn();
         lastActionFailed = true;
         return;
@@ -720,13 +702,13 @@ namespace zFFFightPlugin
         if (Fighter.Movement == null)
         {
           _lastPathDetail = "???";
-          Bot.Character.SendWarning("Failed to move to cast {0} ?", spellTarget.Spell);
+                    Character.SendWarning("Failed to move to cast {0} ?", spellTarget.Spell);
         }
         else
         {
           isMoving = true;
           _lastPathDetail = Fighter.MovementPath.ToString();
-          Bot.Character.SendDebug("Moving to cast {0} : pos {1} => {2} [{3}]", spellTarget.Spell, Fighter.Cell, spellTarget.FromCell, Fighter.Movement.MovementPath.ToString());
+                    Character.SendDebug("Moving to cast {0} : pos {1} => {2} [{3}]", spellTarget.Spell, Fighter.Cell, spellTarget.FromCell, Fighter.Movement.MovementPath.ToString());
         }
         _lastActionDesc = "MoveToCast";
         return;
@@ -737,12 +719,12 @@ namespace zFFFightPlugin
     {
       if (Fighter.CastSpell(spellTarget.Spell, spellTarget.TargetCell))
       {
-        Bot.Character.SendInformation("Casting {0} Spell {1} (cat {2}) on [{3}] {4} (search time : {5}ms)", _explain, spellTarget.Spell, spellTarget.Spell.Categories, string.Join<Fighter>(",", Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell)), spellTarget.TargetCell, spellTarget.TimeSpan.TotalMilliseconds);
+                Character.SendInformation("Casting {0} Spell {1} (cat {2}) on [{3}] {4} (search time : {5}ms)", _explain, spellTarget.Spell, spellTarget.Spell.Categories, string.Join<Fighter>(",", Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell)), spellTarget.TargetCell, spellTarget.TimeSpan.TotalMilliseconds);
         _lastActionDesc = String.Format("Casting {0} spell {1}", _explain, spellTarget.Spell);
         //spellTarget = null;
         return true;
       }
-      Bot.Character.SendError("Failed to cast {0} Spell {1} (cat {2}) on [{3}] {4}", _explain, spellTarget.Spell, spellTarget.Spell.Categories, string.Join<Fighter>(",", Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell)), spellTarget.TargetCell);
+            Character.SendError("Failed to cast {0} Spell {1} (cat {2}) on [{3}] {4}", _explain, spellTarget.Spell, spellTarget.Spell.Categories, string.Join<Fighter>(",", Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell)), spellTarget.TargetCell);
       //spellTarget = null;
       //PassTurn();
       return false;
@@ -776,14 +758,14 @@ namespace zFFFightPlugin
     {
       foreach (Spell spell in Fighter.GetOrderListOfInvocationSpells())
       {
-        Cell dest = GetRandomSurroundingFreeCell(Fighter.Cell, _currentTarget.Cell, spell);
+                Cell dest = GetRandomSurroundingFreeCell(Fighter.Cell, _currentTarget == null ? null : _currentTarget.Cell, spell);
         if (dest != null)
         {
           spellTarget = new SpellTarget(1, Fighter.Cell, dest, spell);
         }
         else
         {
-          Cell whereToMove = Fighter.GetPossibleMoves(true, false, _pathFinder).FirstOrDefault(cell => GetRandomSurroundingFreeCell(cell, _currentTarget.Cell, spell) != null);
+                    Cell whereToMove = Fighter.GetPossibleMoves(true, false, _pathFinder).FirstOrDefault(cell => GetRandomSurroundingFreeCell(cell, _currentTarget == null ? null : _currentTarget.Cell, spell) != null);
           if (whereToMove == null) continue;
           spellTarget = new SpellTarget(1, whereToMove, dest, spell);
         }
@@ -796,7 +778,7 @@ namespace zFFFightPlugin
     bool Cast(Spell.SpellCategory category, bool withWeapon = true)
     {
       if (Fighter.Stats.CurrentAP <= 0) return false;
-      spellTarget = Bot.Character.SpellsBook.FindBestUsage(Fighter, category, withWeapon);
+            spellTarget = Character.SpellsBook.FindBestUsage(Fighter, category, withWeapon);
       return TryCast(category.ToString());
     }
 
@@ -804,7 +786,7 @@ namespace zFFFightPlugin
     {
 
       if (Fighter.Stats.CurrentAP <= 0) return false;
-      spellTarget = Bot.Character.SpellsBook.FindBestUsage(Fighter, spellIds);
+            spellTarget = Character.SpellsBook.FindBestUsage(Fighter, spellIds);
       return TryCast(string.Format("Spells {0}", string.Join(",", spellIds)));
     }
 
@@ -836,7 +818,7 @@ namespace zFFFightPlugin
       if (Mode == Mode.Manual) return;
       if (_IAStep == 0)
       {
-        Bot.Character.SendWarning("OnAcknowledgement before any action on the turn => ignored. AP:{0}, MP:{1}. LastAction: {2}, Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail);
+                Character.SendWarning("OnAcknowledgement before any action on the turn => ignored. AP:{0}, MP:{1}. LastAction: {2}, Actors {3} on Cells {4}. Last path {5}", Character.Stats.CurrentAP, Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail);
         return;
       }
 
@@ -847,22 +829,22 @@ namespace zFFFightPlugin
       {
         if (!isMoving && NoSpellTarget)
         {
-          Bot.Character.SendError("OnAcknowledgement [{6} - {7}] : Failed, but it is neither a move or a spell ! - {2} FAILED. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, FFightNb, Character);
+                    Character.SendError("OnAcknowledgement [{6} - {7}] : Failed, but it is neither a move or a spell ! - {2} FAILED. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Character.Stats.CurrentAP, Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, Id, Character);
           settings.UnvalidAckFailed++;
         }
         else
           if (isMoving)
           {
             settings.FMovesFailed++;
-            Bot.Character.SendError("OnAcknowledgement [{6} - {7}] : {2} FAILED. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, FFightNb, Character);
+                        Character.SendError("OnAcknowledgement [{6} - {7}] : {2} FAILED. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Character.Stats.CurrentAP, Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, Id, Character);
           }
           else
           {
             settings.SpellsFailed++;
             Cell cellTarget = spellTarget.TargetCell;
             Fighter[] targets = cellTarget == null ? new Fighter[0] : Fighter.Fight.GetActorsOnCell(spellTarget.TargetCell);
-            Bot.Character.SendError("OnAcknowledgement [{9}{10}] : {2} FAILED. AP : {0}, MP : {1}. {3} casted on {4} on cell {5} : {6} -  Actors {7} on Cells {8}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP,
-                    _lastActionDesc, spellTarget.Spell, string.Join<Fighter>(",", targets), cellTarget, spellTarget.Spell.AvailabilityExplainString(targets.Select(fighter => fighter.Id).FirstOrDefault()), string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), FFightNb, Character);
+                        Character.SendError("OnAcknowledgement [{9}{10}] : {2} FAILED. AP : {0}, MP : {1}. {3} casted on {4} on cell {5} : {6} -  Actors {7} on Cells {8}", Character.Stats.CurrentAP, Character.Stats.CurrentMP,
+                                _lastActionDesc, spellTarget.Spell, string.Join<Fighter>(",", targets), cellTarget, spellTarget.Spell.AvailabilityExplainString(targets.Select(fighter => fighter.Id).FirstOrDefault()), string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), Id, Character);
             spellTarget.cast = true;
           }
       }
@@ -870,19 +852,19 @@ namespace zFFFightPlugin
       {
         if (!isMoving && NoSpellTarget)
         {
-          Bot.Character.SendError("OnAcknowledgement [{6} - {7}] : Succeeded, but it is neither a move or a spell ! - {2} SUCCESS. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, FFightNb, Character);
+                    Character.SendError("OnAcknowledgement [{6} - {7}] : Succeeded, but it is neither a move or a spell ! - {2} SUCCESS. AP:{0}, MP:{1}. Actors {3} on Cells {4}. Last path {5}", Character.Stats.CurrentAP, Character.Stats.CurrentMP, _lastActionDesc, string.Join(",", Fighter.Fight.Actors), string.Join(",", Fighter.Fight.Actors.Select(actor => actor.Cell)), _lastPathDetail, Id, Character);
           settings.UnvalidAckSucceeded++;
         }
         else
           if (isMoving)
           {
             settings.FMovesSucceded++;
-            Bot.Character.SendDebug("Success on Moving \"{2}\"  - OnAcknowledgement AP:{0}, MP:{1}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc);
+                        Character.SendDebug("Success on Moving \"{2}\"  - OnAcknowledgement AP:{0}, MP:{1}", Character.Stats.CurrentAP, Character.Stats.CurrentMP, _lastActionDesc);
           }
           else
           {
             settings.SpellsSucceded++;
-            Bot.Character.SendDebug("Success on Cast \"{2}\"  - OnAcknowledgement AP:{0}, MP:{1}", Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP, _lastActionDesc);
+                        Character.SendDebug("Success on Cast \"{2}\"  - OnAcknowledgement AP:{0}, MP:{1}", Character.Stats.CurrentAP, Character.Stats.CurrentMP, _lastActionDesc);
             spellTarget.cast = true;
           }
 
@@ -918,7 +900,7 @@ namespace zFFFightPlugin
           return;
         else
           Fighter = Character.Fighter;
-      if (PartyLeaderId == Character.Id && Fighter.Fight.Phase == FightPhase.Placement)
+            if (PartyLeaderId == CharacterId && Fighter.Fight.Phase == FightPhase.Placement)
       {
         foreach (var member in Party)
         {
@@ -941,7 +923,7 @@ namespace zFFFightPlugin
       if ((fighterCells.Length > 0) && (enemyCells.Length > 0))
       {
         Cell farCell = fighterCells.OrderBy(placementCell => enemyCells.Min(cell => cell.ManhattanDistanceTo(placementCell))).LastOrDefault();
-        Bot.Character.Fighter.ChangePrePlacement(farCell);
+                Character.Fighter.ChangePrePlacement(farCell);
       }
       ReadyToStartFight();
 
@@ -953,7 +935,7 @@ namespace zFFFightPlugin
       var enemyCells = Fighter.EnemiesCells.ToArray();
       if ((fighterCells.Length > 0) && (enemyCells.Length > 0))
       {
-        spellTarget = Bot.Character.SpellsBook.FindBestUsage(Fighter, Spell.SpellCategory.Damages, true, fighterCells.OrderByDescending(cell => enemyCells.Min(ennemyCell => cell.ManhattanDistanceTo(ennemyCell))));
+                spellTarget = Character.SpellsBook.FindBestUsage(Fighter, Spell.SpellCategory.Damages, true, fighterCells.OrderByDescending(cell => enemyCells.Min(ennemyCell => cell.ManhattanDistanceTo(ennemyCell))));
         if (spellTarget != null && spellTarget.Efficiency > 0)
         {
           Character.SendDebug("FindOptimalPlacement : bestSpell: {0}, efficiency : {1}, posCell {2}, targetCell {3}", spellTarget.Spell, spellTarget.Efficiency, spellTarget.FromCell, spellTarget.TargetCell);
@@ -976,7 +958,7 @@ namespace zFFFightPlugin
       var enemy = FindWeakestEnemy();
       if (enemy == null)
       {
-        Bot.Character.SendError("PlaceToWeakestEnemy : no enemy left ?");
+                Character.SendError("PlaceToWeakestEnemy : no enemy left ?");
         return;
       }
 
@@ -1147,7 +1129,7 @@ namespace zFFFightPlugin
       Fighter fighter = Fighter.GetOpposedTeam().FightersAlive.OrderBy(_fighter => _fighter.Stats.Health).FirstOrDefault();
       if (fighter == null)
       {
-        Bot.Character.SendWarning("No enemy left => PassTurn");
+                Character.SendWarning("No enemy left => PassTurn");
         PassTurn();
       }
 
@@ -1156,16 +1138,19 @@ namespace zFFFightPlugin
 
       if (dest == null)
       {
-        Bot.Character.SendWarning("Can't Move near {0}", fighter);
+                Character.SendWarning("Can't Move near {0}", fighter);
         PassTurn();
         return;
       }
       //Bot.Character.SendMessage(res, Color.Pink);
 
       //Move(Fighter.Cell, dest, true, mp);
-      if (!Fighter.Move(dest, _pathFinder))
+            if (!Fighter.Move(dest, _pathFinder, 0, false))
       {
-        Bot.Character.SendError("Failed to move from {0} to {1}, near {2} => pass", Fighter.Cell, dest, fighter);
+                if (dest.Id == Fighter.Cell.Id)
+                    Character.SendInformation("No move from {0} to {1}, to come close to {2} => pass", Fighter.Cell, dest, fighter);
+                else
+                    Character.SendError("Failed to move from {0} to {1}, to come close to {2} => pass", Fighter.Cell, dest, fighter);
         PassTurn();
       }
       else
@@ -1220,7 +1205,7 @@ namespace zFFFightPlugin
 
         if (dest == null)
         {
-          Bot.Character.SendWarning("Can't find a path away from monsters", Fighter.Cell, dest, String.Join(",", enemyCells));
+                    Character.SendWarning("Can't find a path away from monsters", Fighter.Cell, dest, String.Join(",", enemyCells));
 
           //DoNotMoveAgain = true;
           PassTurn();
@@ -1229,10 +1214,10 @@ namespace zFFFightPlugin
         Debug.Assert((enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)) > ActualDistanceFromEnnemies), "This move do not take the character away from monsters !");
 
         //Move(Fighter.Cell, dest, true, Fighter.Stats.CurrentMP);
-        if (!Fighter.Move(dest, _pathFinder))
+                if (!Fighter.Move(dest, _pathFinder, 0, cautious))
         {
           //DoNotMoveAgain = true;
-          Bot.Character.SendError("Failed to move far from {0} to {1}, away from {2} => pass", Fighter.Cell, dest, String.Join(",", enemyCells));
+                    Character.SendError("Failed to move far from {0} to {1}, away from {2} => pass", Fighter.Cell, dest, String.Join(",", enemyCells));
           PassTurn();
           return;
         }
@@ -1242,7 +1227,7 @@ namespace zFFFightPlugin
             _lastPathDetail = "???";
           else
             _lastPathDetail = Fighter.MovementPath.ToString();
-          Bot.Character.SendDebug("Moving away from ({0}) : pos {1}({2}) => {3}({4}) => pass", String.Join(",", enemyCells), Fighter.Cell, ActualDistanceFromEnnemies, dest, enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)));
+                    Character.SendDebug("Moving away from ({0}) : pos {1}({2}) => {3}({4}) => pass", String.Join(",", enemyCells), Fighter.Cell, ActualDistanceFromEnnemies, dest, enemyCells.Min(ennCell => dest.ManhattanDistanceTo(ennCell)));
           isMoving = true;
           _lastActionDesc = "MoveFar";
         }
@@ -1264,12 +1249,12 @@ namespace zFFFightPlugin
 
     public override void OnDetached()
     {
-      if (Bot.Character != null)
+            if (Character != null)
       {
-        Bot.Character.FightJoined -= OnFightJoined;
-        Bot.Character.FightLeft -= OnFightLeft;
-        Bot.Character.MapJoined -= OnMapJoined;
-        Bot.Character.StartMoving -= StandUp;
+                Character.FightJoined -= OnFightJoined;
+                Character.FightLeft -= OnFightLeft;
+                Character.MapJoined -= OnMapJoined;
+                Character.StartMoving -= StandUp;
       }
 
       if (Fighter != null)
@@ -1293,10 +1278,10 @@ namespace zFFFightPlugin
 
     internal void Dump()
     {
-      Bot.Character.SendInformation("Current target : {0}", _currentTarget);
-      Bot.Character.SendInformation("HP : {0}, AP : {1}, MP : {2}", Bot.Character.Stats.Health, Bot.Character.Stats.CurrentAP, Bot.Character.Stats.CurrentMP);
-      Bot.Character.SendInformation("Sitting : {0}, Moving : {1}, Fighting : {2}", _sit, Fighter != null ? Fighter.IsMoving() : Bot.Character.IsMoving(), Bot.Character.IsFighting());
-      Bot.Character.SendInformation("MapID : {0}, Cell : {1}", Fighter != null ? Fighter.Map.Id : Bot.Character.Map.Id, Fighter != null ? Fighter.Cell : Bot.Character.Cell);
+            Character.SendInformation("Current target : {0}", _currentTarget);
+            Character.SendInformation("HP : {0}, AP : {1}, MP : {2}", Character.Stats.Health, Character.Stats.CurrentAP, Character.Stats.CurrentMP);
+            Character.SendInformation("Sitting : {0}, Moving : {1}, Fighting : {2}", _sit, Fighter != null ? Fighter.IsMoving() : Character.IsMoving(), Character.IsFighting());
+            Character.SendInformation("MapID : {0}, Cell : {1}", Fighter != null ? Fighter.Map.Id : Character.Map.Id, Fighter != null ? Fighter.Cell : Character.Cell);
     }
 
 
