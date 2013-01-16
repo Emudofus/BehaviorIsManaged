@@ -236,7 +236,7 @@ namespace BiM.Behaviors.Game.Stats
       WaterElementReduction = stats.waterElementReduction;
       AirElementReduction = stats.airElementReduction;
       FireElementReduction = stats.fireElementReduction;
-      logger.Debug("{0}/{1} AP, {2}/{3} MP, {4}/{5} HP", CurrentAP, MaxAP, CurrentMP, MaxMP, Health, MaxHealth);
+      //logger.Debug("{0}/{1} AP, {2}/{3} MP, {4}/{5} HP", CurrentAP, MaxAP, CurrentMP, MaxMP, Health, MaxHealth);
 
       InvisibilityState = (GameActionFightInvisibilityStateEnum)stats.invisibilityState;
     }

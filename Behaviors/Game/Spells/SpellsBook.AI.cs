@@ -136,7 +136,7 @@ namespace BiM.Behaviors.Game.Spells
             List<Spell> spells = m_spells.ToList();
             if (withWeapon && ((category & (Spell.SpellCategory.Damages | Spell.SpellCategory.Healing)) != 0))
                 spells.Add(WeaponSpellLike());
-            logger.Debug("***FindBestUsage {0}, {1} spells in book. {2} PA. {3}/{4} HP ***", category, spells.Count, pc.PCStats.CurrentAP, pc.PCStats.Health, pc.PCStats.MaxHealth);
+            //logger.Debug("***FindBestUsage {0}, {1} spells in book. {2} PA. {3}/{4} HP ***", category, spells.Count, pc.PCStats.CurrentAP, pc.PCStats.Health, pc.PCStats.MaxHealth);
             Object thisLock = new Object();
             //foreach(Spell spell in spells)
             int NbSpellsChecked = 0;
@@ -174,7 +174,7 @@ namespace BiM.Behaviors.Game.Spells
             //Debug.Assert(NbSpellsChecked == spells.Count);
             timer.Stop();
             spellTarget.TimeSpan = timer.Elapsed;
-            pc.Character.SendInformation("Spell {0} selected - efficientcy : {1} - comment = {2}", spellTarget.Spell, spellTarget.Efficiency, spellTarget.Comment);
+            //pc.Character.SendInformation("Spell {0} selected - efficientcy : {1} - comment = {2}", spellTarget.Spell, spellTarget.Efficiency, spellTarget.Comment);
             return spellTarget;
         }
 
