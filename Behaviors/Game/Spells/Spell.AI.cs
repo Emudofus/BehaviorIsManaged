@@ -26,6 +26,7 @@ using BiM.Protocol.Data;
 using DamageType = System.Double;
 using BiM.Behaviors.Game.Spells.Shapes;
 using BiM.Protocol.Enums;
+using NLog;
 // One can either try as double or uint. Results will sightly differ. 
 
 namespace BiM.Behaviors.Game.Spells
@@ -596,7 +597,7 @@ namespace BiM.Behaviors.Game.Spells
                     result.Multiply(0.1);
                 else
                     if (target.Stats.Health < 2000)
-                        result.Multiply(0.6);
+                        result.Multiply(0.5);
             }
 
             // Damage reflection
@@ -783,6 +784,7 @@ namespace BiM.Behaviors.Game.Spells
 
         private LOSMap _losMap;
         private Dictionary<short, int> efficiencyCache = null;
+        protected static readonly Logger logger = LogManager.GetCurrentClassLogger();
             
         // Find where the PC should come to cast the spell, and the best target there (todo : optimize if needed)
         public SpellTarget FindBestTarget(PlayedFighter pc, IEnumerable<Cell> sourceCells, IEnumerable<Fighter> actors, Spell.SpellCategory category)
@@ -790,12 +792,14 @@ namespace BiM.Behaviors.Game.Spells
             if (LevelTemplate.statesForbidden != null)
                 if (LevelTemplate.statesForbidden.Any(state => pc.HasState(state)))
                 {
+                    logger.Debug("Spell {0} skipped : statesForbidden {1}", this, string.Join(",", LevelTemplate.statesForbidden));            
                     pc.Character.SendWarning("Spell {0} skipped : statesForbidden {1}", this, string.Join(",", LevelTemplate.statesForbidden));
                     return null; // Can't cast this : all the required states are not on the caster
                 }
             if (LevelTemplate.statesRequired != null)
                 if (!LevelTemplate.statesRequired.All(state => pc.HasState(state)))
                 {
+                    logger.Debug("Spell {0} skipped : statesRequired {1}", this, string.Join(",", LevelTemplate.statesForbidden));
                     pc.Character.SendWarning("Spell {0} skipped : statesRequired {1}", this, string.Join(",", LevelTemplate.statesForbidden));
                     return null; // Can't cast this : at least one required state is not on the caster
                 }            
