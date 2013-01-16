@@ -15,17 +15,16 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Fights;
 using BiM.Behaviors.Game.World;
 using BiM.Core.Collections;
+using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using NLog;
-using BiM.Protocol.Data;
 
 namespace BiM.Behaviors.Game.Items
 {
@@ -51,7 +50,7 @@ namespace BiM.Behaviors.Game.Items
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private ReadOnlyObservableCollectionMT<Item> m_readOnlyItems;
-        private ObservableCollectionMT<Item> m_items; 
+        private ObservableCollectionMT<Item> m_items;
 
         public Inventory(PlayedCharacter owner)
         {
@@ -62,7 +61,7 @@ namespace BiM.Behaviors.Game.Items
         }
 
         public Inventory(PlayedCharacter owner, InventoryContentMessage inventory)
-            : this (owner)
+            : this(owner)
         {
             if (owner == null) throw new ArgumentNullException("owner");
             if (inventory == null) throw new ArgumentNullException("inventory");
@@ -80,6 +79,11 @@ namespace BiM.Behaviors.Game.Items
         public ReadOnlyObservableCollectionMT<Item> Items
         {
             get { return m_readOnlyItems; }
+        }
+
+        public Item GetEquippedItem(CharacterInventoryPositionEnum position)
+        {
+            return Items.FirstOrDefault(x => x.Position == position);
         }
 
         public Weapon GetEquippedWeapon()
@@ -121,6 +125,21 @@ namespace BiM.Behaviors.Game.Items
         public bool HasItem(CharacterInventoryPositionEnum position)
         {
             return Items.Any(x => x.Position == position);
+        }
+
+        public IEnumerable<Item> GetItems(CharacterInventoryPositionEnum position)
+        {
+            return m_items.Where(item => item.Position == position);
+        }
+
+        public IEnumerable<Item> GetItems(ItemSuperTypeEnum superType)
+        {
+            return m_items.Where(item => item.SuperType == superType);
+        }
+
+        public IEnumerable<Item> GetItemByTemplateIds(int[] templateIds)
+        {
+            return m_items.Where(item => templateIds.Contains(item.Template.id));
         }
 
         public Item GetItem(int guid)
@@ -207,7 +226,7 @@ namespace BiM.Behaviors.Game.Items
             if (!CanMove(item, position, quantity))
                 return false;
 
-            Owner.Bot.SendToServer(new ObjectSetPositionMessage(item.Guid, (byte) position, quantity));
+            Owner.Bot.SendToServer(new ObjectSetPositionMessage(item.Guid, (byte)position, quantity));
             return true;
         }
 
@@ -238,7 +257,7 @@ namespace BiM.Behaviors.Game.Items
 
         public bool CanDrop(Item item)
         {
-            if (!( Owner.Context is Map ))
+            if (!(Owner.Context is Map))
                 return false;
 
             if (!HasItem(item))
@@ -418,14 +437,14 @@ namespace BiM.Behaviors.Game.Items
         public void Update(SetUpdateMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
         {
-          if (PropertyChanged != null)
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
     }
