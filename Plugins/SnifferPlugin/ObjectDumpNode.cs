@@ -14,10 +14,10 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
-using System;
 using BiM.Core.Network;
 
 namespace SnifferPlugin
@@ -71,34 +71,34 @@ namespace SnifferPlugin
 
     public override string ToString()
     {
-        if (TimeStamp != null)
-            return string.Format(" [{0}] {1} ({2}) - {3}", TimeStamp, Name, Id, From);
-        else
-            return Name;
+      if (TimeStamp != null)
+        return string.Format(" [{0}] {1} ({2}) - {3}", TimeStamp, Name, Id, From);
+      else
+        return Name;
     }
 
     public ListenerEntry? From
     {
-        get;
-        set;
+      get;
+      set;
     }
 
     public string Name
     {
-        get;
-        set;
+      get;
+      set;
     }
 
     public uint Id
     {
-        get;
-        set;
+      get;
+      set;
     }
 
     public DateTime? TimeStamp
     {
-        get;
-        set;
+      get;
+      set;
     }
 
     public bool IsProperty
@@ -110,7 +110,7 @@ namespace SnifferPlugin
     // Used in Xaml binding
     public string Text
     {
-        get { return ToString(); }
+      get { return ToString(); }
     }
 
     // Problem: Target keep a useless reference on message, preventing GC
@@ -138,8 +138,8 @@ namespace SnifferPlugin
 
     private void AddSpace(StringBuilder builder, int level, bool toCSV)
     {
-      if (toCSV)          
-        builder.Append(new string(';', level+4));
+      if (toCSV)
+        builder.Append(new string(';', level + 4));
       else
         builder.Append(new string(' ', level * 4));
     }
@@ -148,9 +148,9 @@ namespace SnifferPlugin
     {
       if (level > 0) AddSpace(builder, level, toCSV);
       if (level == 0 && toCSV && TimeStamp.HasValue)
-          builder.AppendLine(TimeStamp.Value.ToLongTimeString() + CSVSeparator + Name + CSVSeparator + Id + CSVSeparator + From);
+        builder.AppendLine(TimeStamp.Value.ToString("HH:mm:ss.fff") + CSVSeparator + Name + CSVSeparator + Id + CSVSeparator + From);
       else
-          builder.AppendLine(level == 0 && !toCSV ? string.Format("{{{0}}}", ToString()) : ToString());
+        builder.AppendLine(level == 0 && !toCSV ? string.Format("{{{0}}}", ToString()) : ToString());
       level++;
 
       if (Childrens.Count > 0)
@@ -170,9 +170,9 @@ namespace SnifferPlugin
           {
             AddSpace(builder, level, toCSV);
             if (toCSV)
-                builder.AppendLine(string.Format("{0}{1}{2}", child, CSVSeparator, child.Childrens[0]));
-              else
-                builder.AppendLine(string.Format("{0}:{1}", child, child.Childrens[0]));
+              builder.AppendLine(string.Format("{0}{1}{2}", child, CSVSeparator, child.Childrens[0]));
+            else
+              builder.AppendLine(string.Format("{0}:{1}", child, child.Childrens[0]));
           }
           else
           {

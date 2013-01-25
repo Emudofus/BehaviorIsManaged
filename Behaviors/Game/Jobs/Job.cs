@@ -24,6 +24,9 @@ namespace BiM.Behaviors.Game.Jobs
 {
     public class Job
     {
+        public const int FISHER = 36;
+        public const int HUNTER = 41;
+
         private string m_name;
 
         public SkillActionDescription[] Skills { get; private set; }

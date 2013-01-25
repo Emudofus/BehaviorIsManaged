@@ -19,20 +19,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using BiM.Behaviors.Game.World.Data;
 
 namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
 {
     public static class MapExtensions
     {
-       
+
         public static int GetNeighbourMapId(this IMap map, MapNeighbour mapNeighbour, bool GetStoredVersion)
         {
             if (GetStoredVersion)
                 switch (mapNeighbour)
                 {
-                        
                     case MapNeighbour.Bottom:
                         return map.BottomNeighbourId;
                     case MapNeighbour.Top:
@@ -56,7 +54,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         public static ICell GetTransitionCell(this IMap map, MapNeighbour mapNeighbour)
         {
             int MapChangeMask = GetMapChangeMask(mapNeighbour);
-           
+
             // Check if at least one cell allow a transition to the supposed-to-be neighbour
             return map.Cells.FirstOrDefault(cell => (cell.MapChangeData & MapChangeMask) != 0);
         }
@@ -108,7 +106,6 @@ namespace BiM.Behaviors.Game.World.Pathfinding.FFPathFinding
         static public Cell GetClosestTransitionCell(this Map map, MapNeighbour MapNeighbour, Cell startingCell)
         {
             int MapChangeMask = GetMapChangeMask(MapNeighbour);
-
             return map.Cells.Where(cell => (cell.MapChangeData & MapChangeMask) != 0).OrderBy(cell => cell.DistanceTo(startingCell)).FirstOrDefault();
         }
 

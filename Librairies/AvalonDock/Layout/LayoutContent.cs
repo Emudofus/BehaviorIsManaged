@@ -340,6 +340,7 @@ namespace AvalonDock.Layout
         {
             var root = Root;
             var parentAsContainer = Parent as ILayoutContainer;
+            if (parentAsContainer != null)
             parentAsContainer.RemoveChild(this);
             if (root != null)
                 root.CollectGarbage();

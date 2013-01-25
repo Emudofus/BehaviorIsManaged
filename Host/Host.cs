@@ -55,6 +55,9 @@ namespace BiM.Host
         [Configurable("DofusDataPath")]
         public static string DofusDataPath = @"app\data\common";
 
+        [Configurable("DofusExe")]
+        public static string DofusExe = @"app\Dofus.exe";
+
         [Configurable("DofusMapsD2P")]
         public static string DofusMapsD2P = @"app\content\maps\maps0.d2p";
 

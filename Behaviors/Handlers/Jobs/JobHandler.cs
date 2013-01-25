@@ -19,47 +19,47 @@ using NLog;
 
 namespace BiM.Behaviors.Handlers.Jobs
 {
-    public class JobHandler
+  public class JobHandler
+  {
+    private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+    [MessageHandler(typeof(JobDescriptionMessage))]
+    public static void HandleJobDescriptionMessage(Bot bot, JobDescriptionMessage message)
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
-        [MessageHandler(typeof(JobDescriptionMessage))]
-        public static void HandleJobDescriptionMessage(Bot bot, JobDescriptionMessage message)
-        {
-            bot.Character.Update(message);
-        }
-
-        [MessageHandler(typeof(JobExperienceMultiUpdateMessage))]
-        public static void HandleJobExperienceMultiUpdateMessage(Bot bot, JobExperienceMultiUpdateMessage message)
-        {
-            foreach (var update in message.experiencesUpdate)
-            {
-                var job = bot.Character.GetJob(update.jobId);
-
-                if (job == null)
-                    logger.Warn("Cannot update job {0} experience because it's not found", update.jobId);
-                else
-                    job.Update(update);
-            }
-        }
-
-        [MessageHandler(typeof(JobLevelUpMessage))]
-        public static void HandleJobLevelUpMessage(Bot bot, JobLevelUpMessage message)
-        {
-            bot.Character.Update(message);
-
-        }
-
-        [MessageHandler(typeof(JobExperienceUpdateMessage))]
-        public static void HandleJobExperienceUpdateMessage(Bot bot, JobExperienceUpdateMessage message)
-        {
-            var job = bot.Character.GetJob(message.experiencesUpdate.jobId);
-
-            if (job == null)
-                logger.Warn("Cannot update job {0} experience because it's not found", message.experiencesUpdate.jobId);
-            else
-                job.Update(message.experiencesUpdate);
-
-        }
+      bot.Character.Update(message);
     }
+
+    [MessageHandler(typeof(JobExperienceMultiUpdateMessage))]
+    public static void HandleJobExperienceMultiUpdateMessage(Bot bot, JobExperienceMultiUpdateMessage message)
+    {
+      foreach (var update in message.experiencesUpdate)
+      {
+        var job = bot.Character.GetJob(update.jobId);
+
+        if (job == null)
+          logger.Warn("Cannot update job {0} experience because it's not found", update.jobId);
+        else
+          job.Update(update);
+      }
+    }
+
+    [MessageHandler(typeof(JobLevelUpMessage))]
+    public static void HandleJobLevelUpMessage(Bot bot, JobLevelUpMessage message)
+    {
+      bot.Character.Update(message);
+
+    }
+
+    [MessageHandler(typeof(JobExperienceUpdateMessage))]
+    public static void HandleJobExperienceUpdateMessage(Bot bot, JobExperienceUpdateMessage message)
+    {
+      var job = bot.Character.GetJob(message.experiencesUpdate.jobId);
+
+      if (job == null)
+        logger.Warn("Cannot update job {0} experience because it's not found", message.experiencesUpdate.jobId);
+      else
+        job.Update(message.experiencesUpdate);
+      bot.Character.Inventory.FixInventoryOverloadIfNeeded();
+    }
+  }
 }

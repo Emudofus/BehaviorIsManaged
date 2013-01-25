@@ -14,20 +14,17 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
-using BiM.Behaviors.Data;
 using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.Effects;
 using BiM.Core.Collections;
-using BiM.Protocol.Data;
 using BiM.Protocol.Enums;
 using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 
 namespace BiM.Behaviors.Game.Items
 {
-    public class Item : ItemBase
+    public partial class Item : ItemBase
     {
         private ReadOnlyObservableCollectionMT<EffectBase> m_readOnlyEffects;
         private ObservableCollectionMT<EffectBase> m_effects;
@@ -42,7 +39,7 @@ namespace BiM.Behaviors.Game.Items
             Quantity = item.quantity;
             PowerRate = item.powerRate;
             OverMax = item.overMax;
-            Position = (CharacterInventoryPositionEnum) item.position;
+            Position = (CharacterInventoryPositionEnum)item.position;
         }
 
 
@@ -88,7 +85,7 @@ namespace BiM.Behaviors.Game.Items
 
         public uint TotalWeight
         {
-            get { return (uint) (UnityWeight*Quantity); }
+            get { return (uint)(UnityWeight * Quantity); }
         }
 
         public bool IsEquipped
@@ -111,13 +108,13 @@ namespace BiM.Behaviors.Game.Items
             Quantity = item.quantity;
             PowerRate = item.powerRate;
             OverMax = item.overMax;
-            Position = (CharacterInventoryPositionEnum) item.position;
+            Position = (CharacterInventoryPositionEnum)item.position;
         }
 
         public void Update(ObjectMovementMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
-            Position = (CharacterInventoryPositionEnum) msg.position;
+            Position = (CharacterInventoryPositionEnum)msg.position;
         }
 
         public void Update(ObjectQuantityMessage msg)

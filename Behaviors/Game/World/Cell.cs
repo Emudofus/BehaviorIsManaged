@@ -25,7 +25,7 @@ using BiM.Protocol.Tools.Dlm;
 
 namespace BiM.Behaviors.Game.World
 {
-    public class Cell : ICell
+    public class Cell : ICell, IComparable
     {
         public const int StructSize = 2 + 2 + 1 + 1 + 1 + 1;
 
@@ -395,6 +395,23 @@ namespace BiM.Behaviors.Game.World
             return null;
         }
 
+        public IEnumerable<Cell> GetCellsInDirection(DirectionsEnum direction, short minDistance, short maxDistance)
+        {
+            for (short distance = minDistance; distance <= maxDistance; distance++)
+            {
+                Cell cell = GetCellInDirection(direction, distance);
+                if (cell != null)
+                    yield return cell;
+            }
+        }
+
+        public IEnumerable<Cell> GetCellsInDirections(IEnumerable<DirectionsEnum> directions, short minDistance, short maxDistance)
+        {
+            foreach (DirectionsEnum direction in directions)
+                foreach (Cell cell in GetCellsInDirection(direction, minDistance, maxDistance))
+                    yield return cell;
+        }
+
         public Cell GetNearestCellInDirection(DirectionsEnum direction)
         {
             return GetCellInDirection(direction, 1);
@@ -557,5 +574,13 @@ namespace BiM.Behaviors.Game.World
         {
             return string.Format("{0}[{1},{2}]", Id, X, Y);
         }
+        #region IComparable
+        public int CompareTo(object obj)
+        {
+            if (obj is Cell) return this.Id.CompareTo((obj as Cell).Id);
+            if (obj is short) return this.Id.CompareTo(obj as short?);
+            throw new InvalidOperationException(string.Format("Can't compare a Cell and a {0}", obj.GetType().Name)); 
+        }
+        #endregion IComparable
     }
 }

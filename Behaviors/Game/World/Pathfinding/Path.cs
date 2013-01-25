@@ -59,12 +59,12 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
         public Cell Start
         {
-            get { return m_cellsPath[0]; }
+            get { if (m_cellsPath != null && m_cellsPath.Length > 0) return m_cellsPath[0]; return null; }
         }
 
         public Cell End
         {
-            get { return m_cellsPath[m_cellsPath.Length - 1]; }
+            get { if (m_cellsPath != null && m_cellsPath.Length > 0) return m_cellsPath[m_cellsPath.Length - 1]; return null; }
         }
 
         public Cell[] Cells
@@ -72,14 +72,15 @@ namespace BiM.Behaviors.Game.World.Pathfinding
             get { return m_cellsPath; }
         }
 
+        // Warning : this is wrong
         public int MPCost
         {
-            get { return (int) Start.ManhattanDistanceTo(End); }
+            get { return (int)Start.ManhattanDistanceTo(End); }
         }
 
         public bool IsEmpty()
         {
-            return m_cellsPath.Length <= 1; // if end == start the path is also empty
+            return m_cellsPath == null || m_cellsPath.Length <= 1; // if end == start the path is also empty
         }
 
         public DirectionsEnum GetEndCellDirection()
@@ -122,7 +123,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         {
             PathElement[] compressedPath = GetCompressedPath();
 
-            return compressedPath.Select(entry => (short) ((ushort) entry.Cell.Id | ((ushort) entry.Direction << 12))).ToArray();
+            return compressedPath.Select(entry => (short)((ushort)entry.Cell.Id | ((ushort)entry.Direction << 12))).ToArray();
         }
 
         public void CutPath(int index)
@@ -140,7 +141,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
 
             // only one cell
             if (m_cellsPath.Length <= 1)
-                return new[] {new PathElement(m_cellsPath[0], DirectionsEnum.DIRECTION_EAST)};
+                return new[] { new PathElement(m_cellsPath[0], DirectionsEnum.DIRECTION_EAST) };
 
             // build the path
             var path = new List<PathElement>();
@@ -222,7 +223,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         {
             IEnumerable<PathElement> path = (from key in keys
                                              let cellId = key & 4095
-                                             let direction = (DirectionsEnum) ((key >> 12) & 7)
+                                             let direction = (DirectionsEnum)((key >> 12) & 7)
                                              select new PathElement(map.Cells[cellId], direction));
 
             return new Path(map, path);
@@ -236,7 +237,7 @@ namespace BiM.Behaviors.Game.World.Pathfinding
         /// <returns></returns>
         public static Path GetEmptyPath(IMapContext map, Cell startCell)
         {
-            return new Path(map, new[] {startCell});
+            return new Path(map, new[] { startCell });
         }
 
         public override string ToString()

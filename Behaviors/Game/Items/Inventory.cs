@@ -28,7 +28,7 @@ using NLog;
 
 namespace BiM.Behaviors.Game.Items
 {
-    public class Inventory : INotifyPropertyChanged
+    public partial class Inventory : INotifyPropertyChanged
     {
         private readonly Dictionary<ItemSuperTypeEnum, CharacterInventoryPositionEnum[]> m_itemsPositioningRules
             = new Dictionary<ItemSuperTypeEnum, CharacterInventoryPositionEnum[]>
@@ -58,12 +58,12 @@ namespace BiM.Behaviors.Game.Items
             Owner = owner;
             m_items = new ObservableCollectionMT<Item>();
             m_readOnlyItems = new ReadOnlyObservableCollectionMT<Item>(m_items);
+            AutomaticallyDestroyItemsOnOverload = false;
         }
 
         public Inventory(PlayedCharacter owner, InventoryContentMessage inventory)
             : this(owner)
         {
-            if (owner == null) throw new ArgumentNullException("owner");
             if (inventory == null) throw new ArgumentNullException("inventory");
             Kamas = inventory.kamas;
 
@@ -305,9 +305,13 @@ namespace BiM.Behaviors.Game.Items
             return true;
         }
 
+        Item _lastAddedItem = null;
+        int _lastQuantity = 0;
         internal void AddItem(Item item)
         {
             m_items.Add(item);
+            _lastAddedItem = item;
+            _lastQuantity = item.Quantity;
         }
 
         internal bool RemoveItem(int guid)
@@ -330,6 +334,7 @@ namespace BiM.Behaviors.Game.Items
                 m_items.Add(new Item(item));
             }
         }
+
 
         public void Update(InventoryWeightMessage msg)
         {
@@ -380,7 +385,11 @@ namespace BiM.Behaviors.Game.Items
             if (item == null)
                 logger.Warn("Try to update item {0} but item not found !", msg.objectUID);
             else
+            {
+                _lastAddedItem = item;
+                _lastQuantity = msg.quantity;
                 item.Update(msg);
+            }
         }
 
         public void Update(ObjectsAddedMessage msg)

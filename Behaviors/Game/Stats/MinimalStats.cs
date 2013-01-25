@@ -217,6 +217,7 @@ namespace BiM.Behaviors.Game.Stats
       //Summoned = stats.summoned;
       Health = stats.lifePoints;
       MaxHealth = stats.maxLifePoints;
+      MaxHealthBase = stats.baseMaxLifePoints;
       CurrentAP = stats.actionPoints;
       CurrentMP = stats.movementPoints;
       MaxAP = stats.maxActionPoints;

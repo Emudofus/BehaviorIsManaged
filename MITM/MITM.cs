@@ -91,7 +91,7 @@ namespace BiM.MITM
             AuthConnections.Stop();
             WorldConnections.Stop();
 
-            logger.Info("MITM stoped");
+            logger.Info("MITM stopped");
         }
 
         private ConnectionMITM CreateAuthClient(Socket socket)
@@ -164,7 +164,7 @@ namespace BiM.MITM
         private void OnWorldClientDisconnected(ConnectionMITM client)
         {
             if (client.Bot != null)
-                client.Bot.AddMessage(client.Bot.Dispose);
+            client.Bot.AddMessage(client.Bot.Dispose);
         }
 
         private void OnAuthClientMessageReceived(Client client, NetworkMessage message)

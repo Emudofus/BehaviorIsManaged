@@ -64,6 +64,7 @@ namespace SnifferPlugin
                 Bot.Character.SendError("Can't append OnTheFly data in {0} : {1}", filename, ex.Message);
             }
         }
+
         #endregion
 
         [Configurable("NbMessagesToKeep", "This says how message to keep in memory. The older will be removed as new messages come over this quantity.")]
@@ -157,7 +158,7 @@ namespace SnifferPlugin
 
         private void OnMesssageDispatched(MessageDispatcher dispatcher, Message message)
         {
-            if (IsPaused)
+            if (IsPaused && !OnTheFly)
                 return;
 
             var dumper = new TreeDumper(message);
@@ -169,31 +170,44 @@ namespace SnifferPlugin
                 tree.TimeStamp = DateTime.Now;
                 tree.Id = networkMessage.MessageId;
                 tree.From = networkMessage.From;
-            }
 
-            foreach (ObjectDumpNode child in tree.Childrens)
-            {
-                if (m_seeProperties)
+                foreach (ObjectDumpNode child in tree.Childrens)
                 {
-                    child.IsVisible = true;
+                    if (m_seeProperties)
+                    {
+                        child.IsVisible = true;
+                    }
+                    else if (child.IsProperty)
+                    {
+                        child.IsVisible = false;
+                    }
                 }
-                else if (child.IsProperty)
+
+                if (!IsPaused)
                 {
-                    child.IsVisible = false;
+                    m_messages.Add(tree);
+
+                    #region Cleaning : avoid memory overflow on a long run
+                    if (NbMessagesToKeep > 0 && m_messages.Count > NbMessagesToKeep)
+                        m_messages.RemoveAt(0);
+                    #endregion Cleaning : avoid memory overflow on a long run
                 }
+                #region Record On the fly
+                if (OnTheFly)
+                    FlushOnTheFly(tree.ExportToString(true));
+                #endregion Record On the fly
             }
-
-            m_messages.Add(tree);
-
-            #region Cleaning : avoid memory overflow on a long run
-            if (NbMessagesToKeep > 0 && m_messages.Count > NbMessagesToKeep)
-                m_messages.RemoveAt(0);
-            #endregion Cleaning : avoid memory overflow on a long run
-
-            #region Record On the fly
-            if (OnTheFly)
-                FlushOnTheFly(tree.ExportToString(true));
-            #endregion Record On the fly
+            else
+                if (OnTheFly)
+                {
+                    if (message is InformationMessage)
+                    {
+                        #region Record On the fly
+                        if (OnTheFly)
+                            FlushOnTheFly((message as InformationMessage).Message+"\n");
+                        #endregion Record On the fly
+                    }
+                }
 
         }
 
