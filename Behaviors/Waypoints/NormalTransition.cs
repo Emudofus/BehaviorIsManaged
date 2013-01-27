@@ -20,7 +20,7 @@ namespace BiM.Behaviors.Waypoints
 {
     public class NormalTransition : MovementTransition
     {
-        public override bool CanActivate(PathSchemaElement element, PlayedCharacter character)
+        public override bool CanActivate(SchemaElement element, PlayedCharacter character)
         {
             return true;
         }

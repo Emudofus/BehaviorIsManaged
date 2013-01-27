@@ -15,6 +15,7 @@
 #endregion
 
 using System;
+using BiM.Behaviors.Game.Actors.RolePlay;
 
 namespace BiM.Behaviors.Waypoints
 {
@@ -33,9 +34,12 @@ namespace BiM.Behaviors.Waypoints
             set;
         }
 
-        public void Start()
+        public bool Start(PlayedCharacter character)
         {
+            if (!MovementSchema.CanStart(character))
+                return false;
 
+            return true;
         }
 
         public void Pause()

@@ -22,7 +22,7 @@ using BiM.Behaviors.Game.World;
 
 namespace BiM.Behaviors.Waypoints
 {
-    public class PathSchemaElement
+    public class SchemaElement
     {
         [XmlAttribute("Map")]
         public int MapId

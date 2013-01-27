@@ -15,10 +15,32 @@
 #endregion
 
 using System.Drawing;
+using System.Linq;
+using BiM.Behaviors.Game.Actors.RolePlay;
 
 namespace BiM.Behaviors.Waypoints
 {
     public class PathSchema : MovementSchema
     {
+        public bool StartFromFirst
+        {
+            get;
+            set;
+        }
+
+        public SchemaElement[] Path
+        {
+            get;
+            set;
+        }
+
+        public override bool CanStart(PlayedCharacter character)
+        {
+            if (Path.Length == 0)
+                return false;
+
+            return (StartFromFirst && Path[0].MapId == character.Map.Id && Path[0].SubMapId == character.SubMap.SubMapId) ||
+                Path.Any(x => character.Map.Id == x.MapId && character.SubMap.SubMapId == x.SubMapId);
+        }
     }
 }

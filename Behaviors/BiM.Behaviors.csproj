@@ -316,7 +316,7 @@
     <Compile Include="Waypoints\MovementTransition.cs" />
     <Compile Include="Waypoints\NormalTransition.cs" />
     <Compile Include="Waypoints\PathSchema.cs" />
-    <Compile Include="Waypoints\PathSchemaElement.cs" />
+    <Compile Include="Waypoints\SchemaElement.cs" />
     <Compile Include="Waypoints\Waypoint.cs" />
     <Compile Include="Waypoints\WaypointAction.cs" />
     <Compile Include="Waypoints\ZoneSchema.cs" />

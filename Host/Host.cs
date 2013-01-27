@@ -135,90 +135,97 @@ namespace BiM.Host
                 return;
 
             UIManager.Instance.SetBusy(true);
-
-            if (!Debugger.IsAttached) // the debugger handle the unhandled exceptions
-                AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-
-            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-
-
-            UIManager.Instance.BusyMessage = "Load config ...";
-            Config = new Config(ConfigPath);
-
-            foreach (Assembly assembly in m_hierarchy)
+            try
             {
-                Config.BindAssembly(assembly);
-                Config.RegisterAttributes(assembly);
-            }
 
-            Config.Load();
+                if (!Debugger.IsAttached) // the debugger handle the unhandled exceptions
+                    AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
-            logger.Info("{0} loaded", Path.GetFileName(Config.FilePath));
+                AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
 
-            UIManager.Instance.BusyMessage = "Loading D2O files ...";
-            ObjectDataManager.Instance.AddReaders(Path.Combine(GetDofusPath(), DofusDataPath));
-            I18NDataManager.Instance.DefaultLanguage = Languages.English;
+                UIManager.Instance.BusyMessage = "Load config ...";
+                Config = new Config(ConfigPath);
 
-            I18NDataManager.Instance.AddReaders(Path.Combine(GetDofusPath(), DofusI18NPath));
-            IconsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusItemIconPath));
-
-
-            UIManager.Instance.BusyMessage = "Starting redis server ...";
-            logger.Info("Starting redis server ...");
-            RedisServerHost.Instance.ExecutablePath = RedisServerExe;
-            RedisServerHost.Instance.StartOrFindProcess();
-
-            UIManager.Instance.BusyMessage = string.Format("Loading {0}...", MapsManager.MapsDataFile);
-            logger.Info("Loading {0}...", MapsManager.MapsDataFile);
-            ProgressionCounter progression = MapsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusMapsD2P));
-            if (progression != null)
-                ExecuteProgress(progression);
-
-            UIManager.Instance.BusyMessage = "Loading maps positions ...";
-            logger.Info("Loading maps positions ...");
-            progression = MapsPositionManager.Instance.Initialize();
-            if (progression != null)
-                ExecuteProgress(progression);
-
-            UIManager.Instance.BusyMessage = "Loading submaps ...";
-            logger.Info("Loading submaps ...");
-            progression = SubMapsManager.Instance.Initialize();
-            if (progression != null)
-                ExecuteProgress(progression);
-
-
-            MITM = new MITM.MITM(new MITMConfiguration
+                foreach (Assembly assembly in m_hierarchy)
                 {
-                    FakeAuthHost = BotAuthHost,
-                    FakeAuthPort = BotAuthPort,
-                    FakeWorldHost = BotWorldHost,
-                    FakeWorldPort = BotWorldPort,
-                    RealAuthHost = RealAuthHost,
-                    RealAuthPort = RealAuthPort
-                });
+                    Config.BindAssembly(assembly);
+                    Config.RegisterAttributes(assembly);
+                }
 
-            MessageDispatcher.DefineHierarchy(m_hierarchy);
+                Config.Load();
 
-            foreach (Assembly assembly in m_hierarchy)
+                logger.Info("{0} loaded", Path.GetFileName(Config.FilePath));
+
+
+                UIManager.Instance.BusyMessage = "Loading D2O files ...";
+                ObjectDataManager.Instance.AddReaders(Path.Combine(GetDofusPath(), DofusDataPath));
+                I18NDataManager.Instance.DefaultLanguage = Languages.English;
+
+                I18NDataManager.Instance.AddReaders(Path.Combine(GetDofusPath(), DofusI18NPath));
+                IconsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusItemIconPath));
+
+
+                UIManager.Instance.BusyMessage = "Starting redis server ...";
+                logger.Info("Starting redis server ...");
+                RedisServerHost.Instance.ExecutablePath = RedisServerExe;
+                RedisServerHost.Instance.StartOrFindProcess();
+
+                UIManager.Instance.BusyMessage = string.Format("Loading {0}...", MapsManager.MapsDataFile);
+                logger.Info("Loading {0}...", MapsManager.MapsDataFile);
+                ProgressionCounter progression = MapsManager.Instance.Initialize(Path.Combine(GetDofusPath(), DofusMapsD2P));
+                if (progression != null)
+                    ExecuteProgress(progression);
+
+                UIManager.Instance.BusyMessage = "Loading maps positions ...";
+                logger.Info("Loading maps positions ...");
+                progression = MapsPositionManager.Instance.Initialize();
+                if (progression != null)
+                    ExecuteProgress(progression);
+
+                UIManager.Instance.BusyMessage = "Loading submaps ...";
+                logger.Info("Loading submaps ...");
+                progression = SubMapsManager.Instance.Initialize();
+                if (progression != null)
+                    ExecuteProgress(progression);
+
+
+                MITM = new MITM.MITM(new MITMConfiguration
+                    {
+                        FakeAuthHost = BotAuthHost,
+                        FakeAuthPort = BotAuthPort,
+                        FakeWorldHost = BotWorldHost,
+                        FakeWorldPort = BotWorldPort,
+                        RealAuthHost = RealAuthHost,
+                        RealAuthPort = RealAuthPort
+                    });
+
+                MessageDispatcher.DefineHierarchy(m_hierarchy);
+
+                foreach (Assembly assembly in m_hierarchy)
+                {
+                    MessageDispatcher.RegisterSharedAssembly(assembly);
+                }
+
+                UIManager.Instance.BusyMessage = "Loading plugins ...";
+                PluginManager.Instance.LoadAllPlugins();
+
+                DispatcherTask = new DispatcherTask(new MessageDispatcher(), MITM);
+                DispatcherTask.Start(); // we have to start it now to dispatch the initialization msg
+
+                BotManager.Instance.Initialize();
+
+                var msg = new HostInitializationMessage();
+                DispatcherTask.Dispatcher.Enqueue(msg, MITM);
+
+                msg.Wait();
+
+            }
+            finally
             {
-                MessageDispatcher.RegisterSharedAssembly(assembly);
+                UIManager.Instance.SetBusy(false);
             }
 
-            UIManager.Instance.BusyMessage = "Loading plugins ...";
-            PluginManager.Instance.LoadAllPlugins();
-
-            DispatcherTask = new DispatcherTask(new MessageDispatcher(), MITM);
-            DispatcherTask.Start(); // we have to start it now to dispatch the initialization msg
-
-            BotManager.Instance.Initialize();
-
-            var msg = new HostInitializationMessage();
-            DispatcherTask.Dispatcher.Enqueue(msg, MITM);
-
-            msg.Wait();
-
-            UIManager.Instance.SetBusy(false);
             Initialized = true;
         }
 

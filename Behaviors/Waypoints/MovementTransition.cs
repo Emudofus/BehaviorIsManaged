@@ -20,6 +20,6 @@ namespace BiM.Behaviors.Waypoints
 {
     public abstract class MovementTransition
     {
-        public abstract bool CanActivate(PathSchemaElement element, PlayedCharacter character);
+        public abstract bool CanActivate(SchemaElement element, PlayedCharacter character);
     }
 }
