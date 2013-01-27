@@ -19,5 +19,6 @@ namespace BiM.Behaviors.Game.Interactives
     {
         None = 0,
         Collectable = 1,
+        Craftable = 2,
     }
 }

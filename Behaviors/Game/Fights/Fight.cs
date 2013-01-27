@@ -23,6 +23,8 @@ using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
 using System.Diagnostics;
+using BiM.Behaviors.Game.Spells;
+using BiM.Behaviors.Game.Effects;
 
 namespace BiM.Behaviors.Game.Fights
 {
@@ -504,6 +506,21 @@ namespace BiM.Behaviors.Game.Fights
         public void Update(GameFightTurnListMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
+
+            foreach (var id in msg.ids.Except(msg.deadsIds))
+            {
+                var fighter = GetFighter(id);
+
+                if (fighter == null)
+                {
+                    logger.Error("(GameFightTurnListMessage) Fighter {0} not found", id);
+                }
+                else
+                {
+                    fighter.IsAlive = true;
+                }
+            }
+            
             foreach (var deadsId in msg.deadsIds)
             {
                 var fighter = GetFighter(deadsId);
@@ -518,21 +535,7 @@ namespace BiM.Behaviors.Game.Fights
                 }
             }
 
-            foreach (var id in msg.ids)
-            {
-                var fighter = GetFighter(id);
-
-                if (fighter == null)
-                {
-                    logger.Error("(GameFightTurnListMessage) Fighter {0} not found", id);
-                }
-                else
-                {
-                    fighter.IsAlive = true;
-                }
-            }
-
-            TimeLine.RefreshTimeLine(msg.ids);
+            TimeLine.RefreshTimeLine(msg.ids.Except(msg.deadsIds));
         }
 
         public void Update(GameFightOptionStateUpdateMessage msg)
@@ -587,26 +590,54 @@ namespace BiM.Behaviors.Game.Fights
 
         public void DispelEffect(int boostUid, int targetId)
         {
+            Fighter fighter = GetFighter(targetId);
             foreach (var effectList in Effects)
                 foreach (var effectT in effectList.Value.ToArray())
                     if (effectT.Item1.uid == boostUid && effectT.Item1.targetId == targetId && effectT.Item1.dispelable != 2)
+                    {
+                        if (fighter is PlayedFighter)
+                        {
+                            PlayedFighter playedFighter = fighter as PlayedFighter;
+                            Spell spell = new Spell(new SpellItem(0, effectT.Item1.spellId, 1));
+                            playedFighter.Character.SendInformation("Effect {0} from spell {1} dispeled (dispelable : {2})", (EffectsEnum)effectT.Item1.TypeId, spell.Name, effectT.Item1.dispelable);
+                        }
                         Effects[effectList.Key].Remove(effectT);
+                    }
         }
 
         public void DispelTarget(int targetId)
         {
+            Fighter fighter = GetFighter(targetId);
             foreach (var effectList in Effects)
                     foreach (var effectT in effectList.Value.ToArray())
                         if (effectT.Item1.targetId == targetId && effectT.Item1.dispelable != 2)
+                        {
+                            if (fighter is PlayedFighter)
+                            {
+                                PlayedFighter playedFighter = fighter as PlayedFighter;
+                                Spell spell = new Spell(new SpellItem(0, effectT.Item1.spellId, 1));
+                                playedFighter.Character.SendInformation("Effect {0} from spell {1} dispeled (dispelable : {2})", (EffectsEnum)effectT.Item1.TypeId, spell.Name, effectT.Item1.dispelable);
+                            }
                             Effects[effectList.Key].Remove(effectT);
+                        }
         }
 
         public void DispelSpell(int targetId, int spellId)
         {
+            Fighter fighter = GetFighter(targetId);
             foreach (var effectList in Effects)
                 foreach (var effectT in effectList.Value.ToArray())
                     if (effectT.Item1.targetId == targetId && effectT.Item1.spellId == spellId && effectT.Item1.dispelable != 2)
+                    {
+                        if (fighter is PlayedFighter)
+                        {
+                            PlayedFighter playedFighter = fighter as PlayedFighter;
+                            Spell spell = new Spell(new SpellItem(0, effectT.Item1.spellId, 1));
+                            playedFighter.Character.SendInformation("Effect {0} from spell {1} dispeled (dispelable : {2})", (EffectsEnum)effectT.Item1.TypeId, spell.Name, effectT.Item1.dispelable);
+                        }
+
                         Effects[effectList.Key].Remove(effectT);
+                    }
         }
 
 

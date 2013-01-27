@@ -15,8 +15,10 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Text.RegularExpressions;
 using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Alignement;
@@ -38,8 +40,6 @@ using BiM.Protocol.Messages;
 using BiM.Protocol.Types;
 using NLog;
 using Job = BiM.Behaviors.Game.Jobs.Job;
-using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace BiM.Behaviors.Game.Actors.RolePlay
 {
@@ -260,18 +260,44 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             return Map != null && !IsFighting();
         }
 
-        public bool Move(short cellId, ISimplePathFinder pathFinder = null, int minDistance = 0, bool cautious = false)
+        Action _actionAfterMove = null;
+
+
+        public void MoveIfNeededThenAction(short cellId, Action actionAfterMove, int delayBeforeMove = 0, int minDistance = 0, bool cautious = false, bool cancelMove = true)
+        {
+            if (cellId != Cell.Id && CanMove())
+            {
+                if (actionAfterMove != null)
+                    _actionAfterMove = actionAfterMove;
+                Bot.CallDelayed(delayBeforeMove, () => Move(Map.Cells[cellId], null, minDistance, cautious, cancelMove));
+            }
+            else
+            {
+                if (actionAfterMove != null)
+                    Bot.CallDelayed(delayBeforeMove, actionAfterMove);
+            }
+            return;
+        }
+
+        public bool Move(short cellId, ISimplePathFinder pathFinder = null, int minDistance = 0, bool cautious = false, bool cancelMove = true)
         {
             if (CanMove())
-                return Move(Map.Cells[cellId], pathFinder, minDistance, cautious);
+                return Move(Map.Cells[cellId], pathFinder, minDistance, cautious, cancelMove);
 
             return false;
         }
 
-        public bool Move(Path path, Cell dest)
+        public bool Move(Path path, Cell dest, bool cancelMove = true)
         {
             if (IsMoving())
-                CancelMove(false);
+                if (cancelMove)
+                    CancelMove(false);
+                else
+                {
+                    if (_actionAfterMove != null) return false; // Can't remember this move
+                    _actionAfterMove = () => Move(path, dest, cancelMove);
+                    return true;
+                }
 
             // DEBUG
             //SendMessage(String.Format("Move {0} => {1} : {2}", Cell, dest, String.Join<Cell>(",", path.Cells)));
@@ -294,7 +320,7 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
         }
 
-        public bool Move(Cell cell, ISimplePathFinder pathFinder = null, int minDistance = 0, bool cautious = false)
+        public bool Move(Cell cell, ISimplePathFinder pathFinder = null, int minDistance = 0, bool cautious = false, bool cancelMove = true)
         {
             if (cell == null) throw new ArgumentNullException("cell");
 
@@ -339,6 +365,11 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
 
                 m_useAfterMove = null;
             }
+            if (_actionAfterMove != null)
+            {
+                Bot.AddMessage(_actionAfterMove);
+                _actionAfterMove = null;
+            }
 
             if (m_nextMap != null)
             {
@@ -353,43 +384,95 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
         }
 
+        bool _changingMap = false;
+        int _srcLeaderMap = 0;
+        int _dstLeaderMap = 0;
+        short _pivotLeaderCell = 0;
+        int _nbTryLeft;
+
+        /// <summary>
+        /// Try to reach the same map as the leader.
+        /// Returns false if it fails (not on the proper map...)
+        /// </summary>
+        /// <param name="SrcMap"></param>
+        /// <param name="destCell"></param>
+        /// <param name="dstMap"></param>
+        /// <param name="nbTryLeft"></param>
+        /// <returns></returns>
         public bool ChangeMap(int SrcMap, short destCell, int dstMap, int nbTryLeft)
         {
-            if (SrcMap != Map.Id)
+            _srcLeaderMap = SrcMap;
+            _dstLeaderMap = dstMap;
+            _pivotLeaderCell = destCell;
+            _nbTryLeft = nbTryLeft;
+            if (!_changingMap)
+            {
+                _changingMap = true;
+                InternalChangeMap();
+            }
+            return _changingMap;
+        }
+
+        private void InternalChangeMap()
+        {
+            _changingMap = true;
+            if (IsFighting())
+            {
+                SendWarning("InternalChangeMap : I'm fighting => stop it !");
+                _changingMap = false;
+                return;
+            }
+            if (_srcLeaderMap != Map.Id)
             {
                 SendWarning("I'm not on the proper map to follow leader on the next map");
-                return false;
+                _changingMap = false;
+                return;
             }
-            if (destCell != Cell.Id)
+            if (_pivotLeaderCell != Cell.Id)
             {
                 PathFinder pathFinder = new PathFinder(Map, false);
-                if (!Move(destCell, pathFinder, 0, true))
+                if (!Move(_pivotLeaderCell, pathFinder, 0, true))
                 {
-                    if (nbTryLeft > 0)
+                    if (_nbTryLeft > 0)
                     {
-                        SendWarning("Can't join the leader yet, try later");
-                        Bot.CallDelayed(6000, () => ChangeMap(SrcMap, destCell, dstMap, nbTryLeft--));
+                        SendWarning("InternalChangeMap : Can't join the leader yet, try later");
+                        _nbTryLeft--;
+                        Bot.CallDelayed(6000, InternalChangeMap);
                     }
                     else
-                        if (nbTryLeft > -6)
+                        if (_nbTryLeft > -6)
                         {
-                            SendWarning("Can't join the leader, no try left. Trying another path");
-                            MapNeighbour neighbour = Map.GetDirectionOfTransitionCell(Map.Cells[destCell]);
-                            destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom().Id;
-                            Bot.CallDelayed(2000, () => ChangeMap(SrcMap, destCell, dstMap, nbTryLeft--));
+                            MapNeighbour neighbour = Map.GetDirectionOfTransitionCell(Map.Cells[_pivotLeaderCell]);
+                            Cell destCell = pathFinder.FindConnectedCells(Cell, false, true, cell => (cell.Cell.MapChangeData & Map.MapChangeDatas[neighbour]) != 0).GetRandom();
+                            if (destCell == null)
+                                SendWarning("InternalChangeMap  : Can't join the leader, no try left. Can't even find any alternate path to go {0}", neighbour);
+                            else
+                            {
+                                SendWarning("InternalChangeMap : Can't join the leader, no try left. Trying alternative path to go {0} : cell {1}", neighbour, destCell);
+                                _pivotLeaderCell = destCell.Id;
+                            }
+                            _nbTryLeft--;
+                            Bot.CallDelayed(2000, InternalChangeMap);
                         }
                         else
-                            SendError("Can't find any path to join the leader. ");
-                    return false;
+                        {
+                            SendError("InternalChangeMap : Can't find any path to join the leader. Trying again later. ");
+                            _changingMap = false;
+                        }
+                    return;
                 }
-                m_nextMap = dstMap;
+
+                SendWarning("InternalChangeMap : Move from {0} to {1} succeeded. When move is complete, should go from map {2} to map {3}. ", Cell, Map.Cells[_pivotLeaderCell], Map.ToString(), new Map(_dstLeaderMap));
+                _changingMap = false;
+                m_nextMap = _dstLeaderMap;
+                return;
             }
-            else
-            {
-                Bot.AddMessage(() => Bot.SendToServer(new ChangeMapMessage(dstMap)));
-                m_previousMap = Map.Id;
-            }
-            return true;
+            SendError("I'm already on the good Cell, just try to jump to the other map.");
+
+            Bot.CallDelayed(400, () => Bot.AddMessage(() => Bot.SendToServer(new ChangeMapMessage(_dstLeaderMap))));
+            m_previousMap = Map.Id;
+            _changingMap = false;
+            return;
         }
 
         public MapNeighbour ChangeMap(MapNeighbour neighbour = MapNeighbour.Any)
@@ -524,6 +607,20 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
         }
 
+        public int GetMapLinkedToCell(short cellId)
+        {
+            Cell cell = Map.Cells[cellId];
+            if (cell == null) return -1;
+            return GetMapLinkedToCell(cell);
+        }
+
+        public int GetMapLinkedToCell(Cell cell)
+        {
+            MapNeighbour neighbour = Map.GetDirectionOfTransitionCell(cell);
+            return GetNeighbourId(neighbour);
+        }
+
+
         #endregion
 
         #region Chat
@@ -545,7 +642,6 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
         public void SendTextInformation(TextInformationTypeEnum type, short id, params object[] parameters)
         {
             Bot.SendToClient(new TextInformationMessage((sbyte)type, id, parameters.Select(entry => entry.ToString()).ToArray()));
-
         }
 
 
@@ -939,6 +1035,20 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             }
         }
 
+        internal void Update(JobLevelUpMessage message)
+        {
+
+            var job = GetJob(message.jobsDescription.jobId);
+
+            if (job == null)
+                logger.Warn("Cannot update job {0} level because it's not found", message.jobsDescription.jobId);
+            else
+            {
+                job.SetJob(message.jobsDescription, message.newLevel);
+            }
+
+        }
+
         public void Update(SetCharacterRestrictionsMessage msg)
         {
             if (msg == null) throw new ArgumentNullException("msg");
@@ -1018,7 +1128,14 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
             SpellsBook.Update(message);
         }
 
-        internal bool CheckCriteria(string p)
+        private bool SubCheck(bool greater, StatsRow stat, int limit)
+        {
+            if (greater && stat.Total < limit) return false;
+            if (!greater && stat.Total > limit) return false;
+            return true;
+        }
+
+        public bool CheckCriteria(string p)
         {
             string pattern = @"(P|C)(C|I|S|V|W|A|M)\&(g|l)t\;(\d+)";
             MatchCollection matches = Regex.Matches(p, pattern);
@@ -1038,37 +1155,31 @@ namespace BiM.Behaviors.Game.Actors.RolePlay
                     switch (match.Captures[1].Value)
                     {
                         case "C":
-                            if (greater && Stats.Chance.Total < Value) return false;
-                            if (!greater && Stats.Chance.Total < Value) return false;
+                            if (!SubCheck(greater, Stats.Chance, Value)) return false;
                             break;
                         case "W":
-                            if (greater && Stats.Wisdom.Total < Value) return false;
-                            if (!greater && Stats.Wisdom.Total < Value) return false;
+                            if (!SubCheck(greater, Stats.Wisdom, Value)) return false;
                             break;
                         case "S":
-                            if (greater && Stats.Strength.Total < Value) return false;
-                            if (!greater && Stats.Strength.Total < Value) return false;
+                            if (!SubCheck(greater, Stats.Strength, Value)) return false;
                             break;
                         case "A":
-                            if (greater && Stats.Agility.Total < Value) return false;
-                            if (!greater && Stats.Agility.Total < Value) return false;
+                            if (!SubCheck(greater, Stats.Agility, Value)) return false;
                             break;
                         case "V":
-                            if (greater && Stats.Vitality.Total < Value) return false;
-                            if (!greater && Stats.Vitality.Total < Value) return false;
+                            if (!SubCheck(greater, Stats.Vitality, Value)) return false;
                             break;
                         case "M":
-                            if (greater && Stats.MP.Total < Value) return false;
-                            if (!greater && Stats.MP.Total < Value) return false;
+                            if (!SubCheck(greater, Stats.MP, Value)) return false;
                             break;
                         case "I":
-                            if (greater && Stats.Intelligence.Total < Value) return false;
-                            if (!greater && Stats.Intelligence.Total < Value) return false;
+                            if (!SubCheck(greater, Stats.Intelligence, Value)) return false;
                             break;
                     }
                 }
             }
             return true;
         }
+
     }
 }

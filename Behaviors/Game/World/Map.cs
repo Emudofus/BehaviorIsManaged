@@ -17,17 +17,13 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using BiM.Behaviors.Data;
 using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Data.Maps;
-using BiM.Behaviors.Game.Actors;
 using BiM.Behaviors.Game.Actors.RolePlay;
 using BiM.Behaviors.Game.Interactives;
-using BiM.Behaviors.Game.World.Areas;
 using BiM.Behaviors.Game.World.Data;
 using BiM.Behaviors.Game.World.MapTraveling;
-using BiM.Behaviors.Game.World.Pathfinding;
 using BiM.Core.Collections;
 using BiM.Core.Config;
 using BiM.Protocol.Data;
@@ -84,7 +80,7 @@ namespace BiM.Behaviors.Game.World
         };
 
         public static MapNeighbour GetDirectionOfTransitionCell(Cell cell)
-        {            
+        {
             foreach (MapNeighbour neighbourFound in Enum.GetValues(typeof(MapNeighbour)))
                 if (neighbourFound != MapNeighbour.Any && ((MapChangeDatas[neighbourFound] & cell.MapChangeData) > 0))
                     return neighbourFound;
@@ -122,7 +118,7 @@ namespace BiM.Behaviors.Game.World
 
         private Map(MapData map)
         {
-            m_position = ObjectDataManager.Instance.GetOrDefault<MapPosition>( map.Id );
+            m_position = ObjectDataManager.Instance.GetOrDefault<MapPosition>(map.Id);
             IEnumerable<Cell> cells = map.Cells.Select(entry => new Cell(this, entry));
             m_cells = new CellList(cells.ToArray());
         }
@@ -151,6 +147,24 @@ namespace BiM.Behaviors.Game.World
         {
             get { return m_readOnlyInteractives; }
         }
+
+        public InteractiveObject[] GetFilteredInteractives(InteractiveAction interactiveCategory, InteractiveState? state = InteractiveState.None, bool? activeSkills = null, short[] skills = null)
+        {
+            return m_interactives.Where(
+                interactive =>
+                    interactive.Action == interactiveCategory &&
+                    (state == null || interactive.State == state) &&
+                    (skills == null || (activeSkills != true && interactive.DisabledSkills.Select(skill => (short)skill.JobSkill.id).Intersect(skills).Any()) || (activeSkills != false && interactive.EnabledSkills.Select(skill => (short)skill.JobSkill.id).Intersect(skills).Any()))).ToArray();
+        }
+
+        public InteractiveObject[] GetFilteredInteractives(int jobId, InteractiveState? state = null)
+        {
+            return m_interactives.Where(
+                interactive =>
+                    interactive.DisabledSkills.Any(skill => skill.JobSkill.parentJobId == jobId) || interactive.EnabledSkills.Any(skill => skill.JobSkill.parentJobId == jobId) &&
+                    (state == null || interactive.State == state)).ToArray();
+        }
+
 
         public SubMap[] SubMaps
         {
@@ -203,8 +217,7 @@ namespace BiM.Behaviors.Game.World
         public void Update(Bot bot, MapComplementaryInformationsDataMessage message)
         {
             if (message == null) throw new ArgumentNullException("message");
-            SubArea = new SubArea(message.subAreaId)
-                          {AlignmentSide = (AlignmentSideEnum) message.subareaAlignmentSide};
+            SubArea = new SubArea(message.subAreaId) { AlignmentSide = (AlignmentSideEnum)message.subareaAlignmentSide };
 
             ClearActors();
 
@@ -219,6 +232,7 @@ namespace BiM.Behaviors.Game.World
                     AddActor(bot, actor);
             }
 
+            m_interactives.Clear();
             foreach (InteractiveElement element in message.interactiveElements)
             {
                 AddInteractive(new InteractiveObject(this, element));
@@ -246,10 +260,13 @@ namespace BiM.Behaviors.Game.World
         public void Update(InteractiveMapUpdateMessage message)
         {
             if (message == null) throw new ArgumentNullException("message");
-            m_interactives.Clear();
             foreach (InteractiveElement element in message.interactiveElements)
             {
-                AddInteractive(new InteractiveObject(this, element));
+                InteractiveObject interactive = GetInteractive(element.elementId);
+                if (interactive == null)
+                    AddInteractive(new InteractiveObject(this, element));
+                else
+                    interactive.Update(element);
             }
         }
 
@@ -257,13 +274,13 @@ namespace BiM.Behaviors.Game.World
         {
             if (element == null) throw new ArgumentNullException("element");
             InteractiveObject interactive = GetInteractive(element.elementId);
-
+            
             if (interactive != null)
             {
                 interactive.Update(element);
             }
             else
-                logger.Warn("Cannot found Interactive {0} associated to the StatedElement", element.elementId);
+                logger.Warn("Cannot find Interactive {0} associated to the StatedElement", element.elementId);
         }
 
         public void Update(StatedElementUpdatedMessage message)
@@ -322,7 +339,7 @@ namespace BiM.Behaviors.Game.World
                 AddActor(bot.Character);
             }
             else
-            AddActor(CreateRolePlayActor(actor));
+                AddActor(CreateRolePlayActor(actor));
         }
 
         public RolePlayActor CreateRolePlayActor(GameRolePlayActorInformations actor)
@@ -488,10 +505,10 @@ namespace BiM.Behaviors.Game.World
 
                 if (m_x != null)
                     return m_x.Value;
-                m_x = ( Id & 0x3FE00 ) >> 9; // 9 higher bits
-                if (( m_x & 0x100 ) == 0x100) // 9th bit is the sign. 1 means it's minus
+                m_x = (Id & 0x3FE00) >> 9; // 9 higher bits
+                if ((m_x & 0x100) == 0x100) // 9th bit is the sign. 1 means it's minus
                 {
-                    m_x = -( X & 0xFF ); // just take the 8 first bits and take the opposite number
+                    m_x = -(X & 0xFF); // just take the 8 first bits and take the opposite number
                 }
 
                 return m_x.Value;
@@ -508,9 +525,9 @@ namespace BiM.Behaviors.Game.World
                 if (m_y != null)
                     return m_y.Value;
                 m_y = Id & 0x01FF; // 9 lower bits
-                if (( m_y & 0x100 ) == 0x100) // 9th bit is the sign. 1 means it's minus
+                if ((m_y & 0x100) == 0x100) // 9th bit is the sign. 1 means it's minus
                 {
-                    m_y = -( X & 0xFF ); // just take the 8 first bits and take the opposite number
+                    m_y = -(X & 0xFF); // just take the 8 first bits and take the opposite number
                 }
 
                 return m_y.Value;
@@ -535,10 +552,13 @@ namespace BiM.Behaviors.Game.World
 
         public string Name
         {
-            get { if (m_position == null)
-                return string.Empty;
-                
-                return m_name ?? (m_name = I18NDataManager.Instance.ReadText(m_position.nameId)); }
+            get
+            {
+                if (m_position == null)
+                    return string.Empty;
+
+                return m_name ?? (m_name = I18NDataManager.Instance.ReadText(m_position.nameId));
+            }
         }
 
         public int WorldMap
@@ -572,6 +592,5 @@ namespace BiM.Behaviors.Game.World
         {
             return String.Format("#{0} [{1},{2}] {3}", Id, X, Y, Name);
         }
-
     }
 }

@@ -127,6 +127,7 @@
     <Compile Include="Data\Maps\MapsManager.cs" />
     <Compile Include="Data\D2O\ObjectDataManager.cs" />
     <Compile Include="Data\Maps\MapsPositionManager.cs" />
+    <Compile Include="Data\Maps\SubMapExtendedData.cs" />
     <Compile Include="Data\Maps\SubMapsManager.cs" />
     <Compile Include="Data\RedisDataManager.cs" />
     <Compile Include="DisplayState.cs" />
@@ -198,6 +199,8 @@
     <Compile Include="Game\Interactives\InteractiveObject.cs" />
     <Compile Include="Game\Interactives\InteractiveSkill.cs" />
     <Compile Include="Game\Interactives\InteractiveState.cs" />
+    <Compile Include="Game\Items\Item.AI.cs" />
+    <Compile Include="Game\Items\Inventory.AI.cs" />
     <Compile Include="Game\Items\Inventory.cs" />
     <Compile Include="Game\Items\ItemSuperTypeEnum.cs" />
     <Compile Include="Game\Items\ItemToSellInHumanShop.cs" />
@@ -309,6 +312,7 @@
     <Compile Include="Messages\BotAddedMessage.cs" />
     <Compile Include="Messages\BotRemovedMessage.cs" />
     <Compile Include="Messages\HostInitializationMessage.cs" />
+    <Compile Include="Messages\InformationMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\BotSettings.cs" />
     <Compile Include="Settings\SettingsEntry.cs" />

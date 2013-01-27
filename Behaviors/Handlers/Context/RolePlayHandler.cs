@@ -17,6 +17,7 @@ using BiM.Behaviors.Frames;
 using BiM.Behaviors.Game.World;
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
+using BiM.Behaviors.Game.Interactives;
 
 namespace BiM.Behaviors.Handlers.Context
 {
@@ -67,7 +68,7 @@ namespace BiM.Behaviors.Handlers.Context
         }
 
         [MessageHandler(typeof (InteractiveUseEndedMessage))]
-        public static void HandleInteractiveUseEndedMessage(Bot bot, InteractiveUseEndedMessage message)
+        public void HandleInteractiveUseEndedMessage(Bot bot, InteractiveUseEndedMessage message)
         {
             var interactive = bot.Character.Map.GetInteractive(message.elemId);
 
@@ -78,7 +79,11 @@ namespace BiM.Behaviors.Handlers.Context
         [MessageHandler(typeof (StatedElementUpdatedMessage))]
         public void HandleStatedElementUpdatedMessage(Bot bot, StatedElementUpdatedMessage message)
         {
+            InteractiveObject interactive = bot.Character.Map.GetInteractive(message.statedElement.elementId);
+            if (interactive == null) return;
+            string previousState = interactive.ToString();
             bot.Character.Map.Update(message);
+            bot.Character.SendInformation("StatedElementUpdatedMessage : {0} => {1}", previousState, interactive);            
         }
 
         [MessageHandler(typeof (StatedMapUpdateMessage))]

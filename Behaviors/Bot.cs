@@ -53,8 +53,7 @@ namespace BiM.Behaviors
 
         public void NotifyMessageLog(LogLevel level, string caller, string message)
         {
-            LogHandler handler = LogNotified;
-            if (handler != null) handler(this, level, caller, message);
+            if (LogNotified != null) LogNotified(this, level, caller, message);
         }
 
         public delegate void CharacterSelectedHandler(Bot bot, PlayedCharacter character);
@@ -62,8 +61,7 @@ namespace BiM.Behaviors
 
         protected void OnCharacterSelected(PlayedCharacter character)
         {
-            CharacterSelectedHandler handler = CharacterSelected;
-            if (handler != null) handler(this, character);
+            if (CharacterSelected != null) CharacterSelected(this, character);
         }
 
         private List<IFrame> m_frames = new List<IFrame>(); 
@@ -283,6 +281,12 @@ namespace BiM.Behaviors
                 logger.Warn("Warning, enqueue {0} but the bot is stopped, the message will be processed once the bot {1} restart", message, this);
         }
 
+        public void SendToClient(NetworkMessage message, int delay)
+        {
+            if (message == null) throw new ArgumentNullException("message");
+            CallDelayed(delay, () => SendToClient(message, false));
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -295,6 +299,12 @@ namespace BiM.Behaviors
                 Send(message, ListenerEntry.Client);
             else
                 Send(message, ListenerEntry.Client | ListenerEntry.Local);
+        }
+
+        public void SendToServer(NetworkMessage message, int delay)
+        {
+            if (message == null) throw new ArgumentNullException("message");
+            CallDelayed(delay, () => SendToServer(message, false));
         }
 
         /// <summary>

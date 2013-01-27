@@ -217,6 +217,7 @@ namespace BiM.Behaviors.Game.Stats
       //Summoned = stats.summoned;
       Health = stats.lifePoints;
       MaxHealth = stats.maxLifePoints;
+      MaxHealthBase = stats.baseMaxLifePoints;
       CurrentAP = stats.actionPoints;
       CurrentMP = stats.movementPoints;
       MaxAP = stats.maxActionPoints;
@@ -236,7 +237,7 @@ namespace BiM.Behaviors.Game.Stats
       WaterElementReduction = stats.waterElementReduction;
       AirElementReduction = stats.airElementReduction;
       FireElementReduction = stats.fireElementReduction;
-      logger.Debug("{0}/{1} AP, {2}/{3} MP, {4}/{5} HP", CurrentAP, MaxAP, CurrentMP, MaxMP, Health, MaxHealth);
+      //logger.Debug("{0}/{1} AP, {2}/{3} MP, {4}/{5} HP", CurrentAP, MaxAP, CurrentMP, MaxMP, Health, MaxHealth);
 
       InvisibilityState = (GameActionFightInvisibilityStateEnum)stats.invisibilityState;
     }

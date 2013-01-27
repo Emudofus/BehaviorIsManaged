@@ -14,7 +14,7 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
-using BiM.Behaviors.Data;
+using System.Linq;
 using BiM.Behaviors.Data.D2O;
 using BiM.Behaviors.Data.I18N;
 using BiM.Behaviors.Game.Actors.RolePlay;
@@ -24,12 +24,51 @@ namespace BiM.Behaviors.Game.Jobs
 {
     public class Job
     {
+        public const int FISHER = 36;
+        public const int HUNTER = 41;
+
         private string m_name;
+
+        public SkillActionDescription[] Skills { get; private set; }
+
+        SkillActionDescriptionCollect[] _collectSkills;
+        public SkillActionDescriptionCollect[] CollectSkills { get { if (_collectSkills == null) { _collectSkills = Skills.OfType<SkillActionDescriptionCollect>().ToArray(); }; return _collectSkills; } }
+
+        SkillActionDescriptionCraft[] _craftSkills;
+        public SkillActionDescriptionCraft[] CraftSkills { get { if (_craftSkills == null) { _craftSkills = Skills.OfType<SkillActionDescriptionCraft>().ToArray(); }; return _craftSkills; } }
+
+        /// <summary>
+        /// Copy ctor
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="job"></param>
+        public Job(Job job)
+        {
+            Owner = job.Owner;
+            Skills = job.Skills;
+            JobTemplate = job.JobTemplate;
+            _craftSkills = null;
+            _collectSkills = null;
+            Level = job.Level;
+            Experience = job.Experience;
+        }
 
         public Job(PlayedCharacter owner, JobDescription job)
         {
             Owner = owner;
+            SetJob(job);
+        }
+
+        public void SetJob(JobDescription job, int? level = null)
+        {
             JobTemplate = ObjectDataManager.Instance.Get<Protocol.Data.Job>(job.jobId);
+            Skills = job.skills;
+            if (Skills == null)
+                Skills = new SkillActionDescription[0]; // make sure we have a valid array in all cases
+            _craftSkills = null;
+            _collectSkills = null;
+            if (level != null)
+                Level = level.Value;
         }
 
         public PlayedCharacter Owner

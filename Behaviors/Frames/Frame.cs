@@ -23,17 +23,12 @@ namespace BiM.Behaviors.Frames
     {
         private static List<T> m_frames = new List<T>();
 
-        private Bot m_bot;
-
         public Frame(Bot bot)
         {
-            m_bot = bot;
+            Bot = bot;
         }
 
-        public Bot Bot
-        {
-            get { return m_bot; }
-        }
+        public Bot Bot { get; private set; }
 
         public virtual void OnAttached()
         {

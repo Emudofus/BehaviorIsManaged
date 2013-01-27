@@ -186,8 +186,10 @@ namespace BiM.Core.Network
                 Socket.Shutdown(SocketShutdown.Both);
                 Socket.Close();
 
-                OnClientDisconnected();
+                Socket = null;
             }
+
+            OnClientDisconnected();
         }
     }
 }

@@ -221,9 +221,9 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// Try to move to the targeted Cell (truncate the path if the player hasn't enough MP)
         /// </summary>
         /// <param name="cell">Targeted cell</param>
-        public bool Move(Cell cell, IAdvancedPathFinder pathFinder = null, int minDistance = 0)
+        public bool Move(Cell cell, IAdvancedPathFinder pathFinder = null, int minDistance = 0, bool cautious = true)
         {
-            return Move(cell, Stats.CurrentMP, pathFinder, minDistance);
+            return Move(cell, Stats.CurrentMP, pathFinder, minDistance, cautious);
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         /// <param name="cell">Targeted cell</param>
         /// <param name="mp">MP to use</param>
         /// <returns>False if cannot move</returns>
-        public bool Move(Cell cell, int mp, IAdvancedPathFinder pathFinder = null, int minDistance = 0)
+        public bool Move(Cell cell, int mp, IAdvancedPathFinder pathFinder = null, int minDistance = 0, bool cautious = true)
         {
             if (!IsPlaying())
                 return false;
@@ -246,10 +246,10 @@ namespace BiM.Behaviors.Game.Actors.Fighters
                     pathFinder = new BiM.Behaviors.Game.World.Pathfinding.FFPathFinding.PathFinder(Fight, true);
             Path path = null;
             path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance, true); // Try in cautious way first
-            if (path == null)
+            if (path == null || path.IsEmpty())
             {
                 path = pathFinder.FindPath(Cell, cell, false, Stats.CurrentMP < mp ? Stats.CurrentMP : mp, minDistance, false); // If failed, then uncautious
-                if (path != null)
+                if (path != null && cautious)
                 {
                     Character.SendWarning("Couldn't find a cautious path from {0} to {1}, so go the unsafe way", Cell, cell);
                 }

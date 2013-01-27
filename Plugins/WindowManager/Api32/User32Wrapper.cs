@@ -41,6 +41,12 @@ namespace WindowManager.Api32
             SendMessage(hWnd, WM_CHAR, c, 0);
         }
 
+        public static void SendString(IntPtr hWnd, string text)
+        {
+            foreach (char c in text)
+                SendMessage(hWnd, WM_CHAR, c, 0);
+        }
+
         #region Constants
 
         // Messages

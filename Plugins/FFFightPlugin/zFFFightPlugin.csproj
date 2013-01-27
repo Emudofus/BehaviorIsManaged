@@ -8,8 +8,8 @@
     <ProjectGuid>{0E425E15-3E38-4B7C-94CC-CC03A4BD77F6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FFFightPlugin</RootNamespace>
-    <AssemblyName>FFFightPlugin</AssemblyName>
+    <RootNamespace>zFFFightPlugin</RootNamespace>
+    <AssemblyName>zFFFightPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -108,6 +108,7 @@
     <Compile Include="FFight.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FFight.StaticHandler.cs" />
     <Compile Include="FFSettings.cs">
       <SubType>Code</SubType>
     </Compile>
