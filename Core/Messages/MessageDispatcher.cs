@@ -14,13 +14,10 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using BiM.Core.Collections;
 using BiM.Core.Extensions;
 using NLog;
 
@@ -394,34 +391,14 @@ namespace BiM.Core.Messages
 
         protected IEnumerable<MessageHandler> GetHandlers(Type messageType, object token)
         {
-            // a bit heavy, isn't it ?
-            var assemblies = m_handlers.Keys.Concat(m_nonSharedHandlers.Keys).Distinct();
-
-            // navigate through the hierarchy ...
-            foreach (var assembly in assemblies)
-            {
-                Dictionary<Type, List<MessageHandler>> nonSharedHandler;
-                if (m_nonSharedHandlers.TryGetValue(assembly, out nonSharedHandler))
-                {
-                    if (nonSharedHandler.ContainsKey(messageType))
-                        foreach (var handler in nonSharedHandler[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
+      foreach (var list in m_nonSharedHandlers.Values.Union(m_handlers.Values))
                         {
+        List<MessageHandler> handlersList;
+        if (list.TryGetValue(messageType, out handlersList))
+          foreach (var handler in handlersList)
+            if (token == null || handler.TokenType.IsInstanceOfType(token))
                             yield return handler;
                         }
-
-                }
-
-                Dictionary<Type, List<MessageHandler>> sharedHandler;
-                if (m_handlers.TryGetValue(assembly, out sharedHandler))
-                {
-                    // if a handler can handle this type we return it
-                    if (sharedHandler.ContainsKey(messageType))
-                        foreach (var handler in sharedHandler[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
-                        {
-                            yield return handler;
-                        }
-                }
-            }
 
             // note : disabled yet.
 
