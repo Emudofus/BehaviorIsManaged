@@ -131,6 +131,7 @@
     <Compile Include="Config\ConfigVariable.cs" />
     <Compile Include="Cryptography\Cryptography.cs" />
     <Compile Include="Database\RedisServerHost.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="IO\FastBigEndianReader.cs" />
     <Compile Include="IO\FastLittleEndianReader.cs" />
     <Compile Include="Machine\OSInfo.cs" />
