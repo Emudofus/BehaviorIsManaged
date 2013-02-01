@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using BiM.Behaviors.Authentification;
 using BiM.Behaviors.Frames;
@@ -51,6 +52,12 @@ namespace BiM.Behaviors
 
         public event LogHandler LogNotified;
 
+    /// <summary>
+    /// Says how many milliseconds elapsed since last message. 
+    /// </summary>
+    public long DelayFromLastMessage { get { return Dispatcher.DelayFromLastMessage; } }
+
+
         public void NotifyMessageLog(LogLevel level, string caller, string message)
         {
             if (LogNotified != null) LogNotified(this, level, caller, message);
@@ -63,6 +70,14 @@ namespace BiM.Behaviors
         {
             if (CharacterSelected != null) CharacterSelected(this, character);
         }
+
+    public delegate void CharacterIdentificationHandler(Bot bot, bool succeeded);
+    public event CharacterIdentificationHandler CharacterIdentified;
+    public void OnCharacterIdentified(bool succeeded)
+    {
+      if (CharacterIdentified != null) CharacterIdentified(this, succeeded);
+    }
+
 
         private List<IFrame> m_frames = new List<IFrame>(); 
 

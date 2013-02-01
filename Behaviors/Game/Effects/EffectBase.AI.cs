@@ -17,6 +17,7 @@
 #endregion
 using BiM.Behaviors.Game.Actors.Fighters;
 using BiM.Behaviors.Game.Spells;
+using BiM.Protocol.Enums;
 
 namespace BiM.Behaviors.Game.Effects
 {

@@ -15,6 +15,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -391,7 +392,7 @@ namespace BiM.Core.Messages
 
         protected IEnumerable<MessageHandler> GetHandlers(Type messageType, object token)
         {
-      foreach (var list in m_nonSharedHandlers.Values.Union(m_handlers.Values))
+      foreach (var list in m_nonSharedHandlers.Values.Concat(m_handlers.Values).ToArray()) // ToArray : to avoid error if handler are added in the same time
                         {
         List<MessageHandler> handlersList;
         if (list.TryGetValue(messageType, out handlersList))
@@ -486,9 +487,7 @@ namespace BiM.Core.Messages
         {
             try
             {
-                var handlers = GetHandlers(message.GetType(), token).ToArray(); // have to transform it into a collection if we want to add/remove handler
-
-                foreach (var handler in handlers)
+        foreach (var handler in GetHandlers(message.GetType(), token).ToArray()) // have to transform it into a collection if we want to add/remove handler
                 {
                     handler.Action(handler.Container, token, message);
 
@@ -546,5 +545,30 @@ namespace BiM.Core.Messages
                 messages.Value.Clear();
             }
         }
+
+    private Stopwatch _spy;
+
+    /// <summary>
+    /// Says how many milliseconds elapsed since last message. 
+    /// </summary>
+    public long DelayFromLastMessage
+    {
+      get
+      {
+        if (_spy == null) _spy = Stopwatch.StartNew(); return _spy.ElapsedMilliseconds;
+      }
+    }
+
+    /// <summary>
+    /// Reset timer for last received message
+    /// </summary>
+    protected void ActivityUpdate()
+    {
+      if (_spy == null)
+        _spy = Stopwatch.StartNew();
+      else
+        _spy.Restart();
+    }
+
     }
 }
