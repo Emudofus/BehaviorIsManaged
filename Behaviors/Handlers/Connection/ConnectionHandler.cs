@@ -15,66 +15,69 @@
 #endregion
 using BiM.Core.Messages;
 using BiM.Protocol.Messages;
-using NLog;
 
 namespace BiM.Behaviors.Handlers.Connection
 {
-    public class ConnectionHandler
+  public class ConnectionHandler
+  {
+    [MessageHandler(typeof(HelloConnectMessage))]
+    public static void HandleHelloConnectMessage(Bot bot, HelloConnectMessage message)
     {
-        [MessageHandler(typeof(HelloConnectMessage))]
-        public static void HandleHelloConnectMessage(Bot bot, HelloConnectMessage message)
-        {
-            bot.ClientInformations.Update(message);
-        }
-
-        [MessageHandler(typeof(IdentificationMessage))]
-        public static void HandleIdentificationMessage(Bot bot, IdentificationMessage message)
-        {
-            bot.ClientInformations.Update(message);
-        }
-
-        [MessageHandler(typeof (IdentificationFailedMessage))]
-        public static void HandleIdentificationFailedMessage(Bot bot, IdentificationFailedMessage message)
-        {
-            bot.ClientInformations.Update(message);
-        }
-
-        [MessageHandler(typeof(IdentificationFailedBannedMessage))]
-        public static void HandleIdentificationFailedBannedMessage(Bot bot, IdentificationFailedBannedMessage message)
-        {
-            bot.ClientInformations.Update(message);
-        }
-
-        [MessageHandler(typeof(IdentificationSuccessMessage))]
-        public static void HandleIdentificationSuccessMessage(Bot bot, IdentificationSuccessMessage message)
-        {
-            bot.ClientInformations.Update(message);
-            message.hasRights = true; // allow to open the console
-        }
-
-        [MessageHandler(typeof(IdentificationFailedForBadVersionMessage))]
-        public static void HandleIdentificationFailedForBadVersionMessage(Bot bot, IdentificationFailedForBadVersionMessage message)
-        {
-            bot.ClientInformations.Update(message);
-        }
-
-        [MessageHandler(typeof(SelectedServerDataMessage))]
-        public static void HandleSelectedServerDataMessage(Bot bot, SelectedServerDataMessage message)
-        {
-            bot.ClientInformations.Update(message);
-        }
-
-        [MessageHandler(typeof(ServersListMessage))]
-        public static void HandleServersListMessage(Bot bot, ServersListMessage message)
-        {
-            bot.ClientInformations.Update(message);
-            bot.Display = DisplayState.ServerSelection;
-        }
-
-        [MessageHandler(typeof(AccountCapabilitiesMessage))]
-        public static void HandleAccountCapabilitiesMessage(Bot bot, AccountCapabilitiesMessage message)
-        {
-            bot.ClientInformations.Update(message);
-        }
+      bot.ClientInformations.Update(message);
     }
+
+    [MessageHandler(typeof(IdentificationMessage))]
+    public static void HandleIdentificationMessage(Bot bot, IdentificationMessage message)
+    {
+      bot.ClientInformations.Update(message);
+    }
+
+    [MessageHandler(typeof(IdentificationFailedMessage))]
+    public static void HandleIdentificationFailedMessage(Bot bot, IdentificationFailedMessage message)
+    {
+      bot.ClientInformations.Update(message);
+      bot.OnCharacterIdentified(false);
+    }
+
+    [MessageHandler(typeof(IdentificationFailedBannedMessage))]
+    public static void HandleIdentificationFailedBannedMessage(Bot bot, IdentificationFailedBannedMessage message)
+    {
+      bot.ClientInformations.Update(message);
+      bot.OnCharacterIdentified(false);
+    }
+
+    [MessageHandler(typeof(IdentificationSuccessMessage))]
+    public static void HandleIdentificationSuccessMessage(Bot bot, IdentificationSuccessMessage message)
+    {
+      bot.ClientInformations.Update(message);
+      message.hasRights = true; // allow to open the console
+      bot.OnCharacterIdentified(true);
+    }
+
+    [MessageHandler(typeof(IdentificationFailedForBadVersionMessage))]
+    public static void HandleIdentificationFailedForBadVersionMessage(Bot bot, IdentificationFailedForBadVersionMessage message)
+    {
+      bot.ClientInformations.Update(message);
+      bot.OnCharacterIdentified(false);
+    }
+
+    [MessageHandler(typeof(SelectedServerDataMessage))]
+    public static void HandleSelectedServerDataMessage(Bot bot, SelectedServerDataMessage message)
+    {
+      bot.ClientInformations.Update(message);
+    }
+
+    [MessageHandler(typeof(ServersListMessage))]
+    public static void HandleServersListMessage(Bot bot, ServersListMessage message)
+    {
+      bot.ClientInformations.Update(message);
+      bot.Display = DisplayState.ServerSelection;
+    }
+
+    [MessageHandler(typeof(AccountCapabilitiesMessage))]
+    public static void HandleAccountCapabilitiesMessage(Bot bot, AccountCapabilitiesMessage message)
+    {
+      bot.ClientInformations.Update(message);
+    }
+  }
 }

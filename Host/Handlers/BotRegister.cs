@@ -33,6 +33,7 @@ namespace BiM.Host.Handlers
         {
             var model = new BotViewModel(message.Bot);
             var layout = UIManager.Instance.AddDocument(model, () => new BotControl());
+            if (layout == null) return;
             layout.Title = "Bot #" + message.Bot.Id;
 
             layout = model.AddDocument(new GeneralTabViewModel(message.Bot), () => new GeneralTab());
