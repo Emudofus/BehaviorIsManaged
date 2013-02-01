@@ -211,6 +211,7 @@ namespace BiM.Core.Network
             socketAsyncEventArgs.Dispose();
         }
 
+        byte[] _buffer = new byte[8192];
         private void ReceiveLoop()
         {
             lock (this)
@@ -220,7 +221,7 @@ namespace BiM.Core.Network
 
                 var args = new SocketAsyncEventArgs();
                 args.Completed += OnReceiveCompleted;
-                args.SetBuffer(new byte[8192], 0, 8192);
+                args.SetBuffer(_buffer, 0, 8192);
 
                 if (!Socket.ReceiveAsync(args))
                 {
