@@ -35,11 +35,11 @@ namespace BiM.Host.UI
 {
     public class UIManager : DockContainer<MainWindow>
     {
-        private static readonly UIManager m_instance = new UIManager();
+        private static UIManager m_instance = null;
 
         public static UIManager Instance
         {
-            get { return m_instance; }
+            get { if (m_instance == null) m_instance = new UIManager();  return m_instance; }
         }
 
 
