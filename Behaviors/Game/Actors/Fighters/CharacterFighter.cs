@@ -38,7 +38,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         public CharacterFighter(GameFightCharacterInformations msg, Fight fight) : base (msg, fight)
         {
             Alignment = new AlignmentInformations(msg.alignmentInfos);
-            Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed));            
+            Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed, true));            
         }
 
         public virtual AlignmentInformations Alignment
@@ -62,9 +62,10 @@ namespace BiM.Behaviors.Game.Actors.Fighters
             //Update(msg.disposition);
             //IsAlive = msg.alive;
             Alignment = new AlignmentInformations(msg.alignmentInfos);
-
+            Name = msg.name;
+            Level = msg.level;
             if (Breed == null || Breed.Id != msg.breed)
-                Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed));
+                Breed = new Breeds.Breed(ObjectDataManager.Instance.Get<Breed>(msg.breed, true));
 
             Stats.Update(msg.stats);
         }
@@ -82,5 +83,11 @@ namespace BiM.Behaviors.Game.Actors.Fighters
                 logger.Error("Cannot update a {0} with a {1} instance", GetType(), informations.GetType()); 
             }
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0} (lv {1}) at {2}", Name, Level, Cell);
+        }
+
     }
 }

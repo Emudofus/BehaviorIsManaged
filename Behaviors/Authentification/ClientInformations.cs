@@ -58,6 +58,12 @@ namespace BiM.Behaviors.Authentification
             set;
         }
 
+        public string Login
+        {
+            get;
+            set;
+        }
+
         public int AccountId
         {
             get;
@@ -251,7 +257,7 @@ namespace BiM.Behaviors.Authentification
             if (msg == null) throw new ArgumentNullException("msg");
             BanEndDate = msg.banEndDate.UnixTimestampToDateTime();
             Banned = true;
-
+            
             logger.Warn("F*** I'm banned :( for {0}", BanEndDate - DateTime.Now);
         }
 
@@ -268,6 +274,7 @@ namespace BiM.Behaviors.Authentification
         {
             if (msg == null) throw new ArgumentNullException("msg");
             HasAdminRights = msg.hasRights;
+            Login = msg.login;
             Nickname = msg.nickname;
             AccountId = msg.accountId;
             CommunityId = msg.communityId;

@@ -15,14 +15,8 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Windows;
-using System.Windows.Markup;
-using System.Windows.Media;
 using AvalonDock.Layout;
 using BiM.Core.Collections;
 using BiM.Core.Messages;
@@ -44,6 +38,12 @@ namespace BiM.Host.UI.ViewModels
             Bot = bot;
 
             bot.Dispatcher.RegisterNonShared(this);
+      Bot.CharacterSelected += Bot_CharacterSelected;
+    }
+
+    void Bot_CharacterSelected(Bot bot, Behaviors.Game.Actors.RolePlay.PlayedCharacter character)
+    {
+      Parent.Title = bot.Character.Name;
         }
 
         public Bot Bot
@@ -87,19 +87,15 @@ namespace BiM.Host.UI.ViewModels
         {
             Parent.Title = bot.ClientInformations.Nickname;
         }
-
-        [MessageHandler(typeof (CharacterSelectedSuccessMessage))]
-        public void HandleCharacterSelectedSuccessMessage(Bot bot, CharacterSelectedSuccessMessage message)
-        {
-            Parent.Title = bot.Character.Name;
-        }
-
         #endregion
 
         public void Dispose()
         {
             if (Bot != null)
+      {
                 Bot.Dispatcher.UnRegisterNonShared(this);
+        Bot.CharacterSelected -= Bot_CharacterSelected;
+      }
 
             UIManager.Instance.RemoveDocument(View);
         }

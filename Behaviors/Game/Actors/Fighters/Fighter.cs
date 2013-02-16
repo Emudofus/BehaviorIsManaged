@@ -351,7 +351,7 @@ namespace BiM.Behaviors.Game.Actors.Fighters
 
     public IEnumerable<AbstractFightDispellableEffect> GetAllEffects(short? actionId=null)
     {
-        return Fight.Effects.Values.SelectMany(effectList => effectList.Where(effectT => effectT.Item1.targetId == Id && effectT.Item2 == actionId).Select(effectT => effectT.Item1));
+      return Fight.Effects.Values.SelectMany(effectList => effectList.Where(effectT => effectT.Item1.targetId == Id && (actionId == null || effectT.Item2 == actionId)).Select(effectT => effectT.Item1));
     }
 
     public IEnumerable<FightTemporaryBoostEffect> GetAllBoostEffects(short? actionId = null)
@@ -390,6 +390,11 @@ namespace BiM.Behaviors.Game.Actors.Fighters
         return GetAllEffects(actionId).Where(effect => effect is FightTemporaryBoostWeaponDamagesEffect).Select(effect => effect as FightTemporaryBoostWeaponDamagesEffect);
     }
 
+    public bool IsImmune(Spells.Spell spell)
+    {
+      if (spell.Categories == Spells.Spell.SpellCategory.Healing && HasState(76)) return true;
+      return GetSpellImmunityEffects().Any(effect => effect.immuneSpellId == spell.Template.id);
+    }
 
     /// <summary>
     /// Says if a given effect is in effect

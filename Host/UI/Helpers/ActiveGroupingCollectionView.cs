@@ -554,6 +554,7 @@ namespace BiM.Host.UI.Helpers
                     }
                 }
             }
+            if (_items.Count <= item.SourceCollectionIndex)
             _items.Add(item);
             return _items.Count;
         }

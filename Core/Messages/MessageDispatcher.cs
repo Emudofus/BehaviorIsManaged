@@ -14,13 +14,11 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using BiM.Core.Collections;
 using BiM.Core.Extensions;
 using NLog;
 
@@ -394,34 +392,14 @@ namespace BiM.Core.Messages
 
         protected IEnumerable<MessageHandler> GetHandlers(Type messageType, object token)
         {
-            // a bit heavy, isn't it ?
-            var assemblies = m_handlers.Keys.Concat(m_nonSharedHandlers.Keys).Distinct();
-
-            // navigate through the hierarchy ...
-            foreach (var assembly in assemblies)
-            {
-                Dictionary<Type, List<MessageHandler>> nonSharedHandler;
-                if (m_nonSharedHandlers.TryGetValue(assembly, out nonSharedHandler))
-                {
-                    if (nonSharedHandler.ContainsKey(messageType))
-                        foreach (var handler in nonSharedHandler[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
+      foreach (var list in m_nonSharedHandlers.Values.Concat(m_handlers.Values).ToArray()) // ToArray : to avoid error if handler are added in the same time
                         {
+        List<MessageHandler> handlersList;
+        if (list.TryGetValue(messageType, out handlersList))
+          foreach (var handler in handlersList)
+            if (token == null || handler.TokenType.IsInstanceOfType(token))
                             yield return handler;
                         }
-
-                }
-
-                Dictionary<Type, List<MessageHandler>> sharedHandler;
-                if (m_handlers.TryGetValue(assembly, out sharedHandler))
-                {
-                    // if a handler can handle this type we return it
-                    if (sharedHandler.ContainsKey(messageType))
-                        foreach (var handler in sharedHandler[messageType].Where(entry => token == null || entry.TokenType.IsInstanceOfType(token)))
-                        {
-                            yield return handler;
-                        }
-                }
-            }
 
             // note : disabled yet.
 
@@ -509,9 +487,7 @@ namespace BiM.Core.Messages
         {
             try
             {
-                var handlers = GetHandlers(message.GetType(), token).ToArray(); // have to transform it into a collection if we want to add/remove handler
-
-                foreach (var handler in handlers)
+        foreach (var handler in GetHandlers(message.GetType(), token).ToArray()) // have to transform it into a collection if we want to add/remove handler
                 {
                     handler.Action(handler.Container, token, message);
 
@@ -569,5 +545,30 @@ namespace BiM.Core.Messages
                 messages.Value.Clear();
             }
         }
+
+    private Stopwatch _spy;
+
+    /// <summary>
+    /// Says how many milliseconds elapsed since last message. 
+    /// </summary>
+    public long DelayFromLastMessage
+    {
+      get
+      {
+        if (_spy == null) _spy = Stopwatch.StartNew(); return _spy.ElapsedMilliseconds;
+      }
+    }
+
+    /// <summary>
+    /// Reset timer for last received message
+    /// </summary>
+    protected void ActivityUpdate()
+    {
+      if (_spy == null)
+        _spy = Stopwatch.StartNew();
+      else
+        _spy.Restart();
+    }
+
     }
 }

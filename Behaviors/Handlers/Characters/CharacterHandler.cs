@@ -57,5 +57,11 @@ namespace BiM.Behaviors.Handlers.Characters
                 else
                     bot.Character.Update(message);
         }
+
+        [MessageHandler(typeof(EmoteListMessage))]
+        public static void OnEmoteListMessage(Bot bot, EmoteListMessage message)
+        {
+            if (bot.Character != null) bot.Character.Update(message);
+        }
     }
 }
