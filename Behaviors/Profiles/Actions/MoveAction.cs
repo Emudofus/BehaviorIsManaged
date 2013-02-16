@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// PathSchema.cs
+// MoveAction.cs
 // 
 // Copyright (C) 2013 - BehaviorIsManaged
 // 
@@ -14,33 +14,29 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
-using System.Drawing;
-using System.Linq;
 using BiM.Behaviors.Game.Actors.RolePlay;
 
-namespace BiM.Behaviors.Waypoints
+namespace BiM.Behaviors.Profiles.Actions
 {
-    public class PathSchema : MovementSchema
+    public class MoveAction : ProfileAction
     {
-        public bool StartFromFirst
+        public override bool CanRun(PlayedCharacter character)
         {
-            get;
-            set;
+            // + conditions
+            return character.CanMove();
+        }
+
+        public override void OnStart()
+        {
+
+
+            base.OnStart();
         }
 
         public SchemaElement[] Path
         {
             get;
             set;
-        }
-
-        public override bool CanStart(PlayedCharacter character)
-        {
-            if (Path.Length == 0)
-                return false;
-
-            return (StartFromFirst && Path[0].MapId == character.Map.Id && Path[0].SubMapId == character.SubMap.SubMapId) ||
-                Path.Any(x => character.Map.Id == x.MapId && character.SubMap.SubMapId == x.SubMapId);
         }
     }
 }

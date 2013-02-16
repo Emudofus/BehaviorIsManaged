@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// PathSchemaElement.cs
+// PathSchema.cs
 // 
 // Copyright (C) 2013 - BehaviorIsManaged
 // 
@@ -14,34 +14,32 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
-using System.Drawing;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using BiM.Behaviors.Game.World;
+using System.Linq;
+using BiM.Behaviors.Game.Actors.RolePlay;
 
-namespace BiM.Behaviors.Waypoints
+namespace BiM.Behaviors.Profiles
 {
-    public class SchemaElement
+    public class PathSchema : MovementSchema
     {
-        [XmlAttribute("Map")]
-        public int MapId
+        public bool StartFromFirst
         {
             get;
             set;
         }
 
-        [XmlAttribute("SubMap")]
-        public int SubMapId
+        public SchemaElement[] Path
         {
             get;
             set;
         }
 
-        public MovementTransition Transition
+        public override bool CanStart(PlayedCharacter character)
         {
-            get;
-            set;
+            if (Path.Length == 0)
+                return false;
+
+            return (StartFromFirst && Path[0].MapId == character.Map.Id && Path[0].SubMapId == character.SubMap.SubMapId) ||
+                Path.Any(x => character.Map.Id == x.MapId && character.SubMap.SubMapId == x.SubMapId);
         }
     }
 }

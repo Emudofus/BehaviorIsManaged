@@ -16,7 +16,7 @@
 
 using BiM.Behaviors.Game.Actors.RolePlay;
 
-namespace BiM.Behaviors.Waypoints
+namespace BiM.Behaviors.Profiles
 {
     public abstract class MovementTransition
     {

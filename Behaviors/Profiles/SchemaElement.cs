@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// WaypointAction.cs
+// PathSchemaElement.cs
 // 
 // Copyright (C) 2013 - BehaviorIsManaged
 // 
@@ -13,10 +13,31 @@
 // You should have received a copy of the GNU General Public License along with this program; 
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
-namespace BiM.Behaviors.Waypoints
+
+using System.Xml.Serialization;
+
+namespace BiM.Behaviors.Profiles
 {
-    public class WaypointAction
+    public class SchemaElement
     {
-         
+        [XmlAttribute("Map")]
+        public int MapId
+        {
+            get;
+            set;
+        }
+
+        [XmlAttribute("SubMap")]
+        public int SubMapId
+        {
+            get;
+            set;
+        }
+
+        public MovementTransition Transition
+        {
+            get;
+            set;
+        }
     }
 }

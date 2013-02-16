@@ -1,5 +1,5 @@
 ﻿#region License GNU GPL
-// Waypoint.cs
+// NormalTransition.cs
 // 
 // Copyright (C) 2013 - BehaviorIsManaged
 // 
@@ -14,46 +14,15 @@
 // if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #endregion
 
-using System;
 using BiM.Behaviors.Game.Actors.RolePlay;
 
-namespace BiM.Behaviors.Waypoints
+namespace BiM.Behaviors.Profiles
 {
-    [Serializable]
-    public class Waypoint
+    public class NormalTransition : MovementTransition
     {
-        public WaypointAction[] Actions
+        public override bool CanActivate(SchemaElement element, PlayedCharacter character)
         {
-            get;
-            set;
-        }
-
-        public MovementSchema MovementSchema
-        {
-            get;
-            set;
-        }
-
-        public bool Start(PlayedCharacter character)
-        {
-            if (!MovementSchema.CanStart(character))
-                return false;
-
             return true;
-        }
-
-        public void Pause()
-        {
-        }
-
-        public void Resume()
-        {
-
-        }
-
-        public void Stop()
-        {
-
         }
     }
 }
