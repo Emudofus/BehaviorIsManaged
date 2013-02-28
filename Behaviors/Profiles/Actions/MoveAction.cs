@@ -26,13 +26,6 @@ namespace BiM.Behaviors.Profiles.Actions
             return character.CanMove();
         }
 
-        public override void OnStart()
-        {
-
-
-            base.OnStart();
-        }
-
         public SchemaElement[] Path
         {
             get;
