@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:39
+// Generated on 04/17/2013 22:30:17
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -10,7 +10,7 @@ namespace BiM.Protocol.Data
     [D2OClass("WorldMaps")]
     public class WorldMap : IDataObject
     {
-        private const String MODULE = "WorldMaps";
+        public const String MODULE = "WorldMaps";
         public int id;
         public int origineX;
         public int origineY;

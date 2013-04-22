@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:34
+// Generated on 04/17/2013 22:30:09
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +16,7 @@ namespace BiM.Protocol.Types
             get { return Id; }
         }
         
+        public int playerId;
         public string playerName;
         public short level;
         public sbyte alignmentSide;
@@ -23,14 +24,16 @@ namespace BiM.Protocol.Types
         public bool sex;
         public Types.BasicGuildInformations guildInfo;
         public sbyte moodSmileyId;
+        public Types.PlayerStatus status;
         
         public FriendOnlineInformations()
         {
         }
         
-        public FriendOnlineInformations(int accountId, string accountName, sbyte playerState, int lastConnection, int achievementPoints, string playerName, short level, sbyte alignmentSide, sbyte breed, bool sex, Types.BasicGuildInformations guildInfo, sbyte moodSmileyId)
+        public FriendOnlineInformations(int accountId, string accountName, sbyte playerState, int lastConnection, int achievementPoints, int playerId, string playerName, short level, sbyte alignmentSide, sbyte breed, bool sex, Types.BasicGuildInformations guildInfo, sbyte moodSmileyId, Types.PlayerStatus status)
          : base(accountId, accountName, playerState, lastConnection, achievementPoints)
         {
+            this.playerId = playerId;
             this.playerName = playerName;
             this.level = level;
             this.alignmentSide = alignmentSide;
@@ -38,11 +41,13 @@ namespace BiM.Protocol.Types
             this.sex = sex;
             this.guildInfo = guildInfo;
             this.moodSmileyId = moodSmileyId;
+            this.status = status;
         }
         
         public override void Serialize(IDataWriter writer)
         {
             base.Serialize(writer);
+            writer.WriteInt(playerId);
             writer.WriteUTF(playerName);
             writer.WriteShort(level);
             writer.WriteSByte(alignmentSide);
@@ -50,11 +55,16 @@ namespace BiM.Protocol.Types
             writer.WriteBoolean(sex);
             guildInfo.Serialize(writer);
             writer.WriteSByte(moodSmileyId);
+            writer.WriteShort(status.TypeId);
+            status.Serialize(writer);
         }
         
         public override void Deserialize(IDataReader reader)
         {
             base.Deserialize(reader);
+            playerId = reader.ReadInt();
+            if (playerId < 0)
+                throw new Exception("Forbidden value on playerId = " + playerId + ", it doesn't respect the following condition : playerId < 0");
             playerName = reader.ReadUTF();
             level = reader.ReadShort();
             if (level < 0 || level > 200)
@@ -67,6 +77,8 @@ namespace BiM.Protocol.Types
             guildInfo = new Types.BasicGuildInformations();
             guildInfo.Deserialize(reader);
             moodSmileyId = reader.ReadSByte();
+            status = Types.ProtocolTypeManager.GetInstance<Types.PlayerStatus>(reader.ReadShort());
+            status.Deserialize(reader);
         }
         
     }

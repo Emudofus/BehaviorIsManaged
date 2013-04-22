@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:13
+// Generated on 04/17/2013 22:29:37
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,21 +20,24 @@ namespace BiM.Protocol.Messages
         
         public string lang;
         public sbyte community;
+        public sbyte gameType;
         
         public ServerSettingsMessage()
         {
         }
         
-        public ServerSettingsMessage(string lang, sbyte community)
+        public ServerSettingsMessage(string lang, sbyte community, sbyte gameType)
         {
             this.lang = lang;
             this.community = community;
+            this.gameType = gameType;
         }
         
         public override void Serialize(IDataWriter writer)
         {
             writer.WriteUTF(lang);
             writer.WriteSByte(community);
+            writer.WriteSByte(gameType);
         }
         
         public override void Deserialize(IDataReader reader)
@@ -43,6 +46,9 @@ namespace BiM.Protocol.Messages
             community = reader.ReadSByte();
             if (community < 0)
                 throw new Exception("Forbidden value on community = " + community + ", it doesn't respect the following condition : community < 0");
+            gameType = reader.ReadSByte();
+            if (gameType < 0)
+                throw new Exception("Forbidden value on gameType = " + gameType + ", it doesn't respect the following condition : gameType < 0");
         }
         
     }

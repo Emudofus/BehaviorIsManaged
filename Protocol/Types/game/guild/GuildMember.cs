@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:34
+// Generated on 04/17/2013 22:30:09
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,12 +28,13 @@ namespace BiM.Protocol.Types
         public sbyte moodSmileyId;
         public int accountId;
         public int achievementPoints;
+        public Types.PlayerStatus status;
         
         public GuildMember()
         {
         }
         
-        public GuildMember(int id, byte level, string name, sbyte breed, bool sex, short rank, double givenExperience, sbyte experienceGivenPercent, uint rights, sbyte connected, sbyte alignmentSide, ushort hoursSinceLastConnection, sbyte moodSmileyId, int accountId, int achievementPoints)
+        public GuildMember(int id, byte level, string name, sbyte breed, bool sex, short rank, double givenExperience, sbyte experienceGivenPercent, uint rights, sbyte connected, sbyte alignmentSide, ushort hoursSinceLastConnection, sbyte moodSmileyId, int accountId, int achievementPoints, Types.PlayerStatus status)
          : base(id, level, name)
         {
             this.breed = breed;
@@ -48,6 +49,7 @@ namespace BiM.Protocol.Types
             this.moodSmileyId = moodSmileyId;
             this.accountId = accountId;
             this.achievementPoints = achievementPoints;
+            this.status = status;
         }
         
         public override void Serialize(IDataWriter writer)
@@ -65,6 +67,8 @@ namespace BiM.Protocol.Types
             writer.WriteSByte(moodSmileyId);
             writer.WriteInt(accountId);
             writer.WriteInt(achievementPoints);
+            writer.WriteShort(status.TypeId);
+            status.Serialize(writer);
         }
         
         public override void Deserialize(IDataReader reader)
@@ -96,6 +100,8 @@ namespace BiM.Protocol.Types
             if (accountId < 0)
                 throw new Exception("Forbidden value on accountId = " + accountId + ", it doesn't respect the following condition : accountId < 0");
             achievementPoints = reader.ReadInt();
+            status = Types.ProtocolTypeManager.GetInstance<Types.PlayerStatus>(reader.ReadShort());
+            status.Deserialize(reader);
         }
         
     }

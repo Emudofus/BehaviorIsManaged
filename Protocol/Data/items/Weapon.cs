@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:37
+// Generated on 04/17/2013 22:30:13
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -13,6 +13,7 @@ namespace BiM.Protocol.Data
         public int apCost;
         public int minRange;
         public int range;
+        public uint maxCastPerTurn;
         public Boolean castInLine;
         public Boolean castInDiagonal;
         public Boolean castTestLos;

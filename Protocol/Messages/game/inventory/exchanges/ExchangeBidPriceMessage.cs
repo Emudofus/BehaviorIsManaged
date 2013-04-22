@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:25
+// Generated on 04/17/2013 22:29:56
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,8 +43,6 @@ namespace BiM.Protocol.Messages
             if (genericId < 0)
                 throw new Exception("Forbidden value on genericId = " + genericId + ", it doesn't respect the following condition : genericId < 0");
             averagePrice = reader.ReadInt();
-            if (averagePrice < 0)
-                throw new Exception("Forbidden value on averagePrice = " + averagePrice + ", it doesn't respect the following condition : averagePrice < 0");
         }
         
     }

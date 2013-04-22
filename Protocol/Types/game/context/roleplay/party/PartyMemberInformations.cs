@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:34
+// Generated on 04/17/2013 22:30:08
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,12 +27,13 @@ namespace BiM.Protocol.Types
         public short worldY;
         public int mapId;
         public short subAreaId;
+        public Types.PlayerStatus status;
         
         public PartyMemberInformations()
         {
         }
         
-        public PartyMemberInformations(int id, byte level, string name, Types.EntityLook entityLook, sbyte breed, bool sex, int lifePoints, int maxLifePoints, short prospecting, byte regenRate, short initiative, bool pvpEnabled, sbyte alignmentSide, short worldX, short worldY, int mapId, short subAreaId)
+        public PartyMemberInformations(int id, byte level, string name, Types.EntityLook entityLook, sbyte breed, bool sex, int lifePoints, int maxLifePoints, short prospecting, byte regenRate, short initiative, bool pvpEnabled, sbyte alignmentSide, short worldX, short worldY, int mapId, short subAreaId, Types.PlayerStatus status)
          : base(id, level, name, entityLook, breed, sex)
         {
             this.lifePoints = lifePoints;
@@ -46,6 +47,7 @@ namespace BiM.Protocol.Types
             this.worldY = worldY;
             this.mapId = mapId;
             this.subAreaId = subAreaId;
+            this.status = status;
         }
         
         public override void Serialize(IDataWriter writer)
@@ -62,6 +64,8 @@ namespace BiM.Protocol.Types
             writer.WriteShort(worldY);
             writer.WriteInt(mapId);
             writer.WriteShort(subAreaId);
+            writer.WriteShort(status.TypeId);
+            status.Serialize(writer);
         }
         
         public override void Deserialize(IDataReader reader)
@@ -94,6 +98,8 @@ namespace BiM.Protocol.Types
             subAreaId = reader.ReadShort();
             if (subAreaId < 0)
                 throw new Exception("Forbidden value on subAreaId = " + subAreaId + ", it doesn't respect the following condition : subAreaId < 0");
+            status = Types.ProtocolTypeManager.GetInstance<Types.PlayerStatus>(reader.ReadShort());
+            status.Deserialize(reader);
         }
         
     }

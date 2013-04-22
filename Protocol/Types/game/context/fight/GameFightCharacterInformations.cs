@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:33
+// Generated on 04/17/2013 22:30:06
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +24,8 @@ namespace BiM.Protocol.Types
         {
         }
         
-        public GameFightCharacterInformations(int contextualId, Types.EntityLook look, Types.EntityDispositionInformations disposition, sbyte teamId, bool alive, Types.GameFightMinimalStats stats, string name, short level, Types.ActorAlignmentInformations alignmentInfos, sbyte breed)
-         : base(contextualId, look, disposition, teamId, alive, stats, name)
+        public GameFightCharacterInformations(int contextualId, Types.EntityLook look, Types.EntityDispositionInformations disposition, sbyte teamId, bool alive, Types.GameFightMinimalStats stats, string name, Types.PlayerStatus status, short level, Types.ActorAlignmentInformations alignmentInfos, sbyte breed)
+         : base(contextualId, look, disposition, teamId, alive, stats, name, status)
         {
             this.level = level;
             this.alignmentInfos = alignmentInfos;

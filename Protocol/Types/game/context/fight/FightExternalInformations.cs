@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:32
+// Generated on 04/17/2013 22:30:06
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +17,7 @@ namespace BiM.Protocol.Types
         }
         
         public int fightId;
+        public sbyte fightType;
         public int fightStart;
         public bool fightSpectatorLocked;
         public Types.FightTeamLightInformations[] fightTeams;
@@ -26,9 +27,10 @@ namespace BiM.Protocol.Types
         {
         }
         
-        public FightExternalInformations(int fightId, int fightStart, bool fightSpectatorLocked, Types.FightTeamLightInformations[] fightTeams, Types.FightOptionsInformations[] fightTeamsOptions)
+        public FightExternalInformations(int fightId, sbyte fightType, int fightStart, bool fightSpectatorLocked, Types.FightTeamLightInformations[] fightTeams, Types.FightOptionsInformations[] fightTeamsOptions)
         {
             this.fightId = fightId;
+            this.fightType = fightType;
             this.fightStart = fightStart;
             this.fightSpectatorLocked = fightSpectatorLocked;
             this.fightTeams = fightTeams;
@@ -38,6 +40,7 @@ namespace BiM.Protocol.Types
         public virtual void Serialize(IDataWriter writer)
         {
             writer.WriteInt(fightId);
+            writer.WriteSByte(fightType);
             writer.WriteInt(fightStart);
             writer.WriteBoolean(fightSpectatorLocked);
             foreach (var entry in fightTeams)
@@ -53,6 +56,9 @@ namespace BiM.Protocol.Types
         public virtual void Deserialize(IDataReader reader)
         {
             fightId = reader.ReadInt();
+            fightType = reader.ReadSByte();
+            if (fightType < 0)
+                throw new Exception("Forbidden value on fightType = " + fightType + ", it doesn't respect the following condition : fightType < 0");
             fightStart = reader.ReadInt();
             if (fightStart < 0)
                 throw new Exception("Forbidden value on fightStart = " + fightStart + ", it doesn't respect the following condition : fightStart < 0");

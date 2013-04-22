@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:18
+// Generated on 04/17/2013 22:29:44
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,42 +19,32 @@ namespace BiM.Protocol.Messages
         }
         
         public int fightId;
-        public string[] names;
-        public short[] levels;
-        public sbyte teamSwap;
-        public bool[] alives;
+        public Types.GameFightFighterLightInformations[] attackers;
+        public Types.GameFightFighterLightInformations[] defenders;
         
         public MapRunningFightDetailsMessage()
         {
         }
         
-        public MapRunningFightDetailsMessage(int fightId, string[] names, short[] levels, sbyte teamSwap, bool[] alives)
+        public MapRunningFightDetailsMessage(int fightId, Types.GameFightFighterLightInformations[] attackers, Types.GameFightFighterLightInformations[] defenders)
         {
             this.fightId = fightId;
-            this.names = names;
-            this.levels = levels;
-            this.teamSwap = teamSwap;
-            this.alives = alives;
+            this.attackers = attackers;
+            this.defenders = defenders;
         }
         
         public override void Serialize(IDataWriter writer)
         {
             writer.WriteInt(fightId);
-            writer.WriteUShort((ushort)names.Length);
-            foreach (var entry in names)
+            writer.WriteUShort((ushort)attackers.Length);
+            foreach (var entry in attackers)
             {
-                 writer.WriteUTF(entry);
+                 entry.Serialize(writer);
             }
-            writer.WriteUShort((ushort)levels.Length);
-            foreach (var entry in levels)
+            writer.WriteUShort((ushort)defenders.Length);
+            foreach (var entry in defenders)
             {
-                 writer.WriteShort(entry);
-            }
-            writer.WriteSByte(teamSwap);
-            writer.WriteUShort((ushort)alives.Length);
-            foreach (var entry in alives)
-            {
-                 writer.WriteBoolean(entry);
+                 entry.Serialize(writer);
             }
         }
         
@@ -64,25 +54,18 @@ namespace BiM.Protocol.Messages
             if (fightId < 0)
                 throw new Exception("Forbidden value on fightId = " + fightId + ", it doesn't respect the following condition : fightId < 0");
             var limit = reader.ReadUShort();
-            names = new string[limit];
+            attackers = new Types.GameFightFighterLightInformations[limit];
             for (int i = 0; i < limit; i++)
             {
-                 names[i] = reader.ReadUTF();
+                 attackers[i] = new Types.GameFightFighterLightInformations();
+                 attackers[i].Deserialize(reader);
             }
             limit = reader.ReadUShort();
-            levels = new short[limit];
+            defenders = new Types.GameFightFighterLightInformations[limit];
             for (int i = 0; i < limit; i++)
             {
-                 levels[i] = reader.ReadShort();
-            }
-            teamSwap = reader.ReadSByte();
-            if (teamSwap < 0)
-                throw new Exception("Forbidden value on teamSwap = " + teamSwap + ", it doesn't respect the following condition : teamSwap < 0");
-            limit = reader.ReadUShort();
-            alives = new bool[limit];
-            for (int i = 0; i < limit; i++)
-            {
-                 alives[i] = reader.ReadBoolean();
+                 defenders[i] = new Types.GameFightFighterLightInformations();
+                 defenders[i].Deserialize(reader);
             }
         }
         

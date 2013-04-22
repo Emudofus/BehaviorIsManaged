@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:39
+// Generated on 04/17/2013 22:30:17
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -10,7 +10,7 @@ namespace BiM.Protocol.Data
     [D2OClass("SubAreas")]
     public class SubArea : IDataObject
     {
-        private const String MODULE = "SubAreas";
+        public const String MODULE = "SubAreas";
         public int id;
         public uint nameId;
         public int areaId;
@@ -20,5 +20,8 @@ namespace BiM.Protocol.Data
         public List<int> shape;
         public List<uint> customWorldMap;
         public int packId;
+        public uint level;
+        public Boolean displayOnWorldMap;
+        public List<uint> monsters;
     }
 }

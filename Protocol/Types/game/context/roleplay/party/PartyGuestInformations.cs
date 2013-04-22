@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:34
+// Generated on 04/17/2013 22:30:08
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +22,13 @@ namespace BiM.Protocol.Types
         public Types.EntityLook guestLook;
         public sbyte breed;
         public bool sex;
+        public Types.PlayerStatus status;
         
         public PartyGuestInformations()
         {
         }
         
-        public PartyGuestInformations(int guestId, int hostId, string name, Types.EntityLook guestLook, sbyte breed, bool sex)
+        public PartyGuestInformations(int guestId, int hostId, string name, Types.EntityLook guestLook, sbyte breed, bool sex, Types.PlayerStatus status)
         {
             this.guestId = guestId;
             this.hostId = hostId;
@@ -35,6 +36,7 @@ namespace BiM.Protocol.Types
             this.guestLook = guestLook;
             this.breed = breed;
             this.sex = sex;
+            this.status = status;
         }
         
         public virtual void Serialize(IDataWriter writer)
@@ -45,6 +47,8 @@ namespace BiM.Protocol.Types
             guestLook.Serialize(writer);
             writer.WriteSByte(breed);
             writer.WriteBoolean(sex);
+            writer.WriteShort(status.TypeId);
+            status.Serialize(writer);
         }
         
         public virtual void Deserialize(IDataReader reader)
@@ -60,6 +64,8 @@ namespace BiM.Protocol.Types
             guestLook.Deserialize(reader);
             breed = reader.ReadSByte();
             sex = reader.ReadBoolean();
+            status = Types.ProtocolTypeManager.GetInstance<Types.PlayerStatus>(reader.ReadShort());
+            status.Deserialize(reader);
         }
         
     }

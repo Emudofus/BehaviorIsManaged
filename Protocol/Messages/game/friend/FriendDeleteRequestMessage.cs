@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:22
+// Generated on 04/17/2013 22:29:52
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,25 +18,27 @@ namespace BiM.Protocol.Messages
             get { return Id; }
         }
         
-        public string name;
+        public int accountId;
         
         public FriendDeleteRequestMessage()
         {
         }
         
-        public FriendDeleteRequestMessage(string name)
+        public FriendDeleteRequestMessage(int accountId)
         {
-            this.name = name;
+            this.accountId = accountId;
         }
         
         public override void Serialize(IDataWriter writer)
         {
-            writer.WriteUTF(name);
+            writer.WriteInt(accountId);
         }
         
         public override void Deserialize(IDataReader reader)
         {
-            name = reader.ReadUTF();
+            accountId = reader.ReadInt();
+            if (accountId < 0)
+                throw new Exception("Forbidden value on accountId = " + accountId + ", it doesn't respect the following condition : accountId < 0");
         }
         
     }

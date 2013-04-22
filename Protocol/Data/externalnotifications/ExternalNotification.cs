@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:36
+// Generated on 04/17/2013 22:30:12
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -10,7 +10,7 @@ namespace BiM.Protocol.Data
     [D2OClass("ExternalNotifications")]
     public class ExternalNotification : IDataObject
     {
-        private const String MODULE = "ExternalNotifications";
+        public const String MODULE = "ExternalNotifications";
         public int id;
         public int categoryId;
         public int iconId;

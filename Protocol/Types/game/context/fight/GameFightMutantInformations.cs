@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:33
+// Generated on 04/17/2013 22:30:07
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +22,8 @@ namespace BiM.Protocol.Types
         {
         }
         
-        public GameFightMutantInformations(int contextualId, Types.EntityLook look, Types.EntityDispositionInformations disposition, sbyte teamId, bool alive, Types.GameFightMinimalStats stats, string name, sbyte powerLevel)
-         : base(contextualId, look, disposition, teamId, alive, stats, name)
+        public GameFightMutantInformations(int contextualId, Types.EntityLook look, Types.EntityDispositionInformations disposition, sbyte teamId, bool alive, Types.GameFightMinimalStats stats, string name, Types.PlayerStatus status, sbyte powerLevel)
+         : base(contextualId, look, disposition, teamId, alive, stats, name, status)
         {
             this.powerLevel = powerLevel;
         }

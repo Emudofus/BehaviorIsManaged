@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:24
+// Generated on 04/17/2013 22:29:55
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,16 +20,18 @@ namespace BiM.Protocol.Messages
         
         public bool hireOrFire;
         public Types.TaxCollectorBasicInformations basicInfos;
+        public int playerId;
         public string playerName;
         
         public TaxCollectorMovementMessage()
         {
         }
         
-        public TaxCollectorMovementMessage(bool hireOrFire, Types.TaxCollectorBasicInformations basicInfos, string playerName)
+        public TaxCollectorMovementMessage(bool hireOrFire, Types.TaxCollectorBasicInformations basicInfos, int playerId, string playerName)
         {
             this.hireOrFire = hireOrFire;
             this.basicInfos = basicInfos;
+            this.playerId = playerId;
             this.playerName = playerName;
         }
         
@@ -37,6 +39,7 @@ namespace BiM.Protocol.Messages
         {
             writer.WriteBoolean(hireOrFire);
             basicInfos.Serialize(writer);
+            writer.WriteInt(playerId);
             writer.WriteUTF(playerName);
         }
         
@@ -45,6 +48,9 @@ namespace BiM.Protocol.Messages
             hireOrFire = reader.ReadBoolean();
             basicInfos = new Types.TaxCollectorBasicInformations();
             basicInfos.Deserialize(reader);
+            playerId = reader.ReadInt();
+            if (playerId < 0)
+                throw new Exception("Forbidden value on playerId = " + playerId + ", it doesn't respect the following condition : playerId < 0");
             playerName = reader.ReadUTF();
         }
         

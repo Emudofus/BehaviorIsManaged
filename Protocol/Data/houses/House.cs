@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:36
+// Generated on 04/17/2013 22:30:13
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -10,7 +10,7 @@ namespace BiM.Protocol.Data
     [D2OClass("Houses")]
     public class House : IDataObject
     {
-        private const String MODULE = "Houses";
+        public const String MODULE = "Houses";
         public int typeId;
         public uint defaultPrice;
         public int nameId;

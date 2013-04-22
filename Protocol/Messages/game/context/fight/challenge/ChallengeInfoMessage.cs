@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:16
+// Generated on 04/17/2013 22:29:43
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,33 +20,27 @@ namespace BiM.Protocol.Messages
         
         public short challengeId;
         public int targetId;
-        public int baseXpBonus;
-        public int extraXpBonus;
-        public int baseDropBonus;
-        public int extraDropBonus;
+        public int xpBonus;
+        public int dropBonus;
         
         public ChallengeInfoMessage()
         {
         }
         
-        public ChallengeInfoMessage(short challengeId, int targetId, int baseXpBonus, int extraXpBonus, int baseDropBonus, int extraDropBonus)
+        public ChallengeInfoMessage(short challengeId, int targetId, int xpBonus, int dropBonus)
         {
             this.challengeId = challengeId;
             this.targetId = targetId;
-            this.baseXpBonus = baseXpBonus;
-            this.extraXpBonus = extraXpBonus;
-            this.baseDropBonus = baseDropBonus;
-            this.extraDropBonus = extraDropBonus;
+            this.xpBonus = xpBonus;
+            this.dropBonus = dropBonus;
         }
         
         public override void Serialize(IDataWriter writer)
         {
             writer.WriteShort(challengeId);
             writer.WriteInt(targetId);
-            writer.WriteInt(baseXpBonus);
-            writer.WriteInt(extraXpBonus);
-            writer.WriteInt(baseDropBonus);
-            writer.WriteInt(extraDropBonus);
+            writer.WriteInt(xpBonus);
+            writer.WriteInt(dropBonus);
         }
         
         public override void Deserialize(IDataReader reader)
@@ -55,18 +49,12 @@ namespace BiM.Protocol.Messages
             if (challengeId < 0)
                 throw new Exception("Forbidden value on challengeId = " + challengeId + ", it doesn't respect the following condition : challengeId < 0");
             targetId = reader.ReadInt();
-            baseXpBonus = reader.ReadInt();
-            if (baseXpBonus < 0)
-                throw new Exception("Forbidden value on baseXpBonus = " + baseXpBonus + ", it doesn't respect the following condition : baseXpBonus < 0");
-            extraXpBonus = reader.ReadInt();
-            if (extraXpBonus < 0)
-                throw new Exception("Forbidden value on extraXpBonus = " + extraXpBonus + ", it doesn't respect the following condition : extraXpBonus < 0");
-            baseDropBonus = reader.ReadInt();
-            if (baseDropBonus < 0)
-                throw new Exception("Forbidden value on baseDropBonus = " + baseDropBonus + ", it doesn't respect the following condition : baseDropBonus < 0");
-            extraDropBonus = reader.ReadInt();
-            if (extraDropBonus < 0)
-                throw new Exception("Forbidden value on extraDropBonus = " + extraDropBonus + ", it doesn't respect the following condition : extraDropBonus < 0");
+            xpBonus = reader.ReadInt();
+            if (xpBonus < 0)
+                throw new Exception("Forbidden value on xpBonus = " + xpBonus + ", it doesn't respect the following condition : xpBonus < 0");
+            dropBonus = reader.ReadInt();
+            if (dropBonus < 0)
+                throw new Exception("Forbidden value on dropBonus = " + dropBonus + ", it doesn't respect the following condition : dropBonus < 0");
         }
         
     }

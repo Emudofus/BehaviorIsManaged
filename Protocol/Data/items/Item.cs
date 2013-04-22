@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:37
+// Generated on 04/17/2013 22:30:13
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -10,7 +10,7 @@ namespace BiM.Protocol.Data
     [D2OClass("Items")]
     public class Item : IDataObject
     {
-        private const String MODULE = "Items";
+        public const String MODULE = "Items";
         public const uint EQUIPEMENT_CATEGORY = 0;
         public const uint CONSUMABLES_CATEGORY = 1;
         public const uint RESSOURCES_CATEGORY = 2;
@@ -38,6 +38,8 @@ namespace BiM.Protocol.Data
         public Boolean nonUsableOnAnother;
         public uint appearanceId;
         public Boolean secretRecipe;
+        public List<uint> dropMonsterIds;
+        public uint recipeSlots;
         public List<uint> recipeIds;
         public Boolean bonusIsSecret;
         public List<EffectInstance> possibleEffects;

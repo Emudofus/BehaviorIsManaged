@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:12
+// Generated on 04/17/2013 22:29:36
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,33 +19,27 @@ namespace BiM.Protocol.Messages
         }
         
         public int targetId;
-        public int amount;
         
         public GameActionFightReflectDamagesMessage()
         {
         }
         
-        public GameActionFightReflectDamagesMessage(short actionId, int sourceId, int targetId, int amount)
+        public GameActionFightReflectDamagesMessage(short actionId, int sourceId, int targetId)
          : base(actionId, sourceId)
         {
             this.targetId = targetId;
-            this.amount = amount;
         }
         
         public override void Serialize(IDataWriter writer)
         {
             base.Serialize(writer);
             writer.WriteInt(targetId);
-            writer.WriteInt(amount);
         }
         
         public override void Deserialize(IDataReader reader)
         {
             base.Deserialize(reader);
             targetId = reader.ReadInt();
-            amount = reader.ReadInt();
-            if (amount < 0)
-                throw new Exception("Forbidden value on amount = " + amount + ", it doesn't respect the following condition : amount < 0");
         }
         
     }

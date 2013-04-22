@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:23
+// Generated on 04/17/2013 22:29:53
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,28 +18,30 @@ namespace BiM.Protocol.Messages
             get { return Id; }
         }
         
-        public string name;
+        public int accountId;
         public bool session;
         
         public IgnoredDeleteRequestMessage()
         {
         }
         
-        public IgnoredDeleteRequestMessage(string name, bool session)
+        public IgnoredDeleteRequestMessage(int accountId, bool session)
         {
-            this.name = name;
+            this.accountId = accountId;
             this.session = session;
         }
         
         public override void Serialize(IDataWriter writer)
         {
-            writer.WriteUTF(name);
+            writer.WriteInt(accountId);
             writer.WriteBoolean(session);
         }
         
         public override void Deserialize(IDataReader reader)
         {
-            name = reader.ReadUTF();
+            accountId = reader.ReadInt();
+            if (accountId < 0)
+                throw new Exception("Forbidden value on accountId = " + accountId + ", it doesn't respect the following condition : accountId < 0");
             session = reader.ReadBoolean();
         }
         

@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:36
+// Generated on 04/17/2013 22:30:12
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -10,7 +10,7 @@ namespace BiM.Protocol.Data
     [D2OClass("Breeds")]
     public class Breed : IDataObject
     {
-        private const String MODULE = "Breeds";
+        public const String MODULE = "Breeds";
         public int id;
         public uint shortNameId;
         public uint longNameId;

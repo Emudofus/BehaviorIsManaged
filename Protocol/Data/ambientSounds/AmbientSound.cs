@@ -1,6 +1,6 @@
 
 
-// Generated on 12/11/2012 19:44:36
+// Generated on 04/17/2013 22:30:11
 using System;
 using System.Collections.Generic;
 using BiM.Protocol.Tools;
@@ -14,7 +14,7 @@ namespace BiM.Protocol.Data
         public const int AMBIENT_TYPE_AMBIENT = 2;
         public const int AMBIENT_TYPE_FIGHT = 3;
         public const int AMBIENT_TYPE_BOSS = 4;
-        private const String MODULE = "AmbientSounds";
+        public const String MODULE = "AmbientSounds";
         public int id;
         public uint volume;
         public int criterionId;
