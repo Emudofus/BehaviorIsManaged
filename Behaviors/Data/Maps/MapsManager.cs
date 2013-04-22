@@ -64,18 +64,19 @@ namespace BiM.Behaviors.Data.Maps
 
         public DlmMap GetDlmMap(int id, string decryptionKey)
         {
-            // retrieve the bound entry to the key or find it in the d2p file
+            // retrieve the bound entry to the mainLock or find it in the d2p file
             D2pEntry entry;
-            if (!m_entriesLinks.TryGetValue(id, out entry))
-            {
-                var idStr = id.ToString();
-                entry = m_reader.Entries.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x.FileName) == idStr);
+            lock (m_entriesLinks) 
+                if (!m_entriesLinks.TryGetValue(id, out entry))
+                {
+                    var idStr = id.ToString();
+                    entry = m_reader.Entries.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x.FileName) == idStr);
 
-                if (entry == null)
-                    throw new ArgumentException(string.Format("Map id {0} not found", id));
+                    if (entry == null)
+                        throw new ArgumentException(string.Format("Map id {0} not found", id));
 
-                m_entriesLinks.Add(id, entry);
-            }
+                    m_entriesLinks.Add(id, entry);
+                }
 
             // then retrieve the data source bound to the entry or create it
             var dlmReader = new DlmReader(m_reader.ReadFile(entry));
@@ -208,7 +209,7 @@ namespace BiM.Behaviors.Data.Maps
         private void EndFileCreation()
         {
             m_tableOffset = (uint)m_writer.BaseStream.Position;
-            m_length = (uint)( m_writer.BaseStream.Position - HeaderSize ); // substracts the header
+            m_length = (uint)(m_writer.BaseStream.Position - HeaderSize); // substracts the header
 
             foreach (var entry in m_offsetsTable)
             {

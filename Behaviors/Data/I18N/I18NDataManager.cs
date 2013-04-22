@@ -65,7 +65,9 @@ namespace BiM.Behaviors.Data.I18N
         private void EnsureLanguageIsLoaded(Languages language)
         {
             if (m_readers.ContainsKey(language)) return;
-            if (string.IsNullOrEmpty(m_d2IPath)) return; // AddReaders not called yet
+
+            if (string.IsNullOrEmpty(m_d2IPath)) 
+                return; // AddReaders not called yet
             foreach (var d2iFile in Directory.EnumerateFiles(m_d2IPath).Where(entry => entry.EndsWith(".d2i")).Where(path => GetLanguageOfFile(path) == language))
             {
                 var reader = new D2IFile(d2iFile);
@@ -115,7 +117,7 @@ namespace BiM.Behaviors.Data.I18N
 
         public string ReadText(uint id, Languages? lang = null)
         {
-            return ReadText((int)id);
+            return ReadText((int)id, lang);
         }
 
         public string ReadText(int id, Languages? lang = null)

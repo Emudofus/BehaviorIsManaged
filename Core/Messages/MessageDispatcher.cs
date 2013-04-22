@@ -465,6 +465,7 @@ namespace BiM.Core.Messages
 
                         var message = keyPair.Value.Dequeue();
 
+                        if (message != null)
                         Dispatch(message.Item1, message.Item2);
                     }
                 }

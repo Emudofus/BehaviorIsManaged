@@ -27,77 +27,79 @@ using Bot = BiM.Behaviors.Bot;
 
 namespace BiM.Host.UI.ViewModels
 {
-    public class BotViewModel : DockContainer<BotControl>, IDisposable, IDocked
+  public class BotViewModel : DockContainer<BotControl>, IDisposable, IDocked
+  {
+    private readonly ObservableCollectionMT<object> m_documents = new ObservableCollectionMT<object>();
+    private readonly Dictionary<object, Assembly> m_documentsAssembly = new Dictionary<object, Assembly>();
+    //private readonly ReadOnlyObservableCollectionMT<object> m_readOnlyDocuments;
+
+    public BotViewModel(Bot bot)
     {
-        private readonly ObservableCollectionMT<object> m_documents = new ObservableCollectionMT<object>();
-        private readonly Dictionary<object, Assembly> m_documentsAssembly = new Dictionary<object, Assembly>();
-        //private readonly ReadOnlyObservableCollectionMT<object> m_readOnlyDocuments;
+      Bot = bot;
 
-        public BotViewModel(Bot bot)
-        {
-            Bot = bot;
-
-            bot.Dispatcher.RegisterNonShared(this);
+      bot.Dispatcher.RegisterNonShared(this);
       Bot.CharacterSelected += Bot_CharacterSelected;
     }
 
     void Bot_CharacterSelected(Bot bot, Behaviors.Game.Actors.RolePlay.PlayedCharacter character)
     {
+     if (Parent != null)
       Parent.Title = bot.Character.Name;
-        }
+    }
 
-        public Bot Bot
-        {
-            get;
-            private set;
-        }
+    public Bot Bot
+    {
+      get;
+      private set;
+    }
 
-        private LayoutContent m_parent;
+    private LayoutContent m_parent;
 
-        public LayoutContent Parent
-        {
-            get
-            {
-                return m_parent;
-            }
-            set
-            {
-                m_parent = value;
-                Parent.Closing += OnClosing;
-            }
-        }
-
-        protected override LayoutDocumentPane DocumentPane
-        {
-            get
-            {
-                return View.DocumentPane;
-            }
-        }
-
-        private void OnClosing(object sender, CancelEventArgs e)
-        {
-            Bot.Dispose();
-        }
-
-        #region Handlers
-
-        [MessageHandler(typeof(IdentificationSuccessMessage))]
-        public void HandleIdentificationSuccessMessage(Bot bot, IdentificationSuccessMessage message)
-        {
-            Parent.Title = bot.ClientInformations.Nickname;
-        }
-        #endregion
-
-        public void Dispose()
-        {
-            if (Bot != null)
+    public LayoutContent Parent
+    {
+      get
       {
-                Bot.Dispatcher.UnRegisterNonShared(this);
+        return m_parent;
+      }
+      set
+      {
+        m_parent = value;
+        Parent.Closing += OnClosing;
+      }
+    }
+
+    protected override LayoutDocumentPane DocumentPane
+    {
+      get
+      {
+        return View.DocumentPane;
+      }
+    }
+
+    private void OnClosing(object sender, CancelEventArgs e)
+    {
+      Bot.Dispose();
+    }
+
+    #region Handlers
+
+    [MessageHandler(typeof(IdentificationSuccessMessage))]
+    public void HandleIdentificationSuccessMessage(Bot bot, IdentificationSuccessMessage message)
+    {
+        if (Parent!=null)
+            Parent.Title = message.nickname;
+    }
+    #endregion
+
+    public void Dispose()
+    {
+      if (Bot != null)
+      {
+        Bot.Dispatcher.UnRegisterNonShared(this);
         Bot.CharacterSelected -= Bot_CharacterSelected;
       }
 
-            UIManager.Instance.RemoveDocument(View);
-        }
+      UIManager.Instance.RemoveDocument(View);
     }
+  }
 }

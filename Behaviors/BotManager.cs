@@ -81,21 +81,23 @@ namespace BiM.Behaviors
                 var index = m_bots.Count;
                 m_bots.Add(bot);
                 bot.Id = index;
-
+            }
                 OnBotAdded(bot);
             }
-        }
+
+        // DO NOT CALL THIS, CALL bot.Dispose() INSTEAD !!
 
         public void RemoveBot(Bot bot)
         {
+            bool removed = false;
             lock (m_bots)
             {
                 if (!bot.Disposed)
                     bot.Dispose();
 
-                if (m_bots.Remove(bot))
-                    OnBotRemoved(bot);
+                removed = m_bots.Remove(bot);                    
             }
+            if (removed) OnBotRemoved(bot);
         }
 
         public Bot GetCurrentBot()
@@ -109,7 +111,8 @@ namespace BiM.Behaviors
         {
             foreach (var bot in m_bots.ToArray())
             {
-                RemoveBot(bot);
+                if (bot != null)
+                    bot.Dispose();
             }
         }
 
