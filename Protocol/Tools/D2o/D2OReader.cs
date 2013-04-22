@@ -456,12 +456,13 @@ namespace BiM.Protocol.Tools
                 vectorType = vectorType.GetGenericArguments()[0];
             }
 
-            if (!objectCreators.ContainsKey(vectorType))
-            {
-                Func<object[], object> creator = CreateObjectBuilder(vectorType, new FieldInfo[0]);
+            lock (objectCreators) // We sometimes have error on objectCreators.Add(vectorType, creator) : mainLock allready in the dictionary
+                if (!objectCreators.ContainsKey(vectorType))
+                {
+                    Func<object[], object> creator = CreateObjectBuilder(vectorType, new FieldInfo[0]);
 
-                objectCreators.Add(vectorType, creator);
-            }
+                    objectCreators.Add(vectorType, creator);
+                }
 
             var result = objectCreators[vectorType](new object[0]) as IList;
 

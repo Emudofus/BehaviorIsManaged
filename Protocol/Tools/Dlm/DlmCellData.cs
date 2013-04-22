@@ -29,6 +29,7 @@ namespace BiM.Protocol.Tools.Dlm
             Speed = 0;
             MapChangeData = 0;
             MoveZone = 0;
+            _arrow = 0;
         }
 
         public short Id;
@@ -40,6 +41,8 @@ namespace BiM.Protocol.Tools.Dlm
 
         private sbyte m_rawFloor;
         private short? m_floor;
+        private byte? _arrow;
+
 
         public byte LosMov;
 
@@ -82,6 +85,26 @@ namespace BiM.Protocol.Tools.Dlm
             get { return (LosMov & 64) >> 6 == 1; }
         }
 
+        public bool useTopArrow
+        {
+            get { return (this._arrow & 1) != 0; }
+        }// end function
+
+        public bool useBottomArrow
+        {
+            get { return (this._arrow & 2) != 0; }
+        }// end function
+
+        public bool useRightArrow
+        {
+            get { return (this._arrow & 4) != 0; }
+        }// end function
+
+        public bool useLeftArrow
+        {
+            get { return (this._arrow & 8) != 0; }
+        }// end function
+
 
 
         public static DlmCellData ReadFromStream(short id, byte version, IDataReader reader)
@@ -103,6 +126,12 @@ namespace BiM.Protocol.Tools.Dlm
             if (version > 5)
             {
                 cell.MoveZone = reader.ReadByte();
+            }
+
+            if (version > 7)
+            {
+                byte tmpBits = reader.ReadByte();
+                cell._arrow = (byte)( 15 & tmpBits);
             }
 
             return cell;

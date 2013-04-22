@@ -23,10 +23,10 @@ namespace BiM.Protocol.Tools.Dlm
     public class DlmReader : IDisposable
     {
         /// <summary>
-        /// Returns the decryption key
+        /// Returns the decryption mainLock
         /// </summary>
         /// <param name="mapId">The map to decrypt</param>
-        /// <returns>The decryption key</returns>
+        /// <returns>The decryption mainLock</returns>
         public delegate string KeyProvider(int mapId);
 
         private IDataReader m_reader;

@@ -43,25 +43,38 @@ namespace BiM.Protocol.Tools
                 var indexPos = reader.ReadInt();
                 reader.Seek(indexPos, SeekOrigin.Begin);
                 var indexLen = reader.ReadInt();
-
-                for (int i = 0; i < indexLen; i += 8)
+                int addOffset = 0;
+                for (int i = 0; i < indexLen; i += 9)
                 {
                     var key = reader.ReadInt();
+                    byte nbAdditionnalStrings = reader.ReadByte();                    
                     var dataPos = reader.ReadInt();
                     var pos = (int)reader.Position;
-                    reader.Seek(dataPos, SeekOrigin.Begin);
+                    reader.Seek(dataPos + addOffset, SeekOrigin.Begin);
                     m_indexes.Add(key, reader.ReadUTF());
                     reader.Seek(pos, SeekOrigin.Begin);
+                    while (nbAdditionnalStrings-- > 0)
+                    {
+                        dataPos = reader.ReadInt();
+                        pos = (int)reader.Position;
+                        reader.Seek(dataPos + addOffset, SeekOrigin.Begin);
+                        string unusedString = reader.ReadUTF(); // Well, no real use to read that, as we don't use 'em
+                        reader.Seek(pos, SeekOrigin.Begin);
+                        i += 4;
+                    }
                 }
+                int lastOffset = reader.ReadInt() + (int)reader.Position;
+                
+                int locpos = (int)reader.Position;
 
-                while (reader.BytesAvailable > 0)
+                while (locpos < lastOffset)
                 {
                     var key = reader.ReadUTF();
                     var dataPos = reader.ReadInt();
-                    var pos = (int)reader.Position;
+                    locpos = (int)reader.Position;
                     reader.Seek(dataPos, SeekOrigin.Begin);
                     m_textIndexes.Add(key, reader.ReadUTF());
-                    reader.Seek(pos, SeekOrigin.Begin);
+                    reader.Seek(locpos, SeekOrigin.Begin);
                 }
             }
         }
