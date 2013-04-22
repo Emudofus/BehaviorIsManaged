@@ -141,6 +141,7 @@
     <Compile Include="Data\communication\Smiley.cs" />
     <Compile Include="Data\AnimFunData.cs" />
     <Compile Include="Data\IDataObject.cs" />
+    <Compile Include="Data\monsters\MonsterDrop.cs" />
     <Compile Include="Data\Point.cs" />
     <Compile Include="Data\Rectangle.cs" />
     <Compile Include="Data\documents\Document.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="Enums\PlayableBreedEnum.cs" />
     <Compile Include="Enums\PlayerLifeStatusEnum.cs" />
     <Compile Include="Enums\PlayerStateEnum.cs" />
+    <Compile Include="Enums\PlayerStatusEnum.cs" />
     <Compile Include="Enums\PresetDeleteResultEnum.cs" />
     <Compile Include="Enums\PresetSaveResultEnum.cs" />
     <Compile Include="Enums\PresetSaveUpdateErrorEnum.cs" />
@@ -451,6 +453,9 @@
     <Compile Include="Messages\game\character\stats\LifePointsRegenBeginMessage.cs" />
     <Compile Include="Messages\game\character\stats\LifePointsRegenEndMessage.cs" />
     <Compile Include="Messages\game\character\stats\UpdateLifePointsMessage.cs" />
+    <Compile Include="Messages\game\character\status\PlayerStatusUpdateErrorMessage.cs" />
+    <Compile Include="Messages\game\character\status\PlayerStatusUpdateMessage.cs" />
+    <Compile Include="Messages\game\character\status\PlayerStatusUpdateRequestMessage.cs" />
     <Compile Include="Messages\game\chat\channel\ChannelEnablingChangeMessage.cs" />
     <Compile Include="Messages\game\chat\channel\ChannelEnablingMessage.cs" />
     <Compile Include="Messages\game\chat\channel\EnabledChannelsMessage.cs" />
@@ -472,6 +477,7 @@
     <Compile Include="Messages\game\chat\smiley\LocalizedChatSmileyMessage.cs" />
     <Compile Include="Messages\game\chat\smiley\MoodSmileyRequestMessage.cs" />
     <Compile Include="Messages\game\chat\smiley\MoodSmileyResultMessage.cs" />
+    <Compile Include="Messages\game\chat\smiley\MoodSmileyUpdateMessage.cs" />
     <Compile Include="Messages\game\context\display\DisplayNumericalValueMessage.cs" />
     <Compile Include="Messages\game\context\display\DisplayNumericalValueWithAgeBonusMessage.cs" />
     <Compile Include="Messages\game\context\dungeon\DungeonEnteredMessage.cs" />
@@ -841,6 +847,7 @@
     <Compile Include="Messages\game\interactive\InteractiveMapUpdateMessage.cs" />
     <Compile Include="Messages\game\interactive\InteractiveUsedMessage.cs" />
     <Compile Include="Messages\game\interactive\InteractiveUseEndedMessage.cs" />
+    <Compile Include="Messages\game\interactive\InteractiveUseErrorMessage.cs" />
     <Compile Include="Messages\game\interactive\InteractiveUseRequestMessage.cs" />
     <Compile Include="Messages\game\interactive\meeting\TeleportBuddiesAnswerMessage.cs" />
     <Compile Include="Messages\game\interactive\meeting\TeleportBuddiesMessage.cs" />
@@ -930,6 +937,7 @@
     <Compile Include="Messages\game\inventory\exchanges\ExchangeRequestOnTaxCollectorMessage.cs" />
     <Compile Include="Messages\game\inventory\exchanges\ExchangeSellMessage.cs" />
     <Compile Include="Messages\game\inventory\exchanges\ExchangeSellOkMessage.cs" />
+    <Compile Include="Messages\game\inventory\exchanges\ExchangeSetCraftRecipeMessage.cs" />
     <Compile Include="Messages\game\inventory\exchanges\ExchangeShopStockMovementRemovedMessage.cs" />
     <Compile Include="Messages\game\inventory\exchanges\ExchangeShopStockMovementUpdatedMessage.cs" />
     <Compile Include="Messages\game\inventory\exchanges\ExchangeShopStockMultiMovementRemovedMessage.cs" />
@@ -1005,6 +1013,7 @@
     <Compile Include="Messages\game\inventory\preset\InventoryPresetItemUpdateErrorMessage.cs" />
     <Compile Include="Messages\game\inventory\preset\InventoryPresetItemUpdateMessage.cs" />
     <Compile Include="Messages\game\inventory\preset\InventoryPresetItemUpdateRequestMessage.cs" />
+    <Compile Include="Messages\game\inventory\preset\InventoryPresetSaveCustomMessage.cs" />
     <Compile Include="Messages\game\inventory\preset\InventoryPresetSaveMessage.cs" />
     <Compile Include="Messages\game\inventory\preset\InventoryPresetSaveResultMessage.cs" />
     <Compile Include="Messages\game\inventory\preset\InventoryPresetUpdateMessage.cs" />
@@ -1200,6 +1209,8 @@
     <Compile Include="Types\game\character\choice\CharacterToRecolorInformation.cs" />
     <Compile Include="Types\game\character\choice\CharacterToRelookInformation.cs" />
     <Compile Include="Types\game\character\restriction\ActorRestrictionsInformations.cs" />
+    <Compile Include="Types\game\character\status\PlayerStatus.cs" />
+    <Compile Include="Types\game\character\status\PlayerStatusExtended.cs" />
     <Compile Include="Types\game\context\ActorOrientation.cs" />
     <Compile Include="Types\game\context\EntityDispositionInformations.cs" />
     <Compile Include="Types\game\context\EntityMovementInformations.cs" />
@@ -1226,6 +1237,7 @@
     <Compile Include="Types\game\context\fight\GameFightAIInformations.cs" />
     <Compile Include="Types\game\context\fight\GameFightCharacterInformations.cs" />
     <Compile Include="Types\game\context\fight\GameFightFighterInformations.cs" />
+    <Compile Include="Types\game\context\fight\GameFightFighterLightInformations.cs" />
     <Compile Include="Types\game\context\fight\GameFightFighterNamedInformations.cs" />
     <Compile Include="Types\game\context\fight\GameFightMinimalStats.cs" />
     <Compile Include="Types\game\context\fight\GameFightMinimalStatsPreparation.cs" />
@@ -1339,7 +1351,6 @@
     <Compile Include="Types\game\interactive\skill\SkillActionDescription.cs" />
     <Compile Include="Types\game\interactive\skill\SkillActionDescriptionCollect.cs" />
     <Compile Include="Types\game\interactive\skill\SkillActionDescriptionCraft.cs" />
-    <Compile Include="Types\game\interactive\skill\SkillActionDescriptionCraftExtended.cs" />
     <Compile Include="Types\game\interactive\skill\SkillActionDescriptionTimed.cs" />
     <Compile Include="Types\game\interactive\StatedElement.cs" />
     <Compile Include="Types\game\inventory\preset\Preset.cs" />
