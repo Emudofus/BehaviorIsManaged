@@ -175,34 +175,46 @@ namespace BiM.Behaviors.Data.Maps
                     foreach (var map in maps)
                     {
                         var pos = new Point(map.X, map.Y);
-                        var subArea = m_subAreas[map.SubAreaId];
-                        var area = m_areas[subArea.areaId];
-                        var superArea = m_superAreas[area.superAreaId];
+                        var subArea = m_subAreas.ContainsKey(map.SubAreaId) ? m_subAreas[map.SubAreaId] : null;
+                        var area = subArea != null && m_areas.ContainsKey(subArea.areaId) ? m_areas[subArea.areaId] : null;
+                        var superArea = area != null && m_subAreas.ContainsKey(area.superAreaId) ? m_superAreas[area.superAreaId] : null;
 
                         var mapWithPrority = new MapWithPriority(map);
 
-                        m_subAreaMaps.AddRegion(subArea.id, map.Id);
-                        m_subAreaMaps.AddMap(subArea.id, pos, mapWithPrority);
+                        if (subArea != null)
+                        {
+                            m_subAreaMaps.AddRegion(subArea.id, map.Id);
+                            m_subAreaMaps.AddMap(subArea.id, pos, mapWithPrority);
+                        }
 
-                        if (!m_areaChildrens.ContainsRegion(area.id, subArea.id))
-                            m_areaChildrens.AddRegion(area.id, subArea.id);
-                        m_areaChildrens.AddMap(area.id, pos, mapWithPrority);
+                        if (area != null)
+                        {
+                            if (!m_areaChildrens.ContainsRegion(area.id, subArea.id))
+                                m_areaChildrens.AddRegion(area.id, subArea.id);
+                            m_areaChildrens.AddMap(area.id, pos, mapWithPrority);
+                        }
 
-                        if (!m_superAreaChildrens.ContainsRegion(superArea.id, area.id))
-                            m_superAreaChildrens.AddRegion(superArea.id, area.id);
-                        m_superAreaChildrens.AddMap(superArea.id, pos, mapWithPrority);
+                        if (superArea != null)
+                        {
+                            if (!m_superAreaChildrens.ContainsRegion(superArea.id, area.id))
+                                m_superAreaChildrens.AddRegion(superArea.id, area.id);
+                            m_superAreaChildrens.AddMap(superArea.id, pos, mapWithPrority);
+                        }
 
-                        var worldmapId = (int)superArea.worldmapId;
-                        if (!m_worldMapsChildrens.ContainsRegion(worldmapId, superArea.id))
-                            m_worldMapsChildrens.AddRegion(worldmapId, superArea.id);
-                        m_worldMapsChildrens.AddMap(worldmapId, pos, mapWithPrority);
+                        int? worldmapId = superArea != null ? (int?)superArea.worldmapId : null;
+                        if (superArea != null)
+                        {
+                            if (!m_worldMapsChildrens.ContainsRegion(worldmapId.Value, superArea.id))
+                                m_worldMapsChildrens.AddRegion(worldmapId.Value, superArea.id);
+                            m_worldMapsChildrens.AddMap(worldmapId.Value, pos, mapWithPrority);
+                        }
 
                         mapsPosition.Add(new MapPositionData
                         {
                             MapId = map.Id,
-                            SubAreaId = subArea.id,
-                            AreaId = area.id,
-                            SuperAreaId = superArea.id,
+                            SubAreaId = subArea != null ? subArea.id : (int?) null,
+                            AreaId = area != null ? area.id : (int?) null,
+                            SuperAreaId = superArea != null ? superArea.id : (int?) null,
                             WorldMapId = worldmapId,
                             X = map.X,
                             Y = map.Y
@@ -264,19 +276,19 @@ namespace BiM.Behaviors.Data.Maps
 
         private int? FindMapNeighbour(MapPositionData map, int deltaX, int deltaY)
         {
-            int? bySubArea = m_subAreaMaps.GetBestMap(map.SubAreaId, map.X + deltaX, map.Y + deltaY);
+            int? bySubArea = map.SubAreaId != null ? m_subAreaMaps.GetBestMap(map.SubAreaId.Value, map.X + deltaX, map.Y + deltaY) : null;
             if (bySubArea != null)
                 return bySubArea;
 
-            int? byArea = m_areaChildrens.GetBestMap(map.AreaId, map.X + deltaX, map.Y + deltaY);
+            int? byArea = map.AreaId != null ? m_areaChildrens.GetBestMap(map.AreaId.Value, map.X + deltaX, map.Y + deltaY) : null;
             if (byArea != null)
                 return byArea;
 
-            int? bySuperArea = m_superAreaChildrens.GetBestMap(map.SuperAreaId, map.X + deltaX, map.Y + deltaY);
+            int? bySuperArea = map.SuperAreaId != null ? m_superAreaChildrens.GetBestMap(map.SuperAreaId.Value, map.X + deltaX, map.Y + deltaY) : null;
             if (bySuperArea != null)
                 return bySuperArea;
 
-            int? byWorldMap = m_worldMapsChildrens.GetBestMap(map.WorldMapId, map.X + deltaX, map.Y + deltaY);
+            int? byWorldMap = map.WorldMapId != null ? m_worldMapsChildrens.GetBestMap(map.WorldMapId.Value, map.X + deltaX, map.Y + deltaY) : null;
             if (byWorldMap != null)
                 return byWorldMap;
 

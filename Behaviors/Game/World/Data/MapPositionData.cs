@@ -38,25 +38,25 @@ namespace BiM.Behaviors.Game.World.Data
             set;
         }
 
-        public int SubAreaId
+        public int? SubAreaId
         {
             get;
             set;
         }
 
-        public int AreaId
+        public int? AreaId
         {
             get;
             set;
         }
 
-        public int SuperAreaId
+        public int? SuperAreaId
         {
             get;
             set;
         }
 
-        public int WorldMapId
+        public int? WorldMapId
         {
             get;
             set;
