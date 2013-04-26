@@ -277,14 +277,27 @@ namespace BiM.Behaviors.Game.World
         /// If not sure, then returns false. 
         /// Warning : cell1 and cell2 are ignored !
         /// </summary>
+        /// <remarks>Same version as the client</remarks>
         /// <returns></returns>
-        public bool CanBeSeen(Cell cell1, Cell cell2, bool throughEntities = false)
+        public bool CanBeSeen(Cell from, Cell to, bool throughEntities = false)
         {
-            if (cell1 == null || cell2 == null) return false;
-            if (cell1 == cell2) return true;
+            if (from == null || to == null) return false;
+            if (from == to) return true;
 
-            foreach (Cell cell in cell1.GetAllCellsInRectangle(cell2, true, cell => cell != null && !cell.LineOfSight || (!throughEntities && IsActorOnCell(cell))))
-                if (TooCloseFromSegment(cell.X, cell.Y, cell1.X, cell1.Y, cell2.X, cell2.Y)) return false;
+            var occupiedCells = new short[0];
+            if (!throughEntities)
+                occupiedCells = _actors.Values.Select(x => x.Cell.Id).ToArray();
+
+            var line = from.GetCellsInLine(to);
+            foreach (var cell in line.Skip(1)) // skip first cell
+            {
+                if (to.Id == cell.Id)
+                    continue;
+
+                if (!cell.LineOfSight || !throughEntities && Array.IndexOf(occupiedCells, cell.Id) != -1)
+                    return false;
+            }
+
             return true;
         }
         #endregion

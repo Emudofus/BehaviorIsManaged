@@ -80,7 +80,7 @@ namespace BiM.Host
         public static int BotWorldPort = 5556;
 
         [Configurable("RealAuthHost")]
-        public static string RealAuthHost = "213.248.126.180";
+        public static string RealAuthHost = "213.248.126.39";
 
         [Configurable("RealAuthPort")]
         public static int RealAuthPort = 5555;

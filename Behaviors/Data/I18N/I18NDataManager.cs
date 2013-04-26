@@ -73,6 +73,9 @@ namespace BiM.Behaviors.Data.I18N
                 var reader = new D2IFile(d2iFile);
                 AddReader(reader, language);
             }
+
+            if (!m_readers.ContainsKey(language))
+                throw new Exception(string.Format("Language {0} not found in the d2i files, check the path of these files and that the file exist ({1})", language, m_d2IPath));
         }
         private string m_d2IPath;
         public void AddReaders(string directory, bool forceLoading = false)
