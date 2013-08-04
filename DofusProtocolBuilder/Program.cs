@@ -77,6 +77,9 @@ namespace DofusProtocolBuilder
 
             foreach (ParsingProfile parsingProfile in profiles)
             {
+                if (parsingProfile == null)
+                    continue;
+
                 Console.WriteLine("Executing profile \'{0}\' ... ", parsingProfile.Name);
 
                 if (parsingProfile.OutPutNamespace != null)

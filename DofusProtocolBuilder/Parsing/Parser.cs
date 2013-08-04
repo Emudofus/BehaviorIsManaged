@@ -301,8 +301,10 @@ namespace DofusProtocolBuilder.Parsing
 
 		private IEnumerable<IStatement> BuildMethodElementsFromMatch(Match match)
 		{
-			int bracketOpen =
-				Array.FindIndex(m_fileLines, (entry) => entry.Contains(match.Groups[0].Value)) + 1;
+		    int bracketOpen =
+		        Array.FindIndex(m_fileLines, (entry) => entry.Contains(match.Groups[0].Value));
+		    if (!m_fileLines[bracketOpen].EndsWith("{"))
+		        bracketOpen++;
 			int bracketClose = m_brackets[bracketOpen];
 
             var methodlines = new string[( bracketClose - 1 ) - bracketOpen];
